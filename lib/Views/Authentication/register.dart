@@ -425,7 +425,7 @@ class _RegisterState extends State<Register> {
                             if (value) {
                               bool isValid = await FlutterNumberCaptcha.show(
                                 titleText: "Confirm You're Not a Robot",
-                                placeholderText: "Type the answer",
+                                placeholderText: "Type the answer ",
                                 context,
                               );
                               if (isValid) {
