@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
@@ -7,6 +9,7 @@ import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/ErrorSnackBar.dart';
 import 'package:verbatica/Views/Authentication/register.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:verbatica/Views/navBarScreens/mainBottomNavigationBar.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -216,6 +219,23 @@ class _LoginState extends State<Login> {
                             );
                             if (isValid) {
                               //call the login event at the backend
+                              context.read<LoginRegisterationBloc>().add(
+                                LoginEvent(
+                                  email: email.text,
+                                  password: password.text,
+                                ),
+                              );
+
+                              //Temprorary code for debugging the UI, remove after adding business logic
+                              if (mounted) {
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => BottomNavigationBarView(),
+                                  ),
+                                  (Route<dynamic> route) => false,
+                                );
+                              }
                             }
                           }
                         },

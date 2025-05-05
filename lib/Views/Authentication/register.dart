@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, library_prefixes
 
 import 'package:country_picker/country_picker.dart';
 import 'package:email_validator/email_validator.dart';
@@ -114,6 +114,7 @@ class _RegisterState extends State<Register> {
                     child: Form(
                       key: _email,
                       child: TextFormField(
+                        keyboardType: TextInputType.emailAddress,
                         enableSuggestions: false,
                         style: TextStyle(color: Colors.white),
 
@@ -429,7 +430,7 @@ class _RegisterState extends State<Register> {
                                 context,
                               );
                               if (isValid) {
-                                //call the register event at the backend
+                                //call the register event of the bloc
                                 if (mounted) {
                                   context.read<LoginRegisterationBloc>().add(
                                     Registration(
@@ -440,6 +441,14 @@ class _RegisterState extends State<Register> {
                                     ),
                                   );
                                 }
+
+                                //Temproray code for UI debugging, remove after adding the business logic
+                                Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                    builder: (context) => EmailVerification(),
+                                  ),
+                                  (Route<dynamic> route) => false,
+                                );
                               }
                             }
                           },

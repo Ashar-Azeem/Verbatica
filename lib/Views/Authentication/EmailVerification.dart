@@ -4,6 +4,8 @@ import 'dart:async';
 
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/Utilities/Color.dart';
+import 'package:verbatica/Utilities/ErrorSnackBar.dart';
+import 'package:verbatica/Views/navBarScreens/mainBottomNavigationBar.dart';
 
 class EmailVerification extends StatefulWidget {
   const EmailVerification({super.key});
@@ -53,7 +55,6 @@ class _EmailVerificationState extends State<EmailVerification> {
   void _resendOtp() {
     if (_canResend) {
       // Add your OTP resend logic here
-      debugPrint('Resending OTP...');
       _startTimer();
       setState(() {
         _enteredOtp = '';
@@ -64,14 +65,12 @@ class _EmailVerificationState extends State<EmailVerification> {
   void _verifyOtp() {
     if (_enteredOtp.length == _otpLength) {
       // Add your OTP verification logic here
-      debugPrint('Verifying OTP: $_enteredOtp');
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Verifying OTP: $_enteredOtp')));
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => BottomNavigationBarView()),
+        (Route<dynamic> route) => false,
+      );
     } else {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please enter a valid OTP')));
+      CustomSnackbar.showError(context, "Please enter a valid OTP");
     }
   }
 

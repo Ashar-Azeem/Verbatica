@@ -7,11 +7,11 @@ part 'login_registeration_state.dart';
 class LoginRegisterationBloc
     extends Bloc<LoginRegisterationEvent, LoginRegisterationState> {
   LoginRegisterationBloc() : super(LoginRegisterationState()) {
-    on<Login>(login);
+    on<LoginEvent>(login);
     on<Registration>(register);
   }
 
-  void login(Login event, Emitter<LoginRegisterationState> emit) {
+  void login(LoginEvent event, Emitter<LoginRegisterationState> emit) {
     //Only login when the credentials exists and are correct and also the isEmailVerified field is true too.
     //otherwise display the exception of user doesn't exist.
   }
