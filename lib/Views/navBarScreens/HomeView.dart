@@ -116,7 +116,7 @@ List<Post> forYouPosts = [
   Post(
     id: '1',
     name: 'Tech News',
-    avatar: 'https://randomuser.me/api/portraits/tech/1.jpg',
+    avatar: 1,
     title: 'New Smartphone Released',
     description:
         'The latest flagship phone with revolutionary camera technology has been unveiled today.',
@@ -129,7 +129,8 @@ List<Post> forYouPosts = [
   Post(
     id: '2',
     name: 'Travel Enthusiast',
-    avatar: 'https://randomuser.me/api/portraits/lego/2.jpg',
+    avatar: 1,
+
     title: 'Hidden Beach in Thailand',
     description:
         'Found this amazing secluded beach that most tourists don\'t know about!',
@@ -143,7 +144,7 @@ List<Post> forYouPosts = [
   Post(
     id: '3',
     name: 'Debate Master',
-    avatar: 'https://randomuser.me/api/portraits/robot/3.jpg',
+    avatar: 1,
     title: 'Android vs iOS: Which is better?',
     description:
         'Let\'s settle this debate once and for all. Share your thoughts below!',
@@ -156,7 +157,7 @@ List<Post> forYouPosts = [
   Post(
     id: '4',
     name: 'Food Blogger',
-    avatar: 'https://randomuser.me/api/portraits/women/4.jpg',
+    avatar: 1,
     title: 'Easy 10-minute Pasta Recipe',
     description:
         'Perfect for when you\'re too tired to cook but want something delicious!',
@@ -169,7 +170,7 @@ List<Post> forYouPosts = [
   Post(
     id: '5',
     name: 'Fitness Coach',
-    avatar: 'https://randomuser.me/api/portraits/men/5.jpg',
+    avatar: 1,
     title: 'Morning Workout Routine',
     description: 'Start your day right with these 5 simple exercises',
     postImageLink: 'https://picsum.photos/500/300?random=4',
@@ -184,7 +185,7 @@ List<Post> followingPosts = [
   Post(
     id: '101',
     name: 'Sarah Johnson',
-    avatar: 'https://randomuser.me/api/portraits/women/10.jpg',
+    avatar: 1,
     title: 'My New Art Project',
     description:
         'After months of work, finally revealed my latest painting series!',
@@ -197,7 +198,7 @@ List<Post> followingPosts = [
   Post(
     id: '102',
     name: 'Mike Chen',
-    avatar: 'https://randomuser.me/api/portraits/men/11.jpg',
+    avatar: 1,
     title: 'Tech Startup Update',
     description:
         'We just secured our Series A funding! Big things coming soon.',
@@ -209,7 +210,7 @@ List<Post> followingPosts = [
   Post(
     id: '103',
     name: 'Alex Taylor',
-    avatar: 'https://randomuser.me/api/portraits/women/12.jpg',
+    avatar: 1,
     title: 'Should remote work be the default?',
     description:
         'With offices reopening, let\'s discuss the future of work arrangements',
@@ -221,7 +222,7 @@ List<Post> followingPosts = [
   Post(
     id: '104',
     name: 'David Kim',
-    avatar: 'https://randomuser.me/api/portraits/men/13.jpg',
+    avatar: 1,
     title: 'Guitar Cover - Latest Pop Hit',
     description: 'Tried my hand at covering this week\'s #1 song',
     postVideoLink: 'https://example.com/videos/guitar.mp4',
@@ -233,7 +234,7 @@ List<Post> followingPosts = [
   Post(
     id: '105',
     name: 'Emma Wilson',
-    avatar: 'https://randomuser.me/api/portraits/women/14.jpg',
+    avatar: 1,
     title: 'Book Recommendation',
     description:
         'Just finished this amazing novel - highly recommend to all fiction lovers!',
@@ -246,7 +247,7 @@ List<Post> followingPosts = [
   Post(
     id: '106',
     name: 'James Rodriguez',
-    avatar: 'https://randomuser.me/api/portraits/men/15.jpg',
+    avatar: 1,
     title: 'Photography Tips',
     description: '5 composition techniques that improved my photos instantly',
     postImageLink: 'https://picsum.photos/500/300?random=106',

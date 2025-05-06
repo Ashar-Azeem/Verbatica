@@ -3,7 +3,7 @@
 class Post {
   final String id;
   final String name;
-  final String avatar;
+  final int avatar;
   final String title;
   final String description;
   final String? postImageLink;
@@ -65,7 +65,7 @@ class Post {
   Post copyWith({
     String? id,
     String? name,
-    String? avatar,
+    int? avatar,
     String? title,
     String? description,
     String? postImageLink,
