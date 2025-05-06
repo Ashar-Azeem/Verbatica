@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
+import 'package:verbatica/BLOC/bloc/user_bloc.dart';
+import 'package:verbatica/BLOC/bloc/user_event.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Authentication/EmailVerification.dart';
 import 'package:verbatica/Views/navBarScreens/mainBottomNavigationBar.dart';
 import 'package:verbatica/Views/Authentication/login.dart';
+import 'package:verbatica/model/user.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,31 +25,36 @@ void main() async {
   runApp(
     Sizer(
       builder: (context, orientation, screenType) {
-        return MaterialApp(
-          title: 'Verbatica',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 40, 188, 242),
-              brightness: Brightness.dark,
-            ),
-            elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                foregroundColor: Colors.white,
-                minimumSize: Size(95.w, 6.h),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+        return BlocProvider(
+          create: (context) => UserBloc(),
+          child: MaterialApp(
+            title: 'Verbatica',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color.fromARGB(255, 40, 188, 242),
+                brightness: Brightness.dark,
+              ),
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                  foregroundColor: Colors.white,
+                  minimumSize: Size(95.w, 6.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
-            ),
 
-            buttonTheme: ButtonThemeData(buttonColor: primaryColor),
-            textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
-            scaffoldBackgroundColor: const Color(0xFF0A0D0F),
-            useMaterial3: true,
+              buttonTheme: ButtonThemeData(buttonColor: primaryColor),
+              textTheme: GoogleFonts.robotoTextTheme(
+                Theme.of(context).textTheme,
+              ),
+              scaffoldBackgroundColor: const Color(0xFF0A0D0F),
+              useMaterial3: true,
+            ),
+            home: const BottomNavigationBarView(),
           ),
-          home: const BottomNavigationBarView(),
         );
       },
     ),
@@ -70,6 +79,26 @@ class MainNavigation extends StatelessWidget {
                 return Login();
               } else {
                 if (user['isEmailVerified']) {
+                  // final dummyUser = User(
+                  //   username: user['username'] ?? 'AnonymousRebel354',
+                  //   country: 'Pakistan',
+                  //   karma: user['karma'] ?? 0,
+                  //   followers: user['followers'] ?? 0,
+                  //   following: user['following'] ?? 0,
+                  //   joinedDate:
+                  //       user['joinedDate'] != null
+                  //           ? DateTime.parse(user['joinedDate'])
+                  //           : DateTime.now(),
+
+                  //   about:
+                  //       user['about'] ??
+                  //       'ahfhjadfbjdbfjshdbfhjsbfjhsdbfjsdfbsfhsjfjsfdbjsdfjhsfbjsfdjshf...',
+                  //   avatarId: user['avatarUrl'] ?? '1',
+                  // );
+
+                  // // Dispatch event to update user in BLoC
+
+                  // context.read<UserBloc>().add(UpdateUser(dummyUser));
                   return BottomNavigationBarView();
                 } else {
                   return EmailVerification();

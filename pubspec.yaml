@@ -46,6 +46,7 @@ dependencies:
   country_picker: ^2.0.27
   email_validator: ^3.0.0
   flutter_otp_text_field: ^1.5.1+1
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
@@ -74,6 +75,15 @@ flutter:
     - assets/Logo.png
     - assets/googleIcon.png
     - assets/EmailIcon.png
+    - assets/Avatars/avatar1.jpg
+    - assets/Avatars/avatar2.jpg
+    - assets/Avatars/avatar3.jpg
+    - assets/Avatars/avatar4.jpg
+    - assets/Avatars/avatar5.jpg
+    - assets/Avatars/avatar6.jpg
+    - assets/Avatars/avatar7.jpg
+   
+    
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
