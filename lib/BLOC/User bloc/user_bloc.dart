@@ -1,7 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:verbatica/BLOC/bloc/user_event.dart';
-import 'package:verbatica/BLOC/bloc/user_state.dart';
-import 'package:verbatica/model/user.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
   UserBloc() : super(UserState()) {

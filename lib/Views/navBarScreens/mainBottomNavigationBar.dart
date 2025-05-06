@@ -2,8 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
-import 'package:verbatica/BLOC/bloc/user_bloc.dart' show UserBloc;
-import 'package:verbatica/BLOC/bloc/user_event.dart' show UpdateUser;
+import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart' show UserBloc;
+import 'package:verbatica/BLOC/User%20bloc/user_event.dart' show UpdateUser;
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/navBarScreens/AddPostView.dart';
 import 'package:verbatica/Views/navBarScreens/HomeView.dart';

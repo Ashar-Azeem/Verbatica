@@ -1,8 +1,8 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:verbatica/BLOC/bloc/user_bloc.dart';
-import 'package:verbatica/BLOC/bloc/user_state.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
 import 'package:verbatica/Views/navBarScreens/ProfileView/editprofile.dart';
 import 'package:verbatica/Views/navBarScreens/ProfileView/settingscreen.dart';
@@ -64,10 +64,6 @@ class _ProfileViewState extends State<ProfileView>
                   children: [
                     Row(
                       children: [
-                        IconButton(
-                          onPressed: () {},
-                          icon: Icon(Icons.arrow_back),
-                        ),
                         Spacer(),
                         IconButton(
                           onPressed: () {

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:verbatica/BLOC/bloc/user_bloc.dart';
-import 'package:verbatica/BLOC/bloc/user_event.dart';
-import 'package:verbatica/BLOC/bloc/user_state.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/model/user.dart';
 
