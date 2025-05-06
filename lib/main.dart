@@ -5,13 +5,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/bloc/user_bloc.dart';
-import 'package:verbatica/BLOC/bloc/user_event.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Authentication/EmailVerification.dart';
 import 'package:verbatica/Views/navBarScreens/mainBottomNavigationBar.dart';
 import 'package:verbatica/Views/Authentication/login.dart';
-import 'package:verbatica/model/user.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
