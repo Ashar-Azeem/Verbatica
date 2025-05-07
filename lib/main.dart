@@ -29,6 +29,7 @@ void main() async {
             title: 'Verbatica',
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
+              primaryColor: Colors.white,
               colorScheme: ColorScheme.fromSeed(
                 seedColor: const Color.fromARGB(255, 40, 188, 242),
                 brightness: Brightness.dark,

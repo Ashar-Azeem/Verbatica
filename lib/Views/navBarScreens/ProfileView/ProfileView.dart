@@ -56,7 +56,7 @@ class _ProfileViewState extends State<ProfileView>
                 right: 20, // This will now work
                 left: 20, // Add left for symmetry
               ),
-              child: Container(
+              child: SizedBox(
                 width:
                     MediaQuery.of(context).size.width - 40, // Constrain width
                 child: Column(
@@ -136,7 +136,7 @@ class _ProfileViewState extends State<ProfileView>
                       child: BlocBuilder<UserBloc, UserState>(
                         builder: (context, state) {
                           return _buildStatItem(
-                            'Karma/Achievement',
+                            'Aura',
                             state.user.karma
                                 .toString(), // Convert to string if needed
                           );

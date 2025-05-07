@@ -14,101 +14,110 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
-  late TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.only(left: 1.w, right: 1.w),
-          child: NestedScrollView(
-            headerSliverBuilder:
-                (context, innerBoxIsScrolled) => [
-                  SliverAppBar(
-                    backgroundColor: Color.fromARGB(255, 10, 13, 15),
-                    automaticallyImplyLeading: false,
-                    toolbarHeight: 6.h, // normal AppBar height
-                    floating: true,
-                    snap: true,
-                    pinned: false,
-                    title: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Image.asset('assets/Logo.png', width: 40, height: 40),
-                        IconButton(
-                          icon: Icon(
-                            Icons.message_outlined,
-                            color: primaryColor,
+      body: DefaultTabController(
+        length: 2,
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.only(left: 1.w, right: 1.w),
+            child: NestedScrollView(
+              physics: NeverScrollableScrollPhysics(),
+              headerSliverBuilder:
+                  (context, innerBoxIsScrolled) => [
+                    SliverAppBar(
+                      backgroundColor: Color.fromARGB(255, 10, 13, 15),
+                      automaticallyImplyLeading: false,
+                      toolbarHeight: 12.h,
+                      floating: true,
+                      snap: true,
+                      pinned: false,
+                      title: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Image.asset(
+                                'assets/Logo.png',
+                                width: 40,
+                                height: 40,
+                              ),
+                              IconButton(
+                                icon: Icon(
+                                  Icons.message_outlined,
+                                  color: primaryColor,
+                                ),
+                                onPressed: () {},
+                              ),
+                            ],
                           ),
-                          onPressed: () {},
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  SliverAppBar(
-                    backgroundColor: Color.fromARGB(255, 10, 13, 15),
-                    automaticallyImplyLeading: false,
-                    toolbarHeight: 7.h, // just enough for TabBar
-                    pinned: false,
-                    floating: true,
-                    snap: true,
-                    title: TabBar(
-                      controller: _tabController,
-                      indicatorColor: primaryColor,
-                      labelColor: primaryColor,
-                      unselectedLabelColor: const Color.fromARGB(
-                        255,
-                        196,
-                        195,
-                        195,
+                          TabBar(
+                            indicatorColor: primaryColor,
+                            labelColor: primaryColor,
+                            unselectedLabelColor: const Color.fromARGB(
+                              255,
+                              196,
+                              195,
+                              195,
+                            ),
+                            tabs: const [
+                              Tab(text: 'For You'),
+                              Tab(text: 'Following'),
+                            ],
+                          ),
+                        ],
                       ),
-                      tabs: const [
-                        Tab(text: 'For You'),
-                        Tab(text: 'Following'),
-                      ],
                     ),
-                  ),
+                  ],
+
+              body: TabBarView(
+                physics: NeverScrollableScrollPhysics(),
+                children: [
+                  // For You Tab
+                  BuiltPostList(posts: forYouPosts),
+
+                  // Following Tab
+                  BuiltPostList(posts: followingPosts),
                 ],
-
-            body: TabBarView(
-              physics: AlwaysScrollableScrollPhysics(),
-              controller: _tabController,
-              children: [
-                // For You Tab
-                _buildPostList('For You', forYouPosts),
-
-                // Following Tab
-                _buildPostList('Following', followingPosts),
-              ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
+}
 
-  Widget _buildPostList(String type, List<Post> posts) {
+class BuiltPostList extends StatefulWidget {
+  final List<Post> posts;
+
+  const BuiltPostList({super.key, required this.posts});
+
+  @override
+  State<BuiltPostList> createState() => _BuiltPostListState();
+}
+
+class _BuiltPostListState extends State<BuiltPostList>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
     return ListView.builder(
-      physics: AlwaysScrollableScrollPhysics(),
+      physics: BouncingScrollPhysics(),
       padding: EdgeInsets.only(top: 8),
-      itemCount: 10,
+      addAutomaticKeepAlives: true,
+      addRepaintBoundaries: true,
+      cacheExtent: 500,
+      itemCount: widget.posts.length,
       itemBuilder: (context, index) {
-        return PostWidget(
-          postIndex: index,
-          postType: type,
-          backgroundColor: Color.fromARGB(255, 19, 26, 31),
-        );
+        return PostWidget(post: widget.posts[index]);
       },
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 // Generate dummy posts
@@ -172,7 +181,8 @@ List<Post> forYouPosts = [
     name: 'Fitness Coach',
     avatar: 1,
     title: 'Morning Workout Routine',
-    description: 'Start your day right with these 5 simple exercises',
+    description:
+        'Start your day right with these 5 simple exercises dfknskdnflskdnfnsldnfsjndfjsdf sdj fsjd gjsd gkjd fgkjs dgsjkd gjk',
     postImageLink: 'https://picsum.photos/500/300?random=4',
     isDebate: false,
     likes: 321,
