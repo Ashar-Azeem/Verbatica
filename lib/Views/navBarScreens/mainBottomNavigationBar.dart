@@ -71,7 +71,7 @@ class BottomNavigationBarView extends StatelessWidget {
           ),
         ),
         PersistentTabConfig(
-          screen: NotificationView(),
+          screen: NotificationScreen(),
           item: ItemConfig(
             icon: Icon(Icons.notifications_none_sharp),
             activeForegroundColor: primaryColor,

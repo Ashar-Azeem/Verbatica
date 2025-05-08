@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
@@ -51,10 +52,10 @@ class _ProfileViewState extends State<ProfileView>
               ),
             ),
             child: Padding(
-              padding: const EdgeInsets.only(
-                top: 40,
-                right: 20, // This will now work
-                left: 20, // Add left for symmetry
+              padding: EdgeInsets.only(
+                top: 5.0.h,
+                right: 3.0.h, // This will now work
+                left: 3.0.h, // Add left for symmetry
               ),
               child: SizedBox(
                 width:
@@ -80,14 +81,14 @@ class _ProfileViewState extends State<ProfileView>
                     BlocBuilder<UserBloc, UserState>(
                       builder: (context, state) {
                         return CircleAvatar(
-                          radius: 40,
+                          radius: 5.0.h,
                           backgroundImage: AssetImage(
                             'assets/Avatars/avatar${state.user.avatarId}.jpg',
                           ),
                         );
                       },
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 2.0.h),
 
                     OutlinedButton(
                       onPressed: () {
@@ -118,6 +119,7 @@ class _ProfileViewState extends State<ProfileView>
                         style: TextStyle(color: Colors.white.withOpacity(0.9)),
                       ),
                     ),
+                    SizedBox(height: 1.0.h),
                     BlocBuilder<UserBloc, UserState>(
                       builder: (context, state) {
                         return Text(
@@ -130,7 +132,7 @@ class _ProfileViewState extends State<ProfileView>
                         );
                       },
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 1.0.h),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: BlocBuilder<UserBloc, UserState>(
@@ -164,7 +166,7 @@ class _ProfileViewState extends State<ProfileView>
               Tab(text: 'Comments'),
               Tab(text: 'About'),
             ],
-            labelColor: Colors.white,
+            labelColor: Colors.blue,
             labelStyle: const TextStyle(fontWeight: FontWeight.bold),
             unselectedLabelColor: Colors.grey,
             indicator: const UnderlineTabIndicator(
