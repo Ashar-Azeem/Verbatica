@@ -61,7 +61,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 10,
                 ),
-                itemCount: 7,
+                itemCount: 11,
                 itemBuilder: (context, index) {
                   final avatarId = index + 1;
                   return GestureDetector(
