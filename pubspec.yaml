@@ -47,6 +47,8 @@ dependencies:
   email_validator: ^3.0.0
   flutter_otp_text_field: ^1.5.1+1
   intl: ^0.20.2
+  expandable_text: ^2.3.0
+  timeago: ^3.2.2
 
 dev_dependencies:
   flutter_test:
