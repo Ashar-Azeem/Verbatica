@@ -9,7 +9,8 @@ class Post {
   final String? postImageLink;
   final String? postVideoLink;
   final bool isDebate;
-  final int likes;
+  final int upvotes;
+  final int downvotes;
   final int comments;
   final DateTime uploadTime;
 
@@ -22,7 +23,8 @@ class Post {
     this.postImageLink,
     this.postVideoLink,
     required this.isDebate,
-    required this.likes,
+    required this.upvotes,
+    required this.downvotes,
     required this.comments,
     required this.uploadTime,
   });
@@ -38,7 +40,8 @@ class Post {
       'postImageLink': postImageLink,
       'postVideoLink': postVideoLink,
       'isDebate': isDebate,
-      'likes': likes,
+      'upVote': upvotes,
+      'downVotes': downvotes,
       'comments': comments,
       'uploadTime': uploadTime.toIso8601String(),
     };
@@ -55,7 +58,8 @@ class Post {
       postImageLink: json['postImageLink'],
       postVideoLink: json['postVideoLink'],
       isDebate: json['isDebate'] ?? false,
-      likes: json['likes'] ?? 0,
+      upvotes: json['upVote'] ?? 0,
+      downvotes: json['downVotes'] ?? 0,
       comments: json['comments'] ?? 0,
       uploadTime: DateTime.parse(json['uploadTime']),
     );
@@ -71,7 +75,8 @@ class Post {
     String? postImageLink,
     String? postVideoLink,
     bool? isDebate,
-    int? likes,
+    int? upvotes,
+    int? downvotes,
     int? comments,
     DateTime? uploadTime,
   }) {
@@ -84,7 +89,8 @@ class Post {
       postImageLink: postImageLink ?? this.postImageLink,
       postVideoLink: postVideoLink ?? this.postVideoLink,
       isDebate: isDebate ?? this.isDebate,
-      likes: likes ?? this.likes,
+      upvotes: upvotes ?? this.upvotes,
+      downvotes: downvotes ?? this.downvotes,
       comments: comments ?? this.comments,
       uploadTime: uploadTime ?? this.uploadTime,
     );

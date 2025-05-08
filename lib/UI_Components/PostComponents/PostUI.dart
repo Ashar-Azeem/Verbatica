@@ -1,7 +1,10 @@
 // ignore_for_file: file_names
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
+import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -20,7 +23,7 @@ class PostWidget extends StatelessWidget {
           width: 97.w,
           decoration: BoxDecoration(
             color: Color.fromARGB(255, 15, 19, 22),
-            borderRadius: BorderRadius.circular(5),
+            borderRadius: BorderRadius.circular(7),
           ),
           child: Column(
             children: [
@@ -163,23 +166,37 @@ class PostWidget extends StatelessWidget {
 
                   SizedBox(height: 0.5.h),
 
-                  /// Image placeholder (show only if image link is not null)
                   if (post.postImageLink != null)
-                    Container(
-                      height: 300,
-                      color: Colors.grey[300],
-                      alignment: Alignment.center,
-                      child: const Text("Image Placeholder"),
+                    CachedNetworkImage(
+                      imageUrl: post.postImageLink!,
+                      placeholder:
+                          (context, url) => Shimmer.fromColors(
+                            baseColor: const Color.fromARGB(255, 58, 76, 90),
+                            highlightColor: const Color.fromARGB(
+                              255,
+                              81,
+                              106,
+                              125,
+                            ),
+                            child: AspectRatio(
+                              aspectRatio: 16 / 9,
+                              child: Container(color: Colors.white),
+                            ),
+                          ),
+                      errorWidget:
+                          (context, url, error) => AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: Container(
+                              color: Colors.grey[200],
+                              child: const Icon(Icons.error),
+                            ),
+                          ),
+                      fit: BoxFit.contain,
                     ),
 
                   /// Video placeholder (show only if video link is not null)
                   if (post.postVideoLink != null)
-                    Container(
-                      height: 200,
-                      color: Colors.grey[400],
-                      alignment: Alignment.center,
-                      child: const Text("Video Placeholder"),
-                    ),
+                    VideoPlayer(videoUrl: post.postVideoLink!),
                 ],
               ),
 
@@ -189,107 +206,115 @@ class PostWidget extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(right: 1.w, bottom: 1.w),
                 child: SizedBox(
-                  height: 6.3.h,
+                  height: 6.h,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Upvote Column
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            height: 9.w,
-                            child: IconButton(
+                      Container(
+                        height: 5.h,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Color.fromARGB(255, 70, 79, 87),
+                          ),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 1.w,
+                          vertical: 1.w,
+                        ),
+                        child: Row(
+                          children: [
+                            IconButton(
                               onPressed: () {},
-                              splashRadius: 1,
                               padding: EdgeInsets.zero,
-                              constraints: BoxConstraints(),
-                              iconSize: 7.w,
-                              icon: Icon(Icons.arrow_circle_up_outlined),
+                              icon: Icon(
+                                Icons.arrow_circle_up_outlined,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                          Text(
-                            "20",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 3.w,
-                              height: 1,
+                            Text(
+                              "${post.upvotes - post.downvotes}",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 3.w,
+                                height: 1,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
+                            SizedBox(width: 4.w),
+                            Container(
+                              width: 1,
+                              height: 6.h,
+                              color: Color.fromARGB(255, 70, 79, 87),
+                            ),
+                            IconButton(
+                              onPressed: () {},
+                              padding: EdgeInsets.zero,
+                              icon: Icon(
+                                Icons.arrow_circle_down_outlined,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Spacer(flex: 1),
+                      Container(
+                        height: 5.h,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Color.fromARGB(255, 70, 79, 87),
                           ),
-                        ],
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 1.w,
+                          vertical: 1.w,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            IconButton(
+                              onPressed: () {},
+                              padding: EdgeInsets.zero,
+                              icon: Icon(
+                                Icons.mode_comment_outlined,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              "${post.comments}",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 3.w,
+                                height: 1,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 4.w),
+                          ],
+                        ),
                       ),
 
-                      // Downvote Button with Count
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            height: 9.w,
-                            child: IconButton(
-                              onPressed: () {},
-                              splashRadius: 1,
-                              padding: EdgeInsets.zero,
-                              constraints: BoxConstraints(),
-                              iconSize: 7.w,
-                              icon: Icon(Icons.arrow_circle_down_outlined),
-                            ),
-                          ),
-                          Text(
-                            "5",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 3.w,
-                              height: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      // Comment Button with Count
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SizedBox(
-                            height: 9.w,
-                            child: IconButton(
-                              onPressed: () {},
-                              splashRadius: 1,
-                              padding: EdgeInsets.zero,
-                              constraints: BoxConstraints(),
-                              iconSize: 6.8.w,
-                              icon: Icon(Icons.mode_comment_outlined),
-                            ),
-                          ),
-                          Text(
-                            "8",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 3.w,
-                              height: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const Spacer(),
+                      const Spacer(flex: 10),
 
                       // Sentiment Analysis Button
                       SizedBox(
                         height: 9.w,
-                        child: TextButton.icon(
+                        child: IconButton(
                           onPressed: () {},
                           style: TextButton.styleFrom(
                             minimumSize: Size.zero,
                             padding: EdgeInsets.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
-                          icon: Icon(Icons.pie_chart_sharp, size: 7.w),
-                          label: Text(
-                            'Sentiment Analysis',
-                            style: TextStyle(fontSize: 3.w, height: 1),
+                          icon: Icon(
+                            Icons.pie_chart,
+                            size: 7.w,
+                            color: primaryColor,
                           ),
                         ),
                       ),
+                      Spacer(flex: 1),
                     ],
                   ),
                 ),

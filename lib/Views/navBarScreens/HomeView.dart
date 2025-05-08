@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
-import 'package:verbatica/UI_Components/PostUI.dart';
+import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/model/Post.dart';
 
@@ -131,7 +131,8 @@ List<Post> forYouPosts = [
         'The latest flagship phone with revolutionary camera technology has been unveiled today.',
     postImageLink: 'https://picsum.photos/500/300?random=1',
     isDebate: false,
-    likes: 245,
+    upvotes: 245,
+    downvotes: 22,
     comments: 32,
     uploadTime: DateTime.now().subtract(Duration(hours: 2)),
   ),
@@ -144,9 +145,10 @@ List<Post> forYouPosts = [
     description:
         'Found this amazing secluded beach that most tourists don\'t know about!',
     postImageLink: 'https://picsum.photos/500/300?random=2',
-    postVideoLink: 'https://example.com/videos/beach.mp4',
+
     isDebate: false,
-    likes: 189,
+    upvotes: 45,
+    downvotes: 22,
     comments: 24,
     uploadTime: DateTime.now().subtract(Duration(hours: 5)),
   ),
@@ -159,7 +161,8 @@ List<Post> forYouPosts = [
         'Let\'s settle this debate once and for all. Share your thoughts below!',
     postImageLink: 'https://picsum.photos/500/300?random=3',
     isDebate: true,
-    likes: 432,
+    upvotes: 200,
+    downvotes: 29,
     comments: 87,
     uploadTime: DateTime.now().subtract(Duration(hours: 8)),
   ),
@@ -170,9 +173,11 @@ List<Post> forYouPosts = [
     title: 'Easy 10-minute Pasta Recipe',
     description:
         'Perfect for when you\'re too tired to cook but want something delicious!',
-    postVideoLink: 'https://example.com/videos/pasta.mp4',
+    postVideoLink:
+        'https://test-videos.co.uk/vids/bigbuckbunny/mp4/h264/720/Big_Buck_Bunny_720_10s_1MB.mp4',
     isDebate: false,
-    likes: 156,
+    upvotes: 20,
+    downvotes: 29,
     comments: 18,
     uploadTime: DateTime.now().subtract(Duration(hours: 12)),
   ),
@@ -185,7 +190,8 @@ List<Post> forYouPosts = [
         'Start your day right with these 5 simple exercises dfknskdnflskdnfnsldnfsjndfjsdf sdj fsjd gjsd gkjd fgkjs dgsjkd gjk',
     postImageLink: 'https://picsum.photos/500/300?random=4',
     isDebate: false,
-    likes: 321,
+    upvotes: 1000,
+    downvotes: 200,
     comments: 42,
     uploadTime: DateTime.now().subtract(Duration(days: 1)),
   ),
@@ -199,9 +205,11 @@ List<Post> followingPosts = [
     title: 'My New Art Project',
     description:
         'After months of work, finally revealed my latest painting series!',
-    postImageLink: 'https://picsum.photos/500/300?random=101',
+    postVideoLink:
+        'https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4',
     isDebate: false,
-    likes: 87,
+    upvotes: 109,
+    downvotes: 0,
     comments: 15,
     uploadTime: DateTime.now().subtract(Duration(hours: 1)),
   ),
@@ -213,7 +221,8 @@ List<Post> followingPosts = [
     description:
         'We just secured our Series A funding! Big things coming soon.',
     isDebate: false,
-    likes: 203,
+    upvotes: 47,
+    downvotes: 21,
     comments: 45,
     uploadTime: DateTime.now().subtract(Duration(hours: 3)),
   ),
@@ -225,7 +234,8 @@ List<Post> followingPosts = [
     description:
         'With offices reopening, let\'s discuss the future of work arrangements',
     isDebate: true,
-    likes: 156,
+    upvotes: 490,
+    downvotes: 89,
     comments: 62,
     uploadTime: DateTime.now().subtract(Duration(hours: 6)),
   ),
@@ -235,9 +245,11 @@ List<Post> followingPosts = [
     avatar: 1,
     title: 'Guitar Cover - Latest Pop Hit',
     description: 'Tried my hand at covering this week\'s #1 song',
-    postVideoLink: 'https://example.com/videos/guitar.mp4',
+    postVideoLink:
+        'https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4',
     isDebate: false,
-    likes: 98,
+    upvotes: 430,
+    downvotes: 90,
     comments: 12,
     uploadTime: DateTime.now().subtract(Duration(days: 1)),
   ),
@@ -250,7 +262,8 @@ List<Post> followingPosts = [
         'Just finished this amazing novel - highly recommend to all fiction lovers!',
     postImageLink: 'https://picsum.photos/500/300?random=105',
     isDebate: false,
-    likes: 76,
+    upvotes: 145,
+    downvotes: 49,
     comments: 9,
     uploadTime: DateTime.now().subtract(Duration(days: 2)),
   ),
@@ -262,7 +275,8 @@ List<Post> followingPosts = [
     description: '5 composition techniques that improved my photos instantly',
     postImageLink: 'https://picsum.photos/500/300?random=106',
     isDebate: false,
-    likes: 134,
+    upvotes: 123,
+    downvotes: 321,
     comments: 21,
     uploadTime: DateTime.now().subtract(Duration(days: 3)),
   ),
