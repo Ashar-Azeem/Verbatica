@@ -424,14 +424,12 @@ class NotificationScreen extends StatelessWidget {
                       ),
                     ),
 
-                    ...todayNotifications
-                        .map(
-                          (notification) => NotificationTile(
-                            notification: notification,
-                            onTap: () {},
-                          ),
-                        )
-                        .toList(),
+                    ...todayNotifications.map(
+                      (notification) => NotificationTile(
+                        notification: notification,
+                        onTap: () {},
+                      ),
+                    ),
                   ],
                   if (earlierNotifications.isNotEmpty) ...[
                     const Text(
@@ -443,14 +441,12 @@ class NotificationScreen extends StatelessWidget {
                       ),
                     ),
 
-                    ...earlierNotifications
-                        .map(
-                          (notification) => NotificationTile(
-                            notification: notification,
-                            onTap: () {},
-                          ),
-                        )
-                        .toList(),
+                    ...earlierNotifications.map(
+                      (notification) => NotificationTile(
+                        notification: notification,
+                        onTap: () {},
+                      ),
+                    ),
                   ],
                 ],
               ),

@@ -11,5 +11,5 @@ abstract class NotificationEvent extends Equatable {
 
 class LoadNotifications extends NotificationEvent {
   final List<AppNotification> appnotification;
-  LoadNotifications(this.appnotification);
+  const LoadNotifications(this.appnotification);
 }

@@ -23,36 +23,34 @@ void main() async {
   runApp(
     Sizer(
       builder: (context, orientation, screenType) {
-        return BlocProvider(
-          create: (context) => UserBloc(),
-          child: MaterialApp(
-            title: 'Verbatica',
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              primaryColor: Colors.white,
-              colorScheme: ColorScheme.fromSeed(
-                seedColor: const Color.fromARGB(255, 40, 188, 242),
-                brightness: Brightness.dark,
-              ),
-              elevatedButtonTheme: ElevatedButtonThemeData(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  foregroundColor: Colors.white,
-                  minimumSize: Size(95.w, 6.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+        return MaterialApp(
+          title: 'Verbatica',
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            primaryColor: Colors.white,
+            colorScheme: ColorScheme.fromSeed(
+              seedColor: const Color.fromARGB(255, 40, 188, 242),
+              brightness: Brightness.dark,
+            ),
+            elevatedButtonTheme: ElevatedButtonThemeData(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+                foregroundColor: Colors.white,
+                minimumSize: Size(95.w, 6.h),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
-
-              buttonTheme: ButtonThemeData(buttonColor: primaryColor),
-              textTheme: GoogleFonts.robotoTextTheme(
-                Theme.of(context).textTheme,
-              ),
-              scaffoldBackgroundColor: const Color(0xFF0A0D0F),
-              useMaterial3: true,
             ),
-            home: const BottomNavigationBarView(),
+
+            buttonTheme: ButtonThemeData(buttonColor: primaryColor),
+            textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
+            scaffoldBackgroundColor: const Color(0xFF0A0D0F),
+            useMaterial3: true,
+          ),
+          home: BlocProvider(
+            create: (context) => UserBloc(),
+            child: const BottomNavigationBarView(),
           ),
         );
       },
@@ -72,32 +70,12 @@ class MainNavigation extends StatelessWidget {
           case ConnectionState.done:
             {
               Map<String, dynamic>? user = snapshot.data;
-              //Also adding the above data to the user bloc and that bloc will be global across the app
-              //local storage to ram using BLOC
+
               if (user == null) {
                 return Login();
               } else {
+                // context.read<UserBloc>().add(UpdateUser(dummyUser));
                 if (user['isEmailVerified']) {
-                  // final dummyUser = User(
-                  //   username: user['username'] ?? 'AnonymousRebel354',
-                  //   country: 'Pakistan',
-                  //   karma: user['karma'] ?? 0,
-                  //   followers: user['followers'] ?? 0,
-                  //   following: user['following'] ?? 0,
-                  //   joinedDate:
-                  //       user['joinedDate'] != null
-                  //           ? DateTime.parse(user['joinedDate'])
-                  //           : DateTime.now(),
-
-                  //   about:
-                  //       user['about'] ??
-                  //       'ahfhjadfbjdbfjshdbfhjsbfjhsdbfjsdfbsfhsjfjsfdbjsdfjhsfbjsfdjshf...',
-                  //   avatarId: user['avatarUrl'] ?? '1',
-                  // );
-
-                  // // Dispatch event to update user in BLoC
-
-                  // context.read<UserBloc>().add(UpdateUser(dummyUser));
                   return BottomNavigationBarView();
                 } else {
                   return EmailVerification();

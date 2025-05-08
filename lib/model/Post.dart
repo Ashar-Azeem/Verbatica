@@ -1,6 +1,8 @@
 // ignore_for_file: file_names
 
-class Post {
+import 'package:equatable/equatable.dart';
+
+class Post extends Equatable {
   final String id;
   final String name;
   final int avatar;
@@ -95,4 +97,20 @@ class Post {
       uploadTime: uploadTime ?? this.uploadTime,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    id,
+    name,
+    avatar,
+    title,
+    description,
+    postImageLink,
+    postVideoLink,
+    isDebate,
+    upvotes,
+    downvotes,
+    comments,
+    uploadTime,
+  ];
 }

@@ -219,8 +219,8 @@ class PostWidget extends StatelessWidget {
                           ),
                         ),
                         padding: EdgeInsets.symmetric(
-                          horizontal: 1.w,
-                          vertical: 1.w,
+                          horizontal: 0.5.w,
+                          vertical: 0.5.w,
                         ),
                         child: Row(
                           children: [
@@ -268,8 +268,8 @@ class PostWidget extends StatelessWidget {
                           ),
                         ),
                         padding: EdgeInsets.symmetric(
-                          horizontal: 1.w,
-                          vertical: 1.w,
+                          horizontal: 0.5.w,
+                          vertical: 0.5.w,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
