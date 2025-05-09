@@ -17,7 +17,9 @@ class Cluster {
   }
 }
 
-class Post {
+import 'package:equatable/equatable.dart';
+
+class Post extends Equatable {
   final String id;
   final String name;
   final int avatar;
@@ -32,11 +34,10 @@ class Post {
   final DateTime uploadTime;
   final List<Cluster>? clusters; //// Only used when isdebate==true
 
-  const Post({
+  Post({
     required this.id,
     this.clusters,
     required this.name,
-    this.clusters,
     required this.avatar,
     required this.title,
     required this.description,
@@ -115,4 +116,20 @@ class Post {
       uploadTime: uploadTime ?? this.uploadTime,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    id,
+    name,
+    avatar,
+    title,
+    description,
+    postImageLink,
+    postVideoLink,
+    isDebate,
+    upvotes,
+    downvotes,
+    comments,
+    uploadTime,
+  ];
 }
