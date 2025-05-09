@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:verbatica/DummyData/UserDummyData.dart';
 import 'package:verbatica/model/user.dart';
 
 // user_state.dart
@@ -10,17 +11,7 @@ class UserState extends Equatable {
 
   // Helper method for default user
   static User _defaultUser() {
-    return User(
-      username: 'AnonymousRebel354',
-      country: 'Pakistan',
-      karma: 0,
-      followers: 0,
-      following: 0,
-      joinedDate: DateTime.now(),
-      about:
-          'ahfhjadfbjdbfjshdbfhjsbfjhsdbfjsdfbsfhsjfjsfdbjsdfjhsfbjsfdjshf...',
-      avatarId: 1,
-    );
+    return dummyUser;
   }
 
   UserState copyWith({User? user}) {
@@ -28,6 +19,5 @@ class UserState extends Equatable {
   }
 
   @override
-  // TODO: implement props
   List<Object?> get props => [user];
 }

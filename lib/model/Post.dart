@@ -1,10 +1,10 @@
 // ignore_for_file: file_names
 
+import 'package:equatable/equatable.dart';
+
 class Cluster {
   final String id;
   final String title;
-
-  //list of comment to be added here
 
   Cluster({required this.id, required this.title});
 
@@ -16,8 +16,6 @@ class Cluster {
     return {'id': id, 'title': title};
   }
 }
-
-import 'package:equatable/equatable.dart';
 
 class Post extends Equatable {
   final String id;

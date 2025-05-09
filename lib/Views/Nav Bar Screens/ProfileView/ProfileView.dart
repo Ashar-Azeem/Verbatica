@@ -5,8 +5,8 @@ import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
-import 'package:verbatica/Views/navBarScreens/ProfileView/editprofile.dart';
-import 'package:verbatica/Views/navBarScreens/ProfileView/settingscreen.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/editprofile.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingscreen.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});

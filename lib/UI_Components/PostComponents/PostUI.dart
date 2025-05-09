@@ -2,8 +2,13 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
+import 'package:verbatica/BLOC/Home/home_bloc.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_event.dart' as userEvents;
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/model/Post.dart';
@@ -11,8 +16,15 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class PostWidget extends StatelessWidget {
   final Post post;
+  final int index;
+  final String category;
 
-  const PostWidget({required this.post, super.key});
+  const PostWidget({
+    required this.post,
+    super.key,
+    required this.index,
+    required this.category,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +73,9 @@ class PostWidget extends StatelessWidget {
                       ),
                       Spacer(flex: 1),
                       TextButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          //Move to the summaryView
+                        },
                         style: TextButton.styleFrom(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(9),
@@ -77,7 +91,17 @@ class PostWidget extends StatelessWidget {
                       PopupMenuButton<String>(
                         icon: Icon(Icons.more_vert),
                         onSelected: (String value) {
-                          // Handle the selected option here
+                          if (value == "report") {
+                            context.read<HomeBloc>().add(
+                              ReportPost(
+                                index: index,
+                                category: category,
+                                postId: post.id,
+                              ),
+                            );
+                          } else if (value == "save") {
+                            context.read<HomeBloc>().add(SavePost(post: post));
+                          }
                         },
                         itemBuilder:
                             (BuildContext context) => <PopupMenuEntry<String>>[
@@ -104,21 +128,6 @@ class PostWidget extends StatelessWidget {
                                   children: [
                                     Icon(Icons.save, color: Colors.white),
                                     Text('Save'),
-                                  ],
-                                ),
-                              ),
-
-                              const PopupMenuItem<String>(
-                                value: 'unfollow',
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Icon(
-                                      Icons.cancel_presentation,
-                                      color: Colors.white,
-                                    ),
-                                    Text('Unfollow'),
                                   ],
                                 ),
                               ),
@@ -222,40 +231,75 @@ class PostWidget extends StatelessWidget {
                           horizontal: 0.5.w,
                           vertical: 0.5.w,
                         ),
-                        child: Row(
-                          children: [
-                            IconButton(
-                              onPressed: () {},
-                              padding: EdgeInsets.zero,
-                              icon: Icon(
-                                Icons.arrow_circle_up_outlined,
-                                color: Colors.white,
-                              ),
-                            ),
-                            Text(
-                              "${post.upvotes - post.downvotes}",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 3.w,
-                                height: 1,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(width: 4.w),
-                            Container(
-                              width: 1,
-                              height: 6.h,
-                              color: Color.fromARGB(255, 70, 79, 87),
-                            ),
-                            IconButton(
-                              onPressed: () {},
-                              padding: EdgeInsets.zero,
-                              icon: Icon(
-                                Icons.arrow_circle_down_outlined,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ],
+                        child: BlocBuilder<UserBloc, UserState>(
+                          builder: (context, state) {
+                            return Row(
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    context.read<UserBloc>().add(
+                                      userEvents.UpVotePost(
+                                        index: index,
+                                        category: category,
+                                        postId: post.id,
+                                        context: context,
+                                      ),
+                                    );
+                                  },
+                                  padding: EdgeInsets.zero,
+                                  icon: Icon(
+                                    Icons.arrow_circle_up_outlined,
+                                    size: 7.w,
+                                    color:
+                                        state.user.upVotedPosts.contains(
+                                              post.id,
+                                            )
+                                            ? primaryColor
+                                            : Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  "${post.upvotes - post.downvotes}",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 3.w,
+                                    height: 1,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(width: 4.w),
+                                Container(
+                                  width: 1,
+                                  height: 6.h,
+                                  color: Color.fromARGB(255, 70, 79, 87),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    context.read<UserBloc>().add(
+                                      userEvents.DownVotePost(
+                                        index: index,
+                                        category: category,
+                                        postId: post.id,
+                                        context: context,
+                                      ),
+                                    );
+                                  },
+                                  padding: EdgeInsets.zero,
+                                  icon: Icon(
+                                    size: 7.w,
+
+                                    Icons.arrow_circle_down_outlined,
+                                    color:
+                                        state.user.downVotedPosts.contains(
+                                              post.id,
+                                            )
+                                            ? primaryColor
+                                            : Colors.white,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ),
                       Spacer(flex: 1),
@@ -275,7 +319,9 @@ class PostWidget extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             IconButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                //Move to the full view of the post with all the comments
+                              },
                               padding: EdgeInsets.zero,
                               icon: Icon(
                                 Icons.mode_comment_outlined,
@@ -302,7 +348,9 @@ class PostWidget extends StatelessWidget {
                       SizedBox(
                         height: 9.w,
                         child: IconButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            //move to the sentiment analysis view
+                          },
                           style: TextButton.styleFrom(
                             minimumSize: Size.zero,
                             padding: EdgeInsets.zero,

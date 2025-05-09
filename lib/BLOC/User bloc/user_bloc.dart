@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:verbatica/BLOC/Home/home_bloc.dart' as homeBloc;
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 
@@ -7,6 +8,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<UpdateUser>(_onUpdateUser);
     on<UpdateAvatar>(_onUpdateAvatar);
     on<UpdateAbout>(_onUpdateAbout);
+    on<UpVotePost>(upVotePost);
+    on<DownVotePost>(downVotePost);
   }
 
   // Future<void> _onFetchUser(FetchUser event, Emitter<UserState> emit) async {
@@ -41,18 +44,98 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     emit(state.copyWith(user: event.user));
   }
 
-  // Future<User> _fetchUserFromApi(String username) async {
-  //   // Mock data - replace with actual API call
-  //   return User(
-  //     username: username,
-  //     karma: 5700,
-  //     followers: 1243,
-  //     following: 567,
-  //     joinedDate: DateTime(2023, 6),
+  upVotePost(UpVotePost event, Emitter<UserState> emit) {
+    if (!state.user.upVotedPosts.contains(event.postId)) {
+      if (state.user.downVotedPosts.contains(event.postId)) {
+        //Removing from down voted posts
+        List<String> downvotes = state.user.downVotedPosts;
+        downvotes.remove(event.postId);
+        emit(
+          state.copyWith(
+            user: state.user.copyWith(downVotedPosts: List.from(downvotes)),
+          ),
+        );
+        //Adding into upvoted posts
+        List<String> upvotes = state.user.upVotedPosts;
+        upvotes.add(event.postId);
+        emit(
+          state.copyWith(
+            user: state.user.copyWith(upVotedPosts: List.from(upvotes)),
+          ),
+        );
 
-  //     about: 'Tell others about yourself...',
-  //     avatarId: '1',
-  //     country: 'Pakistan',
-  //   );
-  // }
+        event.context.read<homeBloc.HomeBloc>().add(
+          homeBloc.UpVotePost(
+            index: event.index,
+            category: event.category,
+            incrementBy: 2,
+          ),
+        );
+      } else {
+        //Adding into upvoted posts
+        List<String> upvotes = state.user.upVotedPosts;
+        upvotes.add(event.postId);
+        emit(
+          state.copyWith(
+            user: state.user.copyWith(upVotedPosts: List.from(upvotes)),
+          ),
+        );
+        event.context.read<homeBloc.HomeBloc>().add(
+          homeBloc.UpVotePost(
+            index: event.index,
+            category: event.category,
+            incrementBy: 1,
+          ),
+        );
+      }
+    }
+  }
+
+  downVotePost(DownVotePost event, Emitter<UserState> emit) {
+    if (!state.user.downVotedPosts.contains(event.postId)) {
+      if (state.user.upVotedPosts.contains(event.postId)) {
+        //removing from the upvoted list
+        List<String> upvotes = state.user.upVotedPosts;
+        upvotes.remove(event.postId);
+        emit(
+          state.copyWith(
+            user: state.user.copyWith(upVotedPosts: List.from(upvotes)),
+          ),
+        );
+        //Adding in the downvotes list
+        List<String> downvotes = state.user.downVotedPosts;
+        downvotes.add(event.postId);
+        emit(
+          state.copyWith(
+            user: state.user.copyWith(downVotedPosts: List.from(downvotes)),
+          ),
+        );
+        //Updates two times
+        event.context.read<homeBloc.HomeBloc>().add(
+          homeBloc.DownVotePost(
+            index: event.index,
+            category: event.category,
+            decrementBy: 2,
+          ),
+        );
+      } else {
+        //Adding in the downvotes list
+
+        List<String> downvotes = state.user.downVotedPosts;
+        downvotes.add(event.postId);
+        emit(
+          state.copyWith(
+            user: state.user.copyWith(downVotedPosts: List.from(downvotes)),
+          ),
+        );
+        event.context.read<homeBloc.HomeBloc>().add(
+          homeBloc.DownVotePost(
+            index: event.index,
+            category: event.category,
+            decrementBy: 1,
+          ),
+        );
+      }
+    }
+  }
 }

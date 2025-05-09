@@ -94,37 +94,31 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     ),
                   ],
 
-              body: TabBarView(
-                physics: NeverScrollableScrollPhysics(),
-                children: [
-                  // For You Tab
-                  BlocBuilder<HomeBloc, HomeState>(
-                    buildWhen: (previous, current) {
-                      return previous.forYou != current.forYou;
-                    },
-                    builder: (context, state) {
-                      return BuiltPostList(
+              body: BlocBuilder<HomeBloc, HomeState>(
+                buildWhen: (previous, current) {
+                  return previous.forYou != current.forYou ||
+                      previous.following != current.following;
+                },
+                builder: (context, state) {
+                  return TabBarView(
+                    physics: NeverScrollableScrollPhysics(),
+                    children: [
+                      // For You Tab
+                      BuiltPostList(
                         posts: state.forYou,
                         loading: state.forYouInitialLoading,
-                      );
-                    },
-                  ),
+                        category: "ForYou",
+                      ),
 
-                  // Following Tab
-                  BlocBuilder<HomeBloc, HomeState>(
-                    buildWhen: (previous, current) {
-                      return previous.following != current.following ||
-                          previous.followingInitialLoading !=
-                              current.followingInitialLoading;
-                    },
-                    builder: (context, state) {
-                      return BuiltPostList(
+                      // Following Tab
+                      BuiltPostList(
                         posts: state.following,
                         loading: state.followingInitialLoading,
-                      );
-                    },
-                  ),
-                ],
+                        category: "Following",
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ),
@@ -137,8 +131,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 class BuiltPostList extends StatefulWidget {
   final List<Post> posts;
   final bool loading;
+  final String category;
 
-  const BuiltPostList({super.key, required this.posts, required this.loading});
+  const BuiltPostList({
+    super.key,
+    required this.posts,
+    required this.loading,
+    required this.category,
+  });
 
   @override
   State<BuiltPostList> createState() => _BuiltPostListState();
@@ -164,7 +164,11 @@ class _BuiltPostListState extends State<BuiltPostList>
           cacheExtent: 500,
           itemCount: widget.posts.length,
           itemBuilder: (context, index) {
-            return PostWidget(post: widget.posts[index]);
+            return PostWidget(
+              post: widget.posts[index],
+              index: index,
+              category: widget.category,
+            );
           },
         );
   }

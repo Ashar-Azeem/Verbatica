@@ -15,6 +15,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<FetchBottomFollowingPosts>(fetchBottomFollowingPosts);
     on<UpVotePost>(upVotePost);
     on<DownVotePost>(downVotePost);
+    on<ReportPost>(reportPost);
+    on<SavePost>(savePost);
   }
   fetchInitialForYouPosts(
     FetchInitialForYouPosts event,
@@ -54,6 +56,42 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     FetchBottomFollowingPosts event,
     Emitter<HomeState> emit,
   ) {}
-  upVotePost(UpVotePost event, Emitter<HomeState> emit) {}
-  downVotePost(DownVotePost event, Emitter<HomeState> emit) {}
+  upVotePost(UpVotePost event, Emitter<HomeState> emit) {
+    if (event.category == "ForYou") {
+      final updatedPost = state.forYou[event.index].copyWith(
+        upvotes: state.forYou[event.index].upvotes + event.incrementBy,
+      );
+      final newForYou = List<Post>.from(state.forYou);
+      newForYou[event.index] = updatedPost;
+      emit(state.copyWith(forYou: newForYou));
+    } else {
+      final updatedPost = state.following[event.index].copyWith(
+        upvotes: state.following[event.index].upvotes + event.incrementBy,
+      );
+      final newFollowing = List<Post>.from(state.following);
+      newFollowing[event.index] = updatedPost;
+      emit(state.copyWith(following: newFollowing));
+    }
+  }
+
+  downVotePost(DownVotePost event, Emitter<HomeState> emit) {
+    if (event.category == "ForYou") {
+      final updatedPost = state.forYou[event.index].copyWith(
+        upvotes: state.forYou[event.index].upvotes - event.decrementBy,
+      );
+      final newForYou = List<Post>.from(state.forYou);
+      newForYou[event.index] = updatedPost;
+      emit(state.copyWith(forYou: newForYou));
+    } else {
+      final updatedPost = state.following[event.index].copyWith(
+        upvotes: state.following[event.index].upvotes - event.decrementBy,
+      );
+      final newFollowing = List<Post>.from(state.following);
+      newFollowing[event.index] = updatedPost;
+      emit(state.copyWith(following: newFollowing));
+    }
+  }
+
+  reportPost(ReportPost event, Emitter<HomeState> emit) {}
+  savePost(SavePost event, Emitter<HomeState> emit) {}
 }

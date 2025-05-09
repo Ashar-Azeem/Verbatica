@@ -8,6 +8,8 @@ class User {
   final String country;
   final String? about;
   final int avatarId;
+  final List<String> upVotedPosts;
+  final List<String> downVotedPosts;
 
   User({
     required this.username,
@@ -16,6 +18,9 @@ class User {
     required this.following,
     required this.joinedDate,
     required this.country,
+    required this.upVotedPosts,
+    required this.downVotedPosts,
+
     this.about,
     required this.avatarId,
   });
@@ -29,6 +34,8 @@ class User {
       'followers': followers,
       'following': following,
       'joinedDate': joinedDate.toIso8601String(),
+      'upVotedPosts': upVotedPosts,
+      'downVotedPosts': downVotedPosts,
 
       'about': about,
       'avatarUrl': avatarId,
@@ -44,6 +51,8 @@ class User {
       followers: json['followers'] as int,
       following: json['following'] as int,
       joinedDate: DateTime.parse(json['joinedDate'] as String),
+      upVotedPosts: json['upVotedPosts'] ?? [],
+      downVotedPosts: json['downVotedPosts'] ?? [],
 
       about: json['about'] as String?,
       avatarId: json['avatarId'] as int,
@@ -61,6 +70,9 @@ class User {
     int? commentCount,
     String? about,
     int? avatarUrl,
+    List<String>? upVotedPosts,
+    List<String>? downVotedPosts,
+
     String? country,
   }) {
     return User(
@@ -70,6 +82,8 @@ class User {
       followers: followers ?? this.followers,
       following: following ?? this.following,
       joinedDate: joinedDate ?? this.joinedDate,
+      upVotedPosts: upVotedPosts ?? this.upVotedPosts,
+      downVotedPosts: downVotedPosts ?? this.downVotedPosts,
 
       about: about ?? this.about,
       avatarId: avatarUrl ?? avatarId,

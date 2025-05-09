@@ -9,7 +9,7 @@ import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/ErrorSnackBar.dart';
 import 'package:verbatica/Views/Authentication/register.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:verbatica/Views/navBarScreens/mainBottomNavigationBar.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/mainBottomNavigationBar.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});

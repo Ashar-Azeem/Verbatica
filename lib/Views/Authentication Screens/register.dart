@@ -10,7 +10,7 @@ import 'package:verbatica/BLOC/LOGIN%20AND%20REGISTRATION/login_registeration_bl
 import 'package:verbatica/Utilities/Captcha/captcha.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/ErrorSnackBar.dart';
-import 'package:verbatica/Views/Authentication/EmailVerification.dart';
+import 'package:verbatica/Views/Authentication%20Screens/EmailVerification.dart';
 import 'package:verbatica/Views/Authentication/login.dart ' as loginRoute;
 
 class Register extends StatefulWidget {
