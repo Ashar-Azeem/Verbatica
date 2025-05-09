@@ -64,7 +64,7 @@ class BottomNavigationBarView extends StatelessWidget {
           ),
         ),
         PersistentTabConfig(
-          screen: AddPostView(),
+          screen: CreatePostScreen(),
           item: ItemConfig(
             icon: Icon(Icons.add_circle_outlined),
             activeForegroundColor: primaryColor,

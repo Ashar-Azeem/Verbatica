@@ -1,5 +1,22 @@
 // ignore_for_file: file_names
 
+class Cluster {
+  final String id;
+  final String title;
+
+  //list of comment to be added here
+
+  Cluster({required this.id, required this.title});
+
+  factory Cluster.fromJson(Map<String, dynamic> json) {
+    return Cluster(id: json['id'], title: json['title']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'title': title};
+  }
+}
+
 class Post {
   final String id;
   final String name;
@@ -12,9 +29,11 @@ class Post {
   final int likes;
   final int comments;
   final DateTime uploadTime;
+  final List<Cluster>? clusters; //// Only used when isdebate==true
 
   Post({
     required this.id,
+    this.clusters,
     required this.name,
     required this.avatar,
     required this.title,
