@@ -1,8 +1,29 @@
 // ignore_for_file: file_names
 
+<<<<<<< HEAD
 import 'package:equatable/equatable.dart';
 
 class Post extends Equatable {
+=======
+class Cluster {
+  final String id;
+  final String title;
+
+  //list of comment to be added here
+
+  Cluster({required this.id, required this.title});
+
+  factory Cluster.fromJson(Map<String, dynamic> json) {
+    return Cluster(id: json['id'], title: json['title']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'title': title};
+  }
+}
+
+class Post {
+>>>>>>> 5525f5cc79cd6582fff95b35cc0816c1b1a0146f
   final String id;
   final String name;
   final int avatar;
@@ -15,9 +36,11 @@ class Post extends Equatable {
   final int downvotes;
   final int comments;
   final DateTime uploadTime;
+  final List<Cluster>? clusters; //// Only used when isdebate==true
 
   Post({
     required this.id,
+    this.clusters,
     required this.name,
     required this.avatar,
     required this.title,
