@@ -1,8 +1,23 @@
 // ignore_for_file: file_names
 
-import 'package:equatable/equatable.dart';
+class Cluster {
+  final String id;
+  final String title;
 
-class Post extends Equatable {
+  //list of comment to be added here
+
+  Cluster({required this.id, required this.title});
+
+  factory Cluster.fromJson(Map<String, dynamic> json) {
+    return Cluster(id: json['id'], title: json['title']);
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'id': id, 'title': title};
+  }
+}
+
+class Post {
   final String id;
   final String name;
   final int avatar;
@@ -15,10 +30,13 @@ class Post extends Equatable {
   final int downvotes;
   final int comments;
   final DateTime uploadTime;
+  final List<Cluster>? clusters; //// Only used when isdebate==true
 
   const Post({
     required this.id,
+    this.clusters,
     required this.name,
+    this.clusters,
     required this.avatar,
     required this.title,
     required this.description,
@@ -97,20 +115,4 @@ class Post extends Equatable {
       uploadTime: uploadTime ?? this.uploadTime,
     );
   }
-
-  @override
-  List<Object?> get props => [
-    id,
-    name,
-    avatar,
-    title,
-    description,
-    postImageLink,
-    postVideoLink,
-    isDebate,
-    upvotes,
-    downvotes,
-    comments,
-    uploadTime,
-  ];
 }
