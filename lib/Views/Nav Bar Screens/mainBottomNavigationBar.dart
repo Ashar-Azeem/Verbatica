@@ -8,10 +8,10 @@ import 'package:verbatica/BLOC/User%20bloc/user_event.dart' show UpdateUser;
 import 'package:verbatica/DummyData/UserDummyData.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/AddPostView.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/HomeView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/NotificationView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/ProfileView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/TrendingView.dart';
-import 'package:verbatica/Views/navBarScreens/Home%20View%20Screens/HomeView.dart';
 
 class BottomNavigationBarView extends StatefulWidget {
   const BottomNavigationBarView({super.key});

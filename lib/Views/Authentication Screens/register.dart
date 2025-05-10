@@ -11,7 +11,8 @@ import 'package:verbatica/Utilities/Captcha/captcha.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/ErrorSnackBar.dart';
 import 'package:verbatica/Views/Authentication%20Screens/EmailVerification.dart';
-import 'package:verbatica/Views/Authentication/login.dart ' as loginRoute;
+import 'package:verbatica/Views/Authentication%20Screens/login.dart'
+    as loginRoute;
 
 class Register extends StatefulWidget {
   const Register({super.key});

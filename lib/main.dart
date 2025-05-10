@@ -8,7 +8,7 @@ import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Authentication%20Screens/EmailVerification.dart';
-import 'package:verbatica/Views/Authentication/login.dart';
+import 'package:verbatica/Views/Authentication%20Screens/login.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/mainBottomNavigationBar.dart';
 
 void main() async {
