@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
@@ -18,9 +19,7 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  String selectedAvatar = '1';
-  String aboutText =
-      '32jfdbskudfbakduvfawudfvsdjvs cshbdhubhjcvbuvbvusdb dfswbdfjsbjvsbjfvswjsdjhvswl wibwsbvhuj';
+
   @override
   void initState() {
     super.initState();
@@ -67,10 +66,10 @@ class _ProfileViewState extends State<ProfileView>
                         Spacer(),
                         IconButton(
                           onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => SettingsScreen(),
-                              ),
+                            pushScreen(
+                              context,
+                              screen: SettingsScreen(),
+                              withNavBar: false,
                             );
                           },
                           icon: Icon(Icons.settings),

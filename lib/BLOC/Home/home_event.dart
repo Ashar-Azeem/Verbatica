@@ -64,3 +64,9 @@ class SavePost extends HomeEvent {
 
   const SavePost({required this.post});
 }
+
+class SharePost extends HomeEvent {
+  final Post post;
+
+  const SharePost({required this.post});
+}

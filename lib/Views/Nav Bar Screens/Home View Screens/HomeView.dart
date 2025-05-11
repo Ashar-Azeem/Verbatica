@@ -168,6 +168,7 @@ class _BuiltPostListState extends State<BuiltPostList>
               post: widget.posts[index],
               index: index,
               category: widget.category,
+              onFullView: false,
             );
           },
         );

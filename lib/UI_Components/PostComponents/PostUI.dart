@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Home/home_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart' as userEvents;
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
 import 'package:verbatica/Utilities/Color.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -18,12 +20,14 @@ class PostWidget extends StatelessWidget {
   final Post post;
   final int index;
   final String category;
+  final bool onFullView;
 
   const PostWidget({
     required this.post,
     super.key,
     required this.index,
     required this.category,
+    required this.onFullView,
   });
 
   @override
@@ -31,16 +35,14 @@ class PostWidget extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(bottom: 1.5.h),
       child: Center(
-        child: Container(
-          width: 97.w,
-          decoration: BoxDecoration(
-            color: Color.fromARGB(255, 15, 19, 22),
-            borderRadius: BorderRadius.circular(7),
-          ),
+        child: SizedBox(
+          width: 100.w,
+
           child: Column(
             children: [
+              Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
               SizedBox(
-                height: 5.h,
+                height: 5.5.h,
                 child: Padding(
                   padding: EdgeInsets.only(left: 1.w, top: 1.w),
 
@@ -77,15 +79,17 @@ class PostWidget extends StatelessWidget {
                           //Move to the summaryView
                         },
                         style: TextButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(9),
-                          ),
+                          shape: StadiumBorder(),
+
                           backgroundColor: primaryColor, // Button color
                           foregroundColor: Colors.white, // Text color
                         ),
                         child: Text(
                           'Summary',
-                          style: TextStyle(color: Colors.white, fontSize: 3.w),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 2.8.w,
+                          ),
                         ),
                       ),
                       PopupMenuButton<String>(
@@ -101,6 +105,8 @@ class PostWidget extends StatelessWidget {
                             );
                           } else if (value == "save") {
                             context.read<HomeBloc>().add(SavePost(post: post));
+                          } else if (value == "share") {
+                            context.read<HomeBloc>().add(SharePost(post: post));
                           }
                         },
                         itemBuilder:
@@ -128,6 +134,18 @@ class PostWidget extends StatelessWidget {
                                   children: [
                                     Icon(Icons.save, color: Colors.white),
                                     Text('Save'),
+                                  ],
+                                ),
+                              ),
+
+                              const PopupMenuItem<String>(
+                                value: 'share',
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Icon(Icons.share, color: Colors.white),
+                                    Text('Share'),
                                   ],
                                 ),
                               ),
@@ -214,159 +232,243 @@ class PostWidget extends StatelessWidget {
               //Bottom side of the post
               Padding(
                 padding: EdgeInsets.only(right: 1.w, bottom: 1.w),
-                child: SizedBox(
-                  height: 6.h,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: 5.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Color.fromARGB(255, 70, 79, 87),
+                child: InkWell(
+                  onTap: () {
+                    if (!onFullView) {
+                      pushScreen(
+                        context,
+                        pageTransitionAnimation: PageTransitionAnimation.scale,
+                        screen: MultiBlocProvider(
+                          providers: [
+                            BlocProvider<UserBloc>.value(
+                              value:
+                                  context
+                                      .read<
+                                        UserBloc
+                                      >(), // Passing existing bloc
+                            ),
+                            BlocProvider<HomeBloc>.value(
+                              value:
+                                  context
+                                      .read<
+                                        HomeBloc
+                                      >(), // Passing existing bloc
+                            ),
+                          ],
+                          child: ViewDiscussion(
+                            post: post,
+                            index: index,
+                            category: category,
                           ),
                         ),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 0.5.w,
-                          vertical: 0.5.w,
+                        withNavBar: false,
+                      );
+                    }
+                  },
+                  child: SizedBox(
+                    height: 6.h,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 1.w),
+                        Container(
+                          height: 5.h,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: Color.fromARGB(255, 70, 79, 87),
+                            ),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 0.5.w,
+                            vertical: 0.5.w,
+                          ),
+                          child: BlocBuilder<UserBloc, UserState>(
+                            builder: (context, state) {
+                              return Row(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      context.read<UserBloc>().add(
+                                        userEvents.UpVotePost(
+                                          index: index,
+                                          category: category,
+                                          postId: post.id,
+                                          context: context,
+                                        ),
+                                      );
+                                    },
+                                    child: Row(
+                                      children: [
+                                        IconButton(
+                                          onPressed: null,
+                                          padding: EdgeInsets.zero,
+                                          icon: Icon(
+                                            Icons.arrow_circle_up_outlined,
+                                            size: 7.w,
+                                            color:
+                                                state.user.upVotedPosts
+                                                        .contains(post.id)
+                                                    ? primaryColor
+                                                    : Colors.white,
+                                          ),
+                                        ),
+
+                                        BlocBuilder<HomeBloc, HomeState>(
+                                          builder: (context, state) {
+                                            Post dynamicpost;
+                                            if (category == 'ForYou') {
+                                              dynamicpost = state.forYou[index];
+                                            } else {
+                                              dynamicpost =
+                                                  state.following[index];
+                                            }
+
+                                            return Text(
+                                              "${dynamicpost.upvotes - dynamicpost.downvotes}",
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 3.w,
+                                                height: 1,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        SizedBox(width: 4.w),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 1,
+                                    height: 6.h,
+                                    color: Color.fromARGB(255, 70, 79, 87),
+                                  ),
+                                  IconButton(
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+
+                                    onPressed: () {
+                                      context.read<UserBloc>().add(
+                                        userEvents.DownVotePost(
+                                          index: index,
+                                          category: category,
+                                          postId: post.id,
+                                          context: context,
+                                        ),
+                                      );
+                                    },
+                                    padding: EdgeInsets.zero,
+                                    icon: Icon(
+                                      size: 7.w,
+
+                                      Icons.arrow_circle_down_outlined,
+                                      color:
+                                          state.user.downVotedPosts.contains(
+                                                post.id,
+                                              )
+                                              ? primaryColor
+                                              : Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
                         ),
-                        child: BlocBuilder<UserBloc, UserState>(
-                          builder: (context, state) {
-                            return Row(
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    context.read<UserBloc>().add(
-                                      userEvents.UpVotePost(
-                                        index: index,
-                                        category: category,
-                                        postId: post.id,
-                                        context: context,
-                                      ),
-                                    );
-                                  },
-                                  padding: EdgeInsets.zero,
-                                  icon: Icon(
-                                    Icons.arrow_circle_up_outlined,
-                                    size: 7.w,
-                                    color:
-                                        state.user.upVotedPosts.contains(
-                                              post.id,
-                                            )
-                                            ? primaryColor
-                                            : Colors.white,
-                                  ),
-                                ),
-                                Text(
-                                  "${post.upvotes - post.downvotes}",
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 3.w,
-                                    height: 1,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(width: 4.w),
-                                Container(
-                                  width: 1,
-                                  height: 6.h,
+                        Spacer(flex: 1),
+                        !onFullView
+                            ? Container(
+                              height: 5.h,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
                                   color: Color.fromARGB(255, 70, 79, 87),
                                 ),
-                                IconButton(
-                                  onPressed: () {
-                                    context.read<UserBloc>().add(
-                                      userEvents.DownVotePost(
-                                        index: index,
-                                        category: category,
-                                        postId: post.id,
-                                        context: context,
-                                      ),
-                                    );
-                                  },
-                                  padding: EdgeInsets.zero,
-                                  icon: Icon(
-                                    size: 7.w,
-
-                                    Icons.arrow_circle_down_outlined,
-                                    color:
-                                        state.user.downVotedPosts.contains(
-                                              post.id,
-                                            )
-                                            ? primaryColor
-                                            : Colors.white,
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 0.5.w,
+                                vertical: 0.5.w,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      //Move to the full view of the post with all the comments
+                                      pushScreen(
+                                        context,
+                                        pageTransitionAnimation:
+                                            PageTransitionAnimation.scale,
+                                        screen: MultiBlocProvider(
+                                          providers: [
+                                            BlocProvider<UserBloc>(
+                                              create:
+                                                  (_) =>
+                                                      context.read<UserBloc>(),
+                                            ),
+                                            BlocProvider<HomeBloc>(
+                                              create:
+                                                  (_) =>
+                                                      context.read<HomeBloc>(),
+                                            ),
+                                          ],
+                                          child: ViewDiscussion(
+                                            post: post,
+                                            index: index,
+                                            category: category,
+                                          ),
+                                        ),
+                                        withNavBar: false,
+                                      );
+                                    },
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    padding: EdgeInsets.zero,
+                                    icon: Icon(
+                                      Icons.mode_comment_outlined,
+                                      color: Colors.white,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                      Spacer(flex: 1),
-                      Container(
-                        height: 5.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Color.fromARGB(255, 70, 79, 87),
-                          ),
-                        ),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 0.5.w,
-                          vertical: 0.5.w,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            IconButton(
+                                  Text(
+                                    "${post.comments}",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 3.w,
+                                      height: 1,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(width: 4.w),
+                                ],
+                              ),
+                            )
+                            : SizedBox.shrink(),
+
+                        const Spacer(flex: 10),
+
+                        // Sentiment Analysis Button
+                        post.isDebate
+                            ? IconButton(
                               onPressed: () {
-                                //Move to the full view of the post with all the comments
+                                //move to the sentiment analysis view
                               },
-                              padding: EdgeInsets.zero,
+
                               icon: Icon(
-                                Icons.mode_comment_outlined,
-                                color: Colors.white,
+                                Icons.analytics_outlined,
+                                size: 7.w,
+                                color: primaryColor,
                               ),
-                            ),
-                            Text(
-                              "${post.comments}",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 3.w,
-                                height: 1,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(width: 4.w),
-                          ],
-                        ),
-                      ),
-
-                      const Spacer(flex: 10),
-
-                      // Sentiment Analysis Button
-                      SizedBox(
-                        height: 9.w,
-                        child: IconButton(
-                          onPressed: () {
-                            //move to the sentiment analysis view
-                          },
-                          style: TextButton.styleFrom(
-                            minimumSize: Size.zero,
-                            padding: EdgeInsets.zero,
-                          ),
-                          icon: Icon(
-                            Icons.pie_chart,
-                            size: 7.w,
-                            color: primaryColor,
-                          ),
-                        ),
-                      ),
-                      Spacer(flex: 1),
-                    ],
+                            )
+                            : SizedBox.shrink(),
+                        Spacer(flex: 1),
+                      ],
+                    ),
                   ),
                 ),
               ),
+              Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
             ],
           ),
         ),
