@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Authentication%20Screens/EmailVerification.dart';
@@ -21,39 +22,44 @@ void main() async {
     ),
   );
   runApp(
-    Sizer(
-      builder: (context, orientation, screenType) {
-        return MaterialApp(
-          title: 'Verbatica',
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            primaryColor: Colors.white,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 40, 188, 242),
-              brightness: Brightness.dark,
-            ),
-            elevatedButtonTheme: ElevatedButtonThemeData(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: primaryColor,
-                foregroundColor: Colors.white,
-                minimumSize: Size(95.w, 6.h),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+    MultiBlocProvider(
+      providers: [
+        BlocProvider<UserBloc>(create: (context) => UserBloc()),
+        BlocProvider<OtheruserBloc>(create: (context) => OtheruserBloc()),
+      ],
+      child: Sizer(
+        builder: (context, orientation, screenType) {
+          return MaterialApp(
+            title: 'Verbatica',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              primaryColor: Colors.white,
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color.fromARGB(255, 40, 188, 242),
+                brightness: Brightness.dark,
+              ),
+              elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: primaryColor,
+                  foregroundColor: Colors.white,
+                  minimumSize: Size(95.w, 6.h),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
                 ),
               ),
-            ),
 
-            buttonTheme: ButtonThemeData(buttonColor: primaryColor),
-            textTheme: GoogleFonts.robotoTextTheme(Theme.of(context).textTheme),
-            scaffoldBackgroundColor: const Color(0xFF0A0D0F),
-            useMaterial3: true,
-          ),
-          home: BlocProvider(
-            create: (context) => UserBloc(),
-            child: const BottomNavigationBarView(),
-          ),
-        );
-      },
+              buttonTheme: ButtonThemeData(buttonColor: primaryColor),
+              textTheme: GoogleFonts.robotoTextTheme(
+                Theme.of(context).textTheme,
+              ),
+              scaffoldBackgroundColor: const Color(0xFF0A0D0F),
+              useMaterial3: true,
+            ),
+            home: const BottomNavigationBarView(),
+          );
+        },
+      ),
     ),
   );
 }

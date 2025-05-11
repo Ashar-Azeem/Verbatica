@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/BLOC/postsubmit/postsubmit_bloc.dart';
+import 'package:verbatica/BLOC/postsubmit/postsubmit_event.dart';
 import 'package:verbatica/model/Post.dart';
 
 // Your PostBloc
@@ -90,7 +92,19 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     } else {
       final user = context.read<UserBloc>().state.user;
 
-      // Post post =new Post(id: , name: user.username, avatar: user.avatarId, title: _titleController.text, description: _descriptionController.text, isDebate: polarity=='polarize', upvotes: 0, downvotes: 0, comments: 0, uploadTime:DateTime.now());
+      Post post = new Post(
+        name: user.username,
+        avatar: user.avatarId,
+        title: _titleController.text,
+        description: _descriptionController.text,
+        isDebate: polarity == 'polarize',
+        upvotes: 0,
+        downvotes: 0,
+        comments: 0,
+        uploadTime: DateTime.now(),
+        id: '999',
+      );
+      context.read<PostBloc>().add(SubmitPostEvent(post));
     }
 
     // // Create post object

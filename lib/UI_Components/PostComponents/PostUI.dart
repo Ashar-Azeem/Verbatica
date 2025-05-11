@@ -10,9 +10,11 @@ import 'package:verbatica/BLOC/Home/home_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart' as userEvents;
+import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/otherprofile.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -46,112 +48,128 @@ class PostWidget extends StatelessWidget {
                 child: Padding(
                   padding: EdgeInsets.only(left: 1.w, top: 1.w),
 
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        backgroundImage: AssetImage(
-                          'assets/Avatars/avatar${post.avatar}.jpg',
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(left: 1.w),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              post.name,
-                              style: TextStyle(color: Colors.white),
-                            ),
-                            Text(
-                              timeago.format(post.uploadTime),
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 2.w,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Spacer(flex: 1),
-                      TextButton(
-                        onPressed: () {
-                          //Move to the summaryView
-                        },
-                        style: TextButton.styleFrom(
-                          shape: StadiumBorder(),
-
-                          backgroundColor: primaryColor, // Button color
-                          foregroundColor: Colors.white, // Text color
-                        ),
-                        child: Text(
-                          'Summary',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 2.8.w,
+                  child: GestureDetector(
+                    onTap: () {
+                      pushScreen(
+                        context,
+                        pageTransitionAnimation: PageTransitionAnimation.scale,
+                        screen: otherProfileView(post: post),
+                        withNavBar: false,
+                      );
+                    },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: AssetImage(
+                            'assets/Avatars/avatar${post.avatar}.jpg',
                           ),
                         ),
-                      ),
-                      PopupMenuButton<String>(
-                        icon: Icon(Icons.more_vert),
-                        onSelected: (String value) {
-                          if (value == "report") {
-                            context.read<HomeBloc>().add(
-                              ReportPost(
-                                index: index,
-                                category: category,
-                                postId: post.id,
+                        Padding(
+                          padding: EdgeInsets.only(left: 1.w),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                post.name,
+                                style: TextStyle(color: Colors.white),
                               ),
-                            );
-                          } else if (value == "save") {
-                            context.read<HomeBloc>().add(SavePost(post: post));
-                          } else if (value == "share") {
-                            context.read<HomeBloc>().add(SharePost(post: post));
-                          }
-                        },
-                        itemBuilder:
-                            (BuildContext context) => <PopupMenuEntry<String>>[
-                              const PopupMenuItem<String>(
-                                value: 'report',
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Icon(
-                                      Icons.report_gmailerrorred,
-                                      color: Colors.white,
-                                    ),
-
-                                    Text('Report'),
-                                  ],
-                                ),
-                              ),
-                              const PopupMenuItem<String>(
-                                value: 'save',
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Icon(Icons.save, color: Colors.white),
-                                    Text('Save'),
-                                  ],
-                                ),
-                              ),
-
-                              const PopupMenuItem<String>(
-                                value: 'share',
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Icon(Icons.share, color: Colors.white),
-                                    Text('Share'),
-                                  ],
+                              Text(
+                                timeago.format(post.uploadTime),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 2.w,
                                 ),
                               ),
                             ],
-                      ),
-                    ],
+                          ),
+                        ),
+                        Spacer(flex: 1),
+                        TextButton(
+                          onPressed: () {
+                            //Move to the summaryView
+                          },
+                          style: TextButton.styleFrom(
+                            shape: StadiumBorder(),
+
+                            backgroundColor: primaryColor, // Button color
+                            foregroundColor: Colors.white, // Text color
+                          ),
+                          child: Text(
+                            'Summary',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 2.8.w,
+                            ),
+                          ),
+                        ),
+                        PopupMenuButton<String>(
+                          icon: Icon(Icons.more_vert),
+                          onSelected: (String value) {
+                            if (value == "report") {
+                              context.read<HomeBloc>().add(
+                                ReportPost(
+                                  index: index,
+                                  category: category,
+                                  postId: post.id,
+                                ),
+                              );
+                            } else if (value == "save") {
+                              context.read<HomeBloc>().add(
+                                SavePost(post: post),
+                              );
+                            } else if (value == "share") {
+                              context.read<HomeBloc>().add(
+                                SharePost(post: post),
+                              );
+                            }
+                          },
+                          itemBuilder:
+                              (
+                                BuildContext context,
+                              ) => <PopupMenuEntry<String>>[
+                                const PopupMenuItem<String>(
+                                  value: 'report',
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Icon(
+                                        Icons.report_gmailerrorred,
+                                        color: Colors.white,
+                                      ),
+
+                                      Text('Report'),
+                                    ],
+                                  ),
+                                ),
+                                const PopupMenuItem<String>(
+                                  value: 'save',
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Icon(Icons.save, color: Colors.white),
+                                      Text('Save'),
+                                    ],
+                                  ),
+                                ),
+
+                                const PopupMenuItem<String>(
+                                  value: 'share',
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Icon(Icons.share, color: Colors.white),
+                                      Text('Share'),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

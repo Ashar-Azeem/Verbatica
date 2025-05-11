@@ -5,6 +5,7 @@ import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:verbatica/BLOC/Home/home_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart' show UserBloc;
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart' show UpdateUser;
+import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/DummyData/UserDummyData.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/AddPostView.dart';
@@ -33,6 +34,7 @@ class _BottomNavigationBarViewState extends State<BottomNavigationBarView> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => HomeBloc()),
+        // BlocProvider(create: (context) => OtheruserBloc()),
         // BlocProvider(
         //   create: (context) => SubjectBloc(),
         // ),
