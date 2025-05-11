@@ -1,4 +1,6 @@
-class User {
+import 'package:equatable/equatable.dart';
+
+class User extends Equatable {
   final String username;
 
   final int karma;
@@ -89,4 +91,18 @@ class User {
       avatarId: avatarUrl ?? avatarId,
     );
   }
+
+  @override
+  List<Object?> get props => [
+    username,
+    country,
+    karma,
+    followers,
+    following,
+    joinedDate,
+    upVotedPosts,
+    downVotedPosts,
+    about,
+    avatarId,
+  ];
 }

@@ -284,10 +284,16 @@ class PostWidget extends StatelessWidget {
                             vertical: 0.5.w,
                           ),
                           child: BlocBuilder<UserBloc, UserState>(
+                            buildWhen:
+                                (previous, current) =>
+                                    previous.user.upVotedPosts !=
+                                        current.user.upVotedPosts ||
+                                    previous.user.downVotedPosts !=
+                                        current.user.downVotedPosts,
                             builder: (context, state) {
                               return Row(
                                 children: [
-                                  InkWell(
+                                  GestureDetector(
                                     onTap: () {
                                       context.read<UserBloc>().add(
                                         userEvents.UpVotePost(

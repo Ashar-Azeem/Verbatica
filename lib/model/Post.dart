@@ -32,7 +32,7 @@ class Post extends Equatable {
   final DateTime uploadTime;
   final List<Cluster>? clusters; //// Only used when isdebate==true
 
-  Post({
+  const Post({
     required this.id,
     this.clusters,
     required this.name,

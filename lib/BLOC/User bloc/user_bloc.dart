@@ -46,21 +46,19 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
   upVotePost(UpVotePost event, Emitter<UserState> emit) {
     if (!state.user.upVotedPosts.contains(event.postId)) {
-      if (state.user.downVotedPosts.contains(event.postId)) {
-        //Removing from down voted posts
-        List<String> downvotes = state.user.downVotedPosts;
-        downvotes.remove(event.postId);
+      final updatedUpvotes = List<String>.from(state.user.upVotedPosts);
+      final updatedDownvotes = List<String>.from(state.user.downVotedPosts);
+
+      if (updatedDownvotes.contains(event.postId)) {
+        updatedDownvotes.remove(event.postId);
+        updatedUpvotes.add(event.postId);
+
         emit(
           state.copyWith(
-            user: state.user.copyWith(downVotedPosts: List.from(downvotes)),
-          ),
-        );
-        //Adding into upvoted posts
-        List<String> upvotes = state.user.upVotedPosts;
-        upvotes.add(event.postId);
-        emit(
-          state.copyWith(
-            user: state.user.copyWith(upVotedPosts: List.from(upvotes)),
+            user: state.user.copyWith(
+              downVotedPosts: updatedDownvotes,
+              upVotedPosts: updatedUpvotes,
+            ),
           ),
         );
 
@@ -72,14 +70,14 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           ),
         );
       } else {
-        //Adding into upvoted posts
-        List<String> upvotes = state.user.upVotedPosts;
-        upvotes.add(event.postId);
+        updatedUpvotes.add(event.postId);
+
         emit(
           state.copyWith(
-            user: state.user.copyWith(upVotedPosts: List.from(upvotes)),
+            user: state.user.copyWith(upVotedPosts: updatedUpvotes),
           ),
         );
+
         event.context.read<homeBloc.HomeBloc>().add(
           homeBloc.UpVotePost(
             index: event.index,
@@ -93,24 +91,22 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
   downVotePost(DownVotePost event, Emitter<UserState> emit) {
     if (!state.user.downVotedPosts.contains(event.postId)) {
-      if (state.user.upVotedPosts.contains(event.postId)) {
-        //removing from the upvoted list
-        List<String> upvotes = state.user.upVotedPosts;
-        upvotes.remove(event.postId);
+      final updatedUpvotes = List<String>.from(state.user.upVotedPosts);
+      final updatedDownvotes = List<String>.from(state.user.downVotedPosts);
+
+      if (updatedUpvotes.contains(event.postId)) {
+        updatedUpvotes.remove(event.postId);
+        updatedDownvotes.add(event.postId);
+
         emit(
           state.copyWith(
-            user: state.user.copyWith(upVotedPosts: List.from(upvotes)),
+            user: state.user.copyWith(
+              upVotedPosts: updatedUpvotes,
+              downVotedPosts: updatedDownvotes,
+            ),
           ),
         );
-        //Adding in the downvotes list
-        List<String> downvotes = state.user.downVotedPosts;
-        downvotes.add(event.postId);
-        emit(
-          state.copyWith(
-            user: state.user.copyWith(downVotedPosts: List.from(downvotes)),
-          ),
-        );
-        //Updates two times
+
         event.context.read<homeBloc.HomeBloc>().add(
           homeBloc.DownVotePost(
             index: event.index,
@@ -119,15 +115,14 @@ class UserBloc extends Bloc<UserEvent, UserState> {
           ),
         );
       } else {
-        //Adding in the downvotes list
+        updatedDownvotes.add(event.postId);
 
-        List<String> downvotes = state.user.downVotedPosts;
-        downvotes.add(event.postId);
         emit(
           state.copyWith(
-            user: state.user.copyWith(downVotedPosts: List.from(downvotes)),
+            user: state.user.copyWith(downVotedPosts: updatedDownvotes),
           ),
         );
+
         event.context.read<homeBloc.HomeBloc>().add(
           homeBloc.DownVotePost(
             index: event.index,
