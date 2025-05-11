@@ -287,10 +287,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('Create Post', style: TextStyle(color: Colors.white)),
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
+
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),

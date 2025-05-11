@@ -1,11 +1,9 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, camel_case_types
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
-import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingscreen.dart';
 import 'package:verbatica/model/Post.dart';
 
 class otherProfileView extends StatefulWidget {
@@ -62,21 +60,7 @@ class _ProfileViewState extends State<otherProfileView>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        Spacer(),
-                        IconButton(
-                          onPressed: () {
-                            pushScreen(
-                              context,
-                              screen: SettingsScreen(),
-                              withNavBar: false,
-                            );
-                          },
-                          icon: Icon(Icons.settings),
-                        ),
-                      ],
-                    ),
+                    SizedBox(height: 5.h),
                     CircleAvatar(
                       radius: 5.0.h,
                       backgroundImage: AssetImage(
