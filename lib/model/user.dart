@@ -13,7 +13,7 @@ class User extends Equatable {
   final List<String> upVotedPosts;
   final List<String> downVotedPosts;
 
-  User({
+  const User({
     required this.username,
     required this.karma,
     required this.followers,

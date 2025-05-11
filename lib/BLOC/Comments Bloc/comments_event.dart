@@ -31,10 +31,27 @@ class DownVoteComment extends CommentsEvent {
   const DownVoteComment({required this.comment});
 }
 
-class AddComment extends CommentsEvent {
+class SelectComment extends CommentsEvent {
   final Comment parentComment;
 
-  const AddComment({required this.parentComment});
+  const SelectComment({required this.parentComment});
+}
+
+class RemoveSelectComment extends CommentsEvent {
+  const RemoveSelectComment();
+}
+
+class UploadComment extends CommentsEvent {
+  final User user;
+  final String comment;
+  final TextEditingController commentController;
+  final String postId;
+  const UploadComment({
+    required this.comment,
+    required this.postId,
+    required this.user,
+    required this.commentController,
+  });
 }
 
 class ReportComment extends CommentsEvent {
