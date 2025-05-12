@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
@@ -46,7 +47,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   // final _formKey = GlobalKey<FormState>();
   File? croppedImage;
-  String? polarity;
+  String polarity = '';
   File? _trimmedVideo;
   Future<void> _pickMedia(bool isVideo) async {
     final pickedFile = await ImagePicker().pickImage(
@@ -84,6 +85,17 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           backgroundColor: Colors.red,
           content: Text(
             "At least 2 clusters are required for polarize posts",
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+      return;
+    } else if (polarity == '') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.red,
+          content: Text(
+            "Select tag of post",
             style: TextStyle(color: Colors.white),
           ),
         ),
@@ -135,33 +147,33 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       );
       if (pickedFile == null) return null;
 
-      // // 2. Crop the image with 16:9 aspect ratio
-      // final CroppedFile? croppedFile = await ImageCropper().cropImage(
-      //   sourcePath: pickedFile.path,
-      //   aspectRatio: const CropAspectRatio(ratioX: 16, ratioY: 9),
-      //   compressQuality: 85,
-      //   uiSettings: [
-      //     AndroidUiSettings(
-      //       toolbarTitle: 'Crop Image',
-      //       toolbarColor: Colors.black,
-      //       toolbarWidgetColor: Colors.white,
-      //       initAspectRatio: CropAspectRatioPreset.ratio16x9,
-      //       lockAspectRatio: true,
-      //       hideBottomControls: true,
-      //       showCropGrid: false,
-      //       statusBarColor: Colors.black,
-      //       backgroundColor: Colors.black,
-      //     ),
-      //     IOSUiSettings(
-      //       title: 'Crop Image',
-      //       aspectRatioLockEnabled: true,
-      //       resetButtonHidden: true,
-      //       rotateButtonsHidden: true,
-      //     ),
-      //   ],
-      // );
+      // 2. Crop the image with 16:9 aspect ratio
+      final CroppedFile? croppedFile = await ImageCropper().cropImage(
+        sourcePath: pickedFile.path,
+        aspectRatio: const CropAspectRatio(ratioX: 16, ratioY: 9),
+        compressQuality: 85,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'Crop Image',
+            toolbarColor: Colors.black,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.ratio16x9,
+            lockAspectRatio: true,
+            hideBottomControls: true,
+            showCropGrid: false,
+            statusBarColor: Colors.black,
+            backgroundColor: Colors.black,
+          ),
+          // IOSUiSettings(
+          //   title: 'Crop Image',
+          //   aspectRatioLockEnabled: true,
+          //   resetButtonHidden: true,
+          //   rotateButtonsHidden: true,
+          // ),
+        ],
+      );
 
-      // return croppedFile != null ? File(croppedFile.path) : null;
+      return croppedFile != null ? File(croppedFile.path) : null;
     } catch (e) {
       debugPrint('Image processing error: $e');
       return null;
@@ -286,10 +298,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: const Text('Create Post', style: TextStyle(color: Colors.white)),
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
+
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
