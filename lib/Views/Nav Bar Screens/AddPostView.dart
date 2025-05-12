@@ -345,7 +345,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       ),
                     ),
                     child: Text(
-                      polarity == null ? 'tag' : polarity!,
+                      polarity == '' ? 'tag' : polarity!,
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
