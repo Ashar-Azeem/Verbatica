@@ -54,11 +54,10 @@ dependencies:
   cached_network_image: ^3.4.1
   visibility_detector: ^0.4.0+2
   image_picker: ^1.1.2
-<<<<<<< HEAD
+
   image_cropper: ^9.1.0
-=======
+
   uuid: ^4.5.1
->>>>>>> bdf4671f3ef791ab2f98c7870fa0efb58758ebf3
 
 dev_dependencies:
   flutter_test:
