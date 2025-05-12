@@ -1,5 +1,4 @@
 // ignore_for_file: file_names
-
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,7 +6,6 @@ import 'package:sizer/sizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:verbatica/BLOC/Comments%20Bloc/comments_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
-import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/model/comment.dart';
 
@@ -22,6 +20,8 @@ class CommentsBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String userId = context.read<UserBloc>().state.user.userId;
+
     return Stack(
       children: [
         if (level > 1)
@@ -122,81 +122,83 @@ class CommentsBlock extends StatelessWidget {
                       ),
                       linkColor: primaryColor,
                     ),
-                    BlocBuilder<UserBloc, UserState>(
-                      builder: (context, state) {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            IconButton(
-                              onPressed: () {},
-                              padding: EdgeInsets.zero,
-                              icon: Icon(
-                                Icons.arrow_circle_up_outlined,
-                                size: 5.5.w,
-                                color:
-                                    state.user.upVotedPosts.contains(comment.id)
-                                        ? primaryColor
-                                        : Colors.white,
-                              ),
-                            ),
-                            Text(
-                              "${comment.upVotes - comment.downVotes}",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 3.w,
-                                height: 1,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(width: 1.w),
-                            IconButton(
-                              onPressed: () {},
-                              padding: EdgeInsets.zero,
-                              icon: Icon(
-                                Icons.arrow_circle_down_outlined,
-                                size: 5.5.w,
-                                color:
-                                    state.user.downVotedPosts.contains(
-                                          comment.id,
-                                        )
-                                        ? primaryColor
-                                        : Colors.white,
-                              ),
-                            ),
-                            level > 7
-                                ? const SizedBox.shrink()
-                                : level == 1
-                                ? TextButton.icon(
-                                  onPressed: () {
-                                    onreply(context);
-                                  },
-                                  label: Text(
-                                    "Reply",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 3.5.w,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                  icon: Icon(
-                                    Icons.reply,
-                                    size: 5.5.w,
-                                    color: primaryColor,
-                                  ),
-                                )
-                                : IconButton(
-                                  onPressed: () {
-                                    onreply(context);
-                                  },
-                                  icon: Icon(
-                                    Icons.reply,
-                                    size: 5.5.w,
-                                    color: primaryColor,
-                                  ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            context.read<CommentsBloc>().add(
+                              UpVoteComment(comment: comment, userId: userId),
+                            );
+                          },
+                          padding: EdgeInsets.zero,
+                          icon: Icon(
+                            Icons.arrow_circle_up_outlined,
+                            size: 5.5.w,
+                            color:
+                                comment.upVoteUserIds.contains(userId)
+                                    ? primaryColor
+                                    : Colors.white,
+                          ),
+                        ),
+                        Text(
+                          "${comment.totalUpVotes - comment.totalDownVotes}",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 3.w,
+                            height: 1,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(width: 1.w),
+                        IconButton(
+                          onPressed: () {
+                            context.read<CommentsBloc>().add(
+                              DownVoteComment(comment: comment, userId: userId),
+                            );
+                          },
+                          padding: EdgeInsets.zero,
+                          icon: Icon(
+                            Icons.arrow_circle_down_outlined,
+                            size: 5.5.w,
+                            color:
+                                comment.downVoteUserIds.contains(userId)
+                                    ? primaryColor
+                                    : Colors.white,
+                          ),
+                        ),
+                        level > 7
+                            ? const SizedBox.shrink()
+                            : level == 1
+                            ? TextButton.icon(
+                              onPressed: () {
+                                onreply(context);
+                              },
+                              label: Text(
+                                "Reply",
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 3.5.w,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                          ],
-                        );
-                      },
+                              ),
+                              icon: Icon(
+                                Icons.reply,
+                                size: 5.5.w,
+                                color: primaryColor,
+                              ),
+                            )
+                            : IconButton(
+                              onPressed: () {
+                                onreply(context);
+                              },
+                              icon: Icon(
+                                Icons.reply,
+                                size: 5.5.w,
+                                color: primaryColor,
+                              ),
+                            ),
+                      ],
                     ),
                     if (comment.allReplies.isNotEmpty)
                       Padding(

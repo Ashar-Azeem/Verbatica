@@ -1,6 +1,26 @@
 // Generate dummy posts
 import 'package:verbatica/model/Post.dart';
 
+// List 1: 3 clusters
+List<Cluster> clusters1 = [
+  Cluster(id: '1', title: 'Technology'),
+  Cluster(id: '2', title: 'Science'),
+  Cluster(id: '3', title: 'Programming'),
+];
+
+// List 2: 4 clusters
+List<Cluster> clusters2 = [
+  Cluster(id: '4', title: 'Sports'),
+  Cluster(id: '5', title: 'Health'),
+  Cluster(id: '6', title: 'Fitness'),
+  Cluster(id: '7', title: 'Nutrition'),
+];
+
+// List 3: 2 clusters
+List<Cluster> clusters3 = [
+  Cluster(id: '8', title: 'Art'),
+  Cluster(id: '9', title: 'Music'),
+];
 List<Post> forYouPosts = [
   Post(
     id: '1',
@@ -44,6 +64,7 @@ List<Post> forYouPosts = [
     upvotes: 200,
     downvotes: 29,
     comments: 87,
+    clusters: clusters1,
     uploadTime: DateTime.now().subtract(Duration(hours: 8)),
   ),
   Post(
@@ -117,6 +138,7 @@ List<Post> followingPosts = [
     upvotes: 490,
     downvotes: 89,
     comments: 62,
+    clusters: clusters2,
     uploadTime: DateTime.now().subtract(Duration(hours: 6)),
   ),
   Post(
@@ -154,7 +176,8 @@ List<Post> followingPosts = [
     title: 'Photography Tips',
     description: '5 composition techniques that improved my photos instantly',
     postImageLink: 'https://picsum.photos/500/300?random=106',
-    isDebate: false,
+    isDebate: true,
+    clusters: clusters3,
     upvotes: 123,
     downvotes: 321,
     comments: 21,

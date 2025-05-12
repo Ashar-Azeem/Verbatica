@@ -30,8 +30,10 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
   }
 
   loadMoreComments(LoadMoreComments event, Emitter<CommentsState> emit) {}
+
   upVoteComment(UpVoteComment event, Emitter<CommentsState> emit) {}
   downVoteComment(DownVoteComment event, Emitter<CommentsState> emit) {}
+
   selectComment(SelectComment event, Emitter<CommentsState> emit) {
     Map<String, dynamic> replyToComment = {"comment": event.parentComment};
     emit(state.copyWith(replyToComment: replyToComment));
@@ -56,8 +58,8 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       author: event.user.username,
       profile: event.user.avatarId.toString(),
       uploadTime: DateTime.now(),
-      upVotes: 0,
-      downVotes: 0,
+      upVoteUserIds: [],
+      downVoteUserIds: [],
       allReplies: [],
       parentId: state.replyToComment?.id, // optional
     );
