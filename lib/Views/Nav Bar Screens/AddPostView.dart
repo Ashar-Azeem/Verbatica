@@ -13,7 +13,7 @@ import 'package:verbatica/model/Post.dart';
 // Your PostBloc
 
 class CreatePostScreen extends StatefulWidget {
-  const CreatePostScreen({Key? key}) : super(key: key);
+  const CreatePostScreen({super.key});
 
   @override
   _CreatePostScreenState createState() => _CreatePostScreenState();
@@ -178,6 +178,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       debugPrint('Image processing error: $e');
       return null;
     }
+    return null;
   }
 
   // Future<File?> pickAndTrimVideo(BuildContext context) async {
