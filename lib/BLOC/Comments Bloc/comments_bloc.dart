@@ -30,8 +30,29 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
   }
 
   loadMoreComments(LoadMoreComments event, Emitter<CommentsState> emit) {}
-  upVoteComment(UpVoteComment event, Emitter<CommentsState> emit) {}
-  downVoteComment(DownVoteComment event, Emitter<CommentsState> emit) {}
+
+  upVoteComment(UpVoteComment event, Emitter<CommentsState> emit) {
+    List<Comment> comments = List.from(state.comments);
+    comments = _updateVotes(
+      comments,
+      event.comment.id,
+      event.userId,
+      isUpvote: true,
+    );
+    emit(state.copyWith(comments: List.from(comments)));
+  }
+
+  downVoteComment(DownVoteComment event, Emitter<CommentsState> emit) {
+    List<Comment> comments = List.from(state.comments);
+    comments = _updateVotes(
+      comments,
+      event.comment.id,
+      event.userId,
+      isUpvote: false,
+    );
+    emit(state.copyWith(comments: List.from(comments)));
+  }
+
   selectComment(SelectComment event, Emitter<CommentsState> emit) {
     Map<String, dynamic> replyToComment = {"comment": event.parentComment};
     emit(state.copyWith(replyToComment: replyToComment));
@@ -56,8 +77,8 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       author: event.user.username,
       profile: event.user.avatarId.toString(),
       uploadTime: DateTime.now(),
-      upVotes: 0,
-      downVotes: 0,
+      upVoteUserIds: [],
+      downVoteUserIds: [],
       allReplies: [],
       parentId: state.replyToComment?.id, // optional
     );
@@ -120,4 +141,52 @@ Comment? _addReplyToComment(
     }
   }
   return null;
+}
+
+List<Comment> _updateVotes(
+  List<Comment> comments,
+  String commentId,
+  String userId, {
+  required bool isUpvote,
+}) {
+  return comments.map((comment) {
+    if (comment.id == commentId) {
+      final updatedUpvotes = List<String>.from(comment.upVoteUserIds);
+      final updatedDownvotes = List<String>.from(comment.downVoteUserIds);
+
+      if (isUpvote) {
+        if (!updatedUpvotes.contains(userId)) {
+          if (updatedDownvotes.contains(userId)) {
+            updatedDownvotes.remove(userId);
+            updatedUpvotes.add(userId);
+          } else {
+            updatedUpvotes.add(userId);
+          }
+        }
+      } else {
+        if (!updatedDownvotes.contains(userId)) {
+          if (updatedUpvotes.contains(userId)) {
+            updatedUpvotes.remove(userId);
+            updatedDownvotes.add(userId);
+          } else {
+            updatedDownvotes.add(userId);
+          }
+        }
+      }
+
+      return comment.copyWith(
+        upVoteUserIds: updatedUpvotes,
+        downVoteUserIds: updatedDownvotes,
+      );
+    } else {
+      return comment.copyWith(
+        allReplies: _updateVotes(
+          comment.allReplies,
+          commentId,
+          userId,
+          isUpvote: isUpvote,
+        ),
+      );
+    }
+  }).toList();
 }

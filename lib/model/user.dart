@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 
 class User extends Equatable {
+  final String userId;
   final String username;
-
   final int karma;
   final int followers;
   final int following;
@@ -14,6 +14,7 @@ class User extends Equatable {
   final List<String> downVotedPosts;
 
   const User({
+    required this.userId,
     required this.username,
     required this.karma,
     required this.followers,
@@ -38,7 +39,7 @@ class User extends Equatable {
       'joinedDate': joinedDate.toIso8601String(),
       'upVotedPosts': upVotedPosts,
       'downVotedPosts': downVotedPosts,
-
+      'userId': userId,
       'about': about,
       'avatarUrl': avatarId,
     };
@@ -55,7 +56,7 @@ class User extends Equatable {
       joinedDate: DateTime.parse(json['joinedDate'] as String),
       upVotedPosts: json['upVotedPosts'] ?? [],
       downVotedPosts: json['downVotedPosts'] ?? [],
-
+      userId: json['userId'] as String,
       about: json['about'] as String?,
       avatarId: json['avatarId'] as int,
     );
@@ -72,6 +73,7 @@ class User extends Equatable {
     int? commentCount,
     String? about,
     int? avatarUrl,
+    String? userId,
     List<String>? upVotedPosts,
     List<String>? downVotedPosts,
 
@@ -86,7 +88,7 @@ class User extends Equatable {
       joinedDate: joinedDate ?? this.joinedDate,
       upVotedPosts: upVotedPosts ?? this.upVotedPosts,
       downVotedPosts: downVotedPosts ?? this.downVotedPosts,
-
+      userId: userId ?? this.userId,
       about: about ?? this.about,
       avatarId: avatarUrl ?? avatarId,
     );
@@ -104,5 +106,6 @@ class User extends Equatable {
     downVotedPosts,
     about,
     avatarId,
+    userId,
   ];
 }
