@@ -11,8 +11,9 @@ class FetchUser extends UserEvent {
 
 class UpdateUser extends UserEvent {
   final User user;
+  final BuildContext context;
 
-  UpdateUser(this.user);
+  UpdateUser(this.user, this.context);
 }
 
 class UpdateAvatar extends UserEvent {

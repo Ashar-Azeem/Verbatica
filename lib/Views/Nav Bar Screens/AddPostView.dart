@@ -104,7 +104,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     } else {
       final user = context.read<UserBloc>().state.user;
 
-      Post post = new Post(
+      Post post = Post(
         name: user.username,
         avatar: user.avatarId,
         title: _titleController.text,
@@ -370,7 +370,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       ),
                     ),
                     child: Text(
-                      polarity == '' ? 'tag' : polarity!,
+                      polarity == '' ? 'tag' : polarity,
                       style: TextStyle(color: Colors.white),
                     ),
                   ),

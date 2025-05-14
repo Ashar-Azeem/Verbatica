@@ -25,7 +25,7 @@ class _BottomNavigationBarViewState extends State<BottomNavigationBarView> {
   @override
   void initState() {
     super.initState();
-    context.read<UserBloc>().add(UpdateUser(dummyUser));
+    context.read<UserBloc>().add(UpdateUser(dummyUser, context));
   }
 
   @override
@@ -33,7 +33,6 @@ class _BottomNavigationBarViewState extends State<BottomNavigationBarView> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => HomeBloc()),
-        // BlocProvider(create: (context) => OtheruserBloc()),
         // BlocProvider(
         //   create: (context) => SubjectBloc(),
         // ),

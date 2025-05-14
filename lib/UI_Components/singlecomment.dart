@@ -17,7 +17,7 @@ class SingleCommentUI extends StatefulWidget {
 }
 
 class _SingleCommentUIState extends State<SingleCommentUI> {
-  bool _showFullParent = false;
+  final bool _showFullParent = false;
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/Home/home_bloc.dart' as homeBloc;
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
@@ -26,9 +27,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     final currentUser = state.user;
     final updatedUser = currentUser.copyWith(avatarUrl: event.newAvatarId);
     emit(state.copyWith(user: updatedUser));
-
-    // Here you would typically also persist to local storage/API
-    // await _userRepository.updateAvatar(event.newAvatarUrl);
   }
 
   void _onUpdateAbout(UpdateAbout event, Emitter<UserState> emit) {
@@ -42,6 +40,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
   void _onUpdateUser(UpdateUser event, Emitter<UserState> emit) {
     emit(state.copyWith(user: event.user));
+    event.context.read<ChatBloc>().add(
+      FetchInitialChats(userId: event.user.userId),
+    );
   }
 
   upVotePost(UpVotePost event, Emitter<UserState> emit) {

@@ -99,7 +99,7 @@ class _ProfileViewState extends State<otherProfileView>
                     ),
                     SizedBox(height: 1.0.h),
                     Text(
-                      '${widget.post.name}',
+                      widget.post.name,
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.8),
                         fontSize: 16,
