@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/comments_cluster/comment_cluster_bloc.dart';
 import 'package:verbatica/UI_Components/singlecomment.dart';
+
+import 'package:verbatica/Views/chartanalytics.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/comment.dart';
 
@@ -42,6 +44,28 @@ class _ClusterscreenState extends State<Clusterscreen>
     return Scaffold(
       appBar: AppBar(
         title: Text('Discussion Detail'),
+        backgroundColor: const Color.fromARGB(
+          255,
+          67,
+          118,
+          138,
+        ).withOpacity(0.6),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) =>
+                          ChartsAnalyticsScreen(clusters: widget.clusters),
+                ),
+              );
+            },
+
+            icon: const Icon(Icons.bar_chart, color: Colors.white),
+          ),
+        ],
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
@@ -60,67 +84,33 @@ class _ClusterscreenState extends State<Clusterscreen>
                 widget.clusters.map((cluster) {
                   final clusterComments = state.comments;
 
-                  return Stack(
-                    children: [
-                      ListView.builder(
-                        padding: EdgeInsets.only(bottom: 80),
-                        itemCount: clusterComments.length,
-                        itemBuilder: (context, index) {
-                          final comment = clusterComments[index];
+                  return ListView.builder(
+                    padding: EdgeInsets.only(bottom: 80),
+                    itemCount: clusterComments.length,
+                    itemBuilder: (context, index) {
+                      final comment = clusterComments[index];
 
-                          Comment? parentComment;
-                          if (comment.parentId != null) {
-                            try {
-                              parentComment = clusterComments.firstWhere(
-                                (c) => c.id == comment.parentId,
-                              );
-                            } catch (e) {
-                              parentComment =
-                                  null; // Or handle missing parent differently
-                            }
-                          }
-                          return SingleCommentUI(
-                            comment: comment,
-                            parentComment: parentComment,
+                      Comment? parentComment;
+                      if (comment.parentId != null) {
+                        try {
+                          parentComment = clusterComments.firstWhere(
+                            (c) => c.id == comment.parentId,
                           );
-                        },
-                      ),
-
-                      Positioned(
-                        bottom: 20,
-                        right: 20,
-                        child: FloatingActionButton(
-                          onPressed: () => _showClusterGraph(cluster),
-                          backgroundColor: Colors.grey[300],
-                          child: const Icon(
-                            Icons.bar_chart,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
+                        } catch (e) {
+                          parentComment =
+                              null; // Or handle missing parent differently
+                        }
+                      }
+                      return SingleCommentUI(
+                        comment: comment,
+                        parentComment: parentComment,
+                      );
+                    },
                   );
                 }).toList(),
           );
         },
       ),
-    );
-  }
-
-  void _showClusterGraph(Cluster cluster) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Graph for ${cluster.title}'),
-            content: const Text('Graph visualization would appear here'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Close'),
-              ),
-            ],
-          ),
     );
   }
 }
