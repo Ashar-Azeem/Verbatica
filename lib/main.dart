@@ -4,9 +4,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
+import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/comments_cluster/comment_cluster_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
+import 'package:verbatica/DummyData/UserDummyData.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Authentication%20Screens/EmailVerification.dart';
@@ -30,6 +33,7 @@ void main() async {
         BlocProvider<CommentClusterBloc>(
           create: (context) => CommentClusterBloc(),
         ),
+        BlocProvider(create: (context) => ChatBloc()),
       ],
       child: Sizer(
         builder: (context, orientation, screenType) {
@@ -87,7 +91,7 @@ class MainNavigation extends StatelessWidget {
               if (user == null) {
                 return Login();
               } else {
-                // context.read<UserBloc>().add(UpdateUser(dummyUser));
+                context.read<UserBloc>().add(UpdateUser(dummyUser, context));
                 if (user['isEmailVerified']) {
                   return BottomNavigationBarView();
                 } else {

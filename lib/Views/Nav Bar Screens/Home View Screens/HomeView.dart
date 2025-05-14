@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:sizer/sizer.dart';
+import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/Home/home_bloc.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/Utilities/Color.dart';
@@ -55,19 +56,44 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                                 width: 40,
                                 height: 40,
                               ),
-                              IconButton(
-                                icon: Icon(
-                                  Icons.insert_comment_rounded,
-                                  color: primaryColor,
-                                ),
-                                onPressed: () {
-                                  pushScreen(
-                                    context,
-                                    pageTransitionAnimation:
-                                        PageTransitionAnimation.platform,
-                                    screen: ChatsView(),
+                              BlocBuilder<ChatBloc, ChatState>(
+                                buildWhen:
+                                    (previous, current) =>
+                                        previous.isAnyUnread !=
+                                        current.isAnyUnread,
+                                builder: (context, state) {
+                                  return Material(
+                                    color: Colors.transparent,
 
-                                    withNavBar: false,
+                                    child: InkWell(
+                                      onTap: () {
+                                        pushScreen(
+                                          context,
+                                          pageTransitionAnimation:
+                                              PageTransitionAnimation.platform,
+                                          screen: ChatsView(),
+
+                                          withNavBar: false,
+                                        );
+                                      },
+                                      borderRadius: BorderRadius.circular(50),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Badge(
+                                          isLabelVisible: state.isAnyUnread,
+                                          backgroundColor: const Color.fromARGB(
+                                            255,
+                                            219,
+                                            26,
+                                            12,
+                                          ),
+                                          child: Icon(
+                                            Icons.insert_comment_rounded,
+                                            color: primaryColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   );
                                 },
                               ),

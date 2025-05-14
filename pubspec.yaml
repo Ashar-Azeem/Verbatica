@@ -58,6 +58,7 @@ dependencies:
   image_cropper: ^9.1.0
 
   uuid: ^4.5.1
+  chatview: ^2.4.0
 
 dev_dependencies:
   flutter_test:
