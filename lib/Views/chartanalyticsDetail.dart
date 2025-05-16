@@ -24,7 +24,6 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
   late AnimationController _chartController;
-  late Animation<double> _chartScaleAnimation;
   final Random _random = Random();
 
   @override
@@ -51,11 +50,6 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
     _chartController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
-    );
-
-    _chartScaleAnimation = CurvedAnimation(
-      parent: _chartController,
-      curve: Curves.elasticOut,
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -137,39 +131,6 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
     );
   }
 
-  Widget _buildGenderChart() {
-    return SizedBox(
-      height: 220,
-      child: ScaleTransition(
-        scale: _chartScaleAnimation,
-        child: Card(
-          color: const Color.fromARGB(255, 67, 118, 138).withOpacity(0.6),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Expanded(
-                  child: PieChart(
-                    PieChartData(
-                      sections: _generateGenderData(),
-                      centerSpaceRadius: 60,
-                      sectionsSpace: 0,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Gender distribution of commenters',
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   List<BarChartGroupData> _generateCountryData() {
     final countries = ['USA', 'India', 'UK', 'Canada', 'Australia', 'Germany'];
     final maxComments = widget.numberOfComments.toDouble();
@@ -224,24 +185,6 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
             borderRadius: BorderRadius.circular(4),
           ),
         ],
-      );
-    });
-  }
-
-  List<PieChartSectionData> _generateGenderData() {
-    final genders = ['Male', 'Female', 'Other'];
-    return List.generate(genders.length, (index) {
-      final value = _random.nextDouble() * 40 + 20;
-      return PieChartSectionData(
-        color: _getColor(index),
-        value: value,
-        title: '${(value).toStringAsFixed(0)}%',
-        radius: 30,
-        titleStyle: const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
       );
     });
   }

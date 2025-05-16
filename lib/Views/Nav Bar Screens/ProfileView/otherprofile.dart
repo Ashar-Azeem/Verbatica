@@ -455,24 +455,4 @@ class _ProfileViewState extends State<otherProfileView>
       ],
     );
   }
-
-  Widget _buildStatItem(String label, String value) {
-    return Row(
-      children: [
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        SizedBox(width: 10),
-        Text(
-          label,
-          style: TextStyle(fontSize: 12, color: Colors.white.withOpacity(0.7)),
-        ),
-      ],
-    );
-  }
 }

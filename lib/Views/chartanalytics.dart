@@ -477,8 +477,6 @@ class _PieChartWithClusterInfoState extends State<PieChartWithClusterInfo>
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return AspectRatio(
       aspectRatio: 1.3,
       child: ScaleTransition(

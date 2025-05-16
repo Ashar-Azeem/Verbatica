@@ -43,18 +43,18 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   File? croppedImage;
   String polarity = '';
-  File? _trimmedVideo;
+  // File? _trimmedVideo;
 
-  Future<void> _pickMedia(bool isVideo) async {
-    final pickedFile = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-      maxWidth: 1920,
-      maxHeight: 1080,
-      imageQuality: 85,
-    );
+  // Future<void> _pickMedia(bool isVideo) async {
+  //   final pickedFile = await ImagePicker().pickImage(
+  //     source: ImageSource.gallery,
+  //     maxWidth: 1920,
+  //     maxHeight: 1080,
+  //     imageQuality: 85,
+  //   );
 
-    if (pickedFile != null) {}
-  }
+  //   if (pickedFile != null) {}
+  // }
 
   void _handlePostSubmission() {
     // Get all non-empty clusters
@@ -204,7 +204,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   Future<String?> showPolarizationDialog(BuildContext context) async {
     String? selectedOption;
-    bool isPolarized = false;
+    // bool isPolarized = false;
 
     return await showDialog<String>(
       context: context,
@@ -230,7 +230,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     setState(() {
                       polarity = "polarize";
                     });
-                    isPolarized = true;
+                    // isPolarized = true;
                     Navigator.pop(context, selectedOption);
                   },
                 ),
@@ -245,7 +245,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     setState(() {
                       polarity = "non_polarize";
                     });
-                    isPolarized = false;
+                    // isPolarized = false;
                     Navigator.pop(context, selectedOption);
                   },
                 ),
