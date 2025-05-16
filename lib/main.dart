@@ -9,6 +9,7 @@ import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/comments_cluster/comment_cluster_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
+import 'package:verbatica/BLOC/summary/summary_bloc.dart';
 import 'package:verbatica/DummyData/UserDummyData.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Utilities/Color.dart';
@@ -30,6 +31,7 @@ void main() async {
       providers: [
         BlocProvider<UserBloc>(create: (context) => UserBloc()),
         BlocProvider<OtheruserBloc>(create: (context) => OtheruserBloc()),
+        BlocProvider<SummaryBloc>(create: (context) => SummaryBloc()),
         BlocProvider<CommentClusterBloc>(
           create: (context) => CommentClusterBloc(),
         ),

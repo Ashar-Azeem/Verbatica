@@ -12,6 +12,7 @@ import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart' as userEvents;
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
 import 'package:verbatica/Utilities/Color.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/SummaryView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/otherprofile.dart';
 import 'package:verbatica/Views/clusterScreen.dart';
@@ -87,7 +88,31 @@ class PostWidget extends StatelessWidget {
                         Spacer(flex: 1),
                         TextButton(
                           onPressed: () {
-                            //Move to the summaryView
+                            if (post.isDebate) {
+                              pushScreen(
+                                context,
+                                pageTransitionAnimation:
+                                    PageTransitionAnimation.scale,
+                                screen: SummaryScreen(
+                                  showClusters: true,
+                                  clusters: post.clusters,
+                                  postId: '',
+                                ),
+                                withNavBar: false,
+                              );
+                            } else {
+                              pushScreen(
+                                context,
+                                pageTransitionAnimation:
+                                    PageTransitionAnimation.scale,
+                                screen: SummaryScreen(
+                                  showClusters: false,
+                                  postId: '',
+                                ),
+                                withNavBar: false,
+                              );
+                            }
+                            ;
                           },
                           style: TextButton.styleFrom(
                             shape: StadiumBorder(),
