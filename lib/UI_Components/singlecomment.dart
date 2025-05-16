@@ -212,6 +212,4 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
       ),
     );
   }
-
-  // ... keep your existing _showCommentMenu, _upvoteComment, etc methods ...
 }

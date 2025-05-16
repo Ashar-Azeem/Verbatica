@@ -28,32 +28,120 @@ class SummaryScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Summary'),
+        title: const Text(
+          'Summary',
+          style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5),
+        ),
         elevation: 0,
         centerTitle: true,
+        backgroundColor: const Color.fromARGB(
+          255,
+          67,
+          118,
+          138,
+        ).withOpacity(0.6),
       ),
-      body: BlocBuilder<SummaryBloc, SummaryState>(
-        builder: (context, state) {
-          // Handle error state
-          if (state is SummaryError) {
-            return Center(child: Text(state.message));
-          }
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).primaryColor.withOpacity(0.05),
+              Colors.transparent,
+            ],
+          ),
+        ),
+        child: BlocBuilder<SummaryBloc, SummaryState>(
+          builder: (context, state) {
+            // Handle error state
+            if (state is SummaryError) {
+              return _buildErrorState(context, state.message);
+            }
 
-          // Handle loading state
-          if (state is SummaryLoading || state is ClusterDetailsLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+            // Handle loading state
+            if (state is SummaryLoading || state is ClusterDetailsLoading) {
+              return _buildLoadingState(context);
+            }
 
-          // Handle loaded states
-          return Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(child: _buildMainContent(context, state)),
-              ],
+            // Handle loaded states
+            return Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 12.0,
+              ),
+              child: CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  SliverToBoxAdapter(child: _buildMainContent(context, state)),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(BuildContext context, String message) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.error_outline,
+            size: 48,
+            color: Theme.of(context).colorScheme.error,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
-          );
-        },
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: () {
+              if (!showClusters) {
+                context.read<SummaryBloc>().add(FetchMainbulletSummary(postId));
+              } else if (clusters != null && clusters!.isNotEmpty) {
+                context.read<SummaryBloc>().add(
+                  FetchClustersSummary(postId, clusters!),
+                );
+              }
+            },
+            icon: const Icon(Icons.refresh),
+            label: const Text('Try Again'),
+            style: ElevatedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoadingState(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const CircularProgressIndicator(),
+          const SizedBox(height: 24),
+          Text(
+            'Generating summary...',
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -64,7 +152,7 @@ class SummaryScreen extends StatelessWidget {
       if (state.bulletPoints.isEmpty) {
         return _buildEmptyContent('No bullet points available');
       }
-      return _buildBulletPointsContent(state.bulletPoints);
+      return _buildBulletPointsContent(context, state.bulletPoints);
     } else if (state is ClusterDetailsLoaded) {
       // Ensure we have clusters and summaries
       if (clusters == null ||
@@ -72,7 +160,7 @@ class SummaryScreen extends StatelessWidget {
           state.summaryOfCluster.isEmpty) {
         return _buildEmptyContent('No cluster summaries available');
       }
-      return _buildClusterContent(clusters!, state.summaryOfCluster);
+      return _buildClusterContent(context, clusters!, state.summaryOfCluster);
     }
 
     return _buildEmptyContent('No content available');
@@ -80,66 +168,106 @@ class SummaryScreen extends StatelessWidget {
 
   Widget _buildEmptyContent(String message) {
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 3,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24.0),
         child: Center(
-          child: Text(message, style: const TextStyle(color: Colors.white)),
+          child: Column(
+            children: [
+              const Icon(Icons.info_outline, size: 48, color: Colors.blue),
+              const SizedBox(height: 16),
+              Text(
+                message,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildBulletPointsContent(List<String> bulletPoints) {
+  Widget _buildBulletPointsContent(
+    BuildContext context,
+    List<String> bulletPoints,
+  ) {
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 4,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Key Points',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontSize: 18,
-              ),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.lightbulb_outline,
+                    size: 20,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Key Points',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 20,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Column(
-              children:
-                  bulletPoints
-                      .map(
-                        (point) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(top: 4, right: 12),
-                                child: Icon(
-                                  Icons.circle,
-                                  size: 10,
-                                  color: Colors.blue,
-                                ),
-                              ),
-                              Expanded(
-                                child: Text(
-                                  point,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Divider(height: 1, thickness: 1, color: Colors.white12),
+            ),
+            ListView.separated(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: bulletPoints.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 16),
+              itemBuilder: (context, index) {
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(top: 6, right: 12),
+                      height: 8,
+                      width: 8,
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
+                        bulletPoints[index],
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          height: 1.5,
                         ),
-                      )
-                      .toList(),
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),
@@ -147,46 +275,97 @@ class SummaryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildClusterContent(List<Cluster> clusters, List<String> summaries) {
+  Widget _buildClusterContent(
+    BuildContext context,
+    List<Cluster> clusters,
+    List<String> summaries,
+  ) {
     return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 4,
+      shadowColor: Colors.black26,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Cluster Summaries',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                fontSize: 18,
-              ),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    Icons.category_outlined,
+                    size: 20,
+                    color: Theme.of(context).primaryColor,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Text(
+                  'Cluster Summaries',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    fontSize: 20,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            ...List.generate(
-              clusters.length,
-              (index) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    clusters[index].title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      fontSize: 16,
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Divider(height: 1, thickness: 1, color: Colors.white12),
+            ),
+            ListView.separated(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: clusters.length,
+              separatorBuilder:
+                  (context, index) => const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Divider(
+                      height: 1,
+                      thickness: 1,
+                      color: Colors.white12,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    summaries[index],
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
-                  ),
-                  if (index != clusters.length - 1)
-                    const Divider(height: 24, color: Colors.white30),
-                ],
-              ),
+              itemBuilder: (context, index) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      child: Text(
+                        clusters[index].title,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).primaryColor,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      summaries[index],
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),

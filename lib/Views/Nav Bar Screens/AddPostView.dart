@@ -2,15 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
-
 import 'package:image_picker/image_picker.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_bloc.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_event.dart';
 import 'package:verbatica/model/Post.dart';
-
-// Your PostBloc
 
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({super.key});
@@ -41,14 +38,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     }
     _titleController.dispose();
     _descriptionController.dispose();
-
     super.dispose();
   }
 
-  // final _formKey = GlobalKey<FormState>();
   File? croppedImage;
   String polarity = '';
   File? _trimmedVideo;
+
   Future<void> _pickMedia(bool isVideo) async {
     final pickedFile = await ImagePicker().pickImage(
       source: ImageSource.gallery,
@@ -68,11 +64,27 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     // Validate required fields
     if (_titleController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(
-            "Title is required",
-            style: TextStyle(color: Colors.white),
+        SnackBar(
+          backgroundColor: Colors.red.shade900,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          content: const Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  "Title is required",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -81,22 +93,54 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
     if (polarity == 'polarize' && validClusters.length < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(
-            "At least 2 clusters are required for polarize posts",
-            style: TextStyle(color: Colors.white),
+        SnackBar(
+          backgroundColor: Colors.red.shade900,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          content: const Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  "At least 2 clusters are required for polarize posts",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       );
       return;
     } else if (polarity == '') {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: Colors.red,
-          content: Text(
-            "Select tag of post",
-            style: TextStyle(color: Colors.white),
+        SnackBar(
+          backgroundColor: Colors.red.shade900,
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.all(16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          content: const Row(
+            children: [
+              Icon(Icons.error_outline, color: Colors.white),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  "Select tag of post",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -118,24 +162,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       );
       context.read<PostBloc>().add(SubmitPostEvent(post));
     }
-
-    // // Create post object
-    // final post = Post(
-    //   title: _titleController.text.trim(),
-    //   description: _descriptionController.text.trim(),
-
-    //   polarity: polarity,
-    //   clusters: polarity == 'polarize' ? validClusters : null,
-    //   createdAt: DateTime.now(),
-    // );
-
-    // Here you would typically:
-    // 1. Save to database
-    // 2. Upload media if needed
-    // 3. Navigate away or show success message
-
-    // debugPrint("Post created: ${post.toJson()}");
-    // Example: context.read<PostBloc>().add(SubmitPost(post));
   }
 
   Future<File?> pickAndCropImage(BuildContext context) async {
@@ -164,12 +190,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             statusBarColor: Colors.black,
             backgroundColor: Colors.black,
           ),
-          // IOSUiSettings(
-          //   title: 'Crop Image',
-          //   aspectRatioLockEnabled: true,
-          //   resetButtonHidden: true,
-          //   rotateButtonsHidden: true,
-          // ),
         ],
       );
 
@@ -178,39 +198,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       debugPrint('Image processing error: $e');
       return null;
     }
-    return null;
   }
 
-  // Future<File?> pickAndTrimVideo(BuildContext context) async {
-  //   try {
-  //     // 1. Pick video file
-  //     final result = await FilePicker.platform.pickFiles(
-  //       type: FileType.video,
-  //       allowMultiple: false,
-  //     );
-
-  //     if (result == null || result.files.isEmpty) return null;
-
-  //     final file = File(result.files.single.path!);
-
-  //     // 2. Initialize trimmer
-  //     final Trimmer trimmer = Trimmer();
-  //     await trimmer.loadVideo(videoFile: file);
-
-  //     // 3. Show trimming dialog
-  //     final File? trimmedFile = await showModalBottomSheet<File>(
-  //       context: context,
-  //       isScrollControlled: true,
-  //       builder: (context) => VideoTrimmerBottomSheet(trimmer: trimmer),
-  //     );
-
-  //     trimmer.dispose();
-  //     return trimmedFile;
-  //   } catch (e) {
-  //     debugPrint('Video picker/trimmer error: $e');
-  //     return null;
-  //   }
-  // }
   Future<String?> showPolarizationDialog(BuildContext context) async {
     String? selectedOption;
     bool isPolarized = false;
@@ -221,38 +210,39 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           (context) => AlertDialog(
             title: const Text(
               "Select Type of Post",
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ListTile(
-                  leading: const Icon(Icons.people, color: Colors.blue),
-                  title: const Text("Polarize"),
-                  subtitle: const Text(
-                    "There will be Divided opinion on this post",
-                  ),
+                _buildDialogOption(
+                  icon: Icons.people,
+                  iconColor: Colors.blue,
+                  title: "Polarize",
+
+                  subtitle: "There will be divided opinion on this post",
                   onTap: () {
                     setState(() {
                       polarity = "polarize";
                     });
-
                     isPolarized = true;
                     Navigator.pop(context, selectedOption);
                   },
                 ),
-                const Divider(),
-                ListTile(
-                  leading: const Icon(Icons.person, color: Colors.green),
-                  title: const Text("Non-Polarize"),
-                  subtitle: const Text(
-                    "This is normal feedback/fact checking/advice seeking post",
-                  ),
+                const Divider(height: 24, thickness: 1),
+                _buildDialogOption(
+                  icon: Icons.person,
+                  iconColor: Colors.green,
+                  title: "Non-Polarize",
+                  subtitle:
+                      "This is normal feedback/fact checking/advice seeking post",
                   onTap: () {
                     setState(() {
                       polarity = "non_polarize";
                     });
-
                     isPolarized = false;
                     Navigator.pop(context, selectedOption);
                   },
@@ -271,7 +261,59 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             elevation: 8,
           ),
     );
-  } // Call this when you need the selection
+  }
+
+  Widget _buildDialogOption({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required String subtitle,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: iconColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(icon, color: iconColor),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 
   void _showDialog() async {
     final result = await showPolarizationDialog(context);
@@ -280,13 +322,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       setState(() {
         // _polarizationChoice = result;
       });
-
-      // Or use directly
-      if (result == "polarize") {
-        // Apply polarize effect
-      } else {
-        // Apply non-polarize effect
-      }
     }
   }
 
@@ -298,188 +333,374 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: const Text('Create Post', style: TextStyle(color: Colors.white)),
-
+        elevation: 0,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        title: const Text(
+          'Create Post',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextButton(
-              onPressed: () {
-                _handlePostSubmission();
-              },
-              child: Text('Post', style: TextStyle(fontSize: 20)),
+              onPressed: _handlePostSubmission,
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.blue,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+              ),
+              child: const Text(
+                'Post',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
         ],
       ),
       body: SingleChildScrollView(
-        child: Container(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextField(
-                  controller: _titleController,
-                  style: const TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    hintText: 'Title',
-                    hintStyle: TextStyle(color: Colors.white54),
-                    border: InputBorder.none,
-                  ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Post Card Container
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[900],
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                const Divider(color: Colors.white24),
-                TextField(
-                  controller: _descriptionController,
-                  style: const TextStyle(color: Colors.white),
-                  maxLines: 5,
-                  decoration: const InputDecoration(
-                    hintText: 'Description (optional)',
-                    hintStyle: TextStyle(color: Colors.white54),
-                    border: InputBorder.none,
-                  ),
-                ),
-                // To display the image:
-                if (croppedImage != null)
-                  AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: Image.file(croppedImage!, fit: BoxFit.cover),
-                  ),
-
-                const SizedBox(height: 20),
-                Row(
-                  children: [
-                    _buildAttachmentOption(Icons.photo_library, 'Gallery', 1),
-                    const SizedBox(width: 20),
-                    _buildAttachmentOption(Icons.video_library, 'Video', 2),
-                  ],
-                ),
-                SizedBox(height: 20),
-                SizedBox(
-                  height: 40,
-                  width: 150,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      _showDialog();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 3, 83, 149),
-
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    child: Text(
-                      polarity == '' ? 'tag' : polarity,
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-                // SizedBox(height: 20),
-                // Align(
-                //   alignment: Alignment.bottomRight,
-                //   child:
-                //   ),
-                // ),
-                SizedBox(height: 40),
-                if (polarity == 'polarize')
-                  ////////////////////////////
-                  ///
-                  // The UI Widget
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        "Add Cluster Names",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                      // Title Field
+                      TextField(
+                        controller: _titleController,
+                        style: const TextStyle(
                           color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'Title',
+                          hintStyle: TextStyle(color: Colors.grey[400]),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.zero,
                         ),
                       ),
-                      const SizedBox(height: 10),
-                      const Text(
-                        "Minimum 2 clusters required",
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                      const SizedBox(height: 20),
+                      const Divider(color: Colors.white24, height: 24),
 
-                      // Cluster input fields
-                      ...List.generate(clusterNames.length, (index) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 15),
-                          child: Row(
-                            children: [
-                              Expanded(
-                                child: TextField(
-                                  style: TextStyle(color: Colors.white),
-                                  controller: _controllers[index],
-                                  decoration: InputDecoration(
-                                    labelText: "Cluster ${index + 1}",
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                  onChanged:
-                                      (value) => clusterNames[index] = value,
-                                ),
+                      // Description Field
+                      TextField(
+                        controller: _descriptionController,
+                        style: const TextStyle(color: Colors.white),
+                        maxLines: 5,
+                        decoration: InputDecoration(
+                          hintText: 'Description (optional)',
+                          hintStyle: TextStyle(color: Colors.grey[400]),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                      ),
+
+                      // Image Preview
+                      if (croppedImage != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: AspectRatio(
+                              aspectRatio: 16 / 9,
+                              child: Image.file(
+                                croppedImage!,
+                                fit: BoxFit.cover,
                               ),
-                              if (index >=
-                                  2) // Show remove button only for extra fields
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.remove_circle,
-                                    color: Colors.red,
-                                  ),
-                                  onPressed: () {
-                                    setState(() {
-                                      clusterNames.removeAt(index);
-                                      _controllers.removeAt(index).dispose();
-                                    });
-                                  },
-                                ),
-                            ],
-                          ),
-                        );
-                      }),
-
-                      const SizedBox(height: 10),
-
-                      // Add more clusters button
-                      OutlinedButton(
-                        onPressed: () {
-                          setState(() {
-                            clusterNames.add('');
-                            _controllers.add(TextEditingController());
-                          });
-                        },
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          side: const BorderSide(color: Colors.blue),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.add, color: Colors.blue, size: 20),
-                            SizedBox(width: 5),
-                            Text(
-                              "Add Cluster",
-                              style: TextStyle(color: Colors.blue),
                             ),
-                          ],
+                          ),
                         ),
-                      ),
-
-                      const SizedBox(height: 25),
-
-                      // Submit button
-                      SizedBox(height: 10.h),
                     ],
                   ),
-              ],
-            ),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
+              // Post Options Section
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[900],
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Add Content',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Media Options
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _buildAttachmentOption(
+                              Icons.photo_library,
+                              'Gallery',
+                              1,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _buildAttachmentOption(
+                              Icons.video_library,
+                              'Video',
+                              2,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 24),
+                      const Divider(color: Colors.white24, height: 1),
+                      const SizedBox(height: 24),
+
+                      // Tag Selection
+                      Row(
+                        children: [
+                          const Text(
+                            'Post Type:',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: _showDialog,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor:
+                                    polarity == ''
+                                        ? Colors.grey[800]
+                                        : (polarity == 'polarize'
+                                            ? Colors.blue.withOpacity(0.2)
+                                            : Colors.green.withOpacity(0.2)),
+                                foregroundColor:
+                                    polarity == ''
+                                        ? Colors.white
+                                        : (polarity == 'polarize'
+                                            ? Colors.blue
+                                            : Colors.green),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (polarity != '')
+                                    Icon(
+                                      polarity == 'polarize'
+                                          ? Icons.people
+                                          : Icons.person,
+                                      size: 18,
+                                    ),
+                                  if (polarity != '') const SizedBox(width: 8),
+                                  Text(
+                                    polarity == '' ? 'Select Tag' : polarity,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Polarize Clusters Section
+              if (polarity == 'polarize')
+                Padding(
+                  padding: const EdgeInsets.only(top: 24.0),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.grey[900],
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.blue.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.people,
+                                color: Colors.blue,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              const Text(
+                                "Add Cluster Names",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              const Spacer(),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: const Text(
+                                  "Min. 2 required",
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Cluster input fields
+                          ...List.generate(clusterNames.length, (index) {
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 12,
+                                    backgroundColor: Colors.blue.withOpacity(
+                                      0.2,
+                                    ),
+                                    child: Text(
+                                      "${index + 1}",
+                                      style: const TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: TextField(
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                      ),
+                                      controller: _controllers[index],
+                                      decoration: InputDecoration(
+                                        hintText: "Enter cluster name",
+                                        hintStyle: TextStyle(
+                                          color: Colors.grey[500],
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 16,
+                                              vertical: 12,
+                                            ),
+                                        filled: true,
+                                        fillColor: Colors.grey[800],
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                          borderSide: BorderSide.none,
+                                        ),
+                                      ),
+                                      onChanged:
+                                          (value) =>
+                                              clusterNames[index] = value,
+                                    ),
+                                  ),
+                                  if (index >=
+                                      2) // Show remove button only for extra fields
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 8.0),
+                                      child: IconButton(
+                                        icon: const Icon(
+                                          Icons.remove_circle,
+                                          color: Colors.red,
+                                          size: 22,
+                                        ),
+                                        onPressed: () {
+                                          setState(() {
+                                            clusterNames.removeAt(index);
+                                            _controllers
+                                                .removeAt(index)
+                                                .dispose();
+                                          });
+                                        },
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            );
+                          }),
+
+                          const SizedBox(height: 16),
+
+                          // Add more clusters button
+                          Center(
+                            child: TextButton.icon(
+                              onPressed: () {
+                                setState(() {
+                                  clusterNames.add('');
+                                  _controllers.add(TextEditingController());
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.add_circle_outline,
+                                size: 18,
+                              ),
+                              label: const Text("Add Another Cluster"),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.blue,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+              SizedBox(height: 10.h),
+            ],
           ),
         ),
       ),
@@ -493,15 +714,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     });
   }
 
-  // void _pickVideo() async {
-  //   final video = await pickAndTrimVideo(context);
-  //   if (video != null) {
-  //     setState(() => _trimmedVideo = video);
-  //   }
-  // }
-
   Widget _buildAttachmentOption(IconData icon, String label, int formatid) {
-    return GestureDetector(
+    return InkWell(
       onTap: () {
         if (formatid == 1) {
           _pickAndCropImage();
@@ -509,24 +723,31 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           // _pickVideo();
         }
       },
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.grey[900],
-              borderRadius: BorderRadius.circular(10),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        decoration: BoxDecoration(
+          color: Colors.grey[800],
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey[700]!, width: 1),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: Colors.white, size: 28),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-            child: Icon(icon, color: Colors.white),
-          ),
-          const SizedBox(height: 5),
-          Text(label, style: const TextStyle(color: Colors.white)),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
-
 // class VideoTrimmerBottomSheet extends StatefulWidget {
 //   final Trimmer trimmer;
 
