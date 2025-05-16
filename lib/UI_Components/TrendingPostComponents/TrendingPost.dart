@@ -6,22 +6,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
-import 'package:verbatica/BLOC/Home/home_bloc.dart';
+import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
 import 'package:verbatica/Utilities/Color.dart';
-import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/otherprofile.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Trending%20View%20Screens/TrendingViewDiscussion.dart';
 import 'package:verbatica/Views/clusterScreen.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class PostWidget extends StatelessWidget {
+class TrendingPostWidget extends StatelessWidget {
   final Post post;
   final int index;
   final String category;
   final bool onFullView;
 
-  const PostWidget({
+  const TrendingPostWidget({
     required this.post,
     super.key,
     required this.index,
@@ -104,7 +104,7 @@ class PostWidget extends StatelessWidget {
                           icon: Icon(Icons.more_vert),
                           onSelected: (String value) {
                             if (value == "report") {
-                              context.read<HomeBloc>().add(
+                              context.read<TrendingViewBloc>().add(
                                 ReportPost(
                                   index: index,
                                   category: category,
@@ -112,11 +112,11 @@ class PostWidget extends StatelessWidget {
                                 ),
                               );
                             } else if (value == "save") {
-                              context.read<HomeBloc>().add(
+                              context.read<TrendingViewBloc>().add(
                                 SavePost(post: post),
                               );
                             } else if (value == "share") {
-                              context.read<HomeBloc>().add(
+                              context.read<TrendingViewBloc>().add(
                                 SharePost(post: post),
                               );
                             }
@@ -255,15 +255,15 @@ class PostWidget extends StatelessWidget {
                         pageTransitionAnimation: PageTransitionAnimation.scale,
                         screen: MultiBlocProvider(
                           providers: [
-                            BlocProvider<HomeBloc>.value(
+                            BlocProvider<TrendingViewBloc>.value(
                               value:
                                   context
                                       .read<
-                                        HomeBloc
+                                        TrendingViewBloc
                                       >(), // Passing existing bloc
                             ),
                           ],
-                          child: ViewDiscussion(
+                          child: TrendingViewDiscussion(
                             post: post,
                             index: index,
                             category: category,
@@ -291,19 +291,18 @@ class PostWidget extends StatelessWidget {
                             horizontal: 0.5.w,
                             vertical: 0.5.w,
                           ),
-                          child: BlocBuilder<HomeBloc, HomeState>(
+                          child: BlocBuilder<
+                            TrendingViewBloc,
+                            TrendingViewState
+                          >(
                             builder: (context, state) {
                               Post dynamicpost;
-                              if (category == 'ForYou') {
-                                dynamicpost = state.forYou[index];
-                              } else {
-                                dynamicpost = state.following[index];
-                              }
+                              dynamicpost = state.trending[index];
                               return Row(
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      context.read<HomeBloc>().add(
+                                      context.read<TrendingViewBloc>().add(
                                         UpVotePost(
                                           index: index,
                                           category: category,
@@ -343,13 +342,12 @@ class PostWidget extends StatelessWidget {
                                     height: 6.h,
                                     color: Color.fromARGB(255, 70, 79, 87),
                                   ),
-
                                   IconButton(
                                     splashColor: Colors.transparent,
                                     highlightColor: Colors.transparent,
 
                                     onPressed: () {
-                                      context.read<HomeBloc>().add(
+                                      context.read<TrendingViewBloc>().add(
                                         DownVotePost(
                                           index: index,
                                           category: category,
@@ -399,13 +397,17 @@ class PostWidget extends StatelessWidget {
                                             PageTransitionAnimation.scale,
                                         screen: MultiBlocProvider(
                                           providers: [
-                                            BlocProvider<HomeBloc>(
-                                              create:
-                                                  (_) =>
-                                                      context.read<HomeBloc>(),
+                                            BlocProvider<
+                                              TrendingViewBloc
+                                            >.value(
+                                              value:
+                                                  context
+                                                      .read<
+                                                        TrendingViewBloc
+                                                      >(), // Passing existing bloc
                                             ),
                                           ],
-                                          child: ViewDiscussion(
+                                          child: TrendingViewDiscussion(
                                             post: post,
                                             index: index,
                                             category: category,

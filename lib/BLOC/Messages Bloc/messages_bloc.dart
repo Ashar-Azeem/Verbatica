@@ -35,10 +35,18 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     Emitter<MessagesState> emit,
   ) async {
     //webSocket using chatId
-
+    List<Message> allMessages = [];
     Future.delayed(Duration(seconds: 2));
-    List<Message> allMessages = messagesBetween1And2;
-    List<Message> subMessages = allMessages.sublist(allMessages.length - 12);
+    if (event.chat.chatId == "chat_0") {
+      allMessages = messagesBetween1And2;
+    } else if (event.chat.chatId == "chat_1") {
+      allMessages = messagesBetween1And3;
+    }
+    List<Message> subMessages =
+        allMessages.length > 12
+            ? allMessages.sublist(allMessages.length - 12)
+            : List.from(allMessages);
+
     //initializing chat controller
     String userId = event.userId;
     OtherUserInfo otherUser = event.chat.getOtherUserInfo(userId);
@@ -62,10 +70,20 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
       ],
     );
 
+    // Logic to update the seen status when last message of the other user appears
+    Message? lastMessage;
+    for (int i = subMessages.length - 1; i >= 0; i--) {
+      if (subMessages[i].id != event.userId) {
+        lastMessage = subMessages[i];
+        //Also add the logic for updating the seen status for the other user using an api
+        break;
+      }
+    }
+
     emit(
       state.copyWith(
+        lastMessage: lastMessage,
         state: ChatViewState.hasMessages,
-        messages: subMessages,
         isLast: false,
         controller: chatController,
       ),
@@ -77,7 +95,12 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   }
 
   fetchMoreMessages(FetchMoreMessages event, Emitter<MessagesState> emit) {
-    List<Message> allMessages = messagesBetween1And2;
+    List<Message> allMessages = [];
+    if (event.chatId == "chat_0") {
+      allMessages = messagesBetween1And2;
+    } else if (event.chatId == "chat_1") {
+      allMessages = messagesBetween1And3;
+    }
     List<Message> subMessages = [];
     for (Message message in allMessages) {
       if (!state.controller!.initialMessageList.contains(message)) {
@@ -85,8 +108,19 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
       }
     }
 
+    // Logic to update the seen status when last message of the other user appears
+    Message? lastMessage;
+    for (int i = subMessages.length - 1; i >= 0; i--) {
+      if (subMessages[i].id != event.userId) {
+        lastMessage = subMessages[i];
+        break;
+      }
+    }
+
     //Never ever add redundant messages here or else it would break the whole UI
     state.controller!.loadMoreData(subMessages);
+
+    emit(state.copyWith(lastMessage: lastMessage));
   }
 
   removeReplyBar(RemoveReplyBar event, Emitter<MessagesState> emit) {
@@ -105,7 +139,5 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
       reactions: [event.emoji],
       reactedUserIds: [event.userId],
     );
-
-    print(newMessage.reaction.reactions);
   }
 }

@@ -40,7 +40,6 @@ class _MessageViewState extends State<MessageView> {
 
   @override
   void dispose() {
-    scrollController.dispose();
     messagesBloc.close();
     super.dispose();
   }
@@ -99,7 +98,9 @@ class _MessageViewState extends State<MessageView> {
                       }
                     },
                     loadMoreData: () async {
-                      context.read<MessagesBloc>().add(FetchMoreMessages());
+                      context.read<MessagesBloc>().add(
+                        FetchMoreMessages(userId: userId, chatId: chat.chatId),
+                      );
                     },
                     repliedMessageConfig: RepliedMessageConfiguration(
                       repliedMsgAutoScrollConfig: RepliedMsgAutoScrollConfig(
@@ -213,10 +214,12 @@ class _MessageViewState extends State<MessageView> {
                       outgoingChatBubbleConfig: ChatBubble(color: primaryColor),
                       inComingChatBubbleConfig: ChatBubble(
                         onMessageRead: (message) {
-                          message.setStatus = MessageStatus.read;
-                          context.read<ChatBloc>().add(
-                            SeenStatus(userId: userId, chatId: chat.chatId),
-                          );
+                          if (message.id == state.lastMessage!.id) {
+                            message.setStatus = MessageStatus.read;
+                            context.read<ChatBloc>().add(
+                              SeenStatus(userId: userId, chatId: chat.chatId),
+                            );
+                          }
                         },
                       ),
                       padding: EdgeInsets.symmetric(vertical: 1.5.w),

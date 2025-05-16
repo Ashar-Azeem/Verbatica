@@ -112,6 +112,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         isDebate: polarity == 'polarize',
         upvotes: 0,
         downvotes: 0,
+        isUpVote: false,
+        isDownVote: false,
         comments: 0,
         uploadTime: DateTime.now(),
         id: '999',

@@ -49,11 +49,19 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     List<Chat> chats = List.from(state.chats);
     for (Chat chat in chats) {
       if (chat.chatId == event.chatId) {
-        chat.lastMessageSeenBy[event.userId] = true;
+        Map<String, bool> seenBy = Map.from(chat.lastMessageSeenBy);
+        seenBy[event.userId] = true;
+        chats[chats.indexOf(chat)] = chat.copyWith(lastMessageSeenBy: seenBy);
         break;
       }
     }
+    bool isUnRead = false;
+    for (Chat chat in chats) {
+      if (!chat.lastMessageSeenBy[event.userId]!) {
+        isUnRead = true;
+      }
+    }
 
-    emit(state.copyWith(chats: chats, isAnyUnread: false));
+    emit(state.copyWith(chats: chats, isAnyUnread: isUnRead));
   }
 }

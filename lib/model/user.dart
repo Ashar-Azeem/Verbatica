@@ -10,8 +10,6 @@ class User extends Equatable {
   final String country;
   final String? about;
   final int avatarId;
-  final List<String> upVotedPosts;
-  final List<String> downVotedPosts;
 
   const User({
     required this.userId,
@@ -21,9 +19,6 @@ class User extends Equatable {
     required this.following,
     required this.joinedDate,
     required this.country,
-    required this.upVotedPosts,
-    required this.downVotedPosts,
-
     this.about,
     required this.avatarId,
   });
@@ -37,8 +32,7 @@ class User extends Equatable {
       'followers': followers,
       'following': following,
       'joinedDate': joinedDate.toIso8601String(),
-      'upVotedPosts': upVotedPosts,
-      'downVotedPosts': downVotedPosts,
+
       'userId': userId,
       'about': about,
       'avatarUrl': avatarId,
@@ -54,8 +48,7 @@ class User extends Equatable {
       followers: json['followers'] as int,
       following: json['following'] as int,
       joinedDate: DateTime.parse(json['joinedDate'] as String),
-      upVotedPosts: json['upVotedPosts'] ?? [],
-      downVotedPosts: json['downVotedPosts'] ?? [],
+
       userId: json['userId'] as String,
       about: json['about'] as String?,
       avatarId: json['avatarId'] as int,
@@ -74,8 +67,6 @@ class User extends Equatable {
     String? about,
     int? avatarUrl,
     String? userId,
-    List<String>? upVotedPosts,
-    List<String>? downVotedPosts,
 
     String? country,
   }) {
@@ -86,8 +77,6 @@ class User extends Equatable {
       followers: followers ?? this.followers,
       following: following ?? this.following,
       joinedDate: joinedDate ?? this.joinedDate,
-      upVotedPosts: upVotedPosts ?? this.upVotedPosts,
-      downVotedPosts: downVotedPosts ?? this.downVotedPosts,
       userId: userId ?? this.userId,
       about: about ?? this.about,
       avatarId: avatarUrl ?? avatarId,
@@ -102,8 +91,6 @@ class User extends Equatable {
     followers,
     following,
     joinedDate,
-    upVotedPosts,
-    downVotedPosts,
     about,
     avatarId,
     userId,

@@ -27,6 +27,8 @@ class Post extends Equatable {
   final String? postVideoLink;
   final bool isDebate;
   final int upvotes;
+  final bool isUpVote;
+  final bool isDownVote;
   final int downvotes;
   final int comments;
   final DateTime uploadTime;
@@ -39,6 +41,8 @@ class Post extends Equatable {
     required this.avatar,
     required this.title,
     required this.description,
+    required this.isDownVote,
+    required this.isUpVote,
     this.postImageLink,
     this.postVideoLink,
     required this.isDebate,
@@ -61,6 +65,8 @@ class Post extends Equatable {
       'isDebate': isDebate,
       'upVote': upvotes,
       'downVotes': downvotes,
+      'isUpVote': isUpVote,
+      'isDownVotes': isDownVote,
       'comments': comments,
       'uploadTime': uploadTime.toIso8601String(),
     };
@@ -78,6 +84,9 @@ class Post extends Equatable {
       postVideoLink: json['postVideoLink'],
       isDebate: json['isDebate'] ?? false,
       upvotes: json['upVote'] ?? 0,
+      isUpVote: json['isUpVote'],
+      isDownVote: json['isDownVote'],
+
       downvotes: json['downVotes'] ?? 0,
       comments: json['comments'] ?? 0,
       uploadTime: DateTime.parse(json['uploadTime']),
@@ -96,6 +105,8 @@ class Post extends Equatable {
     bool? isDebate,
     int? upvotes,
     int? downvotes,
+    bool? isUpVote,
+    bool? isDownVote,
     int? comments,
     DateTime? uploadTime,
   }) {
@@ -110,6 +121,8 @@ class Post extends Equatable {
       isDebate: isDebate ?? this.isDebate,
       upvotes: upvotes ?? this.upvotes,
       downvotes: downvotes ?? this.downvotes,
+      isDownVote: isDownVote ?? this.isDownVote,
+      isUpVote: isUpVote ?? this.isUpVote,
       comments: comments ?? this.comments,
       uploadTime: uploadTime ?? this.uploadTime,
     );
@@ -129,5 +142,7 @@ class Post extends Equatable {
     downvotes,
     comments,
     uploadTime,
+    isUpVote,
+    isDownVote,
   ];
 }

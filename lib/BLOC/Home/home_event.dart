@@ -26,25 +26,15 @@ class FetchBottomFollowingPosts extends HomeEvent {
 class UpVotePost extends HomeEvent {
   final int index;
   final String category;
-  final int incrementBy;
 
-  const UpVotePost({
-    required this.index,
-    required this.category,
-    required this.incrementBy,
-  });
+  const UpVotePost({required this.index, required this.category});
 }
 
 class DownVotePost extends HomeEvent {
   final int index;
   final String category;
-  final int decrementBy;
 
-  const DownVotePost({
-    required this.index,
-    required this.category,
-    required this.decrementBy,
-  });
+  const DownVotePost({required this.index, required this.category});
 }
 
 class ReportPost extends HomeEvent {

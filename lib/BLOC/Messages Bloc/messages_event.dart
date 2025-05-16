@@ -20,7 +20,9 @@ class FetchInitialMessages extends MessagesEvent {
 }
 
 class FetchMoreMessages extends MessagesEvent {
-  const FetchMoreMessages();
+  final String userId;
+  final String chatId;
+  const FetchMoreMessages({required this.userId, required this.chatId});
 }
 
 class AddReplyBar extends MessagesEvent {

@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
+import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/comments_cluster/comment_cluster_bloc.dart';
@@ -34,6 +35,7 @@ void main() async {
           create: (context) => CommentClusterBloc(),
         ),
         BlocProvider(create: (context) => ChatBloc()),
+        BlocProvider(create: (context) => TrendingViewBloc()),
       ],
       child: Sizer(
         builder: (context, orientation, screenType) {

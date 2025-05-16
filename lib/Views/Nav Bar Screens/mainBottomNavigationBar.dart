@@ -11,7 +11,7 @@ import 'package:verbatica/Views/Nav%20Bar%20Screens/AddPostView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/HomeView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/NotificationView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/ProfileView.dart';
-import 'package:verbatica/Views/Nav%20Bar%20Screens/TrendingView.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Trending%20View%20Screens/TrendingView.dart';
 
 class BottomNavigationBarView extends StatefulWidget {
   const BottomNavigationBarView({super.key});

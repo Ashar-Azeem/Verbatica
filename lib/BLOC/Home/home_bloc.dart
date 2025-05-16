@@ -58,37 +58,81 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   ) {}
   upVotePost(UpVotePost event, Emitter<HomeState> emit) {
     if (event.category == "ForYou") {
-      final updatedPost = state.forYou[event.index].copyWith(
-        upvotes: state.forYou[event.index].upvotes + event.incrementBy,
-      );
-      final newForYou = List<Post>.from(state.forYou);
-      newForYou[event.index] = updatedPost;
-      emit(state.copyWith(forYou: newForYou));
+      List<Post> posts = List.from(state.forYou);
+      if (!posts[event.index].isUpVote) {
+        if (posts[event.index].isDownVote) {
+          posts[event.index] = posts[event.index].copyWith(
+            isDownVote: false,
+            isUpVote: true,
+            upvotes: posts[event.index].upvotes + 2,
+          );
+          emit(state.copyWith(forYou: posts));
+        } else {
+          posts[event.index] = posts[event.index].copyWith(
+            isUpVote: true,
+            upvotes: posts[event.index].upvotes + 1,
+          );
+          emit(state.copyWith(forYou: posts));
+        }
+      }
     } else {
-      final updatedPost = state.following[event.index].copyWith(
-        upvotes: state.following[event.index].upvotes + event.incrementBy,
-      );
-      final newFollowing = List<Post>.from(state.following);
-      newFollowing[event.index] = updatedPost;
-      emit(state.copyWith(following: newFollowing));
+      List<Post> posts = List.from(state.following);
+      if (!posts[event.index].isUpVote) {
+        if (posts[event.index].isDownVote) {
+          posts[event.index] = posts[event.index].copyWith(
+            isDownVote: false,
+            isUpVote: true,
+            upvotes: posts[event.index].upvotes + 2,
+          );
+          emit(state.copyWith(following: posts));
+        } else {
+          posts[event.index] = posts[event.index].copyWith(
+            isUpVote: true,
+            upvotes: posts[event.index].upvotes + 1,
+          );
+          emit(state.copyWith(following: posts));
+        }
+      }
     }
   }
 
   downVotePost(DownVotePost event, Emitter<HomeState> emit) {
     if (event.category == "ForYou") {
-      final updatedPost = state.forYou[event.index].copyWith(
-        upvotes: state.forYou[event.index].upvotes - event.decrementBy,
-      );
-      final newForYou = List<Post>.from(state.forYou);
-      newForYou[event.index] = updatedPost;
-      emit(state.copyWith(forYou: newForYou));
+      List<Post> posts = List.from(state.forYou);
+      if (!posts[event.index].isDownVote) {
+        if (posts[event.index].isUpVote) {
+          posts[event.index] = posts[event.index].copyWith(
+            isDownVote: true,
+            isUpVote: false,
+            downvotes: posts[event.index].downvotes + 2,
+          );
+          emit(state.copyWith(forYou: posts));
+        } else {
+          posts[event.index] = posts[event.index].copyWith(
+            isDownVote: true,
+            downvotes: posts[event.index].downvotes + 1,
+          );
+          emit(state.copyWith(forYou: posts));
+        }
+      }
     } else {
-      final updatedPost = state.following[event.index].copyWith(
-        upvotes: state.following[event.index].upvotes - event.decrementBy,
-      );
-      final newFollowing = List<Post>.from(state.following);
-      newFollowing[event.index] = updatedPost;
-      emit(state.copyWith(following: newFollowing));
+      List<Post> posts = List.from(state.following);
+      if (!posts[event.index].isDownVote) {
+        if (posts[event.index].isUpVote) {
+          posts[event.index] = posts[event.index].copyWith(
+            isDownVote: true,
+            isUpVote: false,
+            downvotes: posts[event.index].downvotes + 2,
+          );
+          emit(state.copyWith(following: posts));
+        } else {
+          posts[event.index] = posts[event.index].copyWith(
+            isDownVote: true,
+            downvotes: posts[event.index].downvotes + 1,
+          );
+          emit(state.copyWith(following: posts));
+        }
+      }
     }
   }
 
