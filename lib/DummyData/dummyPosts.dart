@@ -25,7 +25,7 @@ List<Post> forYouPosts = [
   Post(
     id: '1',
     name: 'Tech News',
-    avatar: 1,
+    avatar: 4,
     title: 'New Smartphone Released',
     description:
         'The latest flagship phone with revolutionary camera technology has been unveiled today.',
@@ -57,7 +57,7 @@ List<Post> forYouPosts = [
   Post(
     id: '3',
     name: 'Debate Master',
-    avatar: 1,
+    avatar: 2,
     title: 'Android vs iOS: Which is better?',
     description:
         'Let\'s settle this debate once and for all. Share your thoughts below!',
@@ -91,7 +91,7 @@ List<Post> forYouPosts = [
   Post(
     id: '5',
     name: 'Fitness Coach',
-    avatar: 1,
+    avatar: 7,
     title: 'Morning Workout Routine',
     description: 'Start your day right with these 5 simple exercises...',
     postImageLink: 'https://picsum.photos/500/300?random=4',
@@ -109,7 +109,7 @@ List<Post> followingPosts = [
   Post(
     id: '101',
     name: 'Sarah Johnson',
-    avatar: 1,
+    avatar: 6,
     title: 'My New Art Project',
     description:
         'After months of work, finally revealed my latest painting series!',
@@ -126,7 +126,7 @@ List<Post> followingPosts = [
   Post(
     id: '102',
     name: 'Mike Chen',
-    avatar: 1,
+    avatar: 5,
     title: 'Tech Startup Update',
     description:
         'We just secured our Series A funding! Big things coming soon.',
@@ -141,7 +141,7 @@ List<Post> followingPosts = [
   Post(
     id: '103',
     name: 'Alex Taylor',
-    avatar: 1,
+    avatar: 4,
     title: 'Should remote work be the default?',
     description:
         'With offices reopening, let\'s discuss the future of work arrangements',
@@ -157,7 +157,7 @@ List<Post> followingPosts = [
   Post(
     id: '104',
     name: 'David Kim',
-    avatar: 1,
+    avatar: 3,
     title: 'Guitar Cover - Latest Pop Hit',
     description: 'Tried my hand at covering this week\'s #1 song',
     postVideoLink:
@@ -189,7 +189,7 @@ List<Post> followingPosts = [
   Post(
     id: '106',
     name: 'James Rodriguez',
-    avatar: 1,
+    avatar: 2,
     title: 'Photography Tips',
     description: '5 composition techniques that improved my photos instantly',
     postImageLink: 'https://picsum.photos/500/300?random=106',

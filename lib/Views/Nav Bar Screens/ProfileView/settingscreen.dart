@@ -8,65 +8,167 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: const Text(
+          'Settings',
+          style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5),
+        ),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? Color(0xFF1A237E)
+                : Colors.white,
+        foregroundColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.white
+                : Color(0xFF1A237E),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'GENERAL',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ),
-
-            _buildSettingsItem(context, 'Explore Saved posts'),
-            _buildSettingsItem(context, 'Explore Report feedback'),
-            Divider(height: 1),
-
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'PREFERENCES',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ),
-            _buildSettingsItem(context, 'Reset content preferences'),
-            _buildSettingsItem(context, 'Reset password'),
-            _buildSettingsItem(context, 'Dark mode'),
-            Divider(height: 1),
-
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                'ACCOUNT',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ),
-
-            _buildSettingsItem(context, 'About us'),
-            _buildSettingsItem(context, 'Privacy Policy'),
-            _buildSettingsItem(context, 'Logout'),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
         ),
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildSectionHeader(context, 'GENERAL'),
+                _buildSettingsSection(context, [
+                  _buildSettingData(
+                    title: 'Explore Saved posts',
+                    icon: Icons.bookmark_outline,
+                    iconColor: Colors.blue,
+                  ),
+                  _buildSettingData(
+                    title: 'Explore Report feedback',
+                    icon: Icons.flag_outlined,
+                    iconColor: Colors.orange,
+                  ),
+                ]),
+
+                _buildSectionHeader(context, 'PREFERENCES'),
+                _buildSettingsSection(context, [
+                  _buildSettingData(
+                    title: 'Reset content preferences',
+                    icon: Icons.restart_alt_outlined,
+                    iconColor: Colors.green,
+                  ),
+                  _buildSettingData(
+                    title: 'Reset password',
+                    icon: Icons.lock_outline,
+                    iconColor: Colors.purple,
+                  ),
+                  _buildSettingData(
+                    title: 'Dark mode',
+                    icon: Icons.dark_mode_outlined,
+                    iconColor: Colors.indigo,
+                    trailing: Switch(
+                      value: Theme.of(context).brightness == Brightness.dark,
+                      onChanged: (val) {
+                        // Toggle theme would go here if implemented
+                      },
+                      activeColor: Colors.blue,
+                    ),
+                  ),
+                ]),
+
+                _buildSectionHeader(context, 'ACCOUNT'),
+                _buildSettingsSection(context, [
+                  _buildSettingData(
+                    title: 'About us',
+                    icon: Icons.info_outline,
+                    iconColor: Colors.blue,
+                  ),
+                  _buildSettingData(
+                    title: 'Privacy Policy',
+                    icon: Icons.privacy_tip_outlined,
+                    iconColor: Colors.teal,
+                  ),
+                  _buildSettingData(
+                    title: 'Logout',
+                    icon: Icons.logout,
+                    iconColor: Colors.red,
+                  ),
+                ]),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 24, 16, 8),
+      child: Row(
+        children: [
+          Container(
+            width: 4,
+            height: 18,
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor,
+              borderRadius: BorderRadius.circular(4),
+            ),
+          ),
+          SizedBox(width: 8),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingsSection(BuildContext context, List<SettingData> items) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: List.generate(items.length, (index) {
+          final item = items[index];
+          return Column(
+            children: [
+              _buildSettingsItem(
+                context,
+                item.title,
+                icon: item.icon,
+                iconColor: item.iconColor,
+                trailing: item.trailing,
+              ),
+              if (index < items.length - 1)
+                Padding(
+                  padding: const EdgeInsets.only(left: 56, right: 16),
+                  child: Divider(height: 1, thickness: 0.5),
+                ),
+            ],
+          );
+        }),
       ),
     );
   }
@@ -74,14 +176,51 @@ class SettingsScreen extends StatelessWidget {
   Widget _buildSettingsItem(
     BuildContext context,
     String title, {
+    IconData? icon,
+    Color? iconColor,
     Widget? trailing,
   }) {
+    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final bool isLogout = title == 'Logout';
+
     return ListTile(
-      title: Text(title),
+      contentPadding: EdgeInsets.symmetric(vertical: 6, horizontal: 16),
+      leading: Container(
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: (iconColor ?? Theme.of(context).primaryColor).withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(
+          icon ?? Icons.settings,
+          color: iconColor ?? Theme.of(context).primaryColor,
+          size: 22,
+        ),
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color:
+              isLogout
+                  ? Colors.red
+                  : isDarkMode
+                  ? Colors.white
+                  : Colors.black87,
+        ),
+      ),
       trailing: Container(
         constraints: BoxConstraints(maxWidth: 100),
-        child: trailing ?? Icon(Icons.chevron_right, color: Colors.grey),
+        child:
+            trailing ??
+            Icon(
+              Icons.chevron_right,
+              color: Colors.grey.withOpacity(0.7),
+              size: 22,
+            ),
       ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       onTap: () {
         switch (title) {
           case 'Logout':
@@ -97,4 +236,34 @@ class SettingsScreen extends StatelessWidget {
       },
     );
   }
+}
+
+// Helper class to store setting data
+class SettingData {
+  final String title;
+  final IconData icon;
+  final Color iconColor;
+  final Widget? trailing;
+
+  SettingData({
+    required this.title,
+    required this.icon,
+    required this.iconColor,
+    this.trailing,
+  });
+}
+
+// Helper method to create setting data
+SettingData _buildSettingData({
+  required String title,
+  required IconData icon,
+  required Color iconColor,
+  Widget? trailing,
+}) {
+  return SettingData(
+    title: title,
+    icon: icon,
+    iconColor: iconColor,
+    trailing: trailing,
+  );
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/comments_cluster/comment_cluster_bloc.dart';
 import 'package:verbatica/UI_Components/singlecomment.dart';
+import 'package:verbatica/Views/chartanalytics.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/comment.dart';
 
@@ -9,7 +10,6 @@ class Clusterscreen extends StatefulWidget {
   const Clusterscreen({
     required this.postid,
     required this.clusters,
-    // Add comments parameter
     super.key,
   });
   final String postid;
@@ -40,87 +40,199 @@ class _ClusterscreenState extends State<Clusterscreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
-        title: Text('Discussion Detail'),
-        centerTitle: true,
-        bottom: TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          tabs:
-              widget.clusters
-                  .map((cluster) => Tab(text: cluster.title))
-                  .toList(),
+        elevation: 0,
+        title: Text(
+          'Discussion Detail',
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            letterSpacing: 0.3,
+          ),
         ),
+        backgroundColor: const Color.fromARGB(
+          255,
+          67,
+          118,
+          138,
+        ).withOpacity(0.6),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios_new, size: 20),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) =>
+                          ChartsAnalyticsScreen(clusters: widget.clusters),
+                ),
+              );
+            },
+            icon: const Icon(Icons.bar_chart, size: 22),
+            tooltip: 'View Analytics',
+          ),
+        ],
+        centerTitle: true,
       ),
-      body: BlocBuilder<CommentClusterBloc, CommentClusterState>(
-        builder: (context, state) {
-          return TabBarView(
-            controller: _tabController,
-            children:
-                widget.clusters.map((cluster) {
-                  final clusterComments = state.comments;
-
-                  return Stack(
-                    children: [
-                      ListView.builder(
-                        padding: EdgeInsets.only(bottom: 80),
-                        itemCount: clusterComments.length,
-                        itemBuilder: (context, index) {
-                          final comment = clusterComments[index];
-
-                          Comment? parentComment;
-                          if (comment.parentId != null) {
-                            try {
-                              parentComment = clusterComments.firstWhere(
-                                (c) => c.id == comment.parentId,
-                              );
-                            } catch (e) {
-                              parentComment =
-                                  null; // Or handle missing parent differently
-                            }
-                          }
-                          return SingleCommentUI(
-                            comment: comment,
-                            parentComment: parentComment,
-                          );
-                        },
-                      ),
-
-                      Positioned(
-                        bottom: 20,
-                        right: 20,
-                        child: FloatingActionButton(
-                          onPressed: () => _showClusterGraph(cluster),
-                          backgroundColor: Colors.grey[300],
-                          child: const Icon(
-                            Icons.bar_chart,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                }).toList(),
-          );
-        },
+      body: Column(
+        children: [_buildTabBar(), Expanded(child: _buildCommentsList())],
       ),
     );
   }
 
-  void _showClusterGraph(Cluster cluster) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text('Graph for ${cluster.title}'),
-            content: const Text('Graph visualization would appear here'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Close'),
-              ),
-            ],
+  Widget _buildTabBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: const Color.fromARGB(255, 67, 118, 138).withOpacity(0.6),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
           ),
+        ],
+      ),
+      child: TabBar(
+        controller: _tabController,
+        isScrollable: true,
+        indicatorColor: Theme.of(context).primaryColor,
+        indicatorWeight: 3,
+        labelColor: Colors.white,
+        unselectedLabelColor: Colors.white.withOpacity(0.6),
+        labelStyle: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+          letterSpacing: 0.5,
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.w400,
+          fontSize: 14,
+        ),
+        tabs:
+            widget.clusters
+                .map(
+                  (cluster) => Tab(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(cluster.title),
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Theme.of(
+                                context,
+                              ).primaryColor.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              '13', //we will write logic of number of comments for each cluster later , for dummy here 13 is written
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+      ),
+    );
+  }
+
+  Widget _buildCommentsList() {
+    return BlocBuilder<CommentClusterBloc, CommentClusterState>(
+      builder: (context, state) {
+        return TabBarView(
+          controller: _tabController,
+          children:
+              widget.clusters.map((cluster) {
+                final clusterComments = state.comments;
+
+                if (clusterComments.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.chat_bubble_outline,
+                          size: 64,
+                          color: Colors.grey[700],
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No comments in this cluster yet',
+                          style: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        ElevatedButton.icon(
+                          onPressed: () {},
+                          icon: const Icon(Icons.add_comment),
+                          label: const Text('Add First Comment'),
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 10,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return Scrollbar(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(
+                      left: 12,
+                      right: 12,
+                      top: 16,
+                      bottom: 80,
+                    ),
+                    itemCount: clusterComments.length,
+                    itemBuilder: (context, index) {
+                      final comment = clusterComments[index];
+                      Comment? parentComment;
+
+                      if (comment.parentId != null) {
+                        try {
+                          parentComment = clusterComments.firstWhere(
+                            (c) => c.id == comment.parentId,
+                          );
+                        } catch (e) {
+                          parentComment = null;
+                        }
+                      }
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: SingleCommentUI(
+                          comment: comment,
+                          parentComment: parentComment,
+                        ),
+                      );
+                    },
+                  ),
+                );
+              }).toList(),
+        );
+      },
     );
   }
 }

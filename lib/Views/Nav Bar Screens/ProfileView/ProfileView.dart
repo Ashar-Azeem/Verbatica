@@ -35,36 +35,38 @@ class _ProfileViewState extends State<ProfileView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      body: Stack(
         children: [
+          // Gradient Background
           Container(
+            height: 35.0.h,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Color.fromARGB(255, 3, 49, 119),
-                  Colors.black, // Deep Blue
+                  Color(0xFF1A237E), // Deeper indigo
+                  Color(0xFF0D47A1), // Royal blue
                 ],
+                stops: [0.4, 1.0],
               ),
             ),
-            child: Padding(
-              padding: EdgeInsets.only(
-                top: 5.0.h,
-                right: 3.0.h, // This will now work
-                left: 3.0.h, // Add left for symmetry
-              ),
-              child: SizedBox(
-                width:
-                    MediaQuery.of(context).size.width - 40, // Constrain width
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Spacer(),
-                        IconButton(
+          ),
+
+          // Main Content
+          SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Top Section with Avatar and Info
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 4.0.w),
+                  child: Column(
+                    children: [
+                      // Settings Button
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: IconButton(
                           onPressed: () {
                             pushScreen(
                               context,
@@ -72,166 +74,359 @@ class _ProfileViewState extends State<ProfileView>
                               withNavBar: false,
                             );
                           },
-                          icon: Icon(Icons.settings),
-                        ),
-                      ],
-                    ),
-                    BlocBuilder<UserBloc, UserState>(
-                      builder: (context, state) {
-                        return CircleAvatar(
-                          radius: 5.0.h,
-                          backgroundImage: AssetImage(
-                            'assets/Avatars/avatar${state.user.avatarId}.jpg',
+                          icon: Icon(
+                            Icons.settings,
+                            color: Colors.white,
+                            size: 26,
                           ),
-                        );
-                      },
-                    ),
-                    SizedBox(height: 2.0.h),
+                          style: IconButton.styleFrom(
+                            backgroundColor: Colors.white.withOpacity(0.2),
+                          ),
+                        ),
+                      ),
 
-                    OutlinedButton(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder:
-                              (context) => Container(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.95,
-                                decoration: BoxDecoration(
-                                  color:
-                                      Theme.of(context).scaffoldBackgroundColor,
-                                  borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(20),
+                      SizedBox(height: 1.0.h),
+
+                      // Profile Card
+                      Container(
+                        margin: EdgeInsets.only(bottom: 2.0.h),
+                        padding: EdgeInsets.all(5.0.w),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).cardColor.withOpacity(0.9),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 10,
+                              offset: Offset(0, 5),
+                            ),
+                          ],
+                        ),
+                        child: BlocBuilder<UserBloc, UserState>(
+                          builder: (context, state) {
+                            return Column(
+                              children: [
+                                // Avatar
+                                Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 3,
+                                    ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.2),
+                                        blurRadius: 8,
+                                        offset: Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 8.0.h,
+                                    backgroundImage: AssetImage(
+                                      'assets/Avatars/avatar${state.user.avatarId}.jpg',
+                                    ),
                                   ),
                                 ),
-                                child: BlocProvider.value(
-                                  value: BlocProvider.of<UserBloc>(context),
-                                  child: const EditProfileScreen(),
+
+                                SizedBox(height: 2.0.h),
+
+                                // Username
+                                Text(
+                                  state.user.username,
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.5,
+                                    color: Colors.white,
+                                  ),
                                 ),
+
+                                SizedBox(height: 1.0.h),
+
+                                // Aura Points
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 3.0.w,
+                                    vertical: 1.0.h,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Color(0xFF3949AB),
+                                        Color(0xFF1E88E5),
+                                      ],
+                                    ),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.auto_awesome,
+                                        color: Colors.amber,
+                                        size: 20,
+                                      ),
+                                      SizedBox(width: 1.0.w),
+                                      Text(
+                                        '${state.user.karma} Aura',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                SizedBox(height: 2.0.h),
+
+                                // Join Date
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.cake,
+                                      size: 18,
+                                      color: Colors.grey[600],
+                                    ),
+                                    SizedBox(width: 1.0.w),
+                                    Text(
+                                      'Member since ${formatJoinedDate(state.user.joinedDate)}',
+                                      style: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                SizedBox(height: 2.0.h),
+
+                                // Edit Profile Button
+                                ElevatedButton.icon(
+                                  onPressed: () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      isScrollControlled: true,
+                                      backgroundColor: Colors.transparent,
+                                      builder:
+                                          (context) => Container(
+                                            height:
+                                                MediaQuery.of(
+                                                  context,
+                                                ).size.height *
+                                                0.95,
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).scaffoldBackgroundColor,
+                                              borderRadius:
+                                                  const BorderRadius.vertical(
+                                                    top: Radius.circular(20),
+                                                  ),
+                                            ),
+                                            child: BlocProvider.value(
+                                              value: BlocProvider.of<UserBloc>(
+                                                context,
+                                              ),
+                                              child: const EditProfileScreen(),
+                                            ),
+                                          ),
+                                    );
+                                  },
+                                  icon: Icon(Icons.edit, size: 18),
+                                  label: Text('Edit Profile'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.blue[700],
+                                    foregroundColor: Colors.white,
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 6.0.w,
+                                      vertical: 1.2.h,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Tab Bar
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 3,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: TabBar(
+                    controller: _tabController,
+                    tabs: const [
+                      Tab(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.article, size: 18),
+                            SizedBox(width: 8),
+                            Text('Posts'),
+                          ],
+                        ),
+                      ),
+                      Tab(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.comment, size: 18),
+                            SizedBox(width: 8),
+                            Text('Comments'),
+                          ],
+                        ),
+                      ),
+                      Tab(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.person, size: 18),
+                            SizedBox(width: 8),
+                            Text('About'),
+                          ],
+                        ),
+                      ),
+                    ],
+                    labelColor: Theme.of(context).primaryColor,
+                    unselectedLabelColor: Colors.grey,
+                    labelStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                    indicator: UnderlineTabIndicator(
+                      borderSide: BorderSide(
+                        width: 3.0,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      insets: EdgeInsets.symmetric(horizontal: 16.0),
+                    ),
+                    dividerColor: Colors.transparent,
+                  ),
+                ),
+
+                // Tab Content
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children: [
+                      // Posts Tab
+                      _buildEmptyTabContent(
+                        icon: Icons.article_outlined,
+                        message: 'No posts yet',
+                      ),
+
+                      // Comments Tab
+                      _buildEmptyTabContent(
+                        icon: Icons.chat_bubble_outline,
+                        message: 'No comments yet',
+                      ),
+
+                      // About Tab
+                      SingleChildScrollView(
+                        padding: EdgeInsets.all(5.0.w),
+                        child: BlocBuilder<UserBloc, UserState>(
+                          builder: (context, state) {
+                            return Container(
+                              padding: EdgeInsets.all(5.0.w),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).cardColor,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.05),
+                                    blurRadius: 10,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
                               ),
-                        );
-                      },
-                      child: Text(
-                        'Edit',
-                        style: TextStyle(color: Colors.white.withOpacity(0.9)),
-                      ),
-                    ),
-                    SizedBox(height: 1.0.h),
-                    BlocBuilder<UserBloc, UserState>(
-                      builder: (context, state) {
-                        return Text(
-                          state.user.username,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.8),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        );
-                      },
-                    ),
-                    SizedBox(height: 1.0.h),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: BlocBuilder<UserBloc, UserState>(
-                        builder: (context, state) {
-                          return _buildStatItem(
-                            'Aura',
-                            state.user.karma
-                                .toString(), // Convert to string if needed
-                          );
-                        },
-                      ),
-                    ),
-                    BlocBuilder<UserBloc, UserState>(
-                      builder: (context, state) {
-                        return _buildInfoItem(
-                          Icons.date_range,
-                          formatJoinedDate(state.user.joinedDate),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // About Section Header
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.person_outline,
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                      SizedBox(width: 2.0.w),
+                                      Text(
+                                        'About',
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                          color: Theme.of(context).primaryColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
 
-          TabBar(
-            controller: _tabController,
-            tabs: const [
-              Tab(text: 'Posts'),
-              Tab(text: 'Comments'),
-              Tab(text: 'About'),
-            ],
-            labelColor: Colors.blue,
-            labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-            unselectedLabelColor: Colors.grey,
-            indicator: const UnderlineTabIndicator(
-              borderSide: BorderSide(width: 2.0, color: Colors.blue),
-            ),
-          ),
-          // Tab Content
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                // Posts Tab
-                const Center(
-                  child: Text(
-                    'Posts Content',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ),
-                // Comments Tab
-                const Center(
-                  child: Text(
-                    'Comments Content',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ),
-                // About Tab
-                SingleChildScrollView(
-                  padding: const EdgeInsets.all(16),
-                  child: BlocBuilder<UserBloc, UserState>(
-                    builder: (context, state) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'About',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.grey,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            state.user.about ?? 'Nothing here',
-                            style: TextStyle(color: Colors.grey),
-                          ),
-                          const SizedBox(height: 16),
-                          BlocBuilder<UserBloc, UserState>(
-                            builder: (context, state) {
-                              return _buildInfoItem(
-                                Icons.date_range,
-                                formatJoinedDate(state.user.joinedDate),
-                              );
-                            },
-                          ),
+                                  Divider(height: 4.0.h),
 
-                          BlocBuilder<UserBloc, UserState>(
-                            builder: (context, state) {
-                              return _buildInfoItem(
-                                Icons.location_on,
-                                state.user.country,
-                              );
-                            },
-                          ),
-                        ],
-                      );
-                    },
+                                  // Bio
+                                  Container(
+                                    padding: EdgeInsets.all(3.0.w),
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Text(
+                                      state.user.about ?? 'No bio added yet.',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        height: 1.5,
+                                        color: Colors.white.withOpacity(0.8),
+                                      ),
+                                    ),
+                                  ),
+
+                                  SizedBox(height: 3.0.h),
+
+                                  // Member Since Info
+                                  _buildInfoItem(
+                                    icon: Icons.date_range,
+                                    iconColor: Colors.blue[700]!,
+                                    label: 'Member since',
+                                    value: formatJoinedDate(
+                                      state.user.joinedDate,
+                                    ),
+                                  ),
+
+                                  SizedBox(height: 2.0.h),
+
+                                  // Location Info
+                                  _buildInfoItem(
+                                    icon: Icons.location_on,
+                                    iconColor: Colors.red[400]!,
+                                    label: 'Location',
+                                    value: state.user.country,
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -242,33 +437,57 @@ class _ProfileViewState extends State<ProfileView>
     );
   }
 
-  Widget _buildStatItem(String label, String value) {
-    return Row(
-      children: [
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
+  Widget _buildEmptyTabContent({
+    required IconData icon,
+    required String message,
+  }) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, size: 48, color: Colors.grey[400]),
+          SizedBox(height: 16),
+          Text(
+            message,
+            style: TextStyle(fontSize: 16, color: Colors.grey[500]),
           ),
-        ),
-        SizedBox(width: 10),
-        Text(label, style: const TextStyle(fontSize: 12, color: Colors.grey)),
-      ],
+        ],
+      ),
     );
   }
 
-  Widget _buildInfoItem(IconData icon, String text) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: Colors.grey),
-          const SizedBox(width: 8),
-          Text(text, style: const TextStyle(color: Colors.grey)),
-        ],
-      ),
+  Widget _buildInfoItem({
+    required IconData icon,
+    required Color iconColor,
+    required String label,
+    required String value,
+  }) {
+    return Row(
+      children: [
+        Container(
+          padding: EdgeInsets.all(2.0.w),
+          decoration: BoxDecoration(
+            color: iconColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, size: 20, color: iconColor),
+        ),
+        SizedBox(width: 3.0.w),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: TextStyle(fontSize: 12, color: Colors.white)),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
