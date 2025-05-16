@@ -382,19 +382,76 @@ class NotificationScreen extends StatelessWidget {
                 ]),
               ),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Notifications')),
+        backgroundColor: const Color(
+          0xFF121212,
+        ), // Dark background for better contrast
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: const Color(0xFF1E1E1E),
+          title: const Text(
+            'Notifications',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
         body: BlocBuilder<NotificationBloc, NotificationState>(
           builder: (context, state) {
             if (state.isLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return const Center(
+                child: CircularProgressIndicator(
+                  color: Color(0xFF0073FF), // Match upvote color
+                ),
+              );
             }
 
             if (state.error != null) {
-              return Center(child: Text('Error: ${state.error}'));
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.error_outline_rounded,
+                      color: Colors.redAccent,
+                      size: 48,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Error: ${state.error}',
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
+              );
             }
 
             if (state.notifications.isEmpty) {
-              return const Center(child: Text('No notifications yet'));
+              return Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.notifications_off_rounded,
+                      color: Colors.grey[600],
+                      size: 64,
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'No notifications yet',
+                      style: TextStyle(
+                        color: Colors.white70,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              );
             }
 
             // Group notifications by date
@@ -411,43 +468,130 @@ class NotificationScreen extends StatelessWidget {
                     .toList();
 
             return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListView(
-                children: [
-                  if (todayNotifications.isNotEmpty) ...[
-                    const Text(
-                      'Today',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              child: CustomScrollView(
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Today',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              // Placeholder for "Mark all as read" functionality
+                            },
+                            child: const Text(
+                              'Mark all as read',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF0073FF),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
+                    ),
+                  ),
+
+                  if (todayNotifications.isEmpty)
+                    const SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        child: Center(
+                          child: Text(
+                            'No new notifications today',
+                            style: TextStyle(
+                              color: Colors.white60,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  else
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final notification = todayNotifications[index];
+                        return NotificationTile(
+                          notification: notification,
+                          onTap: () {},
+                        );
+                      }, childCount: todayNotifications.length),
                     ),
 
-                    ...todayNotifications.map(
-                      (notification) => NotificationTile(
-                        notification: notification,
-                        onTap: () {},
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            'Earlier',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              // Placeholder for "Clear all" functionality
+                            },
+                            child: Text(
+                              'Clear all',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.red[300],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                  if (earlierNotifications.isNotEmpty) ...[
-                    const Text(
-                      'Earlier',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                  ),
+
+                  if (earlierNotifications.isEmpty)
+                    const SliverToBoxAdapter(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        child: Center(
+                          child: Text(
+                            'No earlier notifications',
+                            style: TextStyle(
+                              color: Colors.white60,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
                       ),
+                    )
+                  else
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final notification = earlierNotifications[index];
+                        return NotificationTile(
+                          notification: notification,
+                          onTap: () {},
+                        );
+                      }, childCount: earlierNotifications.length),
                     ),
 
-                    ...earlierNotifications.map(
-                      (notification) => NotificationTile(
-                        notification: notification,
-                        onTap: () {},
-                      ),
-                    ),
-                  ],
+                  // Add bottom padding for better scrolling
+                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
                 ],
               ),
             );
@@ -470,87 +614,226 @@ class NotificationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Special handling for upvote notifications
-    if (notification.isUpvoteNotification) {
-      // return ListTile(
-      // leading: const
-      //   title: Text(
-      //     notification.title,
-      //     style: TextStyle(
-      //       fontWeight:
-      //           notification.isRead ? FontWeight.normal : FontWeight.bold,
-      //     ),
-      //   ),
-      //   subtitle: Column(
-      //     crossAxisAlignment: CrossAxisAlignment.start,
-      //     children: [
-      //       Text(
-      //         notification.description,
-      //         maxLines: 2,
-      //         overflow: TextOverflow.ellipsis,
-      //       ),
-      //       const SizedBox(height: 4),
-      //       Text(
-      //         _formatTimeDifference(notification.createdAt),
-      //         style: const TextStyle(color: Colors.grey),
-      //       ),
-      //     ],
-      //   ),
-      //   onTap: onTap,
-      // );
-    }
-
-    // Regular notification
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          notification.isUpvoteNotification
-              ? Icon(
-                Icons.arrow_upward,
-                color: Color.fromARGB(255, 0, 115, 255),
-                size: 6.0.h,
-              )
-              : CircleAvatar(
-                radius: 25,
-                backgroundImage: AssetImage(
-                  'assets/Avatars/avatar${notification.avatarId}.jpg',
-                ),
-              ),
-          SizedBox(width: 10),
-          Expanded(
-            child: Column(
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 6.0),
+      decoration: BoxDecoration(
+        color:
+            notification.isRead
+                ? const Color(0xFF1A1A1A)
+                : const Color(0xFF232733),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 12.0,
+              vertical: 10.0,
+            ),
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: 1.5.h),
-                Text(
-                  notification.title,
-                  style: TextStyle(
-                    fontWeight:
-                        notification.isRead
-                            ? FontWeight.normal
-                            : FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 15,
+                // Avatar or Icon
+                _buildLeadingWidget(),
+
+                const SizedBox(width: 12),
+
+                // Content
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title with unread indicator
+                      Row(
+                        children: [
+                          if (!notification.isRead)
+                            Container(
+                              width: 8,
+                              height: 8,
+                              margin: const EdgeInsets.only(right: 6),
+                              decoration: const BoxDecoration(
+                                color: Color(0xFF0073FF),
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          Expanded(
+                            child: Text(
+                              notification.title,
+                              style: TextStyle(
+                                fontWeight:
+                                    notification.isRead
+                                        ? FontWeight.w500
+                                        : FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 15,
+                                height: 1.3,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+
+                      const SizedBox(height: 4),
+
+                      // Description
+                      Text(
+                        notification.description,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.white70,
+                          height: 1.4,
+                        ),
+                      ),
+
+                      const SizedBox(height: 8),
+
+                      // Time with action icons
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            _formatTimeDifference(notification.createdAt),
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 12,
+                            ),
+                          ),
+
+                          // Action icons
+                          Row(
+                            children: [
+                              _buildActionIcon(
+                                Icons.reply_rounded,
+                                'Reply',
+                                () {},
+                              ),
+                              const SizedBox(width: 16),
+                              _buildActionIcon(
+                                Icons.more_horiz_rounded,
+                                'More options',
+                                () {},
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                ),
-
-                Text(
-                  notification.description,
-                  maxLines: 2,
-
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 11, color: Colors.white),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _formatTimeDifference(notification.createdAt),
-                  style: const TextStyle(color: Colors.grey),
                 ),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLeadingWidget() {
+    if (notification.isUpvoteNotification) {
+      return Container(
+        width: 42,
+        height: 42,
+        decoration: BoxDecoration(
+          color: const Color(0xFF0073FF).withOpacity(0.15),
+          shape: BoxShape.circle,
+        ),
+        child: const Center(
+          child: Icon(
+            Icons.arrow_upward_rounded,
+            color: Color(0xFF0073FF),
+            size: 24,
+          ),
+        ),
+      );
+    } else {
+      return Stack(
+        children: [
+          CircleAvatar(
+            radius: 21,
+            backgroundImage: AssetImage(
+              'assets/Avatars/avatar${notification.avatarId}.jpg',
+            ),
+          ),
+          if (notification.isCommentNotification)
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF0073FF),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: const Color(0xFF121212), width: 2),
+                ),
+                child: const Icon(
+                  Icons.comment_rounded,
+                  color: Colors.white,
+                  size: 10,
+                ),
+              ),
+            )
+          else if (notification.isReplyNotification)
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: const Color(0xFF121212), width: 2),
+                ),
+                child: const Icon(
+                  Icons.reply_rounded,
+                  color: Colors.white,
+                  size: 10,
+                ),
+              ),
+            )
+          else if (notification.isPostNotification)
+            Positioned(
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Colors.purple,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: const Color(0xFF121212), width: 2),
+                ),
+                child: const Icon(
+                  Icons.post_add_rounded,
+                  color: Colors.white,
+                  size: 10,
+                ),
+              ),
+            ),
         ],
+      );
+    }
+  }
+
+  Widget _buildActionIcon(IconData icon, String tooltip, VoidCallback onTap) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(50),
+      child: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Icon(icon, color: Colors.grey, size: 18),
       ),
     );
   }
@@ -559,7 +842,9 @@ class NotificationTile extends StatelessWidget {
     final now = DateTime.now();
     final difference = now.difference(date);
 
-    if (difference.inMinutes < 60) {
+    if (difference.inMinutes < 1) {
+      return 'Just now';
+    } else if (difference.inMinutes < 60) {
       return '${difference.inMinutes}m ago';
     } else if (difference.inHours < 24) {
       return '${difference.inHours}h ago';
@@ -567,59 +852,4 @@ class NotificationTile extends StatelessWidget {
       return '${difference.inDays}d ago';
     }
   }
-
-  // // Placeholder screen for notification details
-  // class NotificationDetailScreen extends StatelessWidget {
-  //   final Notification notification;
-
-  //   const NotificationDetailScreen({super.key, required this.notification});
-
-  //   @override
-  //   Widget build(BuildContext context) {
-  //     return Scaffold(
-  //       appBar: AppBar(
-  //         title: const Text('Notification Details'),
-  //       ),
-  //       body: Padding(
-  //         padding: const EdgeInsets.all(16.0),
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           children: [
-  //             if (notification.isUpvoteNotification)
-  //               const Icon(Icons.arrow_upward, color: Colors.orange, size: 48)
-  //             else
-  //               CircleAvatar(
-  //                 radius: 24,
-  //                 backgroundImage: AssetImage(
-  //                   'assets/avatar/avatar${notification.avatarId}.png',
-  //                 ),
-  //               ),
-  //             const SizedBox(height: 16),
-  //             Text(
-  //               notification.title,
-  //               style: const TextStyle(
-  //                 fontSize: 20,
-  //                 fontWeight: FontWeight.bold,
-  //               ),
-  //             ),
-  //             const SizedBox(height: 8),
-  //             Text(
-  //               notification.description,
-  //               style: const TextStyle(fontSize: 16),
-  //             ),
-  //             const SizedBox(height: 16),
-  //             Text(
-  //               'Received: ${_formatFullDate(notification.createdAt)}',
-  //               style: const TextStyle(color: Colors.grey),
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     );
-  //   }
-
-  //   String _formatFullDate(DateTime date) {
-  //     return '${date.day}/${date.month}/${date.year} at ${date.hour}:${date.minute.toString().padLeft(2, '0')}';
-  //   }
-  //
 }

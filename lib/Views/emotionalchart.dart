@@ -10,7 +10,6 @@
 // }
 
 // class _EmotionalchartState extends State<Emotionalchart> {
- 
 
 //   int touchedIndex = -1;
 

@@ -16,12 +16,22 @@ class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
     try {
       await Future.delayed(const Duration(seconds: 1));
 
-      // Generate 20 dummy bullet points
-      final bulletPoints = List<String>.generate(
-        20,
-        (index) =>
-            "Bullet point ${index + 1}: Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      );
+      final bulletPoints = List<String>.generate(20, (index) {
+        final phrases = [
+          "Fresh perspective on a recurring theme.",
+          "Noteworthy trend with long-term impact.",
+          "Small detail, big implications.",
+          "Challenging the status quo, gently.",
+          "Insight hiding in plain sight.",
+          "A subtle nudge toward innovation.",
+          "Reframing the narrative, one step at a time.",
+          "Signals worth paying attention to.",
+          "Disruption, but make it elegant.",
+          "Patterns emerging from the noise.",
+        ];
+        final phrase = phrases[index % phrases.length];
+        return "$phrase";
+      });
 
       emit(SummaryLoaded(bulletPoints));
     } catch (e) {
@@ -42,13 +52,12 @@ class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
           event.listcluster
               .map(
                 (cluster) =>
-                    "Detailed summary for ${cluster.title}:\n\n"
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
-                    "Nullam euismod, nisl eget aliquam ultricies, nunc nisl "
-                    "aliquet nunc, quis aliquam nisl nunc eu nisl. "
-                    "Nullam euismod, nisl eget aliquam ultricies, nunc nisl "
-                    "aliquet nunc, quis aliquam nisl nunc eu nisl. "
-                    "This cluster contains important information about ${cluster.title}.",
+                    "📌 Summary for \"${cluster.title}\"\n\n"
+                    "Dive into the key insights and noteworthy highlights of ${cluster.title}. "
+                    "This section uncovers essential patterns, emerging trends, and contextual relevance. "
+                    "From subtle details to major breakthroughs, ${cluster.title} offers a comprehensive view "
+                    "that helps connect the dots and spark new ideas.\n\n"
+                    "Stay curious — there's more than meets the eye in ${cluster.title}.",
               )
               .toList();
 
