@@ -1,13 +1,20 @@
+import 'dart:math';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
+import 'package:verbatica/DummyData/comments.dart';
+import 'package:verbatica/DummyData/dummyPosts.dart';
+import 'package:verbatica/model/Post.dart';
+import 'package:verbatica/model/comment.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
   UserBloc() : super(UserState()) {
     on<UpdateUser>(_onUpdateUser);
     on<UpdateAvatar>(_onUpdateAvatar);
     on<UpdateAbout>(_onUpdateAbout);
+    on<updateCommentWithPost>(_onupdateComment);
   }
 
   // Future<void> _onFetchUser(FetchUser event, Emitter<UserState> emit) async {
@@ -24,6 +31,26 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     final currentUser = state.user;
     final updatedUser = currentUser.copyWith(avatarUrl: event.newAvatarId);
     emit(state.copyWith(user: updatedUser));
+  }
+
+  void _onupdateComment(
+    updateCommentWithPost event,
+    Emitter<UserState> emit,
+  ) async {
+    emit(state.copyWith(isLoadingComments: true));
+
+    await Future.delayed(Duration(seconds: 3));
+
+    final List<Post> dummyPosts = dummypostuser;
+    final List<Comment> matchingComments = userdummyComments;
+
+    emit(
+      state.copyWith(
+        postofComment: dummyPosts,
+        userComments: matchingComments,
+        isLoadingComments: false,
+      ),
+    );
   }
 
   void _onUpdateAbout(UpdateAbout event, Emitter<UserState> emit) {

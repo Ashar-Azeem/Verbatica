@@ -2,12 +2,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/editprofile.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingscreen.dart';
+
+import 'package:timeago/timeago.dart' as timeago;
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -19,17 +23,35 @@ class ProfileView extends StatefulWidget {
 class _ProfileViewState extends State<ProfileView>
     with TickerProviderStateMixin {
   late TabController _tabController;
+  final ScrollController _scrollController = ScrollController();
+  final double expandedHeight = 62.0.h; // AppBar height + TabBar height
+  late final ValueNotifier<double> _scrollNotifier;
 
   @override
   void initState() {
     super.initState();
+    context.read<UserBloc>().add(updateCommentWithPost());
     _tabController = TabController(length: 3, vsync: this);
+    _scrollNotifier = ValueNotifier(0.0);
+    _scrollController.addListener(_updateScrollNotifier);
+  }
+
+  void _updateScrollNotifier() {
+    _scrollNotifier.value = _scrollController.offset;
   }
 
   @override
   void dispose() {
+    _scrollController.removeListener(_updateScrollNotifier);
+    _scrollNotifier.dispose();
     _tabController.dispose();
+    _scrollController.dispose();
     super.dispose();
+  }
+
+  bool _isAppBarCollapsed(double shrinkOffset) {
+    // Simpler condition to determine when to show the collapsed state
+    return shrinkOffset > 120; // Fixed threshold that works reliably
   }
 
   @override
@@ -38,93 +60,137 @@ class _ProfileViewState extends State<ProfileView>
       body: DefaultTabController(
         length: 3,
         child: NestedScrollView(
+          controller: _scrollController,
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
-              SliverOverlapAbsorber(
-                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                  context,
-                ),
-                sliver: SliverAppBar(
-                  expandedHeight: 62.0.h,
-                  floating: false,
-                  pinned: true,
-                  automaticallyImplyLeading: false,
-                  backgroundColor: Colors.transparent,
-                  elevation: 0,
-                  flexibleSpace: FlexibleSpaceBar(
-                    collapseMode: CollapseMode.pin,
-                    background: _buildProfileHeader(context),
+              SliverAppBar(
+                expandedHeight: expandedHeight,
+                floating: false,
+                pinned: true,
+
+                snap: false,
+                stretch: true,
+                automaticallyImplyLeading: false,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                elevation: 0,
+                flexibleSpace: FlexibleSpaceBar(
+                  collapseMode: CollapseMode.parallax,
+                  stretchModes: const [StretchMode.zoomBackground],
+                  background: _buildProfileHeader(context),
+                  titlePadding: EdgeInsets.zero,
+                  // Using ValueListenableBuilder to respond to scroll changes
+                  title: BlocBuilder<UserBloc, UserState>(
+                    builder: (context, state) {
+                      return ValueListenableBuilder<double>(
+                        valueListenable: _scrollNotifier,
+                        builder: (context, scrollOffset, child) {
+                          final isCollapsed = _isAppBarCollapsed(scrollOffset);
+
+                          if (isCollapsed) {
+                            return Container(
+                              color: Theme.of(context).scaffoldBackgroundColor,
+                              height: kToolbarHeight,
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  // Username in collapsed state
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 16.0),
+                                    child: Text(
+                                      state.user.username,
+                                      style: TextStyle(
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.titleLarge?.color ??
+                                            Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 20.0,
+                                      ),
+                                    ),
+                                  ),
+                                  // Settings button in collapsed state
+                                  IconButton(
+                                    icon: const Icon(Icons.settings),
+                                    color:
+                                        Theme.of(
+                                          context,
+                                        ).textTheme.titleLarge?.color ??
+                                        Colors.white,
+                                    onPressed: () {
+                                      pushScreen(
+                                        context,
+                                        screen: const SettingsScreen(),
+                                        withNavBar: false,
+                                      );
+                                    },
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            return const SizedBox.shrink(); // Empty container when expanded
+                          }
+                        },
+                      );
+                    },
                   ),
-                  bottom: PreferredSize(
-                    preferredSize: Size.fromHeight(48.0),
-                    child: Container(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                      child: TabBar(
-                        controller: _tabController,
-                        tabs: const [
-                          Tab(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.article, size: 18),
-                                SizedBox(width: 8),
-                                Text('Posts'),
-                              ],
-                            ),
+                ),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(48.0),
+                  child: Container(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: TabBar(
+                      controller: _tabController,
+                      tabs: const [
+                        Tab(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.article, size: 18),
+                              SizedBox(width: 8),
+                              Text('Posts'),
+                            ],
                           ),
-                          Tab(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.comment, size: 18),
-                                SizedBox(width: 8),
-                                Text('Comments'),
-                              ],
-                            ),
-                          ),
-                          Tab(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.person, size: 18),
-                                SizedBox(width: 8),
-                                Text('About'),
-                              ],
-                            ),
-                          ),
-                        ],
-                        labelColor: Theme.of(context).primaryColor,
-                        unselectedLabelColor: Colors.grey,
-                        labelStyle: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
                         ),
-                        indicator: UnderlineTabIndicator(
-                          borderSide: BorderSide(
-                            width: 3.0,
-                            color: Theme.of(context).primaryColor,
+                        Tab(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.comment, size: 18),
+                              SizedBox(width: 8),
+                              Text('Comments'),
+                            ],
                           ),
-                          insets: EdgeInsets.symmetric(horizontal: 16.0),
                         ),
-                        dividerColor: Colors.transparent,
+                        Tab(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.person, size: 18),
+                              SizedBox(width: 8),
+                              Text('About'),
+                            ],
+                          ),
+                        ),
+                      ],
+                      labelColor: Theme.of(context).primaryColor,
+                      unselectedLabelColor: Colors.grey,
+                      labelStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
                       ),
+                      indicator: UnderlineTabIndicator(
+                        borderSide: BorderSide(
+                          width: 3.0,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        insets: const EdgeInsets.symmetric(horizontal: 16.0),
+                      ),
+                      dividerColor: Colors.transparent,
                     ),
                   ),
-
-                  title:
-                      innerBoxIsScrolled
-                          ? BlocBuilder<UserBloc, UserState>(
-                            builder: (context, state) {
-                              return Text(
-                                state.user.username,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              );
-                            },
-                          )
-                          : null,
                 ),
               ),
             ];
@@ -133,80 +199,27 @@ class _ProfileViewState extends State<ProfileView>
             controller: _tabController,
             children: [
               // Posts Tab
-              SafeArea(
-                top: false,
-                bottom: false,
-                child: Builder(
-                  builder: (BuildContext context) {
-                    return CustomScrollView(
-                      slivers: <Widget>[
-                        SliverOverlapInjector(
-                          handle:
-                              NestedScrollView.sliverOverlapAbsorberHandleFor(
-                                context,
-                              ),
-                        ),
-                        SliverFillRemaining(
-                          child: _buildEmptyTabContent(
-                            icon: Icons.article_outlined,
-                            message: 'No posts yet',
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
+              Builder(
+                builder: (BuildContext context) {
+                  return _buildEmptyTabContent(
+                    icon: Icons.article_outlined,
+                    message: 'No posts yet',
+                  );
+                },
               ),
 
               // Comments Tab
-              SafeArea(
-                top: false,
-                bottom: false,
-                child: Builder(
-                  builder: (BuildContext context) {
-                    return CustomScrollView(
-                      slivers: <Widget>[
-                        SliverOverlapInjector(
-                          handle:
-                              NestedScrollView.sliverOverlapAbsorberHandleFor(
-                                context,
-                              ),
-                        ),
-                        SliverFillRemaining(
-                          child: _buildEmptyTabContent(
-                            icon: Icons.chat_bubble_outline,
-                            message: 'No comments yet',
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
+              BlocBuilder<UserBloc, UserState>(
+                builder: (context, state) {
+                  return buildUserCommentsTab(state);
+                },
               ),
 
               // About Tab
-              SafeArea(
-                top: false,
-                bottom: false,
-                child: Builder(
-                  builder: (BuildContext context) {
-                    return CustomScrollView(
-                      slivers: <Widget>[
-                        SliverOverlapInjector(
-                          handle:
-                              NestedScrollView.sliverOverlapAbsorberHandleFor(
-                                context,
-                              ),
-                        ),
-                        SliverToBoxAdapter(
-                          child: Padding(
-                            padding: EdgeInsets.all(5.0.w),
-                            child: _buildAboutSection(),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
+              SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.all(5.0.w),
+                  child: _buildAboutSection(),
                 ),
               ),
             ],
@@ -216,13 +229,67 @@ class _ProfileViewState extends State<ProfileView>
     );
   }
 
+  Widget buildUserCommentsTab(UserState state) {
+    if (state.isLoadingComments) {
+      // Show shimmer while loading
+      return ListView.builder(
+        padding: EdgeInsets.zero, // Important for proper scrolling
+        itemCount: 5,
+        itemBuilder: (_, index) => const CommentShimmerTile(),
+      );
+    }
+
+    if (state.userComments.isEmpty) {
+      return const Center(child: Text("No comments yet"));
+    }
+
+    return ListView.builder(
+      padding: EdgeInsets.zero, // Important for proper scrolling
+      itemCount: state.userComments.length,
+      itemBuilder: (context, index) {
+        final comment = state.userComments[index];
+        final post = state.postofComments[index];
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Subreddit + time + upvotes
+              Text(
+                post.title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Colors.white,
+                ),
+              ),
+
+              Text(
+                '/${comment.text}    • ${timeago.format(comment.uploadTime)}',
+                style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+              ),
+
+              const SizedBox(height: 4),
+
+              // Post title
+              const SizedBox(height: 4),
+
+              // Actual comment text
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildProfileHeader(BuildContext context) {
+    // This is the expanded profile header view
     return Stack(
       children: [
         // Gradient Background
         Container(
           height: 35.0.h,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -245,25 +312,39 @@ class _ProfileViewState extends State<ProfileView>
                 padding: EdgeInsets.symmetric(horizontal: 4.0.w),
                 child: Column(
                   children: [
-                    // Settings Button
+                    // Settings Button in expanded view - only visible when expanded
                     Align(
                       alignment: Alignment.centerRight,
-                      child: IconButton(
-                        onPressed: () {
-                          pushScreen(
-                            context,
-                            screen: SettingsScreen(),
-                            withNavBar: false,
+                      child: ValueListenableBuilder<double>(
+                        valueListenable: _scrollNotifier,
+                        builder: (context, scrollOffset, child) {
+                          final bool isCollapsed = _isAppBarCollapsed(
+                            scrollOffset,
+                          );
+
+                          // Only show this button when we're in expanded state
+                          if (isCollapsed) {
+                            return const SizedBox.shrink();
+                          }
+
+                          return IconButton(
+                            onPressed: () {
+                              pushScreen(
+                                context,
+                                screen: const SettingsScreen(),
+                                withNavBar: false,
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.settings,
+                              color: Colors.white,
+                              size: 26,
+                            ),
+                            style: IconButton.styleFrom(
+                              backgroundColor: Colors.white.withOpacity(0.2),
+                            ),
                           );
                         },
-                        icon: Icon(
-                          Icons.settings,
-                          color: Colors.white,
-                          size: 26,
-                        ),
-                        style: IconButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.2),
-                        ),
                       ),
                     ),
 
@@ -280,7 +361,7 @@ class _ProfileViewState extends State<ProfileView>
                           BoxShadow(
                             color: Colors.black.withOpacity(0.1),
                             blurRadius: 10,
-                            offset: Offset(0, 5),
+                            offset: const Offset(0, 5),
                           ),
                         ],
                       ),
@@ -300,7 +381,7 @@ class _ProfileViewState extends State<ProfileView>
                                     BoxShadow(
                                       color: Colors.black.withOpacity(0.2),
                                       blurRadius: 8,
-                                      offset: Offset(0, 2),
+                                      offset: const Offset(0, 2),
                                     ),
                                   ],
                                 ),
@@ -317,7 +398,7 @@ class _ProfileViewState extends State<ProfileView>
                               // Username
                               Text(
                                 state.user.username,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 0.5,
@@ -334,7 +415,7 @@ class _ProfileViewState extends State<ProfileView>
                                   vertical: 1.0.h,
                                 ),
                                 decoration: BoxDecoration(
-                                  gradient: LinearGradient(
+                                  gradient: const LinearGradient(
                                     colors: [
                                       Color(0xFF3949AB),
                                       Color(0xFF1E88E5),
@@ -345,7 +426,7 @@ class _ProfileViewState extends State<ProfileView>
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Icon(
+                                    const Icon(
                                       Icons.auto_awesome,
                                       color: Colors.amber,
                                       size: 20,
@@ -353,7 +434,7 @@ class _ProfileViewState extends State<ProfileView>
                                     SizedBox(width: 1.0.w),
                                     Text(
                                       '${state.user.karma} Aura',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         color: Colors.white,
                                         fontWeight: FontWeight.bold,
                                       ),
@@ -419,8 +500,8 @@ class _ProfileViewState extends State<ProfileView>
                                         ),
                                   );
                                 },
-                                icon: Icon(Icons.edit, size: 18),
-                                label: Text('Edit Profile'),
+                                icon: const Icon(Icons.edit, size: 18),
+                                label: const Text('Edit Profile'),
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Colors.blue[700],
                                   foregroundColor: Colors.white,
@@ -460,7 +541,7 @@ class _ProfileViewState extends State<ProfileView>
               BoxShadow(
                 color: Colors.black.withOpacity(0.05),
                 blurRadius: 10,
-                offset: Offset(0, 2),
+                offset: const Offset(0, 2),
               ),
             ],
           ),
@@ -540,7 +621,7 @@ class _ProfileViewState extends State<ProfileView>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon, size: 48, color: Colors.grey[400]),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Text(
             message,
             style: TextStyle(fontSize: 16, color: Colors.grey[500]),
@@ -570,7 +651,10 @@ class _ProfileViewState extends State<ProfileView>
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: TextStyle(fontSize: 12, color: Colors.white)),
+            const Text(
+              'label',
+              style: TextStyle(fontSize: 12, color: Colors.white),
+            ),
             Text(
               value,
               style: TextStyle(
@@ -582,6 +666,66 @@ class _ProfileViewState extends State<ProfileView>
           ],
         ),
       ],
+    );
+  }
+}
+
+class CommentShimmerTile extends StatelessWidget {
+  const CommentShimmerTile({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+      child: Shimmer.fromColors(
+        baseColor: Colors.grey.shade800,
+        highlightColor: Colors.grey.shade700,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Post title shimmer
+            Container(
+              height: 14,
+              width: 220,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade800,
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+            const SizedBox(height: 6),
+
+            // Comment info shimmer (subreddit/time/upvotes)
+            Container(
+              height: 10,
+              width: 160,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade800,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            const SizedBox(height: 10),
+
+            // Comment body shimmer
+            Container(
+              height: 12,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade800,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            const SizedBox(height: 4),
+            Container(
+              height: 12,
+              width: MediaQuery.of(context).size.width * 0.75,
+              decoration: BoxDecoration(
+                color: Colors.grey.shade800,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

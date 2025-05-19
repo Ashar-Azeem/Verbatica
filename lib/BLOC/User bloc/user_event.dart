@@ -25,3 +25,5 @@ class UpdateAbout extends UserEvent {
   final String newAbout;
   UpdateAbout(this.newAbout);
 }
+
+class updateCommentWithPost extends UserEvent {}
