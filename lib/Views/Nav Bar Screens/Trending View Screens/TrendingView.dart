@@ -245,6 +245,8 @@ class _BuiltPostListState extends State<BuiltPostList>
                                   120,
                                   48,
                                 ), // width, height
+                                backgroundColor: primaryColor,
+
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 16,
                                 ),
@@ -282,23 +284,42 @@ class _BuiltPostListState extends State<BuiltPostList>
                             ),
 
                             // 📅 Day Selector
-                            DropdownButton<DateTime>(
-                              value: selectedDay,
-                              items:
-                                  last7Days.map((day) {
-                                    return DropdownMenuItem(
-                                      value: day,
-                                      child: Text(
-                                        DateFormat('EEE, MMM d').format(day),
-                                        style: TextStyle(color: Colors.white),
-                                      ),
-                                    );
-                                  }).toList(),
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedDay = value!;
-                                });
-                              },
+                            DecoratedBox(
+                              decoration: BoxDecoration(
+                                border: Border.all(
+                                  color: Colors.white,
+                                  width: 0.5,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Padding(
+                                padding: EdgeInsets.only(left: 3.w),
+                                child: DropdownButtonHideUnderline(
+                                  child: DropdownButton<DateTime>(
+                                    borderRadius: BorderRadius.circular(10),
+                                    value: selectedDay,
+                                    items:
+                                        last7Days.map((day) {
+                                          return DropdownMenuItem(
+                                            value: day,
+                                            child: Text(
+                                              DateFormat(
+                                                'EEE, MMM d',
+                                              ).format(day),
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          );
+                                        }).toList(),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        selectedDay = value!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -306,7 +327,7 @@ class _BuiltPostListState extends State<BuiltPostList>
                     ),
                   ],
                 )
-                : NewsView(index: index, news: widget.news![index - 1]);
+                : NewsView(index: index - 1, news: widget.news![index - 1]);
           },
         );
   }

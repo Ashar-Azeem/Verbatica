@@ -18,12 +18,14 @@ import 'package:timeago/timeago.dart' as timeago;
 class TrendingPostWidget extends StatelessWidget {
   final Post post;
   final int index;
+  final int? newsIndex;
   final String category;
   final bool onFullView;
 
   const TrendingPostWidget({
     required this.post,
     super.key,
+    this.newsIndex,
     required this.index,
     required this.category,
     required this.onFullView,
@@ -266,6 +268,7 @@ class TrendingPostWidget extends StatelessWidget {
                           child: TrendingViewDiscussion(
                             post: post,
                             index: index,
+                            newIndex: newsIndex,
                             category: category,
                           ),
                         ),
@@ -297,17 +300,32 @@ class TrendingPostWidget extends StatelessWidget {
                           >(
                             builder: (context, state) {
                               Post dynamicpost;
-                              dynamicpost = state.trending[index];
+                              if (newsIndex != null) {
+                                dynamicpost =
+                                    state.news[newsIndex!].discussions[index];
+                              } else {
+                                dynamicpost = state.trending[index];
+                              }
                               return Row(
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      context.read<TrendingViewBloc>().add(
-                                        UpVotePost(
-                                          index: index,
-                                          category: category,
-                                        ),
-                                      );
+                                      if (newsIndex != null) {
+                                        context.read<TrendingViewBloc>().add(
+                                          UpVoteNewsPost(
+                                            index: index,
+                                            category: category,
+                                            newsIndex: newsIndex!,
+                                          ),
+                                        );
+                                      } else {
+                                        context.read<TrendingViewBloc>().add(
+                                          UpVotePost(
+                                            index: index,
+                                            category: category,
+                                          ),
+                                        );
+                                      }
                                     },
                                     child: Row(
                                       children: [
@@ -347,12 +365,22 @@ class TrendingPostWidget extends StatelessWidget {
                                     highlightColor: Colors.transparent,
 
                                     onPressed: () {
-                                      context.read<TrendingViewBloc>().add(
-                                        DownVotePost(
-                                          index: index,
-                                          category: category,
-                                        ),
-                                      );
+                                      if (newsIndex != null) {
+                                        context.read<TrendingViewBloc>().add(
+                                          DownVoteNewsPost(
+                                            index: index,
+                                            category: category,
+                                            newsIndex: newsIndex!,
+                                          ),
+                                        );
+                                      } else {
+                                        context.read<TrendingViewBloc>().add(
+                                          DownVotePost(
+                                            index: index,
+                                            category: category,
+                                          ),
+                                        );
+                                      }
                                     },
                                     padding: EdgeInsets.zero,
                                     icon: Icon(
@@ -410,6 +438,7 @@ class TrendingPostWidget extends StatelessWidget {
                                           child: TrendingViewDiscussion(
                                             post: post,
                                             index: index,
+                                            newIndex: newsIndex,
                                             category: category,
                                           ),
                                         ),

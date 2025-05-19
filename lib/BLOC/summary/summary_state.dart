@@ -37,7 +37,7 @@ class ClusterDetailsLoading extends SummaryState {
 class ClusterDetailsLoaded extends SummaryState {
   final List<String> details;
 
-  ClusterDetailsLoaded(this.details) : super(details);
+  const ClusterDetailsLoaded(this.details) : super(details);
 
   @override
   List<Object> get props => [details, ...super.props];

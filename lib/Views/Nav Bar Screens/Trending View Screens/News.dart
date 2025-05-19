@@ -1,11 +1,14 @@
 // ignore_for_file: file_names
-
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:sizer/sizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:verbatica/Utilities/Color.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Trending%20View%20Screens/PostsWithInNews.dart';
 
 import 'package:verbatica/model/news.dart';
 
@@ -23,7 +26,13 @@ class NewsView extends StatelessWidget {
       elevation: 3,
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          pushScreen(
+            context,
+            screen: PostsWithInNews(news: news, newsIndex: index),
+            withNavBar: true,
+          );
+        },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -63,14 +72,22 @@ class NewsView extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 6),
-                  Text(
+                  ExpandableText(
                     news.description,
-                    style: TextStyle(
-                      color: const Color.fromARGB(255, 193, 192, 192),
-                    ),
+                    expandOnTextTap: true,
+                    collapseOnTextTap: true,
+                    expandText: 'show more',
+                    collapseText: 'show less',
+                    linkEllipsis: false,
                     maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 3.8.w,
+                      color: const Color.fromARGB(255, 193, 192, 192),
+                      fontWeight: FontWeight.w300,
+                    ),
+                    linkColor: primaryColor,
                   ),
+
                   SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

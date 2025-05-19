@@ -6,27 +6,25 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
-import 'package:verbatica/BLOC/Home/home_bloc.dart';
+import 'package:verbatica/BLOC/Search%20Bloc/search_bloc.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
+import 'package:verbatica/UI_Components/Search%20Componenets/SearchedViewDiscussion.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/SummaryView.dart';
-import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/otherprofile.dart';
 import 'package:verbatica/Views/clusterScreen.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class PostWidget extends StatelessWidget {
+class SearchedPost extends StatelessWidget {
   final Post post;
   final int index;
-  final String category;
   final bool onFullView;
 
-  const PostWidget({
+  const SearchedPost({
     required this.post,
     super.key,
     required this.index,
-    required this.category,
     required this.onFullView,
   });
 
@@ -128,19 +126,15 @@ class PostWidget extends StatelessWidget {
                           icon: Icon(Icons.more_vert),
                           onSelected: (String value) {
                             if (value == "report") {
-                              context.read<HomeBloc>().add(
-                                ReportPost(
-                                  index: index,
-                                  category: category,
-                                  postId: post.id,
-                                ),
+                              context.read<SearchBloc>().add(
+                                ReportPost(index: index, postId: post.id),
                               );
                             } else if (value == "save") {
-                              context.read<HomeBloc>().add(
+                              context.read<SearchBloc>().add(
                                 SavePost(post: post),
                               );
                             } else if (value == "share") {
-                              context.read<HomeBloc>().add(
+                              context.read<SearchBloc>().add(
                                 SharePost(post: post),
                               );
                             }
@@ -279,18 +273,17 @@ class PostWidget extends StatelessWidget {
                         pageTransitionAnimation: PageTransitionAnimation.scale,
                         screen: MultiBlocProvider(
                           providers: [
-                            BlocProvider<HomeBloc>.value(
+                            BlocProvider<SearchBloc>.value(
                               value:
                                   context
                                       .read<
-                                        HomeBloc
+                                        SearchBloc
                                       >(), // Passing existing bloc
                             ),
                           ],
-                          child: ViewDiscussion(
+                          child: SearchedViewDiscussion(
                             post: post,
                             index: index,
-                            category: category,
                           ),
                         ),
                         withNavBar: false,
@@ -315,23 +308,18 @@ class PostWidget extends StatelessWidget {
                             horizontal: 0.5.w,
                             vertical: 0.5.w,
                           ),
-                          child: BlocBuilder<HomeBloc, HomeState>(
+                          child: BlocBuilder<SearchBloc, SearchState>(
                             builder: (context, state) {
                               Post dynamicpost;
-                              if (category == 'ForYou') {
-                                dynamicpost = state.forYou[index];
-                              } else {
-                                dynamicpost = state.following[index];
-                              }
+
+                              dynamicpost = state.posts[index];
+
                               return Row(
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      context.read<HomeBloc>().add(
-                                        UpVotePost(
-                                          index: index,
-                                          category: category,
-                                        ),
+                                      context.read<SearchBloc>().add(
+                                        UpVotePost(index: index),
                                       );
                                     },
                                     child: Row(
@@ -373,11 +361,8 @@ class PostWidget extends StatelessWidget {
                                     highlightColor: Colors.transparent,
 
                                     onPressed: () {
-                                      context.read<HomeBloc>().add(
-                                        DownVotePost(
-                                          index: index,
-                                          category: category,
-                                        ),
+                                      context.read<SearchBloc>().add(
+                                        DownVotePost(index: index),
                                       );
                                     },
                                     padding: EdgeInsets.zero,
@@ -423,16 +408,16 @@ class PostWidget extends StatelessWidget {
                                             PageTransitionAnimation.scale,
                                         screen: MultiBlocProvider(
                                           providers: [
-                                            BlocProvider<HomeBloc>(
+                                            BlocProvider<SearchBloc>(
                                               create:
                                                   (_) =>
-                                                      context.read<HomeBloc>(),
+                                                      context
+                                                          .read<SearchBloc>(),
                                             ),
                                           ],
-                                          child: ViewDiscussion(
+                                          child: SearchedViewDiscussion(
                                             post: post,
                                             index: index,
-                                            category: category,
                                           ),
                                         ),
                                         withNavBar: false,

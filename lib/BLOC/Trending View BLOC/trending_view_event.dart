@@ -56,3 +56,27 @@ class SharePost extends TrendingViewEvent {
 
   const SharePost({required this.post});
 }
+
+class UpVoteNewsPost extends TrendingViewEvent {
+  final int index;
+  final int newsIndex;
+  final String category;
+
+  const UpVoteNewsPost({
+    required this.index,
+    required this.category,
+    required this.newsIndex,
+  });
+}
+
+class DownVoteNewsPost extends TrendingViewEvent {
+  final int index;
+  final int newsIndex;
+  final String category;
+
+  const DownVoteNewsPost({
+    required this.index,
+    required this.category,
+    required this.newsIndex,
+  });
+}

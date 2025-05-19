@@ -9,28 +9,24 @@ import 'package:verbatica/BLOC/Comments%20Bloc/comments_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/UI_Components/Comment%20Componenets/CommentBlock.dart';
-import 'package:verbatica/UI_Components/TrendingPostComponents/TrendingPost.dart';
+import 'package:verbatica/UI_Components/Search%20Componenets/SearchedPostUI.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/model/Post.dart';
 
-class TrendingViewDiscussion extends StatefulWidget {
+class SearchedViewDiscussion extends StatefulWidget {
   final Post post;
   final int index;
-  final int? newIndex;
-  final String category;
-  const TrendingViewDiscussion({
+  const SearchedViewDiscussion({
     super.key,
     required this.post,
     required this.index,
-    required this.category,
-    this.newIndex,
   });
 
   @override
-  State<TrendingViewDiscussion> createState() => _TrendingViewDiscussionState();
+  State<SearchedViewDiscussion> createState() => _SearchedViewDiscussionState();
 }
 
-class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
+class _SearchedViewDiscussionState extends State<SearchedViewDiscussion>
     with WidgetsBindingObserver {
   late TextEditingController comment;
   final FocusNode _focusNode = FocusNode();
@@ -120,11 +116,9 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                           ),
                         ),
                       ),
-                      TrendingPostWidget(
+                      SearchedPost(
                         post: widget.post,
                         index: widget.index,
-                        category: widget.category,
-                        newsIndex: widget.newIndex,
                         onFullView: true,
                       ),
 
