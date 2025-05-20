@@ -10,16 +10,22 @@ class UserState extends Equatable {
   final List<Post> userPosts;
   final List<Comment> userComments;
   final bool isLoadingComments;
+  final bool isLoadingPosts;
   final List<Post> postofComments;
+  final List<Post> savedPosts; // New field for saved posts
+
   UserState({
     User? user,
     List<Post>? userPosts,
     List<Comment>? userComments,
     List<Post>? postofComments,
+    List<Post>? savedPosts, // New parameter
     this.isLoadingComments = false,
+    this.isLoadingPosts = false,
   }) : user = user ?? _defaultUser(),
        userPosts = userPosts ?? forYouPosts,
        postofComments = postofComments ?? [],
+       savedPosts = savedPosts ?? [], // Initialize empty list if not provided
        userComments = userComments ?? [];
 
   static User _defaultUser() {
@@ -31,14 +37,18 @@ class UserState extends Equatable {
     List<Post>? userPosts,
     List<Post>? postofComment,
     List<Comment>? userComments,
+    List<Post>? savedPosts, // New parameter
     bool? isLoadingComments,
+    bool? isLoadingPosts,
   }) {
     return UserState(
       postofComments: postofComment ?? this.postofComments,
       user: user ?? this.user,
       userPosts: userPosts ?? this.userPosts,
       userComments: userComments ?? this.userComments,
+      savedPosts: savedPosts ?? this.savedPosts, // Add saved posts
       isLoadingComments: isLoadingComments ?? this.isLoadingComments,
+      isLoadingPosts: isLoadingPosts ?? this.isLoadingPosts,
     );
   }
 
@@ -48,6 +58,8 @@ class UserState extends Equatable {
     userPosts,
     userComments,
     isLoadingComments,
+    isLoadingPosts,
     postofComments,
+    savedPosts, // Add to props
   ];
 }

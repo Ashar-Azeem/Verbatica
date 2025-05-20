@@ -30,67 +30,59 @@ class _BottomNavigationBarViewState extends State<BottomNavigationBarView> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(create: (context) => HomeBloc()),
-        // BlocProvider(
-        //   create: (context) => SubjectBloc(),
-        // ),
+    return PersistentTabView(
+      screenTransitionAnimation: ScreenTransitionAnimation.none(),
+      tabs: [
+        PersistentTabConfig(
+          screen: HomeView(),
+          item: ItemConfig(
+            icon: Icon(Icons.home),
+            activeForegroundColor: primaryColor,
+          ),
+        ),
+        PersistentTabConfig(
+          screen: TrendingView(),
+          item: ItemConfig(
+            icon: Icon(Icons.trending_up),
+            activeForegroundColor: primaryColor,
+          ),
+        ),
+        PersistentTabConfig(
+          screen: CreatePostScreen(),
+          item: ItemConfig(
+            icon: Icon(Icons.add_circle_outlined),
+            activeForegroundColor: primaryColor,
+          ),
+        ),
+        PersistentTabConfig(
+          screen: NotificationScreen(),
+          item: ItemConfig(
+            icon: Icon(Icons.notifications_none_sharp),
+            activeForegroundColor: primaryColor,
+          ),
+        ),
+        PersistentTabConfig(
+          screen: ProfileView(),
+          item: ItemConfig(
+            icon: Icon(Icons.person),
+            activeForegroundColor: primaryColor,
+          ),
+        ),
       ],
-      child: PersistentTabView(
-        screenTransitionAnimation: ScreenTransitionAnimation.none(),
-        tabs: [
-          PersistentTabConfig(
-            screen: HomeView(),
-            item: ItemConfig(
-              icon: Icon(Icons.home),
-              activeForegroundColor: primaryColor,
-            ),
-          ),
-          PersistentTabConfig(
-            screen: TrendingView(),
-            item: ItemConfig(
-              icon: Icon(Icons.trending_up),
-              activeForegroundColor: primaryColor,
-            ),
-          ),
-          PersistentTabConfig(
-            screen: CreatePostScreen(),
-            item: ItemConfig(
-              icon: Icon(Icons.add_circle_outlined),
-              activeForegroundColor: primaryColor,
-            ),
-          ),
-          PersistentTabConfig(
-            screen: NotificationScreen(),
-            item: ItemConfig(
-              icon: Icon(Icons.notifications_none_sharp),
-              activeForegroundColor: primaryColor,
-            ),
-          ),
-          PersistentTabConfig(
-            screen: ProfileView(),
-            item: ItemConfig(
-              icon: Icon(Icons.person),
-              activeForegroundColor: primaryColor,
-            ),
-          ),
-        ],
-        navBarBuilder: (p0) {
-          return Style6BottomNavBar(
-            navBarConfig: p0,
-            navBarDecoration: NavBarDecoration(
-              border: Border(
-                top: BorderSide(
-                  color: Colors.grey, // Your desired line color
-                  width: 0.2, // Thickness of the line
-                ),
+      navBarBuilder: (p0) {
+        return Style6BottomNavBar(
+          navBarConfig: p0,
+          navBarDecoration: NavBarDecoration(
+            border: Border(
+              top: BorderSide(
+                color: Colors.grey, // Your desired line color
+                width: 0.2, // Thickness of the line
               ),
-              color: Color.fromARGB(255, 10, 13, 15),
             ),
-          );
-        },
-      ),
+            color: Color.fromARGB(255, 10, 13, 15),
+          ),
+        );
+      },
     );
   }
 }

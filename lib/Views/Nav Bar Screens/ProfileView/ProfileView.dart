@@ -1,17 +1,25 @@
 // ignore_for_file: file_names
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
+import 'package:verbatica/BLOC/Home/home_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
+import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
+import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
+import 'package:verbatica/UI_Components/PostComponents/userpostUI.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/editprofile.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingscreen.dart';
 
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:verbatica/model/Post.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -31,6 +39,7 @@ class _ProfileViewState extends State<ProfileView>
   void initState() {
     super.initState();
     context.read<UserBloc>().add(updateCommentWithPost());
+    context.read<UserBloc>().add(FetchUserPosts());
     _tabController = TabController(length: 3, vsync: this);
     _scrollNotifier = ValueNotifier(0.0);
     _scrollController.addListener(_updateScrollNotifier);
@@ -48,6 +57,43 @@ class _ProfileViewState extends State<ProfileView>
     _scrollController.dispose();
     super.dispose();
   }
+
+  // Add this method to the _ProfileViewState class
+  // Modify the buildUserPostsTab method to add bottom padding
+  Widget buildUserPostsTab(UserState state) {
+    if (state.isLoadingPosts) {
+      // Show shimmer while loading
+      return ListView.builder(
+        // Add bottom padding to account for the navigation bar
+        padding: EdgeInsets.only(bottom: 16.0.h), // Added bottom padding
+        itemCount: 5,
+        itemBuilder: (_, index) => const PostShimmerTile(),
+      );
+    }
+
+    if (state.userPosts.isEmpty) {
+      return _buildEmptyTabContent(
+        icon: Icons.article_outlined,
+        message: 'No posts yet',
+      );
+    }
+
+    return ListView.builder(
+      // Add bottom padding to account for the navigation bar
+      padding: EdgeInsets.only(bottom: 16.0.h), // Added bottom padding
+      itemCount: state.userPosts.length,
+      itemBuilder: (context, index) {
+        final post = state.userPosts[index];
+        return PostTile(
+          post: post,
+          index: index,
+          // onDelete: () => _showDeleteConfirmation(context, post),
+        );
+      },
+    );
+  }
+
+  // Add this method to the _ProfileViewState class
 
   bool _isAppBarCollapsed(double shrinkOffset) {
     // Simpler condition to determine when to show the collapsed state
@@ -175,17 +221,14 @@ class _ProfileViewState extends State<ProfileView>
                           ),
                         ),
                       ],
-                      labelColor: Theme.of(context).primaryColor,
+                      labelColor: Colors.blue,
                       unselectedLabelColor: Colors.grey,
                       labelStyle: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
                       indicator: UnderlineTabIndicator(
-                        borderSide: BorderSide(
-                          width: 3.0,
-                          color: Theme.of(context).primaryColor,
-                        ),
+                        borderSide: BorderSide(width: 3.0, color: Colors.blue),
                         insets: const EdgeInsets.symmetric(horizontal: 16.0),
                       ),
                       dividerColor: Colors.transparent,
@@ -199,12 +242,9 @@ class _ProfileViewState extends State<ProfileView>
             controller: _tabController,
             children: [
               // Posts Tab
-              Builder(
-                builder: (BuildContext context) {
-                  return _buildEmptyTabContent(
-                    icon: Icons.article_outlined,
-                    message: 'No posts yet',
-                  );
+              BlocBuilder<UserBloc, UserState>(
+                builder: (context, state) {
+                  return buildUserPostsTab(state);
                 },
               ),
 
@@ -233,7 +273,8 @@ class _ProfileViewState extends State<ProfileView>
     if (state.isLoadingComments) {
       // Show shimmer while loading
       return ListView.builder(
-        padding: EdgeInsets.zero, // Important for proper scrolling
+        // Add bottom padding to account for the navigation bar
+        padding: EdgeInsets.only(bottom: 16.0.h), // Added bottom padding
         itemCount: 5,
         itemBuilder: (_, index) => const CommentShimmerTile(),
       );
@@ -244,7 +285,8 @@ class _ProfileViewState extends State<ProfileView>
     }
 
     return ListView.builder(
-      padding: EdgeInsets.zero, // Important for proper scrolling
+      // Add bottom padding to account for the navigation bar
+      padding: EdgeInsets.only(bottom: 16.0.h), // Added bottom padding
       itemCount: state.userComments.length,
       itemBuilder: (context, index) {
         final comment = state.userComments[index];
@@ -551,17 +593,14 @@ class _ProfileViewState extends State<ProfileView>
               // About Section Header
               Row(
                 children: [
-                  Icon(
-                    Icons.person_outline,
-                    color: Theme.of(context).primaryColor,
-                  ),
+                  Icon(Icons.person_outline, color: Colors.blue),
                   SizedBox(width: 2.0.w),
                   Text(
                     'About',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).primaryColor,
+                      color: Colors.blue,
                     ),
                   ),
                 ],
@@ -724,6 +763,279 @@ class CommentShimmerTile extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class PostTile extends StatelessWidget {
+  final Post post;
+  // final VoidCallback onDelete;
+  final int index;
+
+  const PostTile({
+    Key? key,
+    required this.post,
+    required this.index,
+    // required this.onDelete,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor.withOpacity(0.7),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.withOpacity(0.2), width: 1),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: UserPostWidget(post: post, index: index, onFullView: false),
+      ),
+
+      // Delete button
+
+      // Post content with expandable text
+      // if (post.description.isNotEmpty)
+      //   Padding(
+      //     padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
+      //     child: ExpandableText(
+      //       post.description,
+      //       expandOnTextTap: true,
+      //       collapseOnTextTap: true,
+      //       expandText: 'show more',
+      //       collapseText: 'show less',
+      //       linkEllipsis: false,
+      //       maxLines: 3,
+      //       style: TextStyle(
+      //         fontSize: 14,
+      //         color: Colors.grey[300],
+      //         height: 1.4,
+      //       ),
+      //       linkColor: Colors.blue,
+      //     ),
+      //   ),
+
+      // // Post image if available (using CachedNetworkImage)
+      // if (post.postImageLink != null)
+      //   CachedNetworkImage(
+      //     imageUrl: post.postImageLink!,
+      //     placeholder:
+      //         (context, url) => Shimmer.fromColors(
+      //           baseColor: const Color.fromARGB(255, 58, 76, 90),
+      //           highlightColor: const Color.fromARGB(255, 81, 106, 125),
+      //           child: AspectRatio(
+      //             aspectRatio: 16 / 9,
+      //             child: Container(color: Colors.white),
+      //           ),
+      //         ),
+      //     errorWidget:
+      //         (context, url, error) => AspectRatio(
+      //           aspectRatio: 16 / 9,
+      //           child: Container(
+      //             color: Colors.grey[200],
+      //             child: const Icon(Icons.error),
+      //           ),
+      //         ),
+      //     fit: BoxFit.cover,
+      //   ),
+
+      // // Video player if video link is available
+      // if (post.postVideoLink != null)
+      //   VideoPlayer(videoUrl: post.postVideoLink!),
+
+      // // Stats and metadata
+      // Padding(
+      //   padding: const EdgeInsets.all(12.0),
+      //   child: Row(
+      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //     children: [
+      //       // Interaction stats (upvotes, downvotes, comments)
+      //       Row(
+      //         children: [
+      //           // Upvotes
+      //           Row(
+      //             children: [
+      //               Icon(
+      //                 Icons.arrow_circle_up_outlined,
+      //                 size: 5.w,
+      //                 color: post.isUpVote ? Colors.blue : Colors.grey,
+      //               ),
+      //               const SizedBox(width: 4),
+      //               Text(
+      //                 '${post.upvotes}',
+      //                 style: TextStyle(
+      //                   color: post.isUpVote ? Colors.blue : Colors.grey,
+      //                   fontWeight: FontWeight.bold,
+      //                 ),
+      //               ),
+      //             ],
+      //           ),
+      //           SizedBox(width: 4.w),
+      //           // Downvotes
+      //           Row(
+      //             children: [
+      //               Icon(
+      //                 Icons.arrow_circle_down_outlined,
+      //                 size: 5.w,
+      //                 color: post.isDownVote ? Colors.blue : Colors.grey,
+      //               ),
+      //               const SizedBox(width: 4),
+      //               Text(
+      //                 '${post.downvotes}',
+      //                 style: TextStyle(
+      //                   color:
+      //                       post.isDownVote ? Colors.blue : Colors.grey,
+      //                   fontWeight: FontWeight.bold,
+      //                 ),
+      //               ),
+      //             ],
+      //           ),
+      //           SizedBox(width: 4.w),
+      //           // Comments
+      //           Row(
+      //             children: [
+      //               Icon(
+      //                 Icons.mode_comment_outlined,
+      //                 size: 5.w,
+      //                 color: Colors.grey,
+      //               ),
+      //               const SizedBox(width: 4),
+      //               Text(
+      //                 '${post.comments}',
+      //                 style: const TextStyle(color: Colors.grey),
+      //               ),
+      //             ],
+      //           ),
+      //         ],
+      //       ),
+
+      //       // Debate/Analytics indicator if applicable
+      //       if (post.isDebate)
+      //         Icon(
+      //           Icons.analytics_outlined,
+      //           size: 5.w,
+      //           color: Colors.blue,
+      //         ),
+
+      //       // Timestamp
+      //       Text(
+      //         timeago.format(post.uploadTime),
+      //         style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+      //       ),
+      //     ],
+      //   ),
+      // ),
+      //   ],
+      // ),
+    );
+  }
+}
+
+class PostShimmerTile extends StatelessWidget {
+  const PostShimmerTile({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor.withOpacity(0.7),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Shimmer.fromColors(
+        baseColor: Colors.grey.shade800,
+        highlightColor: Colors.grey.shade700,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Title shimmer
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    height: 18,
+                    width: MediaQuery.of(context).size.width * 0.6,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade800,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                  const CircleAvatar(radius: 12, backgroundColor: Colors.grey),
+                ],
+              ),
+              const SizedBox(height: 12),
+
+              // Content shimmer
+              Container(
+                height: 14,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade800,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                height: 14,
+                width: MediaQuery.of(context).size.width * 0.8,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade800,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(height: 8),
+              Container(
+                height: 14,
+                width: MediaQuery.of(context).size.width * 0.5,
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade800,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              // Stats shimmer
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        height: 12,
+                        width: 60,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade800,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Container(
+                        height: 12,
+                        width: 60,
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade800,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    height: 10,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade800,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

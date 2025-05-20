@@ -1,24 +1,59 @@
-part of 'otheruser_bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:verbatica/DummyData/UserDummyData.dart';
+import 'package:verbatica/DummyData/dummyPosts.dart';
+import 'package:verbatica/model/Post.dart';
+import 'package:verbatica/model/comment.dart';
+import 'package:verbatica/model/user.dart';
 
 class OtheruserState extends Equatable {
   final User user;
+  final List<Post> userPosts;
+  final List<Comment> userComments;
+  final bool isLoadingComments;
+  final bool isLoadingPosts;
+  final List<Post> postofComments;
 
-  // Proper constructor
-  OtheruserState({User? user}) : user = user ?? _defaultUser();
-
-  // CopyWith method
-  OtheruserState copyWith({User? user}) {
-    return OtheruserState(user: user ?? this.user);
-  }
+  OtheruserState({
+    User? user,
+    List<Post>? userPosts,
+    List<Comment>? userComments,
+    List<Post>? postofComments,
+    this.isLoadingComments = false,
+    this.isLoadingPosts = false,
+  }) : user = user ?? _defaultUser(),
+       userPosts = userPosts ?? forYouPosts,
+       postofComments = postofComments ?? [],
+       userComments = userComments ?? [];
 
   static User _defaultUser() {
     return dummyUser;
   }
 
-  @override
-  List<Object?> get props => [user];
-}
+  OtheruserState copyWith({
+    User? user,
+    List<Post>? userPosts,
+    List<Post>? postofComment,
+    List<Comment>? userComments,
+    bool? isLoadingComments,
+    bool? isLoadingPosts,
+  }) {
+    return OtheruserState(
+      postofComments: postofComment ?? this.postofComments,
+      user: user ?? this.user,
+      userPosts: userPosts ?? this.userPosts,
+      userComments: userComments ?? this.userComments,
+      isLoadingComments: isLoadingComments ?? this.isLoadingComments,
+      isLoadingPosts: isLoadingPosts ?? this.isLoadingPosts,
+    );
+  }
 
-class otheruserStateinitial extends OtheruserState {
-  otheruserStateinitial({required super.user});
+  @override
+  List<Object?> get props => [
+    user,
+    userPosts,
+    userComments,
+    isLoadingComments,
+    isLoadingPosts,
+    postofComments,
+  ];
 }

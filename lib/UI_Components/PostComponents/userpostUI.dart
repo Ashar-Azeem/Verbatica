@@ -6,31 +6,66 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
-import 'package:verbatica/BLOC/Home/home_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/SummaryView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
-import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/otherprofile.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/ProfileView.dart';
 import 'package:verbatica/Views/clusterScreen.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class PostWidget extends StatelessWidget {
+class UserPostWidget extends StatelessWidget {
   final Post post;
   final int index;
-  final String category;
+
   final bool onFullView;
 
-  const PostWidget({
+  const UserPostWidget({
     required this.post,
     super.key,
     required this.index,
-    required this.category,
+
     required this.onFullView,
   });
+  void _showDeleteConfirmation(BuildContext context, Post post) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: const Text(
+            'Delete Post',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          content: const Text(
+            'Are you sure you want to delete this post?',
+            style: TextStyle(color: Colors.white70),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancel', style: TextStyle(color: Colors.grey[400])),
+            ),
+            TextButton(
+              onPressed: () {
+                // Dispatch delete post event
+                context.read<UserBloc>().add(DeleteUserPost(postId: post.id));
+                Navigator.of(context).pop();
+              },
+              child: Text('Delete', style: TextStyle(color: Colors.blue)),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +74,6 @@ class PostWidget extends StatelessWidget {
       child: Center(
         child: SizedBox(
           width: 100.w,
-
           child: Column(
             children: [
               Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
@@ -47,13 +81,12 @@ class PostWidget extends StatelessWidget {
                 height: 5.5.h,
                 child: Padding(
                   padding: EdgeInsets.only(left: 1.w, top: 1.w),
-
                   child: GestureDetector(
                     onTap: () {
                       pushScreen(
                         context,
                         pageTransitionAnimation: PageTransitionAnimation.scale,
-                        screen: otherProfileView(post: post),
+                        screen: ProfileView(), // Navigate to user's own profile
                         withNavBar: false,
                       );
                     },
@@ -95,7 +128,7 @@ class PostWidget extends StatelessWidget {
                                 screen: SummaryScreen(
                                   showClusters: true,
                                   clusters: post.clusters,
-                                  postId: '',
+                                  postId: post.id,
                                 ),
                                 withNavBar: false,
                               );
@@ -106,18 +139,16 @@ class PostWidget extends StatelessWidget {
                                     PageTransitionAnimation.scale,
                                 screen: SummaryScreen(
                                   showClusters: false,
-                                  postId: '',
+                                  postId: post.id,
                                 ),
                                 withNavBar: false,
                               );
                             }
-                            ;
                           },
                           style: TextButton.styleFrom(
                             shape: StadiumBorder(),
-
-                            backgroundColor: primaryColor, // Button color
-                            foregroundColor: Colors.white, // Text color
+                            backgroundColor: primaryColor,
+                            foregroundColor: Colors.white,
                           ),
                           child: Text(
                             'Summary',
@@ -130,22 +161,18 @@ class PostWidget extends StatelessWidget {
                         PopupMenuButton<String>(
                           icon: Icon(Icons.more_vert),
                           onSelected: (String value) {
-                            if (value == "report") {
-                              context.read<HomeBloc>().add(
-                                ReportPost(
-                                  index: index,
-                                  category: category,
-                                  postId: post.id,
-                                ),
-                              );
-                            } else if (value == "save") {
-                              // context.read<HomeBloc>().add(
-                              // SavePost(post: post)
+                            if (value == "edit") {
+                              // context.read<UserBloc>().add(
+                              //   EditUserPost(postId: post.id),
                               // );
-                            } else if (value == "share") {
-                              context.read<HomeBloc>().add(
-                                SharePost(post: post),
+                            } else if (value == "delete") {
+                              context.read<UserBloc>().add(
+                                DeleteUserPost(postId: post.id),
                               );
+                            } else if (value == "share") {
+                              // context.read<UserBloc>().add(
+                              //   ShareUserPost(post: post),
+                              // );
                             }
                           },
                           itemBuilder:
@@ -153,32 +180,27 @@ class PostWidget extends StatelessWidget {
                                 BuildContext context,
                               ) => <PopupMenuEntry<String>>[
                                 const PopupMenuItem<String>(
-                                  value: 'report',
+                                  value: 'edit',
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceAround,
                                     children: [
-                                      Icon(
-                                        Icons.report_gmailerrorred,
-                                        color: Colors.white,
-                                      ),
-
-                                      Text('Report'),
+                                      Icon(Icons.edit, color: Colors.white),
+                                      Text('Edit'),
                                     ],
                                   ),
                                 ),
                                 const PopupMenuItem<String>(
-                                  value: 'save',
+                                  value: 'delete',
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceAround,
                                     children: [
-                                      Icon(Icons.save, color: Colors.white),
-                                      Text('Save'),
+                                      Icon(Icons.delete, color: Colors.white),
+                                      Text('Delete'),
                                     ],
                                   ),
                                 ),
-
                                 const PopupMenuItem<String>(
                                   value: 'share',
                                   child: Row(
@@ -228,7 +250,6 @@ class PostWidget extends StatelessWidget {
                       linkEllipsis: false,
                       maxLines: 2,
                       style: const TextStyle(fontSize: 15, color: Colors.white),
-
                       linkColor: primaryColor,
                     ),
                   ),
@@ -282,18 +303,14 @@ class PostWidget extends StatelessWidget {
                         pageTransitionAnimation: PageTransitionAnimation.scale,
                         screen: MultiBlocProvider(
                           providers: [
-                            BlocProvider<HomeBloc>.value(
-                              value:
-                                  context
-                                      .read<
-                                        HomeBloc
-                                      >(), // Passing existing bloc
+                            BlocProvider<UserBloc>.value(
+                              value: context.read<UserBloc>(),
                             ),
                           ],
                           child: ViewDiscussion(
                             post: post,
                             index: index,
-                            category: category,
+                            category: '',
                           ),
                         ),
                         withNavBar: false,
@@ -318,13 +335,14 @@ class PostWidget extends StatelessWidget {
                             horizontal: 0.5.w,
                             vertical: 0.5.w,
                           ),
-                          child: BlocBuilder<HomeBloc, HomeState>(
+                          child: BlocBuilder<UserBloc, UserState>(
                             builder: (context, state) {
                               Post dynamicpost;
-                              if (category == 'ForYou') {
-                                dynamicpost = state.forYou[index];
-                              } else if (category == 'Following') {
-                                dynamicpost = state.following[index];
+                              if (state.userPosts.isNotEmpty) {
+                                dynamicpost = state.userPosts.firstWhere(
+                                  (p) => p.id == post.id,
+                                  orElse: () => post,
+                                );
                               } else {
                                 dynamicpost = post;
                               }
@@ -332,11 +350,9 @@ class PostWidget extends StatelessWidget {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      context.read<HomeBloc>().add(
-                                        UpVotePost(
-                                          index: index,
-                                          category: category,
-                                        ),
+                                      // No need to upvote your own post
+                                      context.read<UserBloc>().add(
+                                        upvotePost(index: index),
                                       );
                                     },
                                     child: Row(
@@ -348,12 +364,11 @@ class PostWidget extends StatelessWidget {
                                             Icons.arrow_circle_up_outlined,
                                             size: 7.w,
                                             color:
-                                                dynamicpost.isUpVote
-                                                    ? primaryColor
-                                                    : Colors.white,
+                                                post.isUpVote
+                                                    ? Colors.blue
+                                                    : Colors.grey,
                                           ),
                                         ),
-
                                         Text(
                                           "${dynamicpost.upvotes - dynamicpost.downvotes}",
                                           style: TextStyle(
@@ -372,28 +387,22 @@ class PostWidget extends StatelessWidget {
                                     height: 6.h,
                                     color: Color.fromARGB(255, 70, 79, 87),
                                   ),
-
                                   IconButton(
                                     splashColor: Colors.transparent,
                                     highlightColor: Colors.transparent,
-
                                     onPressed: () {
-                                      context.read<HomeBloc>().add(
-                                        DownVotePost(
-                                          index: index,
-                                          category: category,
-                                        ),
+                                      context.read<UserBloc>().add(
+                                        downvotePost(index: index),
                                       );
                                     },
                                     padding: EdgeInsets.zero,
                                     icon: Icon(
                                       size: 7.w,
-
                                       Icons.arrow_circle_down_outlined,
                                       color:
-                                          dynamicpost.isDownVote
-                                              ? primaryColor
-                                              : Colors.white,
+                                          post.isDownVote
+                                              ? Colors.blue
+                                              : Colors.grey,
                                     ),
                                   ),
                                 ],
@@ -421,23 +430,22 @@ class PostWidget extends StatelessWidget {
                                 children: [
                                   IconButton(
                                     onPressed: () {
-                                      //Move to the full view of the post with all the comments
                                       pushScreen(
                                         context,
                                         pageTransitionAnimation:
                                             PageTransitionAnimation.scale,
                                         screen: MultiBlocProvider(
                                           providers: [
-                                            BlocProvider<HomeBloc>(
+                                            BlocProvider<UserBloc>(
                                               create:
                                                   (_) =>
-                                                      context.read<HomeBloc>(),
+                                                      context.read<UserBloc>(),
                                             ),
                                           ],
                                           child: ViewDiscussion(
                                             post: post,
                                             index: index,
-                                            category: category,
+                                            category: '',
                                           ),
                                         ),
                                         withNavBar: false,
@@ -466,8 +474,6 @@ class PostWidget extends StatelessWidget {
                             )
                             : SizedBox.shrink(),
 
-                        const Spacer(flex: 10),
-
                         // Sentiment Analysis Button
                         post.isDebate
                             ? IconButton(
@@ -483,7 +489,6 @@ class PostWidget extends StatelessWidget {
                                   withNavBar: false,
                                 );
                               },
-
                               icon: Icon(
                                 Icons.analytics_outlined,
                                 size: 7.w,
@@ -491,7 +496,33 @@ class PostWidget extends StatelessWidget {
                               ),
                             )
                             : SizedBox.shrink(),
-                        Spacer(flex: 1),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.red,
+                          ),
+                          onPressed: () {
+                            _showDeleteConfirmation(context, post);
+                          },
+                          tooltip: 'Delete post',
+                        ),
+                        // Edit post button - only available for user's own posts
+                        Expanded(
+                          child: IconButton(
+                            onPressed: () {
+                              // context.read<UserBloc>().add(
+                              //       EditUserPost(postId: post.id),
+                              //     );
+                            },
+                            icon: Icon(
+                              Icons.edit,
+                              size: 7.w,
+                              color: Colors.white70,
+                            ),
+                          ),
+                        ),
+
+                        Spacer(flex: 2),
                       ],
                     ),
                   ),

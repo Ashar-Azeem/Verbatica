@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:verbatica/model/user.dart';
+import 'package:verbatica/model/Post.dart';
 
 abstract class UserEvent {}
 
@@ -27,3 +28,37 @@ class UpdateAbout extends UserEvent {
 }
 
 class updateCommentWithPost extends UserEvent {}
+
+// New event for fetching user posts
+class FetchUserPosts extends UserEvent {}
+
+// New event for deleting a user post
+class DeleteUserPost extends UserEvent {
+  final String postId;
+  DeleteUserPost({required this.postId});
+}
+
+// New event for saving a post
+class SavePost extends UserEvent {
+  final Post post;
+  SavePost({required this.post});
+}
+
+// New event for unsaving a post
+class UnsavePost extends UserEvent {
+  final Post post;
+  UnsavePost({required this.post});
+}
+
+// New event for fetching saved posts
+class FetchSavedPosts extends UserEvent {}
+
+class upvotePost extends UserEvent {
+  final int index;
+  upvotePost({required this.index});
+}
+
+class downvotePost extends UserEvent {
+  final int index;
+  downvotePost({required this.index});
+}

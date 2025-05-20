@@ -13,3 +13,14 @@ class fetchUserinfo extends OtheruserEvent {
   String Userid;
   fetchUserinfo({required this.Userid});
 }
+
+class updateCommentWithPost extends OtheruserEvent {}
+
+// New event for fetching user posts
+class FetchUserPosts extends OtheruserEvent {}
+
+// New event for deleting a user post
+class DeleteUserPost extends OtheruserEvent {
+  final String postId;
+  DeleteUserPost({required this.postId});
+}

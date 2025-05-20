@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/report/report_bloc.dart';
 import 'package:verbatica/BLOC/report/report_event.dart';
 import 'package:verbatica/Utilities/DialogueBox.dart';
 import 'package:verbatica/Views/settingviews/aboutus.dart';
 import 'package:verbatica/Views/settingviews/privacypolicy.dart';
 import 'package:verbatica/Views/settingviews/reportdata.dart'; // Import your reports screen
-import 'package:flutter_bloc/flutter_bloc.dart'; // Import your report bloc
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:verbatica/Views/settingviews/savedpost.dart'; // Import your report bloc
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -127,9 +130,16 @@ class SettingsScreen extends StatelessWidget {
     switch (screenName) {
       case 'saved_posts':
         // Navigate to saved posts screen
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Navigate to Saved Posts Screen')),
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder:
+                (context) => BlocProvider(
+                  create: (context) => UserBloc()..add(FetchSavedPosts()),
+                  child: SavedPostsScreen(),
+                ),
+          ),
         );
+
         break;
 
       case 'report_feedback':
