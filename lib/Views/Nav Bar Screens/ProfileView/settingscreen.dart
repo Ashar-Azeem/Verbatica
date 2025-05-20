@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:verbatica/BLOC/report/report_bloc.dart';
+import 'package:verbatica/BLOC/report/report_event.dart';
 import 'package:verbatica/Utilities/DialogueBox.dart';
+import 'package:verbatica/Views/settingviews/aboutus.dart';
+import 'package:verbatica/Views/settingviews/privacypolicy.dart';
+import 'package:verbatica/Views/settingviews/reportdata.dart'; // Import your reports screen
+import 'package:flutter_bloc/flutter_bloc.dart'; // Import your report bloc
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -47,11 +53,14 @@ class SettingsScreen extends StatelessWidget {
                     title: 'Explore Saved posts',
                     icon: Icons.bookmark_outline,
                     iconColor: Colors.blue,
+                    onTap: () => _navigateToScreen(context, 'saved_posts'),
                   ),
+
                   _buildSettingData(
                     title: 'Explore Report feedback',
                     icon: Icons.flag_outlined,
                     iconColor: Colors.orange,
+                    onTap: () => _navigateToScreen(context, 'report_feedback'),
                   ),
                 ]),
 
@@ -61,11 +70,13 @@ class SettingsScreen extends StatelessWidget {
                     title: 'Reset content preferences',
                     icon: Icons.restart_alt_outlined,
                     iconColor: Colors.green,
+                    onTap: () => _showResetPreferencesDialog(context),
                   ),
                   _buildSettingData(
                     title: 'Reset password',
                     icon: Icons.lock_outline,
                     iconColor: Colors.purple,
+                    onTap: () => _navigateToScreen(context, 'reset_password'),
                   ),
                   _buildSettingData(
                     title: 'Dark mode',
@@ -75,6 +86,7 @@ class SettingsScreen extends StatelessWidget {
                       value: Theme.of(context).brightness == Brightness.dark,
                       onChanged: (val) {
                         // Toggle theme would go here if implemented
+                        _toggleTheme(context);
                       },
                       activeColor: Colors.blue,
                     ),
@@ -87,16 +99,19 @@ class SettingsScreen extends StatelessWidget {
                     title: 'About us',
                     icon: Icons.info_outline,
                     iconColor: Colors.blue,
+                    onTap: () => _navigateToScreen(context, 'about_us'),
                   ),
                   _buildSettingData(
                     title: 'Privacy Policy',
                     icon: Icons.privacy_tip_outlined,
                     iconColor: Colors.teal,
+                    onTap: () => _navigateToScreen(context, 'privacy_policy'),
                   ),
                   _buildSettingData(
                     title: 'Logout',
                     icon: Icons.logout,
                     iconColor: Colors.red,
+                    onTap: () => showLogoutDialog(context),
                   ),
                 ]),
               ],
@@ -104,6 +119,105 @@ class SettingsScreen extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  // Method to navigate to appropriate screens
+  void _navigateToScreen(BuildContext context, String screenName) {
+    switch (screenName) {
+      case 'saved_posts':
+        // Navigate to saved posts screen
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Navigate to Saved Posts Screen')),
+        );
+        break;
+
+      case 'report_feedback':
+        // Navigate to report feedback screen using BLoC
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder:
+                (context) => BlocProvider(
+                  create:
+                      (context) =>
+                          ReportBloc()..add(
+                            FetchUserReports(
+                              'user123', // Replace with actual user ID from your auth system
+                            ),
+                          ),
+                  child: UserReportsScreen(),
+                ),
+          ),
+        );
+        break;
+
+      case 'reset_password':
+        // Navigate to reset password screen
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Navigate to Reset Password Screen')),
+        );
+        break;
+
+      case 'about_us':
+        // Navigate to about us screen
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (context) => AboutUsScreen()));
+
+        break;
+
+      case 'privacy_policy':
+        // Navigate to privacy policy screen
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (context) => PrivacyPolicyContent()));
+
+        break;
+
+      default:
+        // Default case
+        break;
+    }
+  }
+
+  // Reset content preferences dialog
+  void _showResetPreferencesDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text('Reset Content Preferences'),
+            content: Text(
+              'Are you sure you want to reset all your content preferences? This action cannot be undone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  // Implement reset preferences logic here
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Content preferences have been reset'),
+                    ),
+                  );
+                },
+                child: Text('Reset'),
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+              ),
+            ],
+          ),
+    );
+  }
+
+  // Toggle theme function (placeholder)
+  void _toggleTheme(BuildContext context) {
+    // This would be implemented with your theme provider
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Theme toggle would be implemented here')),
     );
   }
 
@@ -160,6 +274,7 @@ class SettingsScreen extends StatelessWidget {
                 icon: item.icon,
                 iconColor: item.iconColor,
                 trailing: item.trailing,
+                onTap: item.onTap,
               ),
               if (index < items.length - 1)
                 Padding(
@@ -179,6 +294,7 @@ class SettingsScreen extends StatelessWidget {
     IconData? icon,
     Color? iconColor,
     Widget? trailing,
+    VoidCallback? onTap,
   }) {
     final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final bool isLogout = title == 'Logout';
@@ -221,19 +337,7 @@ class SettingsScreen extends StatelessWidget {
             ),
       ),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      onTap: () {
-        switch (title) {
-          case 'Logout':
-            showLogoutDialog(context);
-            break;
-          case 'Reset password':
-            // Implement reset password logic
-            break;
-          case 'About us':
-            // Navigate to about us screen
-            break;
-        }
-      },
+      onTap: onTap,
     );
   }
 }
@@ -244,12 +348,14 @@ class SettingData {
   final IconData icon;
   final Color iconColor;
   final Widget? trailing;
+  final VoidCallback? onTap;
 
   SettingData({
     required this.title,
     required this.icon,
     required this.iconColor,
     this.trailing,
+    this.onTap,
   });
 }
 
@@ -259,11 +365,13 @@ SettingData _buildSettingData({
   required IconData icon,
   required Color iconColor,
   Widget? trailing,
+  VoidCallback? onTap,
 }) {
   return SettingData(
     title: title,
     icon: icon,
     iconColor: iconColor,
     trailing: trailing,
+    onTap: onTap,
   );
 }
