@@ -650,10 +650,10 @@ class AnimatedCount extends ImplicitlyAnimatedWidget {
     super.key,
     required this.count,
     required this.style,
-    required Duration duration,
+    required super.duration,
     this.prefix = '',
     this.suffix = '',
-  }) : super(duration: duration);
+  });
 
   @override
   ImplicitlyAnimatedWidgetState<ImplicitlyAnimatedWidget> createState() =>

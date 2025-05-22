@@ -30,7 +30,7 @@ class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
           "Patterns emerging from the noise.",
         ];
         final phrase = phrases[index % phrases.length];
-        return "$phrase";
+        return phrase;
       });
 
       emit(SummaryLoaded(bulletPoints));

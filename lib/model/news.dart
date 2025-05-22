@@ -54,6 +54,30 @@ class News extends Equatable {
     };
   }
 
+  News copyWith({
+    String? newsId,
+    String? title,
+    String? description,
+    String? url,
+    String? image,
+    DateTime? publishedAt,
+    String? sourceName,
+    String? sourceUrl,
+    List<Post>? discussions,
+  }) {
+    return News(
+      newsId: newsId ?? this.newsId,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      url: url ?? this.url,
+      image: image ?? this.image,
+      publishedAt: publishedAt ?? this.publishedAt,
+      sourceName: sourceName ?? this.sourceName,
+      sourceUrl: sourceUrl ?? this.sourceUrl,
+      discussions: discussions ?? this.discussions,
+    );
+  }
+
   @override
   List<Object?> get props => [
     newsId,

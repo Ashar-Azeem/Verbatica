@@ -342,7 +342,7 @@ class _ProfileViewState extends State<otherProfileView>
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
-                              state.user?.about ?? 'No bio added yet.',
+                              state.user.about ?? 'No bio added yet.',
                               style: TextStyle(
                                 fontSize: 15,
                                 height: 1.5,
@@ -359,7 +359,7 @@ class _ProfileViewState extends State<otherProfileView>
                             iconColor: Colors.blue[700]!,
                             label: 'Member since',
                             value: formatJoinedDate(
-                              state.user?.joinedDate ?? DateTime.now(),
+                              state.user.joinedDate ?? DateTime.now(),
                             ),
                           ),
 
@@ -370,7 +370,7 @@ class _ProfileViewState extends State<otherProfileView>
                             icon: Icons.location_on,
                             iconColor: Colors.red[400]!,
                             label: 'Location',
-                            value: state.user?.country ?? 'Unknown',
+                            value: state.user.country ?? 'Unknown',
                           ),
                         ],
                       );
@@ -521,7 +521,7 @@ class _ProfileViewState extends State<otherProfileView>
                                 ),
                                 SizedBox(width: 1.0.w),
                                 Text(
-                                  '${state.user?.karma ?? 0} Aura',
+                                  '${state.user.karma ?? 0} Aura',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -544,7 +544,7 @@ class _ProfileViewState extends State<otherProfileView>
                               ),
                               SizedBox(width: 1.0.w),
                               Text(
-                                'Member since ${formatJoinedDate(state.user?.joinedDate ?? DateTime.now())}',
+                                'Member since ${formatJoinedDate(state.user.joinedDate ?? DateTime.now())}',
                                 style: TextStyle(
                                   color: Colors.grey[600],
                                   fontSize: 14,
@@ -733,8 +733,7 @@ class CommentShimmerTile extends StatelessWidget {
 class PostTile extends StatelessWidget {
   final Post post;
   final int index;
-  const PostTile({Key? key, required this.index, required this.post})
-    : super(key: key);
+  const PostTile({super.key, required this.index, required this.post});
 
   @override
   Widget build(BuildContext context) {
@@ -751,7 +750,7 @@ class PostTile extends StatelessWidget {
 }
 
 class PostShimmerTile extends StatelessWidget {
-  const PostShimmerTile({Key? key}) : super(key: key);
+  const PostShimmerTile({super.key});
 
   @override
   Widget build(BuildContext context) {

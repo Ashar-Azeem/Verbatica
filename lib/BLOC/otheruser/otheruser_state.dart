@@ -38,7 +38,7 @@ class OtheruserState extends Equatable {
     bool? isLoadingPosts,
   }) {
     return OtheruserState(
-      postofComments: postofComment ?? this.postofComments,
+      postofComments: postofComment ?? postofComments,
       user: user ?? this.user,
       userPosts: userPosts ?? this.userPosts,
       userComments: userComments ?? this.userComments,

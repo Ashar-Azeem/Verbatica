@@ -11,11 +11,11 @@ class SummaryScreen extends StatelessWidget {
   final String postId;
 
   const SummaryScreen({
-    Key? key,
+    super.key,
     required this.showClusters,
     required this.postId,
     this.clusters,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

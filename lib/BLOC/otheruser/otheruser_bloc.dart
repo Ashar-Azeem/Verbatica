@@ -6,7 +6,6 @@ import 'package:verbatica/DummyData/comments.dart';
 import 'package:verbatica/DummyData/dummyPosts.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/comment.dart';
-import 'package:verbatica/model/user.dart';
 
 part 'otheruser_event.dart';
 

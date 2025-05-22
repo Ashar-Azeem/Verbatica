@@ -77,7 +77,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Container(
+                  SizedBox(
                     height: 300,
                     width: double.maxFinite,
                     child: GridView.builder(

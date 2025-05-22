@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
-  const PrivacyPolicyScreen({Key? key}) : super(key: key);
+  const PrivacyPolicyScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Colors.transparent,
@@ -33,7 +33,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
 }
 
 class PrivacyPolicyContent extends StatelessWidget {
-  const PrivacyPolicyContent({Key? key}) : super(key: key);
+  const PrivacyPolicyContent({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +43,7 @@ class PrivacyPolicyContent extends StatelessWidget {
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           colors: [
-            Theme.of(context).colorScheme.background,
+            Theme.of(context).colorScheme.surface,
             const Color(0xFF0A101D),
           ],
         ),

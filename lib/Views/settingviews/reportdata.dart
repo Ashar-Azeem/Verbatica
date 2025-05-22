@@ -8,7 +8,7 @@ import 'package:verbatica/BLOC/report/report_state.dart';
 import 'package:verbatica/model/report.dart';
 
 class UserReportsScreen extends StatelessWidget {
-  const UserReportsScreen({Key? key}) : super(key: key);
+  const UserReportsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

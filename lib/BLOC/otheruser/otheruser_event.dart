@@ -27,4 +27,5 @@ class upvotePost extends OtheruserEvent {
 class downvotePost extends OtheruserEvent {
   final int index;
   downvotePost({required this.index});
+  // New event for deleting a user post
 }

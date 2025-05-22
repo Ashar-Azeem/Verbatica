@@ -135,7 +135,7 @@ class SettingsScreen extends StatelessWidget {
             builder:
                 (context) => BlocProvider(
                   create: (context) => UserBloc()..add(FetchSavedPosts()),
-                  child: SavedPostScreen(),
+                  child: SavedPostsScreen(),
                 ),
           ),
         );
@@ -215,8 +215,8 @@ class SettingsScreen extends StatelessWidget {
                     ),
                   );
                 },
-                child: Text('Reset'),
                 style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: Text('Reset'),
               ),
             ],
           ),
