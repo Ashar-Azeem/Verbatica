@@ -14,7 +14,8 @@ class OtheruserBloc extends Bloc<OtheruserEvent, OtheruserState> {
   OtheruserBloc() : super(OtheruserState()) {
     on<updateCommentWithPost>(_onupdateComment);
     on<FetchUserPosts>(_onFetchUserPosts);
-
+    on<upvotePost>(_UpvotePost);
+    on<downvotePost>(_downvotePost);
     // Automatically fetch user posts when the bloc is created
     add(FetchUserPosts());
     on<fetchUserinfo>((event, emit) async {
@@ -26,6 +27,46 @@ class OtheruserBloc extends Bloc<OtheruserEvent, OtheruserState> {
 
       emit(state.copyWith(user: fetchedUser));
     });
+  }
+  void _UpvotePost(upvotePost event, Emitter<OtheruserState> emit) {
+    print('dhsfdsjhgdfjshgbfvsjbgfusgigfsiyfgwrifewrgfwiefevwukdvwfcrjtw');
+    List<Post> posts = List.from(state.userPosts);
+    if (!posts[event.index].isUpVote) {
+      if (posts[event.index].isDownVote) {
+        posts[event.index] = posts[event.index].copyWith(
+          isDownVote: false,
+          isUpVote: true,
+          upvotes: posts[event.index].upvotes + 2,
+        );
+        emit(state.copyWith(userPosts: posts));
+      } else {
+        posts[event.index] = posts[event.index].copyWith(
+          isUpVote: true,
+          upvotes: posts[event.index].upvotes + 1,
+        );
+        emit(state.copyWith(userPosts: posts));
+      }
+    }
+  }
+
+  void _downvotePost(downvotePost event, Emitter<OtheruserState> emit) {
+    List<Post> posts = List.from(state.userPosts);
+    if (!posts[event.index].isDownVote) {
+      if (posts[event.index].isUpVote) {
+        posts[event.index] = posts[event.index].copyWith(
+          isDownVote: true,
+          isUpVote: false,
+          upvotes: posts[event.index].upvotes - 2,
+        );
+        emit(state.copyWith(userPosts: posts));
+      } else {
+        posts[event.index] = posts[event.index].copyWith(
+          isDownVote: true,
+          upvotes: posts[event.index].upvotes - 1,
+        );
+        emit(state.copyWith(userPosts: posts));
+      }
+    }
   }
 
   void _onupdateComment(

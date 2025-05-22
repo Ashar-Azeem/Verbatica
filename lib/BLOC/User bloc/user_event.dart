@@ -62,3 +62,13 @@ class downvotePost extends UserEvent {
   final int index;
   downvotePost({required this.index});
 }
+
+class upvotesavedPost extends UserEvent {
+  final int index;
+  upvotesavedPost({required this.index});
+}
+
+class downvotesavedPost extends UserEvent {
+  final int index;
+  downvotesavedPost({required this.index});
+}

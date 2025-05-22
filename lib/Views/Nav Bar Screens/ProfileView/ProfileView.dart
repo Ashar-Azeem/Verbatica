@@ -792,7 +792,12 @@ class PostTile extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: UserPostWidget(post: post, index: index, onFullView: false),
+        child: UserPostWidget(
+          post: post,
+          index: index,
+          onFullView: false,
+          category: 'user',
+        ),
       ),
 
       // Delete button

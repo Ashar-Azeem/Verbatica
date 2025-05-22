@@ -14,6 +14,7 @@ import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/SummaryView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/ProfileView.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/otherprofile.dart';
 import 'package:verbatica/Views/clusterScreen.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -21,16 +22,17 @@ import 'package:timeago/timeago.dart' as timeago;
 class UserPostWidget extends StatelessWidget {
   final Post post;
   final int index;
-
+  final String category;
   final bool onFullView;
 
   const UserPostWidget({
     required this.post,
     super.key,
     required this.index,
-
+    required this.category,
     required this.onFullView,
   });
+
   void _showDeleteConfirmation(BuildContext context, Post post) {
     showDialog(
       context: context,
@@ -69,6 +71,8 @@ class UserPostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool isUserPost = category == 'user';
+
     return Padding(
       padding: EdgeInsets.only(bottom: 1.5.h),
       child: Center(
@@ -86,7 +90,12 @@ class UserPostWidget extends StatelessWidget {
                       pushScreen(
                         context,
                         pageTransitionAnimation: PageTransitionAnimation.scale,
-                        screen: ProfileView(), // Navigate to user's own profile
+                        screen:
+                            isUserPost
+                                ? ProfileView() // Navigate to user's own profile
+                                : otherProfileView(
+                                  post: post,
+                                ), // Navigate to other user's profile
                         withNavBar: false,
                       );
                     },
@@ -161,58 +170,129 @@ class UserPostWidget extends StatelessWidget {
                         PopupMenuButton<String>(
                           icon: Icon(Icons.more_vert),
                           onSelected: (String value) {
-                            if (value == "edit") {
-                              // context.read<UserBloc>().add(
-                              //   EditUserPost(postId: post.id),
-                              // );
-                            } else if (value == "delete") {
-                              context.read<UserBloc>().add(
-                                DeleteUserPost(postId: post.id),
-                              );
-                            } else if (value == "share") {
-                              // context.read<UserBloc>().add(
-                              //   ShareUserPost(post: post),
-                              // );
+                            if (isUserPost) {
+                              // User's own posts - edit/delete/share options
+                              if (value == "edit") {
+                                // context.read<UserBloc>().add(
+                                //   EditUserPost(postId: post.id),
+                                // );
+                              } else if (value == "delete") {
+                                context.read<UserBloc>().add(
+                                  DeleteUserPost(postId: post.id),
+                                );
+                              } else if (value == "share") {
+                                // context.read<UserBloc>().add(
+                                //   ShareUserPost(post: post),
+                                // );
+                              }
+                            } else {
+                              // Saved posts - report/save/share options
+                              if (value == "report") {
+                                // context.read<UserBloc>().add(
+                                //   ReportPost(postId: post.id),
+                                // );
+                              } else if (value == "unsave") {
+                                context.read<UserBloc>().add(
+                                  UnsavePost(post: post),
+                                );
+                              } else if (value == "share") {
+                                // context.read<UserBloc>().add(
+                                //   SharePost(post: post),
+                                // );
+                              }
                             }
                           },
                           itemBuilder:
-                              (
-                                BuildContext context,
-                              ) => <PopupMenuEntry<String>>[
-                                const PopupMenuItem<String>(
-                                  value: 'edit',
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Icon(Icons.edit, color: Colors.white),
-                                      Text('Edit'),
-                                    ],
-                                  ),
-                                ),
-                                const PopupMenuItem<String>(
-                                  value: 'delete',
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Icon(Icons.delete, color: Colors.white),
-                                      Text('Delete'),
-                                    ],
-                                  ),
-                                ),
-                                const PopupMenuItem<String>(
-                                  value: 'share',
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Icon(Icons.share, color: Colors.white),
-                                      Text('Share'),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                              (BuildContext context) =>
+                                  isUserPost
+                                      ? <PopupMenuEntry<String>>[
+                                        const PopupMenuItem<String>(
+                                          value: 'edit',
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Icon(
+                                                Icons.edit,
+                                                color: Colors.white,
+                                              ),
+                                              Text('Edit'),
+                                            ],
+                                          ),
+                                        ),
+                                        const PopupMenuItem<String>(
+                                          value: 'delete',
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Icon(
+                                                Icons.delete,
+                                                color: Colors.white,
+                                              ),
+                                              Text('Delete'),
+                                            ],
+                                          ),
+                                        ),
+                                        const PopupMenuItem<String>(
+                                          value: 'share',
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Icon(
+                                                Icons.share,
+                                                color: Colors.white,
+                                              ),
+                                              Text('Share'),
+                                            ],
+                                          ),
+                                        ),
+                                      ]
+                                      : <PopupMenuEntry<String>>[
+                                        const PopupMenuItem<String>(
+                                          value: 'report',
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Icon(
+                                                Icons.report_gmailerrorred,
+                                                color: Colors.white,
+                                              ),
+                                              Text('Report'),
+                                            ],
+                                          ),
+                                        ),
+                                        const PopupMenuItem<String>(
+                                          value: 'unsave',
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Icon(
+                                                Icons.bookmark_remove,
+                                                color: Colors.white,
+                                              ),
+                                              Text('Unsave'),
+                                            ],
+                                          ),
+                                        ),
+                                        const PopupMenuItem<String>(
+                                          value: 'share',
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Icon(
+                                                Icons.share,
+                                                color: Colors.white,
+                                              ),
+                                              Text('Share'),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                         ),
                       ],
                     ),
@@ -310,7 +390,7 @@ class UserPostWidget extends StatelessWidget {
                           child: ViewDiscussion(
                             post: post,
                             index: index,
-                            category: '',
+                            category: category,
                           ),
                         ),
                         withNavBar: false,
@@ -338,11 +418,18 @@ class UserPostWidget extends StatelessWidget {
                           child: BlocBuilder<UserBloc, UserState>(
                             builder: (context, state) {
                               Post dynamicpost;
-                              if (state.userPosts.isNotEmpty) {
-                                dynamicpost = state.userPosts.firstWhere(
-                                  (p) => p.id == post.id,
-                                  orElse: () => post,
-                                );
+                              if (category == 'user') {
+                                if (state.userPosts.isNotEmpty) {
+                                  dynamicpost = state.userPosts.firstWhere(
+                                    (p) => p.id == post.id,
+                                    orElse: () => post,
+                                  );
+                                } else {
+                                  dynamicpost = post;
+                                }
+                              } else if (category == 'saved') {
+                                // For saved posts, get from saved posts list
+                                dynamicpost = state.savedPosts[index];
                               } else {
                                 dynamicpost = post;
                               }
@@ -350,10 +437,16 @@ class UserPostWidget extends StatelessWidget {
                                 children: [
                                   GestureDetector(
                                     onTap: () {
-                                      // No need to upvote your own post
-                                      context.read<UserBloc>().add(
-                                        upvotePost(index: index),
-                                      );
+                                      if (category == 'user') {
+                                        context.read<UserBloc>().add(
+                                          upvotePost(index: index),
+                                        );
+                                      } else {
+                                        // For saved posts, use different event
+                                        context.read<UserBloc>().add(
+                                          upvotesavedPost(index: index),
+                                        );
+                                      }
                                     },
                                     child: Row(
                                       children: [
@@ -364,8 +457,8 @@ class UserPostWidget extends StatelessWidget {
                                             Icons.arrow_circle_up_outlined,
                                             size: 7.w,
                                             color:
-                                                post.isUpVote
-                                                    ? Colors.blue
+                                                dynamicpost.isUpVote
+                                                    ? primaryColor
                                                     : Colors.grey,
                                           ),
                                         ),
@@ -391,17 +484,24 @@ class UserPostWidget extends StatelessWidget {
                                     splashColor: Colors.transparent,
                                     highlightColor: Colors.transparent,
                                     onPressed: () {
-                                      context.read<UserBloc>().add(
-                                        downvotePost(index: index),
-                                      );
+                                      if (category == 'user') {
+                                        context.read<UserBloc>().add(
+                                          downvotePost(index: index),
+                                        );
+                                      } else {
+                                        // For saved posts, use different event
+                                        context.read<UserBloc>().add(
+                                          downvotesavedPost(index: index),
+                                        );
+                                      }
                                     },
                                     padding: EdgeInsets.zero,
                                     icon: Icon(
                                       size: 7.w,
                                       Icons.arrow_circle_down_outlined,
                                       color:
-                                          post.isDownVote
-                                              ? Colors.blue
+                                          dynamicpost.isDownVote
+                                              ? primaryColor
                                               : Colors.grey,
                                     ),
                                   ),
@@ -436,16 +536,14 @@ class UserPostWidget extends StatelessWidget {
                                             PageTransitionAnimation.scale,
                                         screen: MultiBlocProvider(
                                           providers: [
-                                            BlocProvider<UserBloc>(
-                                              create:
-                                                  (_) =>
-                                                      context.read<UserBloc>(),
+                                            BlocProvider<UserBloc>.value(
+                                              value: context.read<UserBloc>(),
                                             ),
                                           ],
                                           child: ViewDiscussion(
                                             post: post,
                                             index: index,
-                                            category: '',
+                                            category: category,
                                           ),
                                         ),
                                         withNavBar: false,
@@ -474,7 +572,7 @@ class UserPostWidget extends StatelessWidget {
                             )
                             : SizedBox.shrink(),
 
-                        // Sentiment Analysis Button
+                        // Sentiment Analysis Button or spacing
                         post.isDebate
                             ? IconButton(
                               onPressed: () {
@@ -495,34 +593,24 @@ class UserPostWidget extends StatelessWidget {
                                 color: primaryColor,
                               ),
                             )
-                            : SizedBox.shrink(),
-                        IconButton(
-                          icon: const Icon(
-                            Icons.delete_outline,
-                            color: Colors.red,
-                          ),
-                          onPressed: () {
-                            _showDeleteConfirmation(context, post);
-                          },
-                          tooltip: 'Delete post',
-                        ),
-                        // Edit post button - only available for user's own posts
-                        Expanded(
-                          child: IconButton(
-                            onPressed: () {
-                              // context.read<UserBloc>().add(
-                              //       EditUserPost(postId: post.id),
-                              //     );
-                            },
-                            icon: Icon(
-                              Icons.edit,
-                              size: 7.w,
-                              color: Colors.white70,
-                            ),
-                          ),
-                        ),
+                            : SizedBox(height: 6.h, width: 15.w),
 
-                        Spacer(flex: 2),
+                        // Delete button only for user's own posts
+                        if (isUserPost) ...[
+                          Spacer(),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.delete_outline,
+                              color: Colors.red,
+                            ),
+                            onPressed: () {
+                              _showDeleteConfirmation(context, post);
+                            },
+                            tooltip: 'Delete post',
+                          ),
+                          Spacer(flex: 2),
+                        ] else
+                          const Spacer(flex: 10),
                       ],
                     ),
                   ),

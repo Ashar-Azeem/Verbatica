@@ -135,7 +135,7 @@ class SettingsScreen extends StatelessWidget {
             builder:
                 (context) => BlocProvider(
                   create: (context) => UserBloc()..add(FetchSavedPosts()),
-                  child: SavedPostsScreen(),
+                  child: SavedPostScreen(),
                 ),
           ),
         );
