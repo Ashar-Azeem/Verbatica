@@ -784,7 +784,12 @@ class PostTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.grey.withOpacity(0.2), width: 1),
       ),
-      child: UserPostWidget(post: post, index: index, onFullView: false),
+      child: UserPostWidget(
+        post: post,
+        index: index,
+        onFullView: false,
+        category: 'user',
+      ),
 
       // Delete button
 

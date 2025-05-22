@@ -1,23 +1,21 @@
 // ignore_for_file: file_names, camel_case_types
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:sizer/sizer.dart';
-import 'package:verbatica/BLOC/Home/home_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_state.dart';
+import 'package:verbatica/UI_Components/PostComponents/otheruserpostui.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
-import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/model/Post.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:expandable_text/expandable_text.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:verbatica/model/user.dart';
 
 class otherProfileView extends StatefulWidget {
-  const otherProfileView({required this.post, super.key});
+  const otherProfileView({required this.post, this.user, super.key});
   final Post post;
+  final User? user;
   @override
   State<otherProfileView> createState() => _ProfileViewState();
 }
@@ -733,174 +731,14 @@ class PostTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        pushScreen(
-          context,
-          pageTransitionAnimation: PageTransitionAnimation.scale,
-          screen: MultiBlocProvider(
-            providers: [
-              BlocProvider<HomeBloc>(create: (_) => context.read<HomeBloc>()),
-            ],
-            child: ViewDiscussion(post: post, index: 0, category: 'profile'),
-          ),
-          withNavBar: false,
-        );
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 8.0),
-        decoration: BoxDecoration(
-          color: Theme.of(context).cardColor.withOpacity(0.7),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey.withOpacity(0.2), width: 1),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header with title
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Title
-                  Expanded(
-                    child: Text(
-                      post.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                        color: Colors.white,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Post content with expandable text
-            if (post.description.isNotEmpty)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-                child: ExpandableText(
-                  post.description,
-                  expandOnTextTap: true,
-                  collapseOnTextTap: true,
-                  expandText: 'show more',
-                  collapseText: 'show less',
-                  linkEllipsis: false,
-                  maxLines: 3,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[300],
-                    height: 1.4,
-                  ),
-                  linkColor: Colors.blue,
-                ),
-              ),
-
-            // Post image if available (using CachedNetworkImage)
-            if (post.postImageLink != null)
-              CachedNetworkImage(
-                imageUrl: post.postImageLink!,
-                placeholder:
-                    (context, url) => Shimmer.fromColors(
-                      baseColor: const Color.fromARGB(255, 58, 76, 90),
-                      highlightColor: const Color.fromARGB(255, 81, 106, 125),
-                      child: AspectRatio(
-                        aspectRatio: 16 / 9,
-                        child: Container(color: Colors.white),
-                      ),
-                    ),
-                errorWidget:
-                    (context, url, error) => AspectRatio(
-                      aspectRatio: 16 / 9,
-                      child: Container(
-                        color: Colors.grey[200],
-                        child: const Icon(Icons.error),
-                      ),
-                    ),
-                fit: BoxFit.cover,
-              ),
-
-            // Stats and metadata
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Interaction stats (upvotes, downvotes, comments)
-                  Row(
-                    children: [
-                      // Upvotes
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.arrow_circle_up_outlined,
-                            size: 5.w,
-                            color: post.isUpVote ? Colors.blue : Colors.grey,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${post.upvotes}',
-                            style: TextStyle(
-                              color: post.isUpVote ? Colors.blue : Colors.grey,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: 4.w),
-                      // Downvotes
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.arrow_circle_down_outlined,
-                            size: 5.w,
-                            color: post.isDownVote ? Colors.blue : Colors.grey,
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: 4.w),
-                      // Comments
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.mode_comment_outlined,
-                            size: 5.w,
-                            color: Colors.grey,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${post.comments}',
-                            style: const TextStyle(color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-
-                  // Debate/Analytics indicator if applicable
-                  if (post.isDebate)
-                    Icon(
-                      Icons.analytics_outlined,
-                      size: 5.w,
-                      color: Colors.blue,
-                    ),
-
-                  // Timestamp
-                  Text(
-                    timeago.format(post.uploadTime),
-                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor.withOpacity(0.7),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.grey.withOpacity(0.2), width: 1),
       ),
+      child: OtherUserPostWidget(post: post, index: index, onFullView: false),
     );
   }
 }

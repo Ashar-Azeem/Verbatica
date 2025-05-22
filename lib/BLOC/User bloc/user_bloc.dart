@@ -21,6 +21,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<FetchSavedPosts>(_onFetchSavedPosts);
     on<upvotePost>(_UpvotePost);
     on<downvotePost>(_downvotePost);
+    on<upvotesavedPost>(_UpvotesavedPost);
+    on<downvotesavedPost>(_downvotesavedPost);
     // Automatically fetch user posts when the bloc is created
     add(FetchUserPosts());
   }
@@ -29,6 +31,47 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     final currentUser = state.user;
     final updatedUser = currentUser.copyWith(avatarUrl: event.newAvatarId);
     emit(state.copyWith(user: updatedUser));
+  }
+
+  void _UpvotesavedPost(upvotesavedPost event, Emitter<UserState> emit) {
+    print('dhsfdsjhgdfjshgbfvsjbgfusgigfsiyfgwrifewrgfwiefevwukdvwfcrjtw');
+    List<Post> posts = List.from(state.savedPosts);
+    if (!posts[event.index].isUpVote) {
+      if (posts[event.index].isDownVote) {
+        posts[event.index] = posts[event.index].copyWith(
+          isDownVote: false,
+          isUpVote: true,
+          upvotes: posts[event.index].upvotes + 2,
+        );
+        emit(state.copyWith(savedPosts: posts));
+      } else {
+        posts[event.index] = posts[event.index].copyWith(
+          isUpVote: true,
+          upvotes: posts[event.index].upvotes + 1,
+        );
+        emit(state.copyWith(savedPosts: posts));
+      }
+    }
+  }
+
+  void _downvotesavedPost(downvotesavedPost event, Emitter<UserState> emit) {
+    List<Post> posts = List.from(state.savedPosts);
+    if (!posts[event.index].isDownVote) {
+      if (posts[event.index].isUpVote) {
+        posts[event.index] = posts[event.index].copyWith(
+          isDownVote: true,
+          isUpVote: false,
+          upvotes: posts[event.index].upvotes - 2,
+        );
+        emit(state.copyWith(savedPosts: posts));
+      } else {
+        posts[event.index] = posts[event.index].copyWith(
+          isDownVote: true,
+          upvotes: posts[event.index].upvotes - 1,
+        );
+        emit(state.copyWith(savedPosts: posts));
+      }
+    }
   }
 
   void _UpvotePost(upvotePost event, Emitter<UserState> emit) {

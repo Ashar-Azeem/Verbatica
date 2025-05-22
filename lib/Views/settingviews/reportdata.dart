@@ -13,12 +13,7 @@ class UserReportsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
-      appBar: AppBar(
-        title: const Text('My Reports'),
-        backgroundColor: const Color(0xFF1E1E1E),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('My Reports'), elevation: 0),
       body: BlocBuilder<ReportBloc, ReportState>(
         builder: (context, state) {
           if (state is ReportLoading) {
@@ -128,13 +123,10 @@ class UserReportsScreen extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 4,
-      color: const Color(0xFF1E1E1E),
+
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: statusColor,
-          width: 1.5, // Slightly thicker border for better visibility
-        ),
+        side: BorderSide(color: statusColor, width: 0.8),
       ),
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -225,14 +217,13 @@ class UserReportsScreen extends StatelessWidget {
                 margin: const EdgeInsets.only(top: 16),
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: const Color(
-                    0xFF252525,
+                  color: const Color.fromARGB(
+                    255,
+                    26,
+                    39,
+                    49,
                   ), // Darker background that fits better with the theme
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: const Color(0xFF424242), // Subtle border
-                    width: 1,
-                  ),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

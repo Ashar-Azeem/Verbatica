@@ -6,22 +6,22 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
-import 'package:verbatica/BLOC/Search%20Bloc/search_bloc.dart';
+import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
+import 'package:verbatica/BLOC/otheruser/otheruser_state.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
-import 'package:verbatica/UI_Components/Search%20Componenets/SearchedViewDiscussion.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/SummaryView.dart';
-import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/otherprofile.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/Views/clusterScreen.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class SearchedPost extends StatelessWidget {
+class OtherUserPostWidget extends StatelessWidget {
   final Post post;
   final int index;
   final bool onFullView;
 
-  const SearchedPost({
+  const OtherUserPostWidget({
     required this.post,
     super.key,
     required this.index,
@@ -33,24 +33,14 @@ class SearchedPost extends StatelessWidget {
     return Center(
       child: SizedBox(
         width: 100.w,
-
         child: Column(
           children: [
-            Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
-            SizedBox(
-              height: 5.5.h,
-              child: Padding(
-                padding: EdgeInsets.only(left: 1.w, top: 1.w),
-
-                child: GestureDetector(
-                  onTap: () {
-                    pushScreen(
-                      context,
-                      pageTransitionAnimation: PageTransitionAnimation.scale,
-                      screen: otherProfileView(post: post),
-                      withNavBar: false,
-                    );
-                  },
+            Padding(
+              padding: EdgeInsets.only(top: 1.w, bottom: 1.w, left: 1.w),
+              child: SizedBox(
+                height: 5.5.h,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 1.w, top: 1.w),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -89,7 +79,7 @@ class SearchedPost extends StatelessWidget {
                               screen: SummaryScreen(
                                 showClusters: true,
                                 clusters: post.clusters,
-                                postId: '',
+                                postId: post.id,
                               ),
                               withNavBar: false,
                             );
@@ -100,7 +90,7 @@ class SearchedPost extends StatelessWidget {
                                   PageTransitionAnimation.scale,
                               screen: SummaryScreen(
                                 showClusters: false,
-                                postId: '',
+                                postId: post.id,
                               ),
                               withNavBar: false,
                             );
@@ -108,9 +98,8 @@ class SearchedPost extends StatelessWidget {
                         },
                         style: TextButton.styleFrom(
                           shape: StadiumBorder(),
-
-                          backgroundColor: primaryColor, // Button color
-                          foregroundColor: Colors.white, // Text color
+                          backgroundColor: primaryColor,
+                          foregroundColor: Colors.white,
                         ),
                         child: Text(
                           'Summary',
@@ -123,49 +112,30 @@ class SearchedPost extends StatelessWidget {
                       PopupMenuButton<String>(
                         icon: Icon(Icons.more_vert),
                         onSelected: (String value) {
-                          if (value == "report") {
-                            context.read<SearchBloc>().add(
-                              ReportPost(index: index, postId: post.id),
-                            );
-                          } else if (value == "save") {
-                            context.read<SearchBloc>().add(
-                              SavePost(post: post),
-                            );
+                          if (value == "edit") {
+                            // context.read<OtheruserBloc>().add(
+                            //   EditOtherUserPost(postId: post.id),
+                            // );
+                          } else if (value == "delete") {
                           } else if (value == "share") {
-                            context.read<SearchBloc>().add(
-                              SharePost(post: post),
-                            );
+                            // context.read<OtheruserBloc>().add(
+                            //   ShareOtherUserPost(post: post),
+                            // );
                           }
                         },
                         itemBuilder:
                             (BuildContext context) => <PopupMenuEntry<String>>[
                               const PopupMenuItem<String>(
-                                value: 'report',
+                                value: 'delete',
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: [
-                                    Icon(
-                                      Icons.report_gmailerrorred,
-                                      color: Colors.white,
-                                    ),
-
-                                    Text('Report'),
+                                    Icon(Icons.delete, color: Colors.white),
+                                    Text('Delete'),
                                   ],
                                 ),
                               ),
-                              const PopupMenuItem<String>(
-                                value: 'save',
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Icon(Icons.save, color: Colors.white),
-                                    Text('Save'),
-                                  ],
-                                ),
-                              ),
-
                               const PopupMenuItem<String>(
                                 value: 'share',
                                 child: Row(
@@ -184,7 +154,7 @@ class SearchedPost extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
+
             //Content, title, image or video
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,7 +185,6 @@ class SearchedPost extends StatelessWidget {
                     linkEllipsis: false,
                     maxLines: 2,
                     style: const TextStyle(fontSize: 15, color: Colors.white),
-
                     linkColor: primaryColor,
                   ),
                 ),
@@ -269,15 +238,15 @@ class SearchedPost extends StatelessWidget {
                       pageTransitionAnimation: PageTransitionAnimation.scale,
                       screen: MultiBlocProvider(
                         providers: [
-                          BlocProvider<SearchBloc>.value(
-                            value:
-                                context
-                                    .read<
-                                      SearchBloc
-                                    >(), // Passing existing bloc
+                          BlocProvider<OtheruserBloc>.value(
+                            value: context.read<OtheruserBloc>(),
                           ),
                         ],
-                        child: SearchedViewDiscussion(post: post, index: index),
+                        child: ViewDiscussion(
+                          post: post,
+                          index: index,
+                          category: 'other',
+                        ),
                       ),
                       withNavBar: false,
                     );
@@ -301,18 +270,23 @@ class SearchedPost extends StatelessWidget {
                           horizontal: 0.5.w,
                           vertical: 0.5.w,
                         ),
-                        child: BlocBuilder<SearchBloc, SearchState>(
+                        child: BlocBuilder<OtheruserBloc, OtheruserState>(
                           builder: (context, state) {
                             Post dynamicpost;
-
-                            dynamicpost = state.posts[index];
-
+                            if (state.userPosts.isNotEmpty) {
+                              dynamicpost = state.userPosts.firstWhere(
+                                (p) => p.id == post.id,
+                                orElse: () => post,
+                              );
+                            } else {
+                              dynamicpost = post;
+                            }
                             return Row(
                               children: [
                                 GestureDetector(
                                   onTap: () {
-                                    context.read<SearchBloc>().add(
-                                      UpVotePost(index: index),
+                                    context.read<OtheruserBloc>().add(
+                                      upvotePost(index: index),
                                     );
                                   },
                                   child: Row(
@@ -325,11 +299,10 @@ class SearchedPost extends StatelessWidget {
                                           size: 7.w,
                                           color:
                                               dynamicpost.isUpVote
-                                                  ? primaryColor
-                                                  : Colors.white,
+                                                  ? Colors.blue
+                                                  : Colors.grey,
                                         ),
                                       ),
-
                                       Text(
                                         "${dynamicpost.upvotes - dynamicpost.downvotes}",
                                         style: TextStyle(
@@ -348,25 +321,22 @@ class SearchedPost extends StatelessWidget {
                                   height: 6.h,
                                   color: Color.fromARGB(255, 70, 79, 87),
                                 ),
-
                                 IconButton(
                                   splashColor: Colors.transparent,
                                   highlightColor: Colors.transparent,
-
                                   onPressed: () {
-                                    context.read<SearchBloc>().add(
-                                      DownVotePost(index: index),
+                                    context.read<OtheruserBloc>().add(
+                                      downvotePost(index: index),
                                     );
                                   },
                                   padding: EdgeInsets.zero,
                                   icon: Icon(
                                     size: 7.w,
-
                                     Icons.arrow_circle_down_outlined,
                                     color:
                                         dynamicpost.isDownVote
-                                            ? primaryColor
-                                            : Colors.white,
+                                            ? Colors.blue
+                                            : Colors.grey,
                                   ),
                                 ),
                               ],
@@ -374,7 +344,7 @@ class SearchedPost extends StatelessWidget {
                           },
                         ),
                       ),
-                      Spacer(flex: 1),
+                      SizedBox(width: 4.w),
                       !onFullView
                           ? Container(
                             height: 5.h,
@@ -393,22 +363,23 @@ class SearchedPost extends StatelessWidget {
                               children: [
                                 IconButton(
                                   onPressed: () {
-                                    //Move to the full view of the post with all the comments
                                     pushScreen(
                                       context,
                                       pageTransitionAnimation:
                                           PageTransitionAnimation.scale,
                                       screen: MultiBlocProvider(
                                         providers: [
-                                          BlocProvider<SearchBloc>(
+                                          BlocProvider<OtheruserBloc>(
                                             create:
                                                 (_) =>
-                                                    context.read<SearchBloc>(),
+                                                    context
+                                                        .read<OtheruserBloc>(),
                                           ),
                                         ],
-                                        child: SearchedViewDiscussion(
+                                        child: ViewDiscussion(
                                           post: post,
                                           index: index,
+                                          category: 'other',
                                         ),
                                       ),
                                       withNavBar: false,
@@ -436,9 +407,7 @@ class SearchedPost extends StatelessWidget {
                             ),
                           )
                           : SizedBox.shrink(),
-
-                      const Spacer(flex: 10),
-
+                      Spacer(),
                       // Sentiment Analysis Button
                       post.isDebate
                           ? IconButton(
@@ -454,7 +423,6 @@ class SearchedPost extends StatelessWidget {
                                 withNavBar: false,
                               );
                             },
-
                             icon: Icon(
                               Icons.analytics_outlined,
                               size: 7.w,
@@ -462,13 +430,14 @@ class SearchedPost extends StatelessWidget {
                             ),
                           )
                           : SizedBox.shrink(),
-                      Spacer(flex: 1),
+
+                      // Edit post button - only available for user's own posts
+                      Spacer(flex: 2),
                     ],
                   ),
                 ),
               ),
             ),
-            Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
           ],
         ),
       ),

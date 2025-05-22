@@ -14,6 +14,7 @@ import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/SummaryView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/ProfileView.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/otherprofile.dart';
 import 'package:verbatica/Views/clusterScreen.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -21,16 +22,17 @@ import 'package:timeago/timeago.dart' as timeago;
 class UserPostWidget extends StatelessWidget {
   final Post post;
   final int index;
-
+  final String category;
   final bool onFullView;
 
   const UserPostWidget({
     required this.post,
     super.key,
     required this.index,
-
+    required this.category,
     required this.onFullView,
   });
+
   void _showDeleteConfirmation(BuildContext context, Post post) {
     showDialog(
       context: context,
@@ -69,101 +71,106 @@ class UserPostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 0),
-      child: Center(
-        child: SizedBox(
-          width: 100.w,
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(bottom: 1.w),
-                child: SizedBox(
-                  height: 5.5.h,
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 1.w, top: 1.w),
-                    child: GestureDetector(
-                      onTap: () {
-                        pushScreen(
-                          context,
-                          pageTransitionAnimation:
-                              PageTransitionAnimation.scale,
-                          screen:
-                              ProfileView(), // Navigate to user's own profile
-                          withNavBar: false,
-                        );
-                      },
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          CircleAvatar(
-                            backgroundImage: AssetImage(
-                              'assets/Avatars/avatar${post.avatar}.jpg',
-                            ),
+    bool isUserPost = category == 'user';
+
+    return Center(
+      child: SizedBox(
+        width: 100.w,
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(top: 1.w, bottom: 1.w, left: 1.w),
+              child: SizedBox(
+                height: 5.5.h,
+                child: Padding(
+                  padding: EdgeInsets.only(left: 1.w, top: 1.w),
+                  child: GestureDetector(
+                    onTap: () {
+                      pushScreen(
+                        context,
+                        pageTransitionAnimation: PageTransitionAnimation.scale,
+                        screen:
+                            isUserPost
+                                ? ProfileView() // Navigate to user's own profile
+                                : otherProfileView(
+                                  post: post,
+                                ), // Navigate to other user's profile
+                        withNavBar: false,
+                      );
+                    },
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          backgroundImage: AssetImage(
+                            'assets/Avatars/avatar${post.avatar}.jpg',
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(left: 1.w),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  post.name,
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                Text(
-                                  timeago.format(post.uploadTime),
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 2.w,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Spacer(flex: 1),
-                          TextButton(
-                            onPressed: () {
-                              if (post.isDebate) {
-                                pushScreen(
-                                  context,
-                                  pageTransitionAnimation:
-                                      PageTransitionAnimation.scale,
-                                  screen: SummaryScreen(
-                                    showClusters: true,
-                                    clusters: post.clusters,
-                                    postId: post.id,
-                                  ),
-                                  withNavBar: false,
-                                );
-                              } else {
-                                pushScreen(
-                                  context,
-                                  pageTransitionAnimation:
-                                      PageTransitionAnimation.scale,
-                                  screen: SummaryScreen(
-                                    showClusters: false,
-                                    postId: post.id,
-                                  ),
-                                  withNavBar: false,
-                                );
-                              }
-                            },
-                            style: TextButton.styleFrom(
-                              shape: StadiumBorder(),
-                              backgroundColor: primaryColor,
-                              foregroundColor: Colors.white,
-                            ),
-                            child: Text(
-                              'Summary',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 2.8.w,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 1.w),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                post.name,
+                                style: TextStyle(color: Colors.white),
                               ),
+                              Text(
+                                timeago.format(post.uploadTime),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 2.w,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Spacer(flex: 1),
+                        TextButton(
+                          onPressed: () {
+                            if (post.isDebate) {
+                              pushScreen(
+                                context,
+                                pageTransitionAnimation:
+                                    PageTransitionAnimation.scale,
+                                screen: SummaryScreen(
+                                  showClusters: true,
+                                  clusters: post.clusters,
+                                  postId: post.id,
+                                ),
+                                withNavBar: false,
+                              );
+                            } else {
+                              pushScreen(
+                                context,
+                                pageTransitionAnimation:
+                                    PageTransitionAnimation.scale,
+                                screen: SummaryScreen(
+                                  showClusters: false,
+                                  postId: post.id,
+                                ),
+                                withNavBar: false,
+                              );
+                            }
+                          },
+                          style: TextButton.styleFrom(
+                            shape: StadiumBorder(),
+                            backgroundColor: primaryColor,
+                            foregroundColor: Colors.white,
+                          ),
+                          child: Text(
+                            'Summary',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 2.8.w,
                             ),
                           ),
-                          PopupMenuButton<String>(
-                            icon: Icon(Icons.more_vert),
-                            onSelected: (String value) {
+                        ),
+                        PopupMenuButton<String>(
+                          icon: Icon(Icons.more_vert),
+                          onSelected: (String value) {
+                            if (isUserPost) {
+                              // User's own posts - edit/delete/share options
                               if (value == "edit") {
                                 // context.read<UserBloc>().add(
                                 //   EditUserPost(postId: post.id),
@@ -177,170 +184,240 @@ class UserPostWidget extends StatelessWidget {
                                 //   ShareUserPost(post: post),
                                 // );
                               }
-                            },
-                            itemBuilder:
-                                (
-                                  BuildContext context,
-                                ) => <PopupMenuEntry<String>>[
-                                  const PopupMenuItem<String>(
-                                    value: 'edit',
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Icon(Icons.edit, color: Colors.white),
-                                        Text('Edit'),
+                            } else {
+                              // Saved posts - report/save/share options
+                              if (value == "report") {
+                                // context.read<UserBloc>().add(
+                                //   ReportPost(postId: post.id),
+                                // );
+                              } else if (value == "unsave") {
+                                context.read<UserBloc>().add(
+                                  UnsavePost(post: post),
+                                );
+                              } else if (value == "share") {
+                                // context.read<UserBloc>().add(
+                                //   SharePost(post: post),
+                                // );
+                              }
+                            }
+                          },
+                          itemBuilder:
+                              (BuildContext context) =>
+                                  isUserPost
+                                      ? <PopupMenuEntry<String>>[
+                                        const PopupMenuItem<String>(
+                                          value: 'edit',
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Icon(
+                                                Icons.edit,
+                                                color: Colors.white,
+                                              ),
+                                              Text('Edit'),
+                                            ],
+                                          ),
+                                        ),
+                                        const PopupMenuItem<String>(
+                                          value: 'delete',
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Icon(
+                                                Icons.delete,
+                                                color: Colors.white,
+                                              ),
+                                              Text('Delete'),
+                                            ],
+                                          ),
+                                        ),
+                                        const PopupMenuItem<String>(
+                                          value: 'share',
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Icon(
+                                                Icons.share,
+                                                color: Colors.white,
+                                              ),
+                                              Text('Share'),
+                                            ],
+                                          ),
+                                        ),
+                                      ]
+                                      : <PopupMenuEntry<String>>[
+                                        const PopupMenuItem<String>(
+                                          value: 'report',
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Icon(
+                                                Icons.report_gmailerrorred,
+                                                color: Colors.white,
+                                              ),
+                                              Text('Report'),
+                                            ],
+                                          ),
+                                        ),
+                                        const PopupMenuItem<String>(
+                                          value: 'unsave',
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Icon(
+                                                Icons.bookmark_remove,
+                                                color: Colors.white,
+                                              ),
+                                              Text('Unsave'),
+                                            ],
+                                          ),
+                                        ),
+                                        const PopupMenuItem<String>(
+                                          value: 'share',
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceAround,
+                                            children: [
+                                              Icon(
+                                                Icons.share,
+                                                color: Colors.white,
+                                              ),
+                                              Text('Share'),
+                                            ],
+                                          ),
+                                        ),
                                       ],
-                                    ),
-                                  ),
-                                  const PopupMenuItem<String>(
-                                    value: 'delete',
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Icon(Icons.delete, color: Colors.white),
-                                        Text('Delete'),
-                                      ],
-                                    ),
-                                  ),
-                                  const PopupMenuItem<String>(
-                                    value: 'share',
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        Icon(Icons.share, color: Colors.white),
-                                        Text('Share'),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-              //Content, title, image or video
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  /// Title
-                  Padding(
-                    padding: EdgeInsets.only(left: 1.w),
-                    child: Text(
-                      post.title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+            ),
+            //Content, title, image or video
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// Title
+                Padding(
+                  padding: EdgeInsets.only(left: 1.w),
+                  child: Text(
+                    post.title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
+                ),
 
-                  SizedBox(height: 0.2.h),
+                SizedBox(height: 0.2.h),
 
-                  Padding(
-                    padding: EdgeInsets.only(left: 1.w),
-                    child: ExpandableText(
-                      post.description,
-                      expandOnTextTap: true,
-                      collapseOnTextTap: true,
-                      expandText: 'show more',
-                      collapseText: 'show less',
-                      linkEllipsis: false,
-                      maxLines: 2,
-                      style: const TextStyle(fontSize: 15, color: Colors.white),
-                      linkColor: primaryColor,
-                    ),
+                Padding(
+                  padding: EdgeInsets.only(left: 1.w),
+                  child: ExpandableText(
+                    post.description,
+                    expandOnTextTap: true,
+                    collapseOnTextTap: true,
+                    expandText: 'show more',
+                    collapseText: 'show less',
+                    linkEllipsis: false,
+                    maxLines: 2,
+                    style: const TextStyle(fontSize: 15, color: Colors.white),
+                    linkColor: primaryColor,
                   ),
+                ),
 
-                  SizedBox(height: 0.5.h),
+                SizedBox(height: 0.5.h),
 
-                  if (post.postImageLink != null)
-                    CachedNetworkImage(
-                      imageUrl: post.postImageLink!,
-                      placeholder:
-                          (context, url) => Shimmer.fromColors(
-                            baseColor: const Color.fromARGB(255, 58, 76, 90),
-                            highlightColor: const Color.fromARGB(
-                              255,
-                              81,
-                              106,
-                              125,
-                            ),
-                            child: AspectRatio(
-                              aspectRatio: 16 / 9,
-                              child: Container(color: Colors.white),
-                            ),
+                if (post.postImageLink != null)
+                  CachedNetworkImage(
+                    imageUrl: post.postImageLink!,
+                    placeholder:
+                        (context, url) => Shimmer.fromColors(
+                          baseColor: const Color.fromARGB(255, 58, 76, 90),
+                          highlightColor: const Color.fromARGB(
+                            255,
+                            81,
+                            106,
+                            125,
                           ),
-                      errorWidget:
-                          (context, url, error) => AspectRatio(
+                          child: AspectRatio(
                             aspectRatio: 16 / 9,
-                            child: Container(
-                              color: Colors.grey[200],
-                              child: const Icon(Icons.error),
-                            ),
-                          ),
-                      fit: BoxFit.contain,
-                    ),
-
-                  /// Video placeholder (show only if video link is not null)
-                  if (post.postVideoLink != null)
-                    VideoPlayer(videoUrl: post.postVideoLink!),
-                ],
-              ),
-
-              //End of content, title, image or video
-
-              //Bottom side of the post
-              Padding(
-                padding: EdgeInsets.only(right: 1.w),
-                child: InkWell(
-                  onTap: () {
-                    if (!onFullView) {
-                      pushScreen(
-                        context,
-                        pageTransitionAnimation: PageTransitionAnimation.scale,
-                        screen: MultiBlocProvider(
-                          providers: [
-                            BlocProvider<UserBloc>.value(
-                              value: context.read<UserBloc>(),
-                            ),
-                          ],
-                          child: ViewDiscussion(
-                            post: post,
-                            index: index,
-                            category: '',
+                            child: Container(color: Colors.white),
                           ),
                         ),
-                        withNavBar: false,
-                      );
-                    }
-                  },
-                  child: SizedBox(
-                    height: 6.h,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(width: 1.w),
-                        Container(
-                          height: 5.h,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Color.fromARGB(255, 70, 79, 87),
-                            ),
+                    errorWidget:
+                        (context, url, error) => AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: Container(
+                            color: Colors.grey[200],
+                            child: const Icon(Icons.error),
                           ),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 0.5.w,
-                            // vertical: 0.5.w,
+                        ),
+                    fit: BoxFit.contain,
+                  ),
+
+                /// Video placeholder (show only if video link is not null)
+                if (post.postVideoLink != null)
+                  VideoPlayer(videoUrl: post.postVideoLink!),
+              ],
+            ),
+
+            //End of content, title, image or video
+
+            //Bottom side of the post
+            Padding(
+              padding: EdgeInsets.only(right: 1.w),
+              child: InkWell(
+                onTap: () {
+                  if (!onFullView) {
+                    pushScreen(
+                      context,
+                      pageTransitionAnimation: PageTransitionAnimation.scale,
+                      screen: MultiBlocProvider(
+                        providers: [
+                          BlocProvider<UserBloc>.value(
+                            value: context.read<UserBloc>(),
                           ),
-                          child: BlocBuilder<UserBloc, UserState>(
-                            builder: (context, state) {
-                              Post dynamicpost;
+                        ],
+                        child: ViewDiscussion(
+                          post: post,
+                          index: index,
+                          category: category,
+                        ),
+                      ),
+                      withNavBar: false,
+                    );
+                  }
+                },
+                child: SizedBox(
+                  height: 6.h,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(width: 1.w),
+                      Container(
+                        height: 5.h,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Color.fromARGB(255, 70, 79, 87),
+                          ),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 0.5.w,
+                          // vertical: 0.5.w,
+                        ),
+                        child: BlocBuilder<UserBloc, UserState>(
+                          builder: (context, state) {
+                            Post dynamicpost;
+                            if (category == 'user') {
                               if (state.userPosts.isNotEmpty) {
                                 dynamicpost = state.userPosts.firstWhere(
                                   (p) => p.id == post.id,
@@ -349,156 +426,176 @@ class UserPostWidget extends StatelessWidget {
                               } else {
                                 dynamicpost = post;
                               }
-                              return Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      // No need to upvote your own post
+                            } else if (category == 'saved') {
+                              // For saved posts, get from saved posts list
+                              dynamicpost = state.savedPosts[index];
+                            } else {
+                              dynamicpost = post;
+                            }
+                            return Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    if (category == 'user') {
                                       context.read<UserBloc>().add(
                                         upvotePost(index: index),
                                       );
-                                    },
-                                    child: Row(
-                                      children: [
-                                        IconButton(
-                                          onPressed: null,
-                                          padding: EdgeInsets.zero,
-                                          icon: Icon(
-                                            Icons.arrow_circle_up_outlined,
-                                            size: 7.w,
-                                            color:
-                                                post.isUpVote
-                                                    ? Colors.blue
-                                                    : Colors.grey,
-                                          ),
+                                    } else {
+                                      // For saved posts, use different event
+                                      context.read<UserBloc>().add(
+                                        upvotesavedPost(index: index),
+                                      );
+                                    }
+                                  },
+                                  child: Row(
+                                    children: [
+                                      IconButton(
+                                        onPressed: null,
+                                        padding: EdgeInsets.zero,
+                                        icon: Icon(
+                                          Icons.arrow_circle_up_outlined,
+                                          size: 7.w,
+                                          color:
+                                              dynamicpost.isUpVote
+                                                  ? primaryColor
+                                                  : Colors.grey,
                                         ),
-                                        Text(
-                                          "${dynamicpost.upvotes - dynamicpost.downvotes}",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 3.w,
-                                            height: 1,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                      ),
+                                      Text(
+                                        "${dynamicpost.upvotes - dynamicpost.downvotes}",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 3.w,
+                                          height: 1,
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                        SizedBox(width: 4.w),
-                                      ],
-                                    ),
+                                      ),
+                                      SizedBox(width: 4.w),
+                                    ],
                                   ),
-                                  Container(
-                                    width: 1,
-                                    height: 6.h,
-                                    color: Color.fromARGB(255, 70, 79, 87),
-                                  ),
-                                  IconButton(
-                                    splashColor: Colors.transparent,
-                                    highlightColor: Colors.transparent,
-                                    onPressed: () {
+                                ),
+                                Container(
+                                  width: 1,
+                                  height: 6.h,
+                                  color: Color.fromARGB(255, 70, 79, 87),
+                                ),
+                                IconButton(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onPressed: () {
+                                    if (category == 'user') {
                                       context.read<UserBloc>().add(
                                         downvotePost(index: index),
                                       );
-                                    },
-                                    padding: EdgeInsets.zero,
-                                    icon: Icon(
-                                      size: 7.w,
-                                      Icons.arrow_circle_down_outlined,
-                                      color:
-                                          post.isDownVote
-                                              ? Colors.blue
-                                              : Colors.grey,
-                                    ),
+                                    } else {
+                                      // For saved posts, use different event
+                                      context.read<UserBloc>().add(
+                                        downvotesavedPost(index: index),
+                                      );
+                                    }
+                                  },
+                                  padding: EdgeInsets.zero,
+                                  icon: Icon(
+                                    size: 7.w,
+                                    Icons.arrow_circle_down_outlined,
+                                    color:
+                                        dynamicpost.isDownVote
+                                            ? primaryColor
+                                            : Colors.grey,
                                   ),
-                                ],
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                      Spacer(flex: 1),
+                      !onFullView
+                          ? Container(
+                            height: 5.h,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Color.fromARGB(255, 70, 79, 87),
+                              ),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 0.5.w,
+                              vertical: 0.5.w,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    pushScreen(
+                                      context,
+                                      pageTransitionAnimation:
+                                          PageTransitionAnimation.scale,
+                                      screen: MultiBlocProvider(
+                                        providers: [
+                                          BlocProvider<UserBloc>.value(
+                                            value: context.read<UserBloc>(),
+                                          ),
+                                        ],
+                                        child: ViewDiscussion(
+                                          post: post,
+                                          index: index,
+                                          category: category,
+                                        ),
+                                      ),
+                                      withNavBar: false,
+                                    );
+                                  },
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  padding: EdgeInsets.zero,
+                                  icon: Icon(
+                                    Icons.mode_comment_outlined,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  "${post.comments}",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 3.w,
+                                    height: 1,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(width: 4.w),
+                              ],
+                            ),
+                          )
+                          : SizedBox.shrink(),
+
+                      // Sentiment Analysis Button or spacing
+                      post.isDebate
+                          ? IconButton(
+                            onPressed: () {
+                              pushScreen(
+                                context,
+                                pageTransitionAnimation:
+                                    PageTransitionAnimation.scale,
+                                screen: Clusterscreen(
+                                  clusters: post.clusters!,
+                                  postid: post.id,
+                                ),
+                                withNavBar: false,
                               );
                             },
-                          ),
-                        ),
-                        Spacer(flex: 1),
-                        !onFullView
-                            ? Container(
-                              height: 5.h,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: Color.fromARGB(255, 70, 79, 87),
-                                ),
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 0.5.w,
-                                vertical: 0.5.w,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      pushScreen(
-                                        context,
-                                        pageTransitionAnimation:
-                                            PageTransitionAnimation.scale,
-                                        screen: MultiBlocProvider(
-                                          providers: [
-                                            BlocProvider<UserBloc>(
-                                              create:
-                                                  (_) =>
-                                                      context.read<UserBloc>(),
-                                            ),
-                                          ],
-                                          child: ViewDiscussion(
-                                            post: post,
-                                            index: index,
-                                            category: '',
-                                          ),
-                                        ),
-                                        withNavBar: false,
-                                      );
-                                    },
-                                    splashColor: Colors.transparent,
-                                    highlightColor: Colors.transparent,
-                                    padding: EdgeInsets.zero,
-                                    icon: Icon(
-                                      Icons.mode_comment_outlined,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Text(
-                                    "${post.comments}",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 3.w,
-                                      height: 1,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(width: 4.w),
-                                ],
-                              ),
-                            )
-                            : SizedBox.shrink(),
+                            icon: Icon(
+                              Icons.analytics_outlined,
+                              size: 7.w,
+                              color: primaryColor,
+                            ),
+                          )
+                          : SizedBox(height: 6.h, width: 15.w),
 
-                        // Sentiment Analysis Button
-                        post.isDebate
-                            ? IconButton(
-                              onPressed: () {
-                                pushScreen(
-                                  context,
-                                  pageTransitionAnimation:
-                                      PageTransitionAnimation.scale,
-                                  screen: Clusterscreen(
-                                    clusters: post.clusters!,
-                                    postid: post.id,
-                                  ),
-                                  withNavBar: false,
-                                );
-                              },
-                              icon: Icon(
-                                Icons.analytics_outlined,
-                                size: 7.w,
-                                color: primaryColor,
-                              ),
-                            )
-                            : SizedBox.shrink(),
+                      // Delete button only for user's own posts
+                      if (isUserPost) ...[
+                        Spacer(),
                         IconButton(
                           icon: const Icon(
                             Icons.delete_outline,
@@ -509,28 +606,15 @@ class UserPostWidget extends StatelessWidget {
                           },
                           tooltip: 'Delete post',
                         ),
-                        // Edit post button - only available for user's own posts
-                        IconButton(
-                          onPressed: () {
-                            // context.read<UserBloc>().add(
-                            //       EditUserPost(postId: post.id),
-                            //     );
-                          },
-                          icon: Icon(
-                            Icons.edit,
-                            size: 7.w,
-                            color: Colors.white70,
-                          ),
-                        ),
-
                         Spacer(flex: 2),
-                      ],
-                    ),
+                      ] else
+                        const Spacer(flex: 10),
+                    ],
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

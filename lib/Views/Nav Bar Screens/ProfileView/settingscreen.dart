@@ -23,10 +23,7 @@ class SettingsScreen extends StatelessWidget {
         ),
         centerTitle: true,
         elevation: 0,
-        backgroundColor:
-            Theme.of(context).brightness == Brightness.dark
-                ? Color(0xFF1A237E)
-                : Colors.white,
+
         foregroundColor:
             Theme.of(context).brightness == Brightness.dark
                 ? Colors.white
@@ -180,7 +177,7 @@ class SettingsScreen extends StatelessWidget {
         // Navigate to privacy policy screen
         Navigator.of(
           context,
-        ).push(MaterialPageRoute(builder: (context) => PrivacyPolicyContent()));
+        ).push(MaterialPageRoute(builder: (context) => PrivacyPolicyScreen()));
 
         break;
 
@@ -196,14 +193,18 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Text('Reset Content Preferences'),
+            title: Text(
+              'Reset Content Preferences',
+              style: TextStyle(color: Colors.white),
+            ),
             content: Text(
               'Are you sure you want to reset all your content preferences? This action cannot be undone.',
+              style: TextStyle(color: Colors.white),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: Text('Cancel'),
+                child: Text('Cancel', style: TextStyle(color: Colors.white)),
               ),
               TextButton(
                 onPressed: () {
@@ -211,7 +212,10 @@ class SettingsScreen extends StatelessWidget {
                   Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Content preferences have been reset'),
+                      content: Text(
+                        'Content preferences have been reset',
+                        style: TextStyle(color: Colors.white),
+                      ),
                     ),
                   );
                 },
