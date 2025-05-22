@@ -7,8 +7,6 @@ import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Home/home_bloc.dart';
-import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
-import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/SummaryView.dart';

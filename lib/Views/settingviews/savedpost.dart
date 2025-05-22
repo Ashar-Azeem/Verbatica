@@ -8,7 +8,7 @@ import 'package:verbatica/model/Post.dart';
 import 'package:sizer/sizer.dart';
 
 class SavedPostsScreen extends StatelessWidget {
-  const SavedPostsScreen({Key? key}) : super(key: key);
+  const SavedPostsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -107,8 +107,8 @@ class SavedPostWidget extends StatelessWidget {
     required this.post,
     required this.index,
     required this.onUnsave,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

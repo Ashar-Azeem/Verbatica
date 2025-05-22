@@ -215,8 +215,8 @@ class SettingsScreen extends StatelessWidget {
                     ),
                   );
                 },
-                child: Text('Reset'),
                 style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: Text('Reset'),
               ),
             ],
           ),

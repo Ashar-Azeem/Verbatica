@@ -22,5 +22,5 @@ class FetchUserPosts extends OtheruserEvent {}
 // New event for deleting a user post
 class DeleteUserPost extends OtheruserEvent {
   final String postId;
-  DeleteUserPost({required this.postId});
+  const DeleteUserPost({required this.postId});
 }
