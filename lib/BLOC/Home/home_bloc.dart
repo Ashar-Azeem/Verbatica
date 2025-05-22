@@ -75,7 +75,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           emit(state.copyWith(forYou: posts));
         }
       }
-    } else {
+    } else if (event.category == 'Following') {
       List<Post> posts = List.from(state.following);
       if (!posts[event.index].isUpVote) {
         if (posts[event.index].isDownVote) {

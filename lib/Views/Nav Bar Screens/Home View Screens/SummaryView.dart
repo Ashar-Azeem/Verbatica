@@ -70,12 +70,7 @@ class SummaryScreen extends StatelessWidget {
                 horizontal: 16.0,
                 vertical: 12.0,
               ),
-              child: CustomScrollView(
-                physics: const BouncingScrollPhysics(),
-                slivers: [
-                  SliverToBoxAdapter(child: _buildMainContent(context, state)),
-                ],
-              ),
+              child: _buildMainContent(context, state),
             );
           },
         ),
@@ -160,7 +155,9 @@ class SummaryScreen extends StatelessWidget {
           state.summaryOfCluster.isEmpty) {
         return _buildEmptyContent('No cluster summaries available');
       }
-      return _buildClusterContent(context, clusters!, state.summaryOfCluster);
+
+      // Use TabView for cluster summaries instead of the previous layout
+      return _buildClusterTabView(context, clusters!, state.summaryOfCluster);
     }
 
     return _buildEmptyContent('No content available');
@@ -198,76 +195,161 @@ class SummaryScreen extends StatelessWidget {
     BuildContext context,
     List<String> bulletPoints,
   ) {
-    return Card(
-      elevation: 4,
-      shadowColor: Colors.black26,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.lightbulb_outline,
-                    size: 20,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Key Points',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 20,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ],
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              child: Divider(height: 1, thickness: 1, color: Colors.white12),
-            ),
-            ListView.separated(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: bulletPoints.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 16),
-              itemBuilder: (context, index) {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      margin: const EdgeInsets.only(top: 6, right: 12),
-                      height: 8,
-                      width: 8,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor,
-                        shape: BoxShape.circle,
-                      ),
+    return SingleChildScrollView(
+      child: Card(
+        elevation: 4,
+        shadowColor: Colors.black26,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    Expanded(
-                      child: Text(
-                        bulletPoints[index],
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          height: 1.5,
+                    child: Icon(
+                      Icons.lightbulb_outline,
+                      size: 20,
+                      color: Theme.of(context).primaryColor,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text(
+                    'Key Points',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontSize: 20,
+                      letterSpacing: 0.5,
+                    ),
+                  ),
+                ],
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: Divider(height: 1, thickness: 1, color: Colors.white12),
+              ),
+              ListView.separated(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                itemCount: bulletPoints.length,
+                separatorBuilder:
+                    (context, index) => const SizedBox(height: 16),
+                itemBuilder: (context, index) {
+                  return Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 6, right: 12),
+                        height: 8,
+                        width: 8,
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).primaryColor,
+                          shape: BoxShape.circle,
                         ),
                       ),
-                    ),
-                  ],
-                );
-              },
+                      Expanded(
+                        child: Text(
+                          bulletPoints[index],
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            height: 1.5,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // New method to build the Tab View for clusters
+  Widget _buildClusterTabView(
+    BuildContext context,
+    List<Cluster> clusters,
+    List<String> summaries,
+  ) {
+    return DefaultTabController(
+      length: clusters.length,
+      child: SizedBox(
+        height: MediaQuery.of(context).size.height * 0.75, // Set a fixed height
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min, // Shrink wrap content
+          children: [
+            // Tab Bar with cluster titles
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(30),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 4,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: TabBar(
+                isScrollable: true,
+                labelColor: Theme.of(context).colorScheme.onPrimary,
+                unselectedLabelColor: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withOpacity(0.6),
+                labelStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+                unselectedLabelStyle: const TextStyle(
+                  fontWeight: FontWeight.normal,
+                  fontSize: 14,
+                ),
+                indicator: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                tabs:
+                    clusters
+                        .map(
+                          (cluster) => Tab(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                              ),
+                              child: Text(cluster.title),
+                            ),
+                          ),
+                        )
+                        .toList(),
+              ),
+            ),
+
+            // Tab content area - using Flexible instead of Expanded
+            Flexible(
+              child: TabBarView(
+                children: List.generate(
+                  clusters.length,
+                  (index) => _buildClusterContentTab(
+                    context,
+                    clusters[index],
+                    summaries[index],
+                  ),
+                ),
+              ),
             ),
           ],
         ),
@@ -275,99 +357,68 @@ class SummaryScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildClusterContent(
+  // Display individual cluster content within each tab
+  Widget _buildClusterContentTab(
     BuildContext context,
-    List<Cluster> clusters,
-    List<String> summaries,
+    Cluster cluster,
+    String summary,
   ) {
     return Card(
       elevation: 4,
       shadowColor: Colors.black26,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.category_outlined,
-                    size: 20,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                const Text(
-                  'Cluster Summaries',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 20,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-              ],
-            ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 12),
-              child: Divider(height: 1, thickness: 1, color: Colors.white12),
-            ),
-            ListView.separated(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemCount: clusters.length,
-              separatorBuilder:
-                  (context, index) => const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 16),
-                    child: Divider(
-                      height: 1,
-                      thickness: 1,
-                      color: Colors.white12,
+      margin: const EdgeInsets.all(2), // Add small margin
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min, // Shrink wrap content
+            children: [
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.category_outlined,
+                      size: 20,
+                      color: Theme.of(context).primaryColor,
                     ),
                   ),
-              itemBuilder: (context, index) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).primaryColor.withOpacity(0.15),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      child: Text(
-                        clusters[index].title,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).primaryColor,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      summaries[index],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      cluster.title,
                       style: const TextStyle(
+                        fontWeight: FontWeight.bold,
                         color: Colors.white,
-                        fontSize: 15,
-                        height: 1.5,
+                        fontSize: 20,
+                        letterSpacing: 0.5,
                       ),
+                      overflow: TextOverflow.ellipsis,
                     ),
-                  ],
-                );
-              },
-            ),
-          ],
+                  ),
+                ],
+              ),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 12),
+                child: Divider(height: 1, thickness: 1, color: Colors.white12),
+              ),
+              Text(
+                summary,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  height: 1.5,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

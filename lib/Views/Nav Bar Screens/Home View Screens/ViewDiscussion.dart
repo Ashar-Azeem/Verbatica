@@ -10,6 +10,7 @@ import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/UI_Components/Comment%20Componenets/CommentBlock.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
+import 'package:verbatica/UI_Components/PostComponents/userpostUI.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/model/Post.dart';
 
@@ -118,12 +119,19 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                           ),
                         ),
                       ),
-                      PostWidget(
-                        post: widget.post,
-                        index: widget.index,
-                        category: widget.category,
-                        onFullView: true,
-                      ),
+                      if (widget.category == '')
+                        UserPostWidget(
+                          post: widget.post,
+                          index: widget.index,
+                          onFullView: true,
+                        ),
+                      if (widget.category != '')
+                        PostWidget(
+                          post: widget.post,
+                          index: widget.index,
+                          category: widget.category,
+                          onFullView: true,
+                        ),
 
                       BlocBuilder<CommentsBloc, CommentsState>(
                         buildWhen:
