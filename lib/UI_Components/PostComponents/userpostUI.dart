@@ -70,156 +70,159 @@ class UserPostWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: 1.5.h),
+      padding: EdgeInsets.only(bottom: 0),
       child: Center(
         child: SizedBox(
           width: 100.w,
           child: Column(
             children: [
-              Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
-              SizedBox(
-                height: 5.5.h,
-                child: Padding(
-                  padding: EdgeInsets.only(left: 1.w, top: 1.w),
-                  child: GestureDetector(
-                    onTap: () {
-                      pushScreen(
-                        context,
-                        pageTransitionAnimation: PageTransitionAnimation.scale,
-                        screen: ProfileView(), // Navigate to user's own profile
-                        withNavBar: false,
-                      );
-                    },
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        CircleAvatar(
-                          backgroundImage: AssetImage(
-                            'assets/Avatars/avatar${post.avatar}.jpg',
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(left: 1.w),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                post.name,
-                                style: TextStyle(color: Colors.white),
-                              ),
-                              Text(
-                                timeago.format(post.uploadTime),
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 2.w,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Spacer(flex: 1),
-                        TextButton(
-                          onPressed: () {
-                            if (post.isDebate) {
-                              pushScreen(
-                                context,
-                                pageTransitionAnimation:
-                                    PageTransitionAnimation.scale,
-                                screen: SummaryScreen(
-                                  showClusters: true,
-                                  clusters: post.clusters,
-                                  postId: post.id,
-                                ),
-                                withNavBar: false,
-                              );
-                            } else {
-                              pushScreen(
-                                context,
-                                pageTransitionAnimation:
-                                    PageTransitionAnimation.scale,
-                                screen: SummaryScreen(
-                                  showClusters: false,
-                                  postId: post.id,
-                                ),
-                                withNavBar: false,
-                              );
-                            }
-                          },
-                          style: TextButton.styleFrom(
-                            shape: StadiumBorder(),
-                            backgroundColor: primaryColor,
-                            foregroundColor: Colors.white,
-                          ),
-                          child: Text(
-                            'Summary',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 2.8.w,
+              Padding(
+                padding: EdgeInsets.only(bottom: 1.w),
+                child: SizedBox(
+                  height: 5.5.h,
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 1.w, top: 1.w),
+                    child: GestureDetector(
+                      onTap: () {
+                        pushScreen(
+                          context,
+                          pageTransitionAnimation:
+                              PageTransitionAnimation.scale,
+                          screen:
+                              ProfileView(), // Navigate to user's own profile
+                          withNavBar: false,
+                        );
+                      },
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          CircleAvatar(
+                            backgroundImage: AssetImage(
+                              'assets/Avatars/avatar${post.avatar}.jpg',
                             ),
                           ),
-                        ),
-                        PopupMenuButton<String>(
-                          icon: Icon(Icons.more_vert),
-                          onSelected: (String value) {
-                            if (value == "edit") {
-                              // context.read<UserBloc>().add(
-                              //   EditUserPost(postId: post.id),
-                              // );
-                            } else if (value == "delete") {
-                              context.read<UserBloc>().add(
-                                DeleteUserPost(postId: post.id),
-                              );
-                            } else if (value == "share") {
-                              // context.read<UserBloc>().add(
-                              //   ShareUserPost(post: post),
-                              // );
-                            }
-                          },
-                          itemBuilder:
-                              (
-                                BuildContext context,
-                              ) => <PopupMenuEntry<String>>[
-                                const PopupMenuItem<String>(
-                                  value: 'edit',
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Icon(Icons.edit, color: Colors.white),
-                                      Text('Edit'),
-                                    ],
-                                  ),
+                          Padding(
+                            padding: EdgeInsets.only(left: 1.w),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  post.name,
+                                  style: TextStyle(color: Colors.white),
                                 ),
-                                const PopupMenuItem<String>(
-                                  value: 'delete',
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Icon(Icons.delete, color: Colors.white),
-                                      Text('Delete'),
-                                    ],
-                                  ),
-                                ),
-                                const PopupMenuItem<String>(
-                                  value: 'share',
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Icon(Icons.share, color: Colors.white),
-                                      Text('Share'),
-                                    ],
+                                Text(
+                                  timeago.format(post.uploadTime),
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 2.w,
                                   ),
                                 ),
                               ],
-                        ),
-                      ],
+                            ),
+                          ),
+                          Spacer(flex: 1),
+                          TextButton(
+                            onPressed: () {
+                              if (post.isDebate) {
+                                pushScreen(
+                                  context,
+                                  pageTransitionAnimation:
+                                      PageTransitionAnimation.scale,
+                                  screen: SummaryScreen(
+                                    showClusters: true,
+                                    clusters: post.clusters,
+                                    postId: post.id,
+                                  ),
+                                  withNavBar: false,
+                                );
+                              } else {
+                                pushScreen(
+                                  context,
+                                  pageTransitionAnimation:
+                                      PageTransitionAnimation.scale,
+                                  screen: SummaryScreen(
+                                    showClusters: false,
+                                    postId: post.id,
+                                  ),
+                                  withNavBar: false,
+                                );
+                              }
+                            },
+                            style: TextButton.styleFrom(
+                              shape: StadiumBorder(),
+                              backgroundColor: primaryColor,
+                              foregroundColor: Colors.white,
+                            ),
+                            child: Text(
+                              'Summary',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 2.8.w,
+                              ),
+                            ),
+                          ),
+                          PopupMenuButton<String>(
+                            icon: Icon(Icons.more_vert),
+                            onSelected: (String value) {
+                              if (value == "edit") {
+                                // context.read<UserBloc>().add(
+                                //   EditUserPost(postId: post.id),
+                                // );
+                              } else if (value == "delete") {
+                                context.read<UserBloc>().add(
+                                  DeleteUserPost(postId: post.id),
+                                );
+                              } else if (value == "share") {
+                                // context.read<UserBloc>().add(
+                                //   ShareUserPost(post: post),
+                                // );
+                              }
+                            },
+                            itemBuilder:
+                                (
+                                  BuildContext context,
+                                ) => <PopupMenuEntry<String>>[
+                                  const PopupMenuItem<String>(
+                                    value: 'edit',
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Icon(Icons.edit, color: Colors.white),
+                                        Text('Edit'),
+                                      ],
+                                    ),
+                                  ),
+                                  const PopupMenuItem<String>(
+                                    value: 'delete',
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Icon(Icons.delete, color: Colors.white),
+                                        Text('Delete'),
+                                      ],
+                                    ),
+                                  ),
+                                  const PopupMenuItem<String>(
+                                    value: 'share',
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Icon(Icons.share, color: Colors.white),
+                                        Text('Share'),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-              Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
               //Content, title, image or video
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -294,7 +297,7 @@ class UserPostWidget extends StatelessWidget {
 
               //Bottom side of the post
               Padding(
-                padding: EdgeInsets.only(right: 1.w, bottom: 1.w),
+                padding: EdgeInsets.only(right: 1.w),
                 child: InkWell(
                   onTap: () {
                     if (!onFullView) {
@@ -333,7 +336,7 @@ class UserPostWidget extends StatelessWidget {
                           ),
                           padding: EdgeInsets.symmetric(
                             horizontal: 0.5.w,
-                            vertical: 0.5.w,
+                            // vertical: 0.5.w,
                           ),
                           child: BlocBuilder<UserBloc, UserState>(
                             builder: (context, state) {
@@ -507,18 +510,16 @@ class UserPostWidget extends StatelessWidget {
                           tooltip: 'Delete post',
                         ),
                         // Edit post button - only available for user's own posts
-                        Expanded(
-                          child: IconButton(
-                            onPressed: () {
-                              // context.read<UserBloc>().add(
-                              //       EditUserPost(postId: post.id),
-                              //     );
-                            },
-                            icon: Icon(
-                              Icons.edit,
-                              size: 7.w,
-                              color: Colors.white70,
-                            ),
+                        IconButton(
+                          onPressed: () {
+                            // context.read<UserBloc>().add(
+                            //       EditUserPost(postId: post.id),
+                            //     );
+                          },
+                          icon: Icon(
+                            Icons.edit,
+                            size: 7.w,
+                            color: Colors.white70,
                           ),
                         ),
 
@@ -528,7 +529,6 @@ class UserPostWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
             ],
           ),
         ),

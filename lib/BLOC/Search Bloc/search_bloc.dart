@@ -13,11 +13,11 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   SearchBloc() : super(SearchState()) {
     on<SearchUsers>(
       searchUsers,
-      transformer: debounceRestartable(const Duration(milliseconds: 300)),
+      transformer: debounceRestartable(const Duration(milliseconds: 500)),
     );
     on<SearchPosts>(
       searchPosts,
-      transformer: debounceRestartable(const Duration(milliseconds: 300)),
+      transformer: debounceRestartable(const Duration(milliseconds: 500)),
     );
     on<UpVotePost>(upVotePost);
     on<DownVotePost>(downVotePost);
@@ -34,33 +34,37 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
   searchUsers(SearchUsers event, Emitter<SearchState> emit) async {
     try {
-      emit(state.copyWith(loadingUsers: true));
-
-      final query = event.userName.toLowerCase();
-      final currentUsers = List.from(state.users);
-
-      if (query.trim().isEmpty) {
-        emit(state.copyWith(loadingUsers: false, users: []));
-      }
-      await Future.delayed(const Duration(milliseconds: 150));
-
-      List<User> matchedInState = [];
-      for (User user in currentUsers) {
-        final String username = user.username.toLowerCase().trim();
-        if (username.startsWith(query)) {
-          matchedInState.add(user);
-        }
-      }
-
-      if (matchedInState.isNotEmpty) {
-        emit(state.copyWith(users: matchedInState, loadingUsers: false));
+      if (event.userName.trim().isEmpty) {
+        emit(state.copyWith(users: [], loadingUsers: false));
       } else {
-        List<User> matchedInDummy =
-            dummySearchedUsers.where((user) {
-              final username = user.username.toLowerCase().trim();
-              return username.startsWith(query);
-            }).toList();
-        emit(state.copyWith(users: matchedInDummy, loadingUsers: false));
+        emit(state.copyWith(users: [], loadingUsers: true));
+
+        final query = event.userName.toLowerCase();
+        final currentUsers = List.from(state.users);
+
+        if (query.trim().isEmpty) {
+          emit(state.copyWith(loadingUsers: false, users: []));
+        }
+        await Future.delayed(const Duration(milliseconds: 150));
+
+        List<User> matchedInState = [];
+        for (User user in currentUsers) {
+          final String username = user.username.toLowerCase().trim();
+          if (username.startsWith(query)) {
+            matchedInState.add(user);
+          }
+        }
+
+        if (matchedInState.isNotEmpty) {
+          emit(state.copyWith(users: matchedInState, loadingUsers: false));
+        } else {
+          List<User> matchedInDummy =
+              dummySearchedUsers.where((user) {
+                final username = user.username.toLowerCase().trim();
+                return username.startsWith(query);
+              }).toList();
+          emit(state.copyWith(users: matchedInDummy, loadingUsers: false));
+        }
       }
     } catch (e) {
       print(e);
@@ -69,27 +73,32 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
   searchPosts(SearchPosts event, Emitter<SearchState> emit) async {
     try {
-      emit(state.copyWith(loadingPosts: true));
-      final query = event.postTitle.toLowerCase();
-      final List<Post> currentPosts = List.from(state.posts);
-
-      await Future.delayed(const Duration(milliseconds: 150));
-      List<Post> matchedInState =
-          currentPosts.where((post) {
-            final title = post.title.toLowerCase().trim();
-            return title.startsWith(query);
-          }).toList();
-
-      if (matchedInState.isNotEmpty) {
-        emit(state.copyWith(posts: matchedInState, loadingPosts: false));
+      if (event.postTitle.trim().isEmpty) {
+        emit(state.copyWith(posts: [], loadingPosts: false));
       } else {
-        List<Post> matchedInDummy =
-            searchingPosts.where((post) {
+        emit(state.copyWith(posts: [], loadingPosts: true));
+
+        final query = event.postTitle.toLowerCase();
+        final List<Post> currentPosts = List.from(state.posts);
+
+        await Future.delayed(const Duration(milliseconds: 150));
+        List<Post> matchedInState =
+            currentPosts.where((post) {
               final title = post.title.toLowerCase().trim();
               return title.startsWith(query);
             }).toList();
 
-        emit(state.copyWith(posts: matchedInDummy, loadingPosts: false));
+        if (matchedInState.isNotEmpty) {
+          emit(state.copyWith(posts: matchedInState, loadingPosts: false));
+        } else {
+          List<Post> matchedInDummy =
+              searchingPosts.where((post) {
+                final title = post.title.toLowerCase().trim();
+                return title.startsWith(query);
+              }).toList();
+
+          emit(state.copyWith(posts: matchedInDummy, loadingPosts: false));
+        }
       }
     } catch (e) {
       print(e);

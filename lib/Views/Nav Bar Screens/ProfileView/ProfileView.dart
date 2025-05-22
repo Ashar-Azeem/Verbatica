@@ -325,13 +325,13 @@ class _ProfileViewState extends State<ProfileView>
         // Gradient Background
         Container(
           height: 35.0.h,
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Color(0xFF1A237E), // Deeper indigo
-                Color(0xFF0D47A1), // Royal blue
+                Color.fromARGB(255, 25, 129, 255), // Deeper indigo
+                Color.fromARGB(255, 157, 192, 245), // Royal blue
               ],
               stops: [0.4, 1.0],
             ),
@@ -388,10 +388,10 @@ class _ProfileViewState extends State<ProfileView>
 
                     // Profile Card
                     Container(
-                      margin: EdgeInsets.only(bottom: 2.0.h),
+                      // margin: EdgeInsets.only(bottom: 2.0.h),
                       padding: EdgeInsets.all(5.0.w),
                       decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor.withOpacity(0.9),
+                        color: Theme.of(context).cardColor,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -778,16 +778,13 @@ class PostTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+      margin: EdgeInsets.symmetric(horizontal: 4, vertical: 8.0),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor.withOpacity(0.7),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.grey.withOpacity(0.2), width: 1),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: UserPostWidget(post: post, index: index, onFullView: false),
-      ),
+      child: UserPostWidget(post: post, index: index, onFullView: false),
 
       // Delete button
 

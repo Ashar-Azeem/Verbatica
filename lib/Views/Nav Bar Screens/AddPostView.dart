@@ -7,6 +7,7 @@ import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_bloc.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_event.dart';
+import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/model/Post.dart';
 
 class CreatePostScreen extends StatefulWidget {
@@ -336,7 +337,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        backgroundColor: Theme.of(context).cardColor,
         title: const Text(
           'Create Post',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
@@ -347,7 +348,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             child: TextButton(
               onPressed: _handlePostSubmission,
               style: TextButton.styleFrom(
-                foregroundColor: Colors.blue,
+                foregroundColor: primaryColor,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
               ),
               child: const Text(
@@ -367,7 +368,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               // Post Card Container
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.grey[900],
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Padding(
@@ -398,7 +399,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         style: const TextStyle(color: Colors.white),
                         maxLines: 5,
                         decoration: InputDecoration(
-                          hintText: 'Description (optional)',
+                          hintText: 'Description ',
                           hintStyle: TextStyle(color: Colors.grey[400]),
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
@@ -430,7 +431,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
               // Post Options Section
               Container(
                 decoration: BoxDecoration(
-                  color: Colors.grey[900],
+                  color: Theme.of(context).cardColor,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Padding(
@@ -491,7 +492,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
                                     polarity == ''
-                                        ? Colors.grey[800]
+                                        ? primaryColor
                                         : (polarity == 'polarize'
                                             ? Colors.blue.withOpacity(0.2)
                                             : Colors.green.withOpacity(0.2)),
@@ -542,12 +543,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   padding: const EdgeInsets.only(top: 24.0),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.grey[900],
+                      color: Theme.of(context).cardColor,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Colors.blue.withOpacity(0.3),
-                        width: 1,
-                      ),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
@@ -624,7 +621,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                       decoration: InputDecoration(
                                         hintText: "Enter cluster name",
                                         hintStyle: TextStyle(
-                                          color: Colors.grey[500],
+                                          color: Colors.white,
                                         ),
                                         contentPadding:
                                             const EdgeInsets.symmetric(
@@ -632,7 +629,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                               vertical: 12,
                                             ),
                                         filled: true,
-                                        fillColor: Colors.grey[800],
+                                        fillColor: const Color.fromARGB(
+                                          255,
+                                          28,
+                                          40,
+                                          52,
+                                        ),
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(
                                             10,
@@ -729,7 +731,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
-          color: Colors.grey[800],
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: Colors.grey[700]!, width: 1),
         ),

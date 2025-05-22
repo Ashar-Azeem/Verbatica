@@ -82,18 +82,14 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                         ),
 
                         onChanged: (value) {
-                          if (value.isNotEmpty) {
-                            if (_tabController.index == 0) {
-                              context.read<SearchBloc>().add(
-                                SearchUsers(userName: value),
-                              );
-                            } else {
-                              context.read<SearchBloc>().add(
-                                SearchPosts(postTitle: value),
-                              );
-                            }
+                          if (_tabController.index == 0) {
+                            context.read<SearchBloc>().add(
+                              SearchUsers(userName: value),
+                            );
                           } else {
-                            context.read<SearchBloc>().add(Reset());
+                            context.read<SearchBloc>().add(
+                              SearchPosts(postTitle: value),
+                            );
                           }
                         },
                         leading: const Icon(Icons.search),
