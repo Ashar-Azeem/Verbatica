@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:verbatica/Utilities/Color.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
@@ -6,10 +7,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Colors.transparent,
         title: const Text(
           'Privacy Policy',
           style: TextStyle(
@@ -24,10 +22,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
             Icons.arrow_back_ios,
             color: Theme.of(context).colorScheme.primary,
           ),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
       ),
-      body: const SafeArea(child: PrivacyPolicyContent()),
+      body: SafeArea(child: PrivacyPolicyContent()),
     );
   }
 }
@@ -198,7 +198,7 @@ class PrivacyPolicyContent extends StatelessWidget {
   Widget _buildHeaderCard(BuildContext context) {
     return Card(
       elevation: 10,
-      color: Theme.of(context).colorScheme.surface,
+
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -365,7 +365,7 @@ class PrivacyPolicyContent extends StatelessWidget {
       },
 
       style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: primaryColor,
         padding: const EdgeInsets.symmetric(vertical: 15),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 5,

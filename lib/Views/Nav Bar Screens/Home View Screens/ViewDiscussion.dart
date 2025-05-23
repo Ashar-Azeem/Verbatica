@@ -133,8 +133,17 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                           index: widget.index,
                           onFullView: true,
                         ),
+                      if (widget.category == 'saved')
+                        UserPostWidget(
+                          post: widget.post,
+                          index: widget.index,
+                          onFullView: true,
+                          category: widget.category,
+                        ),
+
                       if (widget.category != 'user' &&
-                          widget.category != 'other')
+                          widget.category != 'other' &&
+                          widget.category != 'saved')
                         PostWidget(
                           post: widget.post,
                           index: widget.index,

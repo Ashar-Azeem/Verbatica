@@ -73,15 +73,14 @@ class UserPostWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     bool isUserPost = category == 'user';
 
-    return Padding(
-      padding: EdgeInsets.only(bottom: 1.5.h),
-      child: Center(
-        child: SizedBox(
-          width: 100.w,
-          child: Column(
-            children: [
-              Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
-              SizedBox(
+    return Center(
+      child: SizedBox(
+        width: 100.w,
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(top: 1.w, bottom: 1.w, left: 1.w),
+              child: SizedBox(
                 height: 5.5.h,
                 child: Padding(
                   padding: EdgeInsets.only(left: 1.w, top: 1.w),
@@ -299,326 +298,323 @@ class UserPostWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
-              //Content, title, image or video
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  /// Title
-                  Padding(
-                    padding: EdgeInsets.only(left: 1.w),
-                    child: Text(
-                      post.title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 0.2.h),
-
-                  Padding(
-                    padding: EdgeInsets.only(left: 1.w),
-                    child: ExpandableText(
-                      post.description,
-                      expandOnTextTap: true,
-                      collapseOnTextTap: true,
-                      expandText: 'show more',
-                      collapseText: 'show less',
-                      linkEllipsis: false,
-                      maxLines: 2,
-                      style: const TextStyle(fontSize: 15, color: Colors.white),
-                      linkColor: primaryColor,
-                    ),
-                  ),
-
-                  SizedBox(height: 0.5.h),
-
-                  if (post.postImageLink != null)
-                    CachedNetworkImage(
-                      imageUrl: post.postImageLink!,
-                      placeholder:
-                          (context, url) => Shimmer.fromColors(
-                            baseColor: const Color.fromARGB(255, 58, 76, 90),
-                            highlightColor: const Color.fromARGB(
-                              255,
-                              81,
-                              106,
-                              125,
-                            ),
-                            child: AspectRatio(
-                              aspectRatio: 16 / 9,
-                              child: Container(color: Colors.white),
-                            ),
-                          ),
-                      errorWidget:
-                          (context, url, error) => AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: Container(
-                              color: Colors.grey[200],
-                              child: const Icon(Icons.error),
-                            ),
-                          ),
-                      fit: BoxFit.contain,
-                    ),
-
-                  /// Video placeholder (show only if video link is not null)
-                  if (post.postVideoLink != null)
-                    VideoPlayer(videoUrl: post.postVideoLink!),
-                ],
-              ),
-
-              //End of content, title, image or video
-
-              //Bottom side of the post
-              Padding(
-                padding: EdgeInsets.only(right: 1.w, bottom: 1.w),
-                child: InkWell(
-                  onTap: () {
-                    if (!onFullView) {
-                      pushScreen(
-                        context,
-                        pageTransitionAnimation: PageTransitionAnimation.scale,
-                        screen: MultiBlocProvider(
-                          providers: [
-                            BlocProvider<UserBloc>.value(
-                              value: context.read<UserBloc>(),
-                            ),
-                          ],
-                          child: ViewDiscussion(
-                            post: post,
-                            index: index,
-                            category: category,
-                          ),
-                        ),
-                        withNavBar: false,
-                      );
-                    }
-                  },
-                  child: SizedBox(
-                    height: 6.h,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(width: 1.w),
-                        Container(
-                          height: 5.h,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: Color.fromARGB(255, 70, 79, 87),
-                            ),
-                          ),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 0.5.w,
-                            vertical: 0.5.w,
-                          ),
-                          child: BlocBuilder<UserBloc, UserState>(
-                            builder: (context, state) {
-                              Post dynamicpost;
-                              if (category == 'user') {
-                                if (state.userPosts.isNotEmpty) {
-                                  dynamicpost = state.userPosts.firstWhere(
-                                    (p) => p.id == post.id,
-                                    orElse: () => post,
-                                  );
-                                } else {
-                                  dynamicpost = post;
-                                }
-                              } else if (category == 'saved') {
-                                // For saved posts, get from saved posts list
-                                dynamicpost = state.savedPosts[index];
-                              } else {
-                                dynamicpost = post;
-                              }
-                              return Row(
-                                children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      if (category == 'user') {
-                                        context.read<UserBloc>().add(
-                                          upvotePost(index: index),
-                                        );
-                                      } else {
-                                        // For saved posts, use different event
-                                        context.read<UserBloc>().add(
-                                          upvotesavedPost(index: index),
-                                        );
-                                      }
-                                    },
-                                    child: Row(
-                                      children: [
-                                        IconButton(
-                                          onPressed: null,
-                                          padding: EdgeInsets.zero,
-                                          icon: Icon(
-                                            Icons.arrow_circle_up_outlined,
-                                            size: 7.w,
-                                            color:
-                                                dynamicpost.isUpVote
-                                                    ? primaryColor
-                                                    : Colors.grey,
-                                          ),
-                                        ),
-                                        Text(
-                                          "${dynamicpost.upvotes - dynamicpost.downvotes}",
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 3.w,
-                                            height: 1,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        SizedBox(width: 4.w),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    width: 1,
-                                    height: 6.h,
-                                    color: Color.fromARGB(255, 70, 79, 87),
-                                  ),
-                                  IconButton(
-                                    splashColor: Colors.transparent,
-                                    highlightColor: Colors.transparent,
-                                    onPressed: () {
-                                      if (category == 'user') {
-                                        context.read<UserBloc>().add(
-                                          downvotePost(index: index),
-                                        );
-                                      } else {
-                                        // For saved posts, use different event
-                                        context.read<UserBloc>().add(
-                                          downvotesavedPost(index: index),
-                                        );
-                                      }
-                                    },
-                                    padding: EdgeInsets.zero,
-                                    icon: Icon(
-                                      size: 7.w,
-                                      Icons.arrow_circle_down_outlined,
-                                      color:
-                                          dynamicpost.isDownVote
-                                              ? primaryColor
-                                              : Colors.grey,
-                                    ),
-                                  ),
-                                ],
-                              );
-                            },
-                          ),
-                        ),
-                        Spacer(flex: 1),
-                        !onFullView
-                            ? Container(
-                              height: 5.h,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                border: Border.all(
-                                  color: Color.fromARGB(255, 70, 79, 87),
-                                ),
-                              ),
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 0.5.w,
-                                vertical: 0.5.w,
-                              ),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  IconButton(
-                                    onPressed: () {
-                                      pushScreen(
-                                        context,
-                                        pageTransitionAnimation:
-                                            PageTransitionAnimation.scale,
-                                        screen: MultiBlocProvider(
-                                          providers: [
-                                            BlocProvider<UserBloc>.value(
-                                              value: context.read<UserBloc>(),
-                                            ),
-                                          ],
-                                          child: ViewDiscussion(
-                                            post: post,
-                                            index: index,
-                                            category: category,
-                                          ),
-                                        ),
-                                        withNavBar: false,
-                                      );
-                                    },
-                                    splashColor: Colors.transparent,
-                                    highlightColor: Colors.transparent,
-                                    padding: EdgeInsets.zero,
-                                    icon: Icon(
-                                      Icons.mode_comment_outlined,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  Text(
-                                    "${post.comments}",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 3.w,
-                                      height: 1,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  SizedBox(width: 4.w),
-                                ],
-                              ),
-                            )
-                            : SizedBox.shrink(),
-
-                        // Sentiment Analysis Button or spacing
-                        post.isDebate
-                            ? IconButton(
-                              onPressed: () {
-                                pushScreen(
-                                  context,
-                                  pageTransitionAnimation:
-                                      PageTransitionAnimation.scale,
-                                  screen: Clusterscreen(
-                                    clusters: post.clusters!,
-                                    postid: post.id,
-                                  ),
-                                  withNavBar: false,
-                                );
-                              },
-                              icon: Icon(
-                                Icons.analytics_outlined,
-                                size: 7.w,
-                                color: primaryColor,
-                              ),
-                            )
-                            : SizedBox(height: 6.h, width: 15.w),
-
-                        // Delete button only for user's own posts
-                        if (isUserPost) ...[
-                          Spacer(),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.delete_outline,
-                              color: Colors.red,
-                            ),
-                            onPressed: () {
-                              _showDeleteConfirmation(context, post);
-                            },
-                            tooltip: 'Delete post',
-                          ),
-                          Spacer(flex: 2),
-                        ] else
-                          const Spacer(flex: 10),
-                      ],
+            ),
+            //Content, title, image or video
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// Title
+                Padding(
+                  padding: EdgeInsets.only(left: 1.w),
+                  child: Text(
+                    post.title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
+
+                SizedBox(height: 0.2.h),
+
+                Padding(
+                  padding: EdgeInsets.only(left: 1.w),
+                  child: ExpandableText(
+                    post.description,
+                    expandOnTextTap: true,
+                    collapseOnTextTap: true,
+                    expandText: 'show more',
+                    collapseText: 'show less',
+                    linkEllipsis: false,
+                    maxLines: 2,
+                    style: const TextStyle(fontSize: 15, color: Colors.white),
+                    linkColor: primaryColor,
+                  ),
+                ),
+
+                SizedBox(height: 0.5.h),
+
+                if (post.postImageLink != null)
+                  CachedNetworkImage(
+                    imageUrl: post.postImageLink!,
+                    placeholder:
+                        (context, url) => Shimmer.fromColors(
+                          baseColor: const Color.fromARGB(255, 58, 76, 90),
+                          highlightColor: const Color.fromARGB(
+                            255,
+                            81,
+                            106,
+                            125,
+                          ),
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: Container(color: Colors.white),
+                          ),
+                        ),
+                    errorWidget:
+                        (context, url, error) => AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: Container(
+                            color: Colors.grey[200],
+                            child: const Icon(Icons.error),
+                          ),
+                        ),
+                    fit: BoxFit.contain,
+                  ),
+
+                /// Video placeholder (show only if video link is not null)
+                if (post.postVideoLink != null)
+                  VideoPlayer(videoUrl: post.postVideoLink!),
+              ],
+            ),
+
+            //End of content, title, image or video
+
+            //Bottom side of the post
+            Padding(
+              padding: EdgeInsets.only(right: 1.w),
+              child: InkWell(
+                onTap: () {
+                  if (!onFullView) {
+                    pushScreen(
+                      context,
+                      pageTransitionAnimation: PageTransitionAnimation.scale,
+                      screen: MultiBlocProvider(
+                        providers: [
+                          BlocProvider<UserBloc>.value(
+                            value: context.read<UserBloc>(),
+                          ),
+                        ],
+                        child: ViewDiscussion(
+                          post: post,
+                          index: index,
+                          category: category,
+                        ),
+                      ),
+                      withNavBar: false,
+                    );
+                  }
+                },
+                child: SizedBox(
+                  height: 6.h,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(width: 1.w),
+                      Container(
+                        height: 5.h,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Color.fromARGB(255, 70, 79, 87),
+                          ),
+                        ),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 0.5.w,
+                          // vertical: 0.5.w,
+                        ),
+                        child: BlocBuilder<UserBloc, UserState>(
+                          builder: (context, state) {
+                            Post dynamicpost;
+                            if (category == 'user') {
+                              if (state.userPosts.isNotEmpty) {
+                                dynamicpost = state.userPosts.firstWhere(
+                                  (p) => p.id == post.id,
+                                  orElse: () => post,
+                                );
+                              } else {
+                                dynamicpost = post;
+                              }
+                            } else if (category == 'saved') {
+                              // For saved posts, get from saved posts list
+                              dynamicpost = state.savedPosts[index];
+                            } else {
+                              dynamicpost = post;
+                            }
+                            return Row(
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    if (category == 'user') {
+                                      context.read<UserBloc>().add(
+                                        upvotePost(index: index),
+                                      );
+                                    } else {
+                                      // For saved posts, use different event
+                                      context.read<UserBloc>().add(
+                                        upvotesavedPost(index: index),
+                                      );
+                                    }
+                                  },
+                                  child: Row(
+                                    children: [
+                                      IconButton(
+                                        onPressed: null,
+                                        padding: EdgeInsets.zero,
+                                        icon: Icon(
+                                          Icons.arrow_circle_up_outlined,
+                                          size: 7.w,
+                                          color:
+                                              dynamicpost.isUpVote
+                                                  ? primaryColor
+                                                  : Colors.grey,
+                                        ),
+                                      ),
+                                      Text(
+                                        "${dynamicpost.upvotes - dynamicpost.downvotes}",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 3.w,
+                                          height: 1,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      SizedBox(width: 4.w),
+                                    ],
+                                  ),
+                                ),
+                                Container(
+                                  width: 1,
+                                  height: 6.h,
+                                  color: Color.fromARGB(255, 70, 79, 87),
+                                ),
+                                IconButton(
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  onPressed: () {
+                                    if (category == 'user') {
+                                      context.read<UserBloc>().add(
+                                        downvotePost(index: index),
+                                      );
+                                    } else {
+                                      // For saved posts, use different event
+                                      context.read<UserBloc>().add(
+                                        downvotesavedPost(index: index),
+                                      );
+                                    }
+                                  },
+                                  padding: EdgeInsets.zero,
+                                  icon: Icon(
+                                    size: 7.w,
+                                    Icons.arrow_circle_down_outlined,
+                                    color:
+                                        dynamicpost.isDownVote
+                                            ? primaryColor
+                                            : Colors.grey,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                      Spacer(flex: 1),
+                      !onFullView
+                          ? Container(
+                            height: 5.h,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Color.fromARGB(255, 70, 79, 87),
+                              ),
+                            ),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 0.5.w,
+                              vertical: 0.5.w,
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                IconButton(
+                                  onPressed: () {
+                                    pushScreen(
+                                      context,
+                                      pageTransitionAnimation:
+                                          PageTransitionAnimation.scale,
+                                      screen: MultiBlocProvider(
+                                        providers: [
+                                          BlocProvider<UserBloc>.value(
+                                            value: context.read<UserBloc>(),
+                                          ),
+                                        ],
+                                        child: ViewDiscussion(
+                                          post: post,
+                                          index: index,
+                                          category: category,
+                                        ),
+                                      ),
+                                      withNavBar: false,
+                                    );
+                                  },
+                                  splashColor: Colors.transparent,
+                                  highlightColor: Colors.transparent,
+                                  padding: EdgeInsets.zero,
+                                  icon: Icon(
+                                    Icons.mode_comment_outlined,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                Text(
+                                  "${post.comments}",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 3.w,
+                                    height: 1,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(width: 4.w),
+                              ],
+                            ),
+                          )
+                          : SizedBox.shrink(),
+
+                      // Sentiment Analysis Button or spacing
+                      post.isDebate
+                          ? IconButton(
+                            onPressed: () {
+                              pushScreen(
+                                context,
+                                pageTransitionAnimation:
+                                    PageTransitionAnimation.scale,
+                                screen: Clusterscreen(
+                                  clusters: post.clusters!,
+                                  postid: post.id,
+                                ),
+                                withNavBar: false,
+                              );
+                            },
+                            icon: Icon(
+                              Icons.analytics_outlined,
+                              size: 7.w,
+                              color: primaryColor,
+                            ),
+                          )
+                          : SizedBox(height: 6.h, width: 15.w),
+
+                      // Delete button only for user's own posts
+                      if (isUserPost) ...[
+                        Spacer(),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.red,
+                          ),
+                          onPressed: () {
+                            _showDeleteConfirmation(context, post);
+                          },
+                          tooltip: 'Delete post',
+                        ),
+                        Spacer(flex: 2),
+                      ] else
+                        const Spacer(flex: 10),
+                    ],
+                  ),
+                ),
               ),
-              Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

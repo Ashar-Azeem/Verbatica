@@ -5,6 +5,7 @@ import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_state.dart';
 import 'package:verbatica/UI_Components/PostComponents/otheruserpostui.dart';
+import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:shimmer/shimmer.dart';
@@ -219,57 +220,52 @@ class _ProfileViewState extends State<otherProfileView>
                 ),
                 bottom: PreferredSize(
                   preferredSize: const Size.fromHeight(48.0),
-                  child: Container(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    child: TabBar(
-                      controller: _tabController,
-                      tabs: const [
-                        Tab(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.article, size: 18),
-                              SizedBox(width: 8),
-                              Text('Posts'),
-                            ],
-                          ),
+                  child: TabBar(
+                    controller: _tabController,
+                    tabs: const [
+                      Tab(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.article, size: 18),
+                            SizedBox(width: 8),
+                            Text('Posts'),
+                          ],
                         ),
-                        Tab(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.comment, size: 18),
-                              SizedBox(width: 8),
-                              Text('Comments'),
-                            ],
-                          ),
-                        ),
-                        Tab(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.person, size: 18),
-                              SizedBox(width: 8),
-                              Text('About'),
-                            ],
-                          ),
-                        ),
-                      ],
-                      labelColor: Theme.of(context).primaryColor,
-                      unselectedLabelColor: Colors.grey,
-                      labelStyle: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
                       ),
-                      indicator: UnderlineTabIndicator(
-                        borderSide: BorderSide(
-                          width: 3.0,
-                          color: Theme.of(context).primaryColor,
+                      Tab(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.comment, size: 18),
+                            SizedBox(width: 8),
+                            Text('Comments'),
+                          ],
                         ),
-                        insets: const EdgeInsets.symmetric(horizontal: 16.0),
                       ),
-                      dividerColor: Colors.transparent,
+                      Tab(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.person, size: 18),
+                            SizedBox(width: 8),
+                            Text('About'),
+                          ],
+                        ),
+                      ),
+                    ],
+                    labelColor: primaryColor,
+
+                    unselectedLabelColor: Colors.grey,
+                    labelStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
                     ),
+                    indicator: UnderlineTabIndicator(
+                      borderSide: BorderSide(width: 3.0, color: primaryColor),
+                      insets: const EdgeInsets.symmetric(horizontal: 16.0),
+                    ),
+                    dividerColor: Colors.transparent,
                   ),
                 ),
               ),
@@ -358,9 +354,7 @@ class _ProfileViewState extends State<otherProfileView>
                             icon: Icons.date_range,
                             iconColor: Colors.blue[700]!,
                             label: 'Member since',
-                            value: formatJoinedDate(
-                              state.user.joinedDate ?? DateTime.now(),
-                            ),
+                            value: formatJoinedDate(state.user.joinedDate),
                           ),
 
                           SizedBox(height: 2.0.h),
@@ -370,7 +364,7 @@ class _ProfileViewState extends State<otherProfileView>
                             icon: Icons.location_on,
                             iconColor: Colors.red[400]!,
                             label: 'Location',
-                            value: state.user.country ?? 'Unknown',
+                            value: state.user.country,
                           ),
                         ],
                       );
@@ -397,8 +391,8 @@ class _ProfileViewState extends State<otherProfileView>
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
               colors: [
-                Color(0xFF1A237E), // Deeper indigo
-                Color(0xFF0D47A1), // Royal blue
+                Color.fromARGB(255, 25, 129, 255), // Deeper indigo
+                Color.fromARGB(255, 157, 192, 245), // Royal blue
               ],
               stops: [0.4, 1.0],
             ),
@@ -449,7 +443,7 @@ class _ProfileViewState extends State<otherProfileView>
                   margin: EdgeInsets.only(bottom: 2.0.h),
                   padding: EdgeInsets.all(5.0.w),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor.withOpacity(0.9),
+                    color: Theme.of(context).cardColor,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
@@ -521,7 +515,7 @@ class _ProfileViewState extends State<otherProfileView>
                                 ),
                                 SizedBox(width: 1.0.w),
                                 Text(
-                                  '${state.user.karma ?? 0} Aura',
+                                  '${state.user.karma} Aura',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
@@ -544,7 +538,7 @@ class _ProfileViewState extends State<otherProfileView>
                               ),
                               SizedBox(width: 1.0.w),
                               Text(
-                                'Member since ${formatJoinedDate(state.user.joinedDate ?? DateTime.now())}',
+                                'Member since ${formatJoinedDate(state.user.joinedDate)}',
                                 style: TextStyle(
                                   color: Colors.grey[600],
                                   fontSize: 14,
@@ -738,7 +732,7 @@ class PostTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8.0),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor.withOpacity(0.7),
         borderRadius: BorderRadius.circular(12),

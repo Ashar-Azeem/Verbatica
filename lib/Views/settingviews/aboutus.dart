@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
 
 class AboutUsScreen extends StatelessWidget {
   const AboutUsScreen({super.key});
@@ -6,26 +7,15 @@ class AboutUsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
-      appBar: AppBar(
-        title: const Text('About Us'),
-        backgroundColor: const Color(0xFF1E1E1E),
-        elevation: 0,
-      ),
+      appBar: AppBar(title: const Text('About Us'), elevation: 0),
       body: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Column(
           children: [
             // Hero section
-            Container(
+            SizedBox(
               width: double.infinity,
-              decoration: const BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [Color(0xFF2A2A2A), Color(0xFF121212)],
-                ),
-              ),
+
               child: SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -51,14 +41,14 @@ class AboutUsScreen extends StatelessWidget {
                         ),
                         child: Container(
                           padding: const EdgeInsets.all(24),
-                          decoration: const BoxDecoration(
-                            color: Color(0xFF1E1E1E),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).cardColor,
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
-                            Icons.forum_rounded,
-                            size: 64,
-                            color: Color.fromARGB(255, 2, 159, 232),
+                          child: Image.asset(
+                            'assets/Logo.png',
+                            width: 20.w,
+                            height: 20.w,
                           ),
                         ),
                       ),
@@ -177,7 +167,7 @@ class AboutUsScreen extends StatelessWidget {
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(vertical: 16),
-              color: const Color(0xFF1A1A1A),
+              color: Theme.of(context).cardColor,
               child: Text(
                 '© ${DateTime.now().year} Verbatica. All rights reserved.',
                 textAlign: TextAlign.center,
