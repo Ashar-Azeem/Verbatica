@@ -1,6 +1,6 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'dart:math' as math;
+import 'package:sizer/sizer.dart';
 
 class EmotionalChart extends StatefulWidget {
   const EmotionalChart({
@@ -9,6 +9,7 @@ class EmotionalChart extends StatefulWidget {
     required this.index,
     super.key,
   });
+
   final double value;
   final int index;
   final List<String> dataforgraph;
@@ -19,27 +20,16 @@ class EmotionalChart extends StatefulWidget {
 
 class _EmotionalChartState extends State<EmotionalChart>
     with TickerProviderStateMixin {
-  // Animation controllers
   late AnimationController _chartController;
   late AnimationController _indicatorsController;
 
   int touchedIndex = -1;
-
-  // Modern gradient background
-  final LinearGradient _backgroundGradient = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [
-      const Color.fromARGB(255, 67, 118, 138).withOpacity(0.9),
-      const Color.fromARGB(255, 67, 118, 138).withOpacity(0.6),
-    ],
-    stops: const [0.2, 0.9],
-  );
+  final Color containerColor = const Color.fromARGB(255, 21, 28, 32);
+  late List<double> emotionValues;
 
   @override
   void initState() {
     super.initState();
-
     _chartController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1500),
@@ -49,6 +39,11 @@ class _EmotionalChartState extends State<EmotionalChart>
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     )..forward();
+
+    // Evenly distribute the values
+    final count = widget.dataforgraph.length;
+    final double perSectionValue = count > 0 ? widget.value / count : 0;
+    emotionValues = List.filled(count, perSectionValue);
   }
 
   @override
@@ -60,93 +55,79 @@ class _EmotionalChartState extends State<EmotionalChart>
 
   @override
   Widget build(BuildContext context) {
-    final String title =
+    final title =
         widget.index == 1
             ? 'Emotional Distribution Analysis'
             : 'Gender Distribution Analysis';
-    final String subtitle =
+    final subtitle =
         widget.index == 1
             ? 'Distribution of emotions in comments'
             : 'Distribution of genders in comments';
 
-    return SizedBox(
-      height: 480, // Increased height to prevent overlapping
-      child: Card(
-        elevation: 12,
-        shadowColor: Colors.black38,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        child: Container(
-          decoration: BoxDecoration(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Card(
+          elevation: 12,
+          shadowColor: Colors.black38,
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
-            gradient: _backgroundGradient,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 10,
-                spreadRadius: 1,
-                offset: const Offset(0, 4),
-              ),
-            ],
           ),
-          child: Padding(
+          child: Container(
+            decoration: BoxDecoration(
+              color: containerColor,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
             padding: const EdgeInsets.all(20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Title Section with improved styling
-                Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: Colors.white.withOpacity(0.1),
-                        width: 1,
+                // Title
+                Column(
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
                       ),
                     ),
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.5,
-                        ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.7),
+                        fontSize: 12,
                       ),
-                      const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.7),
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                    const Divider(color: Colors.white12, height: 24),
+                  ],
                 ),
-                const SizedBox(height: 20),
 
-                // Enhanced Chart with better spacing
-                Expanded(
-                  flex: 2,
+                // Pie Chart
+                AspectRatio(
+                  aspectRatio: 1.2,
                   child: PieChart(
                     PieChartData(
                       pieTouchData: PieTouchData(
-                        touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                        touchCallback: (event, response) {
                           setState(() {
                             if (!event.isInterestedForInteractions ||
-                                pieTouchResponse == null ||
-                                pieTouchResponse.touchedSection == null) {
+                                response?.touchedSection == null) {
                               touchedIndex = -1;
-                              return;
+                            } else {
+                              touchedIndex =
+                                  response!.touchedSection!.touchedSectionIndex;
                             }
-                            touchedIndex =
-                                pieTouchResponse
-                                    .touchedSection!
-                                    .touchedSectionIndex;
                           });
                         },
                       ),
@@ -158,203 +139,142 @@ class _EmotionalChartState extends State<EmotionalChart>
                   ),
                 ),
 
-                // Improved legend with better scrolling and indicators
-                SizedBox(
-                  height: 120, // Increased height to ensure enough space
-                  child: _buildIndicators(widget.dataforgraph),
-                ),
+                const SizedBox(height: 16),
+
+                // Legend
+                _buildIndicators(widget.dataforgraph),
               ],
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
   List<PieChartSectionData> _buildSections(List<String> emotions) {
     return List.generate(emotions.length, (index) {
-      final isTouched = index == touchedIndex;
-      final double fontSize = isTouched ? 15 : 13;
-      final double radius = isTouched ? 65 : 50;
+      final double fontSize = 13;
+      final double radius = 50;
 
-      // Only enlarge the section when touched, no movement animation
       return PieChartSectionData(
         color: _getColor(index),
-        value: widget.value * (0.8 + (math.Random().nextDouble() * 0.4)),
-        title: '${widget.value.toStringAsFixed(0)}%',
+        value: emotionValues[index],
+        title: '${emotionValues[index].toStringAsFixed(0)}%',
         radius: radius,
         titleStyle: TextStyle(
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
           color: Colors.white,
-          shadows:
-              isTouched
-                  ? [
-                    const BoxShadow(
-                      color: Colors.black45,
-                      blurRadius: 8,
-                      spreadRadius: 0,
-                    ),
-                  ]
-                  : [],
         ),
-        badgeWidget: isTouched ? _buildBadge(emotions[index]) : null,
-        badgePositionPercentageOffset:
-            1.3, // Moved further out to avoid overlap
+        badgePositionPercentageOffset: 1.3,
       );
     });
   }
 
-  Widget _buildBadge(String label) {
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
-          BoxShadow(
-            color: Colors.black26,
-            blurRadius: 10,
-            spreadRadius: 1,
-            offset: Offset(0, 3),
-          ),
-        ],
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 13,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 0.3,
-        ),
-      ),
-    );
-  }
-
   Widget _buildIndicators(List<String> emotions) {
-    if (emotions.length > 5) {
-      return Padding(
-        padding: const EdgeInsets.only(top: 8),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          physics: const BouncingScrollPhysics(),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: List.generate(emotions.length, (index) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 6),
-                  child: _buildIndicatorItem(emotions, index),
-                );
-              }),
-            ),
-          ),
-        ),
-      );
-    }
-
     return Padding(
       padding: const EdgeInsets.only(top: 10),
-      child: Wrap(
-        alignment: WrapAlignment.center,
-        spacing: 14,
-        runSpacing: 12,
-        children: List.generate(emotions.length, (index) {
-          return _buildIndicatorItem(emotions, index);
-        }),
-      ),
+      child:
+          emotions.length > 5
+              ? SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    emotions.length,
+                    (index) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      child: _buildIndicatorItem(emotions, index),
+                    ),
+                  ),
+                ),
+              )
+              : Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 14,
+                runSpacing: 12,
+                children: List.generate(
+                  emotions.length,
+                  (index) => _buildIndicatorItem(emotions, index),
+                ),
+              ),
     );
   }
 
   Widget _buildIndicatorItem(List<String> emotions, int index) {
     final isSelected = index == touchedIndex;
+    final color = _getColor(index);
 
     return GestureDetector(
-      onTap: () {
-        setState(() {
-          touchedIndex = isSelected ? -1 : index;
-        });
-      },
+      onTap: () {},
       child: AnimatedContainer(
+        width: 22.w,
+        height: 4.h,
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color:
               isSelected
-                  ? _getColor(index).withOpacity(0.25)
+                  ? color.withOpacity(0.25)
                   : Colors.black.withOpacity(0.1),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color:
-                isSelected ? _getColor(index) : Colors.white.withOpacity(0.15),
+            color: isSelected ? color : Colors.white.withOpacity(0.15),
             width: isSelected ? 1.5 : 1,
           ),
-          boxShadow:
-              isSelected
-                  ? [
-                    BoxShadow(
-                      color: _getColor(index).withOpacity(0.3),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                    ),
-                  ]
-                  : null,
         ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              width: isSelected ? 14 : 12,
-              height: isSelected ? 14 : 12,
-              decoration: BoxDecoration(
-                color: _getColor(index),
-                shape: BoxShape.circle,
-                boxShadow:
-                    isSelected
-                        ? [
-                          BoxShadow(
-                            color: _getColor(index).withOpacity(0.6),
-                            blurRadius: 8,
-                            spreadRadius: 1,
-                          ),
-                        ]
-                        : null,
+        child: Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: isSelected ? 14 : 12,
+                height: isSelected ? 14 : 12,
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                  boxShadow:
+                      isSelected
+                          ? [
+                            BoxShadow(
+                              color: color.withOpacity(0.6),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                            ),
+                          ]
+                          : [],
+                ),
               ),
-            ),
-            const SizedBox(width: 8),
-            Text(
-              emotions[index],
-              style: TextStyle(
-                color:
-                    isSelected ? Colors.white : Colors.white.withOpacity(0.85),
-                fontSize: isSelected ? 13 : 12,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                letterSpacing: 0.2,
+              const SizedBox(width: 8),
+              Text(
+                emotions[index],
+                style: TextStyle(
+                  color:
+                      isSelected
+                          ? Colors.white
+                          : Colors.white.withOpacity(0.85),
+                  fontSize: isSelected ? 13 : 12,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   Color _getColor(int index) {
-    // Enhanced color palette with better contrast and vibrancy
-    final colors = [
-      const Color(0xFF3498DB), // Blue
-      const Color(0xFFE74C3C), // Red
-      const Color(0xFFF39C12), // Orange
-      const Color(0xFF2ECC71), // Green
-      const Color(0xFF9B59B6), // Purple
-      const Color(0xFF1ABC9C), // Teal
-      const Color(0xFFE84393), // Pink
-      const Color(0xFFD35400), // Dark Orange
-      const Color(0xFF27AE60), // Emerald
-      const Color(0xFF8E44AD), // Violet
+    const colors = [
+      Color(0xFF3498DB),
+      Color(0xFFE74C3C),
+      Color(0xFFF39C12),
+      Color(0xFF2ECC71),
+      Color(0xFF9B59B6),
+      Color(0xFF1ABC9C),
+      Color(0xFFE84393),
+      Color(0xFFD35400),
+      Color(0xFF27AE60),
+      Color(0xFF8E44AD),
     ];
     return colors[index % colors.length];
   }

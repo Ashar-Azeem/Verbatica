@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/countrychart.dart';
 import 'package:verbatica/Views/emotional.dart';
 
@@ -25,6 +26,7 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
   late Animation<double> _fadeAnimation;
   late AnimationController _chartController;
   final Random _random = Random();
+  Color containerColor = Color.fromARGB(255, 21, 28, 32);
 
   @override
   void initState() {
@@ -76,7 +78,7 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: Card(
-          color: const Color.fromARGB(255, 67, 118, 138).withOpacity(0.6),
+          color: containerColor,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -93,7 +95,7 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.comment, color: Colors.white70, size: 16),
+                    Icon(Icons.comment_rounded, color: primaryColor, size: 16),
                     const SizedBox(width: 4),
                     Text(
                       '${widget.numberOfComments.toInt()} comments',
@@ -212,13 +214,11 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
       appBar: AppBar(
         title: const Text('Cluster Analytics'),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(
-          255,
-          67,
-          118,
-          138,
-        ).withOpacity(0.6),
+        backgroundColor: containerColor,
         elevation: 0,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+        ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: FadeTransition(

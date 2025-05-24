@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/comments_cluster/comment_cluster_bloc.dart';
 import 'package:verbatica/UI_Components/singlecomment.dart';
+import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/chartanalytics.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/comment.dart';
@@ -40,7 +41,6 @@ class _ClusterscreenState extends State<Clusterscreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
       appBar: AppBar(
         elevation: 0,
         title: Text(
@@ -51,12 +51,7 @@ class _ClusterscreenState extends State<Clusterscreen>
             letterSpacing: 0.3,
           ),
         ),
-        backgroundColor: const Color.fromARGB(
-          255,
-          67,
-          118,
-          138,
-        ).withOpacity(0.6),
+
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new, size: 20),
           onPressed: () => Navigator.of(context).pop(),
@@ -87,22 +82,13 @@ class _ClusterscreenState extends State<Clusterscreen>
 
   Widget _buildTabBar() {
     return Container(
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 67, 118, 138).withOpacity(0.6),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.2),
-            blurRadius: 8,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
+      decoration: BoxDecoration(color: Theme.of(context).cardColor),
       child: TabBar(
         controller: _tabController,
         isScrollable: true,
-        indicatorColor: Theme.of(context).primaryColor,
+        indicatorColor: primaryColor,
         indicatorWeight: 3,
-        labelColor: Colors.white,
+        labelColor: primaryColor,
         unselectedLabelColor: Colors.white.withOpacity(0.6),
         labelStyle: const TextStyle(
           fontWeight: FontWeight.w600,
@@ -130,9 +116,7 @@ class _ClusterscreenState extends State<Clusterscreen>
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: Theme.of(
-                                context,
-                              ).primaryColor.withOpacity(0.2),
+                              color: primaryColor.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(

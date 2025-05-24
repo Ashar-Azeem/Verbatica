@@ -50,18 +50,19 @@ class _EditProfileContentState extends State<_EditProfileContent> {
       context: context,
       builder:
           (context) => Dialog(
-            backgroundColor: Colors.transparent,
+            backgroundColor: Theme.of(context).cardColor,
             insetPadding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.grey[900],
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
+                    color: Colors.white.withOpacity(0.03),
+                    blurRadius: 12,
+                    spreadRadius: 4,
+                    offset: const Offset(0, 0),
                   ),
                 ],
               ),
@@ -110,16 +111,6 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                                         : Colors.transparent,
                                 width: 3,
                               ),
-                              boxShadow:
-                                  _selectedAvatarId == avatarId
-                                      ? [
-                                        BoxShadow(
-                                          color: primaryColor.withOpacity(0.4),
-                                          blurRadius: 8,
-                                          spreadRadius: 2,
-                                        ),
-                                      ]
-                                      : null,
                             ),
                             child: CircleAvatar(
                               radius: 28,
@@ -136,7 +127,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     style: TextButton.styleFrom(
-                      backgroundColor: Colors.grey[800],
+                      backgroundColor: primaryColor,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24,
                         vertical: 12,
@@ -284,13 +275,14 @@ class _EditProfileContentState extends State<_EditProfileContent> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.grey[900],
+                color: Theme.of(context).cardColor,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 10,
-                    offset: const Offset(0, 5),
+                    color: Colors.blue.withOpacity(0.2),
+                    blurRadius: 5,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 0),
                   ),
                 ],
               ),
@@ -319,7 +311,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                     maxLength: 200,
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Colors.grey[800],
+                      fillColor: Theme.of(context).cardColor,
                       hintText: 'Tell others about yourself...',
                       hintStyle: TextStyle(
                         color: Colors.grey[400],

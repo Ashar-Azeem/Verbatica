@@ -54,9 +54,7 @@ void main() async {
                 seedColor: const Color.fromARGB(255, 40, 188, 242),
                 brightness: Brightness.dark,
               ),
-              appBarTheme: AppBarTheme(
-                backgroundColor: Color.fromARGB(255, 16, 26, 32),
-              ),
+              appBarTheme: AppBarTheme(backgroundColor: Color(0xFF0F1417)),
               elevatedButtonTheme: ElevatedButtonThemeData(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: primaryColor,

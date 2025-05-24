@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:sizer/sizer.dart';
+import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/chartanalyticsDetail.dart';
 import 'package:verbatica/model/Post.dart';
 
@@ -82,24 +84,20 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
 
   @override
   Widget build(BuildContext context) {
+    Color containerColor = Color.fromARGB(255, 21, 28, 32);
     final total = _fixedRandomValues.reduce((a, b) => a + b);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final cardColor = isDarkMode ? const Color(0xFF1E2A3A) : Colors.white;
-    final backgroundColor =
-        isDarkMode ? const Color(0xFF121212) : const Color(0xFFF5F7FA);
     final textColor = isDarkMode ? Colors.white : const Color(0xFF2D3748);
     final secondaryTextColor = isDarkMode ? Colors.grey[400] : Colors.grey[600];
 
     return Scaffold(
-      backgroundColor: backgroundColor,
       appBar: AppBar(
         title: const Text(
           'Cluster Analytics',
           style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5),
         ),
         centerTitle: true,
-        backgroundColor:
-            isDarkMode ? const Color(0xFF0A1929) : const Color(0xFF3B82F6),
+        backgroundColor: containerColor,
         elevation: 0,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
@@ -111,68 +109,118 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
           scale: _scaleAnimation,
           child: Container(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Animated Header Card
-                SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, -0.5),
-                    end: Offset.zero,
-                  ).animate(
-                    CurvedAnimation(
-                      parent: _controller,
-                      curve: Curves.easeOutCubic,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Animated Header Card
+                  SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, -0.5),
+                      end: Offset.zero,
+                    ).animate(
+                      CurvedAnimation(
+                        parent: _controller,
+                        curve: Curves.easeOutCubic,
+                      ),
+                    ),
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Card(
+                        color: containerColor,
+                        elevation: 8,
+                        shadowColor: Colors.black26,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        margin: const EdgeInsets.only(bottom: 20),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 24.0,
+                            horizontal: 16.0,
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.comment_rounded,
+                                    color: primaryColor,
+                                    size: 22,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    'Total Comments',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.9),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              AnimatedCount(
+                                count: total.round(),
+                                duration: const Duration(milliseconds: 1500),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
                   ),
-                  child: FadeTransition(
-                    opacity: _fadeAnimation,
+
+                  // Pie Chart with entry animation
+                  SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(-0.5, 0),
+                      end: Offset.zero,
+                    ).animate(
+                      CurvedAnimation(
+                        parent: _controller,
+                        curve: Curves.easeOutCubic,
+                      ),
+                    ),
                     child: Card(
-                      color:
-                          isDarkMode
-                              ? const Color(0xFF3B82F6)
-                              : const Color(0xFF3B82F6),
-                      elevation: 8,
-                      shadowColor: Colors.black26,
+                      elevation: 4,
+                      shadowColor: Colors.black12,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
+                      color: containerColor,
                       margin: const EdgeInsets.only(bottom: 20),
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 24.0,
-                          horizontal: 16.0,
-                        ),
+                        padding: const EdgeInsets.all(16.0),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.comment_rounded,
-                                  color: Colors.white.withOpacity(0.9),
-                                  size: 22,
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                'Distribution',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: textColor,
                                 ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  'Total Comments',
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(0.9),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                            const SizedBox(height: 8),
-                            AnimatedCount(
-                              count: total.round(),
-                              duration: const Duration(milliseconds: 1500),
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 32,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.5,
+                            Center(
+                              child: SizedBox(
+                                width: 80.w,
+                                height: 38.h,
+                                child: PieChartWithClusterInfo(
+                                  clusters: _getClusterData(),
+                                ),
                               ),
                             ),
                           ],
@@ -180,56 +228,9 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
                       ),
                     ),
                   ),
-                ),
 
-                // Pie Chart with entry animation
-                SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(-0.5, 0),
-                    end: Offset.zero,
-                  ).animate(
-                    CurvedAnimation(
-                      parent: _controller,
-                      curve: Curves.easeOutCubic,
-                    ),
-                  ),
-                  child: Card(
-                    elevation: 4,
-                    shadowColor: Colors.black12,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    color: cardColor,
-                    margin: const EdgeInsets.only(bottom: 20),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 8.0,
-                              bottom: 16.0,
-                            ),
-                            child: Text(
-                              'Distribution',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: textColor,
-                              ),
-                            ),
-                          ),
-                          PieChartWithClusterInfo(clusters: _getClusterData()),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-
-                // Animated Cluster Legend
-                Expanded(
-                  child: SlideTransition(
+                  // Animated Cluster Legend
+                  SlideTransition(
                     position: Tween<Offset>(
                       begin: const Offset(0, 0.5),
                       end: Offset.zero,
@@ -245,7 +246,7 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      color: cardColor,
+                      color: containerColor,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -258,172 +259,162 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
                             child: Text(
                               'Clusters',
                               style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
                                 color: textColor,
                               ),
                             ),
                           ),
-                          Expanded(
-                            child: ListView.separated(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 8.0,
-                                horizontal: 8.0,
-                              ),
-                              itemCount: widget.clusters.length,
-                              separatorBuilder:
-                                  (_, __) => Divider(
-                                    color:
-                                        isDarkMode
-                                            ? Colors.grey[800]
-                                            : Colors.grey[200],
-                                    height: 1,
-                                    indent: 16,
-                                    endIndent: 16,
-                                  ),
-                              itemBuilder: (context, index) {
-                                final cluster = widget.clusters[index];
-                                final percentage =
-                                    ((_fixedRandomValues[index] / total) * 100)
-                                        .round();
-                                final count = _fixedRandomValues[index].round();
+                          ListView.separated(
+                            physics: NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 8.0,
+                              horizontal: 8.0,
+                            ),
+                            itemCount: widget.clusters.length,
+                            separatorBuilder:
+                                (_, __) => Divider(
+                                  color: Color.fromARGB(255, 30, 38, 45),
+                                  height: 1,
+                                  indent: 16,
+                                  endIndent: 16,
+                                ),
+                            itemBuilder: (context, index) {
+                              final cluster = widget.clusters[index];
+                              final percentage =
+                                  ((_fixedRandomValues[index] / total) * 100)
+                                      .round();
+                              final count = _fixedRandomValues[index].round();
 
-                                return GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder:
-                                            (context) => ClusterDetailScreen(
-                                              clusterTitle: cluster.title,
-                                              numberOfComments:
-                                                  percentage / 100 * total,
-                                            ),
-                                      ),
-                                    );
-                                  },
-                                  child: AnimatedListItem(
-                                    index: index,
-                                    child: Container(
-                                      margin: const EdgeInsets.symmetric(
-                                        vertical: 4.0,
-                                        horizontal: 8.0,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12),
-                                        color:
-                                            isDarkMode
-                                                ? Colors.grey[900]!.withOpacity(
-                                                  0.3,
-                                                )
-                                                : Colors.grey[100]!.withOpacity(
-                                                  0.5,
+                              return GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => ClusterDetailScreen(
+                                            clusterTitle: cluster.title,
+                                            numberOfComments:
+                                                percentage / 100 * total,
+                                          ),
+                                    ),
+                                  );
+                                },
+                                child: AnimatedListItem(
+                                  index: index,
+                                  child: Container(
+                                    margin: const EdgeInsets.symmetric(
+                                      vertical: 4.0,
+                                      horizontal: 8.0,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(12),
+                                      color: Color.fromARGB(255, 29, 39, 45),
+                                    ),
+                                    child: ListTile(
+                                      contentPadding:
+                                          const EdgeInsets.symmetric(
+                                            horizontal: 16.0,
+                                            vertical: 10.0,
+                                          ),
+                                      leading: Container(
+                                        width: 40,
+                                        height: 40,
+                                        decoration: BoxDecoration(
+                                          color: _getColor(
+                                            index,
+                                          ).withOpacity(0.2),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Center(
+                                          child: Container(
+                                            width: 24,
+                                            height: 24,
+                                            decoration: BoxDecoration(
+                                              color: _getColor(index),
+                                              shape: BoxShape.circle,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: _getColor(
+                                                    index,
+                                                  ).withOpacity(0.3),
+                                                  blurRadius: 8,
+                                                  offset: const Offset(0, 2),
                                                 ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                      child: ListTile(
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                              horizontal: 16.0,
-                                              vertical: 10.0,
-                                            ),
-                                        leading: Container(
-                                          width: 40,
-                                          height: 40,
-                                          decoration: BoxDecoration(
-                                            color: _getColor(
-                                              index,
-                                            ).withOpacity(0.2),
-                                            shape: BoxShape.circle,
-                                          ),
-                                          child: Center(
-                                            child: Container(
-                                              width: 24,
-                                              height: 24,
-                                              decoration: BoxDecoration(
-                                                color: _getColor(index),
-                                                shape: BoxShape.circle,
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: _getColor(
-                                                      index,
-                                                    ).withOpacity(0.3),
-                                                    blurRadius: 8,
-                                                    offset: const Offset(0, 2),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ),
+                                      title: Text(
+                                        cluster.title,
+                                        style: TextStyle(
+                                          color: textColor,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500,
                                         ),
-                                        title: Text(
-                                          cluster.title,
-                                          style: TextStyle(
-                                            color: textColor,
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.w500,
+                                      ),
+                                      subtitle: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.comment_outlined,
+                                            size: 14,
+                                            color: secondaryTextColor,
                                           ),
-                                        ),
-                                        subtitle: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.comment_outlined,
-                                              size: 14,
-                                              color: secondaryTextColor,
-                                            ),
-                                            const SizedBox(width: 4),
-                                            AnimatedCount(
-                                              count: count,
-                                              duration: const Duration(
-                                                milliseconds: 800,
-                                              ),
-                                              style: TextStyle(
-                                                color: secondaryTextColor,
-                                                fontSize: 14,
-                                              ),
-                                              prefix: '',
-                                              suffix: ' comments',
-                                            ),
-                                          ],
-                                        ),
-                                        trailing: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 12,
-                                            vertical: 8,
-                                          ),
-                                          decoration: BoxDecoration(
-                                            color: _getColor(
-                                              index,
-                                            ).withOpacity(0.15),
-                                            borderRadius: BorderRadius.circular(
-                                              12,
-                                            ),
-                                          ),
-                                          child: AnimatedCount(
-                                            count: percentage,
+                                          const SizedBox(width: 4),
+                                          AnimatedCount(
+                                            count: count,
                                             duration: const Duration(
-                                              milliseconds: 1000,
+                                              milliseconds: 800,
                                             ),
                                             style: TextStyle(
-                                              color: _getColor(index),
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 15,
+                                              color: secondaryTextColor,
+                                              fontSize: 14,
                                             ),
-                                            suffix: '%',
+                                            prefix: '',
+                                            suffix: ' comments',
                                           ),
+                                        ],
+                                      ),
+                                      trailing: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                          vertical: 8,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: _getColor(
+                                            index,
+                                          ).withOpacity(0.15),
+                                          borderRadius: BorderRadius.circular(
+                                            12,
+                                          ),
+                                        ),
+                                        child: AnimatedCount(
+                                          count: percentage,
+                                          duration: const Duration(
+                                            milliseconds: 1000,
+                                          ),
+                                          style: TextStyle(
+                                            color: _getColor(index),
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 15,
+                                          ),
+                                          suffix: '%',
                                         ),
                                       ),
                                     ),
                                   ),
-                                );
-                              },
-                            ),
+                                ),
+                              );
+                            },
                           ),
                         ],
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -478,7 +469,7 @@ class _PieChartWithClusterInfoState extends State<PieChartWithClusterInfo>
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
-      aspectRatio: 1.3,
+      aspectRatio: 1,
       child: ScaleTransition(
         scale: _scaleAnimation,
         child: PieChart(
@@ -499,7 +490,7 @@ class _PieChartWithClusterInfoState extends State<PieChartWithClusterInfo>
             ),
             borderData: FlBorderData(show: false),
             sectionsSpace: 3,
-            centerSpaceRadius: 50,
+            centerSpaceRadius: 7.h,
             sections: showingSections(),
           ),
         ),
@@ -518,7 +509,7 @@ class _PieChartWithClusterInfoState extends State<PieChartWithClusterInfo>
       final cluster = widget.clusters[i];
       final percentage = (cluster.commentCount / total * 100).round();
       final fontSize = isTouched ? 16.0 : 14.0;
-      final radius = isTouched ? 65.0 : 55.0;
+      final radius = isTouched ? 75.0 : 65.0;
       final badgeSize = isTouched ? 55.0 : 45.0;
 
       return PieChartSectionData(

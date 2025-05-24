@@ -152,7 +152,6 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                                 cacheExtent: 500,
                                 itemCount: state.users.length,
                                 itemBuilder: (context, index) {
-                                  print("LIST VIEW");
                                   return SearchedUser(user: state.users[index]);
                                 },
                               ),

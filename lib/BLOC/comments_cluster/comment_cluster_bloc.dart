@@ -25,8 +25,8 @@ class CommentClusterBloc
             parentId: null,
             allReplies: [],
             uploadTime: now.subtract(Duration(hours: i)),
-            upVoteUserIds: [],
-            downVoteUserIds: [],
+            upVoteUserIds: i % 2 == 0 ? ["1"] : [],
+            downVoteUserIds: i % 2 != 0 ? ["1"] : [],
             cluster: clusters[i % clusters.length],
           ),
         );
@@ -44,8 +44,8 @@ class CommentClusterBloc
             parentId: 'p$parentIndex',
             allReplies: [],
             uploadTime: now.subtract(Duration(hours: i + 12)),
-            upVoteUserIds: [],
-            downVoteUserIds: [],
+            upVoteUserIds: i % 2 == 0 ? ["1"] : [],
+            downVoteUserIds: i % 2 != 0 ? ["1"] : [],
             cluster: clusters[(i + 1) % clusters.length],
           ),
         );

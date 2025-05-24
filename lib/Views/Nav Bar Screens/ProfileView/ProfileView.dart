@@ -91,7 +91,7 @@ class _ProfileViewState extends State<ProfileView>
 
   bool _isAppBarCollapsed(double shrinkOffset) {
     // Simpler condition to determine when to show the collapsed state
-    return shrinkOffset > 120; // Fixed threshold that works reliably
+    return shrinkOffset > 40.h; // Fixed threshold that works reliably
   }
 
   @override
@@ -107,9 +107,8 @@ class _ProfileViewState extends State<ProfileView>
                 expandedHeight: expandedHeight,
                 floating: false,
                 pinned: true,
-
                 snap: false,
-                stretch: true,
+                stretch: false,
                 automaticallyImplyLeading: false,
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 elevation: 0,
@@ -118,7 +117,6 @@ class _ProfileViewState extends State<ProfileView>
                   stretchModes: const [StretchMode.zoomBackground],
                   background: _buildProfileHeader(context),
                   titlePadding: EdgeInsets.zero,
-                  // Using ValueListenableBuilder to respond to scroll changes
                   title: BlocBuilder<UserBloc, UserState>(
                     builder: (context, state) {
                       return ValueListenableBuilder<double>(
@@ -126,38 +124,40 @@ class _ProfileViewState extends State<ProfileView>
                         builder: (context, scrollOffset, child) {
                           final isCollapsed = _isAppBarCollapsed(scrollOffset);
 
-                          if (isCollapsed) {
-                            return Container(
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                              height: kToolbarHeight,
+                          return AnimatedOpacity(
+                            opacity: isCollapsed ? 1 : 0,
+                            duration: Duration(seconds: 1),
+                            child: Container(
+                              padding: EdgeInsets.only(left: 2.w, bottom: 2.w),
+                              color: Color.fromARGB(255, 10, 13, 15),
+                              height: 20.h,
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
+                                  CircleAvatar(
+                                    radius: 6.w,
+                                    backgroundImage: AssetImage(
+                                      'assets/Avatars/avatar${state.user.avatarId}.jpg',
+                                    ),
+                                  ),
                                   // Username in collapsed state
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 16.0),
+                                  Spacer(),
+                                  SizedBox(
+                                    width: 40.w,
                                     child: Text(
                                       state.user.username,
                                       style: TextStyle(
-                                        color:
-                                            Theme.of(
-                                              context,
-                                            ).textTheme.titleLarge?.color ??
-                                            Colors.white,
+                                        color: Colors.white,
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 20.0,
+                                        fontSize: 4.w,
                                       ),
                                     ),
                                   ),
+                                  Spacer(flex: 8),
                                   // Settings button in collapsed state
                                   IconButton(
-                                    icon: const Icon(Icons.settings),
-                                    color:
-                                        Theme.of(
-                                          context,
-                                        ).textTheme.titleLarge?.color ??
-                                        Colors.white,
+                                    icon: Icon(Icons.settings, size: 5.w),
+                                    color: Colors.white,
                                     onPressed: () {
                                       pushScreen(
                                         context,
@@ -168,10 +168,8 @@ class _ProfileViewState extends State<ProfileView>
                                   ),
                                 ],
                               ),
-                            );
-                          } else {
-                            return const SizedBox.shrink(); // Empty container when expanded
-                          }
+                            ),
+                          );
                         },
                       );
                     },
@@ -320,248 +318,268 @@ class _ProfileViewState extends State<ProfileView>
 
   Widget _buildProfileHeader(BuildContext context) {
     // This is the expanded profile header view
-    return Stack(
-      children: [
-        // Gradient Background
-        Container(
-          height: 35.0.h,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color.fromARGB(255, 25, 129, 255), // Deeper indigo
-                Color.fromARGB(255, 157, 192, 245), // Royal blue
-              ],
-              stops: [0.4, 1.0],
-            ),
-          ),
-        ),
+    return ValueListenableBuilder<double>(
+      valueListenable: _scrollNotifier,
+      builder: (context, scrollOffset, child) {
+        final bool isCollapsed = _isAppBarCollapsed(scrollOffset);
 
-        // Main Content
-        SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Top Section with Avatar and Info
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4.0.w),
-                child: Column(
-                  children: [
-                    // Settings Button in expanded view - only visible when expanded
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: ValueListenableBuilder<double>(
-                        valueListenable: _scrollNotifier,
-                        builder: (context, scrollOffset, child) {
-                          final bool isCollapsed = _isAppBarCollapsed(
-                            scrollOffset,
-                          );
-
-                          // Only show this button when we're in expanded state
-                          if (isCollapsed) {
-                            return const SizedBox.shrink();
-                          }
-
-                          return IconButton(
-                            onPressed: () {
-                              pushScreen(
-                                context,
-                                screen: const SettingsScreen(),
-                                withNavBar: false,
-                              );
-                            },
-                            icon: const Icon(
-                              Icons.settings,
-                              color: Colors.white,
-                              size: 26,
-                            ),
-                            style: IconButton.styleFrom(
-                              backgroundColor: Colors.white.withOpacity(0.2),
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-
-                    SizedBox(height: 1.0.h),
-
-                    // Profile Card
-                    Container(
-                      // margin: EdgeInsets.only(bottom: 2.0.h),
-                      padding: EdgeInsets.all(5.0.w),
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).cardColor,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
+        return AnimatedContainer(
+          duration: Duration(seconds: 2),
+          child:
+              isCollapsed
+                  ? SizedBox.shrink()
+                  : Stack(
+                    children: [
+                      // Gradient Background
+                      Container(
+                        height: 35.0.h,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Color.fromARGB(
+                                255,
+                                25,
+                                129,
+                                255,
+                              ), // Deeper indigo
+                              Color.fromARGB(255, 157, 192, 245), // Royal blue
+                            ],
+                            stops: [0.4, 1.0],
                           ),
-                        ],
+                        ),
                       ),
-                      child: BlocBuilder<UserBloc, UserState>(
-                        builder: (context, state) {
-                          return Column(
-                            children: [
-                              // Avatar
-                              Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: Colors.white,
-                                    width: 3,
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.2),
-                                      blurRadius: 8,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: CircleAvatar(
-                                  radius: 8.0.h,
-                                  backgroundImage: AssetImage(
-                                    'assets/Avatars/avatar${state.user.avatarId}.jpg',
-                                  ),
-                                ),
-                              ),
 
-                              SizedBox(height: 2.0.h),
-
-                              // Username
-                              Text(
-                                state.user.username,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 0.5,
-                                  color: Colors.white,
-                                ),
-                              ),
-
-                              SizedBox(height: 1.0.h),
-
-                              // Aura Points
-                              Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 3.0.w,
-                                  vertical: 1.0.h,
-                                ),
-                                decoration: BoxDecoration(
-                                  gradient: const LinearGradient(
-                                    colors: [
-                                      Color(0xFF3949AB),
-                                      Color(0xFF1E88E5),
-                                    ],
-                                  ),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(
-                                      Icons.auto_awesome,
-                                      color: Colors.amber,
-                                      size: 20,
-                                    ),
-                                    SizedBox(width: 1.0.w),
-                                    Text(
-                                      '${state.user.karma} Aura',
-                                      style: const TextStyle(
+                      // Main Content
+                      SafeArea(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Top Section with Avatar and Info
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 4.0.w),
+                              child: Column(
+                                children: [
+                                  // Settings Button in expanded view - only visible when expanded
+                                  Align(
+                                    alignment: Alignment.topRight,
+                                    child: IconButton(
+                                      onPressed: () {
+                                        pushScreen(
+                                          context,
+                                          screen: const SettingsScreen(),
+                                          withNavBar: false,
+                                        );
+                                      },
+                                      icon: const Icon(
+                                        Icons.settings,
                                         color: Colors.white,
-                                        fontWeight: FontWeight.bold,
+                                        size: 26,
+                                      ),
+                                      style: IconButton.styleFrom(
+                                        backgroundColor: Colors.white
+                                            .withOpacity(0.2),
                                       ),
                                     ),
-                                  ],
-                                ),
-                              ),
-
-                              SizedBox(height: 2.0.h),
-
-                              // Join Date
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.cake,
-                                    size: 18,
-                                    color: Colors.grey[600],
                                   ),
-                                  SizedBox(width: 1.0.w),
-                                  Text(
-                                    'Member since ${formatJoinedDate(state.user.joinedDate)}',
-                                    style: TextStyle(
-                                      color: Colors.grey[600],
-                                      fontSize: 14,
+
+                                  SizedBox(height: 1.0.h),
+
+                                  // Profile Card
+                                  Container(
+                                    // margin: EdgeInsets.only(bottom: 2.0.h),
+                                    padding: EdgeInsets.all(5.0.w),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).cardColor,
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 5),
+                                        ),
+                                      ],
+                                    ),
+                                    child: BlocBuilder<UserBloc, UserState>(
+                                      builder: (context, state) {
+                                        return Column(
+                                          children: [
+                                            // Avatar
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.white,
+                                                  width: 3,
+                                                ),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        .withOpacity(0.2),
+                                                    blurRadius: 8,
+                                                    offset: const Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: CircleAvatar(
+                                                radius: 8.0.h,
+                                                backgroundImage: AssetImage(
+                                                  'assets/Avatars/avatar${state.user.avatarId}.jpg',
+                                                ),
+                                              ),
+                                            ),
+
+                                            SizedBox(height: 2.0.h),
+
+                                            // Username
+                                            Text(
+                                              state.user.username,
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                letterSpacing: 0.5,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+
+                                            SizedBox(height: 1.0.h),
+
+                                            // Aura Points
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 3.0.w,
+                                                vertical: 1.0.h,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                gradient: const LinearGradient(
+                                                  colors: [
+                                                    Color(0xFF3949AB),
+                                                    Color(0xFF1E88E5),
+                                                  ],
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(
+                                                    Icons.auto_awesome,
+                                                    color: Colors.amber,
+                                                    size: 20,
+                                                  ),
+                                                  SizedBox(width: 1.0.w),
+                                                  Text(
+                                                    '${state.user.karma} Aura',
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+
+                                            SizedBox(height: 2.0.h),
+
+                                            // Join Date
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.cake,
+                                                  size: 18,
+                                                  color: Colors.grey[600],
+                                                ),
+                                                SizedBox(width: 1.0.w),
+                                                Text(
+                                                  'Member since ${formatJoinedDate(state.user.joinedDate)}',
+                                                  style: TextStyle(
+                                                    color: Colors.grey[600],
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+
+                                            SizedBox(height: 2.0.h),
+
+                                            // Edit Profile Button
+                                            ElevatedButton.icon(
+                                              onPressed: () {
+                                                showModalBottomSheet(
+                                                  context: context,
+                                                  isScrollControlled: true,
+                                                  backgroundColor:
+                                                      Colors.transparent,
+                                                  builder:
+                                                      (context) => Container(
+                                                        height:
+                                                            MediaQuery.of(
+                                                              context,
+                                                            ).size.height *
+                                                            0.95,
+                                                        decoration: BoxDecoration(
+                                                          color:
+                                                              Theme.of(
+                                                                context,
+                                                              ).cardColor,
+                                                          borderRadius:
+                                                              const BorderRadius.vertical(
+                                                                top:
+                                                                    Radius.circular(
+                                                                      20,
+                                                                    ),
+                                                              ),
+                                                        ),
+                                                        child: BlocProvider.value(
+                                                          value:
+                                                              BlocProvider.of<
+                                                                UserBloc
+                                                              >(context),
+                                                          child:
+                                                              const EditProfileScreen(),
+                                                        ),
+                                                      ),
+                                                );
+                                              },
+                                              icon: const Icon(
+                                                Icons.edit,
+                                                size: 18,
+                                              ),
+                                              label: const Text('Edit Profile'),
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor:
+                                                    Colors.blue[700],
+                                                foregroundColor: Colors.white,
+                                                padding: EdgeInsets.symmetric(
+                                                  horizontal: 6.0.w,
+                                                  vertical: 1.2.h,
+                                                ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(30),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        );
+                                      },
                                     ),
                                   ),
                                 ],
                               ),
-
-                              SizedBox(height: 2.0.h),
-
-                              // Edit Profile Button
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    isScrollControlled: true,
-                                    backgroundColor: Colors.transparent,
-                                    builder:
-                                        (context) => Container(
-                                          height:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.height *
-                                              0.95,
-                                          decoration: BoxDecoration(
-                                            color:
-                                                Theme.of(
-                                                  context,
-                                                ).scaffoldBackgroundColor,
-                                            borderRadius:
-                                                const BorderRadius.vertical(
-                                                  top: Radius.circular(20),
-                                                ),
-                                          ),
-                                          child: BlocProvider.value(
-                                            value: BlocProvider.of<UserBloc>(
-                                              context,
-                                            ),
-                                            child: const EditProfileScreen(),
-                                          ),
-                                        ),
-                                  );
-                                },
-                                icon: const Icon(Icons.edit, size: 18),
-                                label: const Text('Edit Profile'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue[700],
-                                  foregroundColor: Colors.white,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 6.0.w,
-                                    vertical: 1.2.h,
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(30),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+                    ],
+                  ),
+        );
+      },
     );
   }
 
@@ -684,10 +702,7 @@ class _ProfileViewState extends State<ProfileView>
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'label',
-              style: TextStyle(fontSize: 12, color: Colors.white),
-            ),
+            Text(label, style: TextStyle(fontSize: 12, color: Colors.white)),
             Text(
               value,
               style: TextStyle(

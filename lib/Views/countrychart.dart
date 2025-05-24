@@ -32,16 +32,6 @@ class _CountrychartState extends State<Countrychart>
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
 
-  // Gradient background similar to EmotionalChart
-  final LinearGradient _backgroundGradient = LinearGradient(
-    begin: Alignment.topLeft,
-    end: Alignment.bottomRight,
-    colors: [
-      const Color.fromARGB(255, 67, 118, 138).withOpacity(0.9),
-      const Color.fromARGB(255, 67, 118, 138).withOpacity(0.6),
-    ],
-  );
-
   @override
   void initState() {
     super.initState();
@@ -132,7 +122,7 @@ class _CountrychartState extends State<Countrychart>
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              gradient: _backgroundGradient,
+              color: Color.fromARGB(255, 21, 28, 32),
             ),
             child: Padding(
               padding: const EdgeInsets.all(16),
