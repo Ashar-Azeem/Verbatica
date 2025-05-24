@@ -684,10 +684,7 @@ class _ProfileViewState extends State<ProfileView>
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'label',
-              style: TextStyle(fontSize: 12, color: Colors.white),
-            ),
+            Text(label, style: TextStyle(fontSize: 12, color: Colors.white)),
             Text(
               value,
               style: TextStyle(
