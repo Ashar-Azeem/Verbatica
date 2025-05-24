@@ -2,8 +2,8 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:verbatica/Utilities/Color.dart';
-import 'package:verbatica/Views/countrychart.dart';
-import 'package:verbatica/Views/emotional.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/countrychart.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/emotional.dart';
 
 class ClusterDetailScreen extends StatefulWidget {
   final String clusterTitle;

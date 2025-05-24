@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/Utilities/Color.dart';
-import 'package:verbatica/Views/chartanalyticsDetail.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/chartanalyticsDetail.dart';
 import 'package:verbatica/model/Post.dart';
 
 class ChartsAnalyticsScreen extends StatefulWidget {

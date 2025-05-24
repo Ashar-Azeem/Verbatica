@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/comments_cluster/comment_cluster_bloc.dart';
 import 'package:verbatica/UI_Components/singlecomment.dart';
 import 'package:verbatica/Utilities/Color.dart';
-import 'package:verbatica/Views/chartanalytics.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/chartanalytics.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/comment.dart';
 

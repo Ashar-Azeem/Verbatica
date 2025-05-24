@@ -9,7 +9,7 @@ import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/Home/home_bloc.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/Utilities/Color.dart';
-import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ChatsView.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/Chats%20And%20Messaging%20Views/ChatsView.dart';
 import 'package:verbatica/model/Post.dart';
 
 class HomeView extends StatefulWidget {
