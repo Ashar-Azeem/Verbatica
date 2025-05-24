@@ -12,7 +12,7 @@ import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/SummaryView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
-import 'package:verbatica/Views/clusterScreen.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/clusterScreen.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:timeago/timeago.dart' as timeago;
 

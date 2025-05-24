@@ -137,7 +137,7 @@ class _ProfileViewState extends State<otherProfileView>
 
   bool _isAppBarCollapsed(double shrinkOffset) {
     // Simpler condition to determine when to show the collapsed state
-    return shrinkOffset > 120; // Fixed threshold that works reliably
+    return shrinkOffset > 40.h; // Fixed threshold that works reliably
   }
 
   @override
@@ -170,49 +170,46 @@ class _ProfileViewState extends State<otherProfileView>
                         valueListenable: _scrollNotifier,
                         builder: (context, scrollOffset, child) {
                           final isCollapsed = _isAppBarCollapsed(scrollOffset);
-
-                          if (isCollapsed) {
-                            return Container(
-                              color: Theme.of(context).scaffoldBackgroundColor,
-                              height: kToolbarHeight,
+                          return AnimatedOpacity(
+                            opacity: isCollapsed ? 1 : 0,
+                            duration: Duration(seconds: 1),
+                            child: Container(
+                              padding: EdgeInsets.only(left: 2.w, bottom: 2.w),
+                              color: Color.fromARGB(255, 10, 13, 15),
+                              height: 20.h,
                               child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  // Back button in collapsed state
-                                  IconButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    icon: const Icon(
-                                      Icons.arrow_back_ios,
-                                      size: 20,
+                                  CircleAvatar(
+                                    radius: 6.w,
+                                    backgroundImage: AssetImage(
+                                      'assets/Avatars/avatar${widget.post.avatar}.jpg',
                                     ),
                                   ),
                                   // Username in collapsed state
-                                  Expanded(
+                                  Spacer(),
+                                  SizedBox(
+                                    width: 40.w,
                                     child: Text(
                                       widget.post.name,
                                       style: TextStyle(
-                                        color:
-                                            Theme.of(
-                                              context,
-                                            ).textTheme.titleLarge?.color ??
-                                            Colors.white,
+                                        color: Colors.white,
                                         fontWeight: FontWeight.bold,
-                                        fontSize: 20.0,
+                                        fontSize: 4.w,
                                       ),
-                                      textAlign: TextAlign.center,
                                     ),
                                   ),
-                                  // Empty space to balance the back button
-                                  const SizedBox(width: 48),
+                                  Spacer(flex: 8),
+                                  // Settings button in collapsed state
+                                  IconButton(
+                                    icon: Icon(Icons.message, size: 5.w),
+                                    color: primaryColor,
+                                    onPressed: () {},
+                                  ),
                                 ],
                               ),
-                            );
-                          } else {
-                            return const SizedBox.shrink(); // Empty container when expanded
-                          }
+                            ),
+                          );
                         },
                       );
                     },
@@ -220,52 +217,55 @@ class _ProfileViewState extends State<otherProfileView>
                 ),
                 bottom: PreferredSize(
                   preferredSize: const Size.fromHeight(48.0),
-                  child: TabBar(
-                    controller: _tabController,
-                    tabs: const [
-                      Tab(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.article, size: 18),
-                            SizedBox(width: 8),
-                            Text('Posts'),
-                          ],
+                  child: Container(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: TabBar(
+                      controller: _tabController,
+                      tabs: const [
+                        Tab(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.article, size: 18),
+                              SizedBox(width: 8),
+                              Text('Posts'),
+                            ],
+                          ),
                         ),
-                      ),
-                      Tab(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.comment, size: 18),
-                            SizedBox(width: 8),
-                            Text('Comments'),
-                          ],
+                        Tab(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.comment, size: 18),
+                              SizedBox(width: 8),
+                              Text('Comments'),
+                            ],
+                          ),
                         ),
-                      ),
-                      Tab(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.person, size: 18),
-                            SizedBox(width: 8),
-                            Text('About'),
-                          ],
+                        Tab(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.person, size: 18),
+                              SizedBox(width: 8),
+                              Text('About'),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                    labelColor: primaryColor,
+                      ],
+                      labelColor: primaryColor,
 
-                    unselectedLabelColor: Colors.grey,
-                    labelStyle: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+                      unselectedLabelColor: Colors.grey,
+                      labelStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                      indicator: UnderlineTabIndicator(
+                        borderSide: BorderSide(width: 3.0, color: primaryColor),
+                        insets: const EdgeInsets.symmetric(horizontal: 16.0),
+                      ),
+                      dividerColor: Colors.transparent,
                     ),
-                    indicator: UnderlineTabIndicator(
-                      borderSide: BorderSide(width: 3.0, color: primaryColor),
-                      insets: const EdgeInsets.symmetric(horizontal: 16.0),
-                    ),
-                    dividerColor: Colors.transparent,
                   ),
                 ),
               ),
@@ -381,227 +381,271 @@ class _ProfileViewState extends State<otherProfileView>
 
   Widget _buildProfileHeader(BuildContext context) {
     // This is the expanded profile header view
-    return Stack(
-      children: [
-        // Gradient Background
-        Container(
-          height: 35.0.h,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Color.fromARGB(255, 25, 129, 255), // Deeper indigo
-                Color.fromARGB(255, 157, 192, 245), // Royal blue
-              ],
-              stops: [0.4, 1.0],
-            ),
-          ),
-        ),
+    return ValueListenableBuilder<double>(
+      valueListenable: _scrollNotifier,
+      builder: (context, scrollOffset, child) {
+        final bool isCollapsed = _isAppBarCollapsed(scrollOffset);
 
-        // Main Content
-        SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Top Section with Back Button
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4.0.w),
-                child: ValueListenableBuilder<double>(
-                  valueListenable: _scrollNotifier,
-                  builder: (context, scrollOffset, child) {
-                    final bool isCollapsed = _isAppBarCollapsed(scrollOffset);
-
-                    // Only show this button when we're in expanded state
-                    if (isCollapsed) {
-                      return const SizedBox.shrink();
-                    }
-
-                    return IconButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      icon: const Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.white,
-                        size: 20,
+        return AnimatedContainer(
+          duration: Duration(seconds: 2),
+          child:
+              isCollapsed
+                  ? SizedBox.shrink()
+                  : Stack(
+                    children: [
+                      // Gradient Background
+                      Container(
+                        height: 35.0.h,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [
+                              Color.fromARGB(
+                                255,
+                                25,
+                                129,
+                                255,
+                              ), // Deeper indigo
+                              Color.fromARGB(255, 157, 192, 245), // Royal blue
+                            ],
+                            stops: [0.4, 1.0],
+                          ),
+                        ),
                       ),
-                      style: IconButton.styleFrom(
-                        backgroundColor: Colors.white.withOpacity(0.2),
-                      ),
-                    );
-                  },
-                ),
-              ),
 
-              SizedBox(height: 1.0.h),
+                      // Main Content
+                      SafeArea(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Top Section with Avatar and Info
+                            Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 4.0.w),
+                              child: Column(
+                                children: [
+                                  // Settings Button in expanded view - only visible when expanded
+                                  Align(
+                                    alignment: Alignment.topLeft,
+                                    child: IconButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      icon: const Icon(
+                                        Icons.arrow_back_ios_new_outlined,
+                                        color: Colors.white,
+                                        size: 26,
+                                      ),
+                                      style: IconButton.styleFrom(
+                                        backgroundColor: Colors.white
+                                            .withOpacity(0.2),
+                                      ),
+                                    ),
+                                  ),
 
-              // Profile Card
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 4.0.w),
-                child: Container(
-                  margin: EdgeInsets.only(bottom: 2.0.h),
-                  padding: EdgeInsets.all(5.0.w),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 10,
-                        offset: const Offset(0, 5),
+                                  SizedBox(height: 1.0.h),
+
+                                  // Profile Card
+                                  Container(
+                                    // margin: EdgeInsets.only(bottom: 2.0.h),
+                                    padding: EdgeInsets.all(5.0.w),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).cardColor,
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 10,
+                                          offset: const Offset(0, 5),
+                                        ),
+                                      ],
+                                    ),
+                                    child: BlocBuilder<
+                                      OtheruserBloc,
+                                      OtheruserState
+                                    >(
+                                      builder: (context, state) {
+                                        return Column(
+                                          children: [
+                                            // Avatar
+                                            Container(
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.white,
+                                                  width: 3,
+                                                ),
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: Colors.black
+                                                        .withOpacity(0.2),
+                                                    blurRadius: 8,
+                                                    offset: const Offset(0, 2),
+                                                  ),
+                                                ],
+                                              ),
+                                              child: CircleAvatar(
+                                                radius: 8.0.h,
+                                                backgroundImage: AssetImage(
+                                                  'assets/Avatars/avatar${widget.post.avatar}.jpg',
+                                                ),
+                                              ),
+                                            ),
+
+                                            SizedBox(height: 2.0.h),
+
+                                            // Username
+                                            Text(
+                                              widget.post.name,
+                                              style: const TextStyle(
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                                letterSpacing: 0.5,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+
+                                            SizedBox(height: 1.0.h),
+
+                                            // Aura Points
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                horizontal: 3.0.w,
+                                                vertical: 1.0.h,
+                                              ),
+                                              decoration: BoxDecoration(
+                                                gradient: const LinearGradient(
+                                                  colors: [
+                                                    Color(0xFF3949AB),
+                                                    Color(0xFF1E88E5),
+                                                  ],
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const Icon(
+                                                    Icons.auto_awesome,
+                                                    color: Colors.amber,
+                                                    size: 20,
+                                                  ),
+                                                  SizedBox(width: 1.0.w),
+                                                  Text(
+                                                    '${state.user.karma} Aura',
+                                                    style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+
+                                            SizedBox(height: 2.0.h),
+
+                                            // Join Date
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.cake,
+                                                  size: 18,
+                                                  color: Colors.grey[600],
+                                                ),
+                                                SizedBox(width: 1.0.w),
+                                                Text(
+                                                  'Member since ${formatJoinedDate(state.user.joinedDate)}',
+                                                  style: TextStyle(
+                                                    color: Colors.grey[600],
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+
+                                            SizedBox(height: 3.0.h),
+
+                                            // Action Buttons
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                // Follow Button
+                                                Expanded(
+                                                  child: ElevatedButton.icon(
+                                                    onPressed: () {},
+                                                    icon: const Icon(
+                                                      Icons.person_add,
+                                                      size: 18,
+                                                    ),
+                                                    label: const Text('Follow'),
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor:
+                                                          Colors.blue[700],
+                                                      foregroundColor:
+                                                          Colors.white,
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                            vertical: 1.2.h,
+                                                          ),
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              30,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                                SizedBox(width: 3.0.w),
+                                                // Message Button
+                                                Expanded(
+                                                  child: ElevatedButton(
+                                                    onPressed: () {},
+                                                    style: ElevatedButton.styleFrom(
+                                                      backgroundColor:
+                                                          Colors.grey[800],
+                                                      foregroundColor:
+                                                          Colors.white,
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                            horizontal: 4.0.w,
+                                                            vertical: 1.2.h,
+                                                          ),
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              30,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                    child: const Icon(
+                                                      Icons.message,
+                                                      size: 20,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                  child: BlocBuilder<OtheruserBloc, OtheruserState>(
-                    builder: (context, state) {
-                      return Column(
-                        children: [
-                          // Avatar
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 3),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.2),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: CircleAvatar(
-                              radius: 8.0.h,
-                              backgroundImage: AssetImage(
-                                'assets/Avatars/avatar${widget.post.avatar}.jpg',
-                              ),
-                            ),
-                          ),
-
-                          SizedBox(height: 2.0.h),
-
-                          // Username
-                          Text(
-                            widget.post.name,
-                            style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.5,
-                              color: Colors.white,
-                            ),
-                          ),
-
-                          SizedBox(height: 1.0.h),
-
-                          // Aura Points
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 3.0.w,
-                              vertical: 1.0.h,
-                            ),
-                            decoration: BoxDecoration(
-                              gradient: const LinearGradient(
-                                colors: [Color(0xFF3949AB), Color(0xFF1E88E5)],
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Icon(
-                                  Icons.auto_awesome,
-                                  color: Colors.amber,
-                                  size: 20,
-                                ),
-                                SizedBox(width: 1.0.w),
-                                Text(
-                                  '${state.user.karma} Aura',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          SizedBox(height: 2.0.h),
-
-                          // Join Date
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.cake,
-                                size: 18,
-                                color: Colors.grey[600],
-                              ),
-                              SizedBox(width: 1.0.w),
-                              Text(
-                                'Member since ${formatJoinedDate(state.user.joinedDate)}',
-                                style: TextStyle(
-                                  color: Colors.grey[600],
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          SizedBox(height: 3.0.h),
-
-                          // Action Buttons
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              // Follow Button
-                              Expanded(
-                                child: ElevatedButton.icon(
-                                  onPressed: () {},
-                                  icon: const Icon(Icons.person_add, size: 18),
-                                  label: const Text('Follow'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue[700],
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      vertical: 1.2.h,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              SizedBox(width: 3.0.w),
-                              // Message Button
-                              Expanded(
-                                child: ElevatedButton(
-                                  onPressed: () {},
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.grey[800],
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 4.0.w,
-                                      vertical: 1.2.h,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(30),
-                                    ),
-                                  ),
-                                  child: const Icon(Icons.message, size: 20),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
+        );
+      },
     );
   }
 

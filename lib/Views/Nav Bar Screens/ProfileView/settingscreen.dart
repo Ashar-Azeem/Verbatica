@@ -4,11 +4,11 @@ import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/report/report_bloc.dart';
 import 'package:verbatica/BLOC/report/report_event.dart';
 import 'package:verbatica/Utilities/DialogueBox.dart';
-import 'package:verbatica/Views/settingviews/aboutus.dart';
-import 'package:verbatica/Views/settingviews/privacypolicy.dart';
-import 'package:verbatica/Views/settingviews/reportdata.dart'; // Import your reports screen
+import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/aboutus.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/privacypolicy.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/reportdata.dart'; // Import your reports screen
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:verbatica/Views/settingviews/savedpost.dart'; // Import your report bloc
+import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/savedpost.dart'; // Import your report bloc
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});

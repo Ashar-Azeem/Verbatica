@@ -15,7 +15,7 @@ import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/Summar
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/ProfileView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/otherprofile.dart';
-import 'package:verbatica/Views/clusterScreen.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/clusterScreen.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:timeago/timeago.dart' as timeago;
 

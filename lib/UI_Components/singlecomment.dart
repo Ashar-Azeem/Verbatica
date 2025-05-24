@@ -1,6 +1,9 @@
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/model/comment.dart';
 
 class SingleCommentUI extends StatefulWidget {
@@ -18,12 +21,20 @@ class SingleCommentUI extends StatefulWidget {
 
 class _SingleCommentUIState extends State<SingleCommentUI> {
   bool _showFullParent = false;
+  late final String userId;
+
+  @override
+  void initState() {
+    super.initState();
+    userId = context.read<UserBloc>().state.user.userId;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 6),
       decoration: BoxDecoration(
+        color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -59,9 +70,12 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: const Color(0xFF2A2A2A),
+          color: Theme.of(context).cardColor,
           border: Border(
-            bottom: BorderSide(color: Colors.grey.shade800, width: 1),
+            bottom: BorderSide(
+              color: Color.fromARGB(255, 22, 28, 33),
+              width: 1,
+            ),
           ),
         ),
         child: Column(
@@ -113,13 +127,13 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade800,
+                    color: primaryColor.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     timeago.format(widget.parentComment!.uploadTime),
-                    style: const TextStyle(
-                      color: Colors.grey,
+                    style: TextStyle(
+                      color: primaryColor,
                       fontSize: 9,
                       fontWeight: FontWeight.w400,
                     ),
@@ -161,190 +175,199 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
   }
 
   Widget _buildMainComment() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: const BoxDecoration(color: Color(0xFF1E1E1E)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Replying indicator
-          if (widget.parentComment != null)
-            Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: const Color(0xFF43768A).withOpacity(0.2),
-                borderRadius: BorderRadius.circular(4),
-                border: Border.all(
-                  color: const Color(0xFF43768A).withOpacity(0.4),
-                  width: 1,
+    return Card(
+      margin: EdgeInsets.all(0),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(color: Theme.of(context).cardColor),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Replying indicator
+            if (widget.parentComment != null)
+              Container(
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(
+                    color: const Color(0xFF43768A).withOpacity(0.4),
+                    width: 1,
+                  ),
                 ),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.reply, size: 12, color: Color(0xFF43768A)),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Replying to ${widget.parentComment!.author}',
-                    style: const TextStyle(
-                      color: Color(0xFF43768A),
-                      fontSize: 11,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-          // User info row
-          Row(
-            children: [
-              Stack(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: const Color(0xFF43768A),
-                        width: 2,
-                      ),
-                    ),
-                    child: CircleAvatar(
-                      radius: 16,
-                      backgroundImage: AssetImage(
-                        'assets/Avatars/avatar${widget.comment.profile}.jpg',
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 0,
-                    child: Container(
-                      height: 10,
-                      width: 10,
-                      decoration: BoxDecoration(
-                        color: Colors.green,
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: const Color(0xFF1E1E1E),
-                          width: 1.5,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
+                    const Icon(Icons.reply, size: 12, color: Color(0xFF43768A)),
+                    const SizedBox(width: 4),
                     Text(
-                      widget.comment.author,
+                      'Replying to ${widget.parentComment!.author}',
                       style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      timeago.format(widget.comment.uploadTime),
-                      style: TextStyle(
-                        color: Colors.grey.shade500,
+                        color: Color(0xFF43768A),
                         fontSize: 11,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],
                 ),
               ),
-              IconButton(
-                icon: const Icon(
-                  Icons.more_horiz,
-                  size: 20,
-                  color: Colors.grey,
-                ),
-                onPressed: () {},
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-              ),
-            ],
-          ),
 
-          // Content
-          Container(
-            margin: const EdgeInsets.only(top: 14, bottom: 14),
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: ExpandableText(
-              widget.comment.text,
-              expandOnTextTap: true,
-              collapseOnTextTap: true,
-              maxLines: 3,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                height: 1.5,
-                letterSpacing: 0.2,
-              ),
-              expandText: 'Show more',
-              collapseText: 'Show less',
-              linkColor: const Color(0xFF43768A),
-              linkStyle: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 12,
-              ),
-              prefixText: '',
-              prefixStyle: const TextStyle(fontWeight: FontWeight.bold),
-              animation: true,
-              animationDuration: const Duration(milliseconds: 300),
-              animationCurve: Curves.easeOut,
-            ),
-          ),
-
-          // Action buttons
-          Container(
-            margin: const EdgeInsets.only(top: 2),
-            child: Row(
+            // User info row
+            Row(
               children: [
-                _buildActionButton(
-                  icon: Icons.arrow_upward_rounded,
-                  color: const Color(0xFF43768A),
-                  onPressed: () {},
+                Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: const Color(0xFF43768A),
+                          width: 2,
+                        ),
+                      ),
+                      child: CircleAvatar(
+                        radius: 16,
+                        backgroundImage: AssetImage(
+                          'assets/Avatars/avatar${widget.comment.profile}.jpg',
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 0,
+                      right: 0,
+                      child: Container(
+                        height: 10,
+                        width: 10,
+                        decoration: BoxDecoration(
+                          color: Colors.green,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: const Color(0xFF1E1E1E),
+                            width: 1.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 4),
-                Text(
-                  '${widget.comment.totalUpVotes - widget.comment.totalDownVotes}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.comment.author,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        timeago.format(widget.comment.uploadTime),
+                        style: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(width: 4),
-                _buildActionButton(
-                  icon: Icons.arrow_downward_rounded,
-                  color: Colors.grey,
+                IconButton(
+                  icon: const Icon(
+                    Icons.more_horiz,
+                    size: 20,
+                    color: Colors.grey,
+                  ),
                   onPressed: () {},
-                ),
-                const Spacer(),
-                _buildActionButton(
-                  icon: Icons.reply_rounded,
-                  color: Colors.grey.shade400,
-                  label: 'Reply',
-                  onPressed: () {},
-                ),
-                const SizedBox(width: 8),
-                _buildActionButton(
-                  icon: Icons.bookmark_border_rounded,
-                  color: Colors.grey.shade400,
-                  onPressed: () {},
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
                 ),
               ],
             ),
-          ),
-        ],
+
+            // Content
+            Container(
+              margin: const EdgeInsets.only(top: 14, bottom: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 4),
+              child: ExpandableText(
+                widget.comment.text,
+                expandOnTextTap: true,
+                collapseOnTextTap: true,
+                maxLines: 3,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  height: 1.5,
+                  letterSpacing: 0.2,
+                ),
+                expandText: 'Show more',
+                collapseText: 'Show less',
+                linkColor: const Color(0xFF43768A),
+                linkStyle: const TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 12,
+                ),
+                prefixText: '',
+                prefixStyle: const TextStyle(fontWeight: FontWeight.bold),
+                animation: true,
+                animationDuration: const Duration(milliseconds: 300),
+                animationCurve: Curves.easeOut,
+              ),
+            ),
+
+            // Action buttons
+            Container(
+              margin: const EdgeInsets.only(top: 2),
+              child: Row(
+                children: [
+                  _buildActionButton(
+                    icon: Icons.arrow_upward_rounded,
+                    color:
+                        widget.comment.upVoteUserIds.contains(userId)
+                            ? primaryColor
+                            : Colors.white,
+                    onPressed: () {},
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${widget.comment.totalUpVotes - widget.comment.totalDownVotes}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  _buildActionButton(
+                    icon: Icons.arrow_downward_rounded,
+                    color:
+                        widget.comment.downVoteUserIds.contains(userId)
+                            ? primaryColor
+                            : Colors.white,
+                    onPressed: () {},
+                  ),
+                  const Spacer(),
+                  _buildActionButton(
+                    icon: Icons.reply_rounded,
+                    color: primaryColor,
+                    label: 'Reply',
+                    onPressed: () {},
+                  ),
+                  const SizedBox(width: 8),
+                  _buildActionButton(
+                    icon: Icons.bookmark_border_rounded,
+                    color: primaryColor,
+                    onPressed: () {},
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

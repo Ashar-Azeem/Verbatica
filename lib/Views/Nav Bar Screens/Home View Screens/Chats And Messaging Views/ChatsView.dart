@@ -8,7 +8,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/Utilities/Color.dart';
-import 'package:verbatica/Views/MessageView.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/Chats%20And%20Messaging%20Views/MessageView.dart';
 import 'package:verbatica/model/Chat.dart';
 
 class ChatsView extends StatefulWidget {
@@ -73,6 +73,7 @@ class _ChatsViewState extends State<ChatsView> {
                                     horizontal: 8,
                                   ),
                                   decoration: BoxDecoration(
+                                    color: Theme.of(context).cardColor,
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Row(

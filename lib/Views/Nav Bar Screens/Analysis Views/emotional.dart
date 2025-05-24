@@ -1,0 +1,281 @@
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:sizer/sizer.dart';
+
+class EmotionalChart extends StatefulWidget {
+  const EmotionalChart({
+    required this.dataforgraph,
+    required this.value,
+    required this.index,
+    super.key,
+  });
+
+  final double value;
+  final int index;
+  final List<String> dataforgraph;
+
+  @override
+  State<EmotionalChart> createState() => _EmotionalChartState();
+}
+
+class _EmotionalChartState extends State<EmotionalChart>
+    with TickerProviderStateMixin {
+  late AnimationController _chartController;
+  late AnimationController _indicatorsController;
+
+  int touchedIndex = -1;
+  final Color containerColor = const Color.fromARGB(255, 21, 28, 32);
+  late List<double> emotionValues;
+
+  @override
+  void initState() {
+    super.initState();
+    _chartController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1500),
+    )..forward();
+
+    _indicatorsController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..forward();
+
+    // Evenly distribute the values
+    final count = widget.dataforgraph.length;
+    final double perSectionValue = count > 0 ? widget.value / count : 0;
+    emotionValues = List.filled(count, perSectionValue);
+  }
+
+  @override
+  void dispose() {
+    _chartController.dispose();
+    _indicatorsController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final title =
+        widget.index == 1
+            ? 'Emotional Distribution Analysis'
+            : 'Gender Distribution Analysis';
+    final subtitle =
+        widget.index == 1
+            ? 'Distribution of emotions in comments'
+            : 'Distribution of genders in comments';
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Card(
+          elevation: 12,
+          shadowColor: Colors.black38,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Container(
+            decoration: BoxDecoration(
+              color: containerColor,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.1),
+                  blurRadius: 10,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Title
+                Column(
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.7),
+                        fontSize: 12,
+                      ),
+                    ),
+                    const Divider(color: Colors.white12, height: 24),
+                  ],
+                ),
+
+                // Pie Chart
+                AspectRatio(
+                  aspectRatio: 1.2,
+                  child: PieChart(
+                    PieChartData(
+                      pieTouchData: PieTouchData(
+                        touchCallback: (event, response) {
+                          setState(() {
+                            if (!event.isInterestedForInteractions ||
+                                response?.touchedSection == null) {
+                              touchedIndex = -1;
+                            } else {
+                              touchedIndex =
+                                  response!.touchedSection!.touchedSectionIndex;
+                            }
+                          });
+                        },
+                      ),
+                      borderData: FlBorderData(show: false),
+                      sectionsSpace: 2.5,
+                      centerSpaceRadius: 65,
+                      sections: _buildSections(widget.dataforgraph),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                // Legend
+                _buildIndicators(widget.dataforgraph),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  List<PieChartSectionData> _buildSections(List<String> emotions) {
+    return List.generate(emotions.length, (index) {
+      final double fontSize = 13;
+      final double radius = 50;
+
+      return PieChartSectionData(
+        color: _getColor(index),
+        value: emotionValues[index],
+        title: '${emotionValues[index].toStringAsFixed(0)}%',
+        radius: radius,
+        titleStyle: TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+          color: Colors.white,
+        ),
+        badgePositionPercentageOffset: 1.3,
+      );
+    });
+  }
+
+  Widget _buildIndicators(List<String> emotions) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child:
+          emotions.length > 5
+              ? SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: List.generate(
+                    emotions.length,
+                    (index) => Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      child: _buildIndicatorItem(emotions, index),
+                    ),
+                  ),
+                ),
+              )
+              : Wrap(
+                alignment: WrapAlignment.center,
+                spacing: 14,
+                runSpacing: 12,
+                children: List.generate(
+                  emotions.length,
+                  (index) => _buildIndicatorItem(emotions, index),
+                ),
+              ),
+    );
+  }
+
+  Widget _buildIndicatorItem(List<String> emotions, int index) {
+    final isSelected = index == touchedIndex;
+    final color = _getColor(index);
+
+    return GestureDetector(
+      onTap: () {},
+      child: AnimatedContainer(
+        width: 22.w,
+        height: 4.h,
+        duration: const Duration(milliseconds: 200),
+        decoration: BoxDecoration(
+          color:
+              isSelected
+                  ? color.withOpacity(0.25)
+                  : Colors.black.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? color : Colors.white.withOpacity(0.15),
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: isSelected ? 14 : 12,
+                height: isSelected ? 14 : 12,
+                decoration: BoxDecoration(
+                  color: color,
+                  shape: BoxShape.circle,
+                  boxShadow:
+                      isSelected
+                          ? [
+                            BoxShadow(
+                              color: color.withOpacity(0.6),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                            ),
+                          ]
+                          : [],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                emotions[index],
+                style: TextStyle(
+                  color:
+                      isSelected
+                          ? Colors.white
+                          : Colors.white.withOpacity(0.85),
+                  fontSize: isSelected ? 13 : 12,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Color _getColor(int index) {
+    const colors = [
+      Color(0xFF3498DB),
+      Color(0xFFE74C3C),
+      Color(0xFFF39C12),
+      Color(0xFF2ECC71),
+      Color(0xFF9B59B6),
+      Color(0xFF1ABC9C),
+      Color(0xFFE84393),
+      Color(0xFFD35400),
+      Color(0xFF27AE60),
+      Color(0xFF8E44AD),
+    ];
+    return colors[index % colors.length];
+  }
+}
