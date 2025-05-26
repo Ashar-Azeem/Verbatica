@@ -57,6 +57,7 @@ class UserState extends Equatable {
     user,
     userPosts,
     userComments,
+
     isLoadingComments,
     isLoadingPosts,
     postofComments,

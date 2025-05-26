@@ -16,12 +16,12 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<FetchUserPosts>(_onFetchUserPosts);
     on<DeleteUserPost>(_onDeleteUserPost);
     // Register new event handlers
-    on<SavePost>(_onSavePost);
-    on<UnsavePost>(_onUnsavePost);
+    on<SavePost1>(_onSavePost);
+    on<UnsavePost1>(_onUnsavePost);
     on<FetchSavedPosts>(_onFetchSavedPosts);
-    on<upvotePost>(_UpvotePost);
-    on<downvotePost>(_downvotePost);
-    on<upvotesavedPost>(_UpvotesavedPost);
+    on<upvotePost1>(_UpvotePost);
+    on<downvotePost1>(_downvotePost);
+    on<upvotesavedPost1>(_UpvotesavedPost);
     on<downvotesavedPost>(_downvotesavedPost);
     // Automatically fetch user posts when the bloc is created
     add(FetchUserPosts());
@@ -33,7 +33,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     emit(state.copyWith(user: updatedUser));
   }
 
-  void _UpvotesavedPost(upvotesavedPost event, Emitter<UserState> emit) {
+  void _UpvotesavedPost(upvotesavedPost1 event, Emitter<UserState> emit) {
     print('dhsfdsjhgdfjshgbfvsjbgfusgigfsiyfgwrifewrgfwiefevwukdvwfcrjtw');
     List<Post> posts = List.from(state.savedPosts);
     if (!posts[event.index].isUpVote) {
@@ -74,7 +74,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
   }
 
-  void _UpvotePost(upvotePost event, Emitter<UserState> emit) {
+  void _UpvotePost(upvotePost1 event, Emitter<UserState> emit) {
     print('dhsfdsjhgdfjshgbfvsjbgfusgigfsiyfgwrifewrgfwiefevwukdvwfcrjtw');
     List<Post> posts = List.from(state.userPosts);
     if (!posts[event.index].isUpVote) {
@@ -95,7 +95,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     }
   }
 
-  void _downvotePost(downvotePost event, Emitter<UserState> emit) {
+  void _downvotePost(downvotePost1 event, Emitter<UserState> emit) {
     List<Post> posts = List.from(state.userPosts);
     if (!posts[event.index].isDownVote) {
       if (posts[event.index].isUpVote) {
@@ -177,19 +177,21 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   }
 
   // New handler for saving posts
-  void _onSavePost(SavePost event, Emitter<UserState> emit) {
+  void _onSavePost(SavePost1 event, Emitter<UserState> emit) {
     final currentSavedPosts = state.savedPosts;
 
     // Check if the post is already saved
-    if (!currentSavedPosts.any((post) => post.id == event.post.id)) {
-      final updatedSavedPosts = List<Post>.from(currentSavedPosts)
-        ..add(event.post);
-      emit(state.copyWith(savedPosts: updatedSavedPosts));
-    }
+    // if (!currentSavedPosts.any((post) => post.id == event.post.id)) {
+
+    final updatedSavedPosts = List<Post>.from(currentSavedPosts)
+      ..add(event.post);
+    emit(state.copyWith(savedPosts: updatedSavedPosts));
+
+    // }
   }
 
   // New handler for unsaving posts
-  void _onUnsavePost(UnsavePost event, Emitter<UserState> emit) {
+  void _onUnsavePost(UnsavePost1 event, Emitter<UserState> emit) {
     final currentSavedPosts = state.savedPosts;
     final updatedSavedPosts =
         currentSavedPosts.where((post) => post.id != event.post.id).toList();
@@ -203,9 +205,12 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     Emitter<UserState> emit,
   ) async {
     if (state.savedPosts.isEmpty) {
-      // Take a few posts from forYouPosts for demo purposes
       final sampleSavedPosts = forYouPosts.take(3).toList();
       emit(state.copyWith(savedPosts: sampleSavedPosts));
+    } else {
+      emit(
+        state.copyWith(savedPosts: state.savedPosts),
+      ); // Force emit current savedPosts
     }
   }
 }

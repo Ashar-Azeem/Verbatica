@@ -130,8 +130,10 @@ class SettingsScreen extends StatelessWidget {
         Navigator.of(context).push(
           MaterialPageRoute(
             builder:
-                (context) => BlocProvider(
-                  create: (context) => UserBloc()..add(FetchSavedPosts()),
+                (context) => BlocProvider.value(
+                  value: BlocProvider.of<UserBloc>(
+                    context,
+                  ), // 👈 reuse existing UserBloc
                   child: SavedPostsScreen(),
                 ),
           ),

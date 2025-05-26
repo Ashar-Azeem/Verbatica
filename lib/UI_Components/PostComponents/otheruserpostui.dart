@@ -6,6 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_state.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
@@ -116,7 +118,8 @@ class OtherUserPostWidget extends StatelessWidget {
                             // context.read<OtheruserBloc>().add(
                             //   EditOtherUserPost(postId: post.id),
                             // );
-                          } else if (value == "delete") {
+                          } else if (value == "save") {
+                            context.read<UserBloc>().add(SavePost1(post: post));
                           } else if (value == "share") {
                             // context.read<OtheruserBloc>().add(
                             //   ShareOtherUserPost(post: post),
@@ -126,13 +129,13 @@ class OtherUserPostWidget extends StatelessWidget {
                         itemBuilder:
                             (BuildContext context) => <PopupMenuEntry<String>>[
                               const PopupMenuItem<String>(
-                                value: 'delete',
+                                value: 'save',
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: [
-                                    Icon(Icons.delete, color: Colors.white),
-                                    Text('Delete'),
+                                    Icon(Icons.save, color: Colors.white),
+                                    Text('save'),
                                   ],
                                 ),
                               ),

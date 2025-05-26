@@ -192,7 +192,7 @@ class UserPostWidget extends StatelessWidget {
                                 // );
                               } else if (value == "unsave") {
                                 context.read<UserBloc>().add(
-                                  UnsavePost(post: post),
+                                  UnsavePost1(post: post),
                                 );
                               } else if (value == "share") {
                                 // context.read<UserBloc>().add(
@@ -438,12 +438,12 @@ class UserPostWidget extends StatelessWidget {
                                   onTap: () {
                                     if (category == 'user') {
                                       context.read<UserBloc>().add(
-                                        upvotePost(index: index),
+                                        upvotePost1(index: index),
                                       );
                                     } else {
                                       // For saved posts, use different event
                                       context.read<UserBloc>().add(
-                                        upvotesavedPost(index: index),
+                                        upvotesavedPost1(index: index),
                                       );
                                     }
                                   },
@@ -485,7 +485,7 @@ class UserPostWidget extends StatelessWidget {
                                   onPressed: () {
                                     if (category == 'user') {
                                       context.read<UserBloc>().add(
-                                        downvotePost(index: index),
+                                        downvotePost1(index: index),
                                       );
                                     } else {
                                       // For saved posts, use different event
