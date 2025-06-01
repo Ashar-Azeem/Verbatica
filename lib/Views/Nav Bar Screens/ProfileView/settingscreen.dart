@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
-import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/report/report_bloc.dart';
 import 'package:verbatica/BLOC/report/report_event.dart';
 import 'package:verbatica/Utilities/DialogueBox.dart';

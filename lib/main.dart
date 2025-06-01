@@ -73,7 +73,7 @@ void main() async {
               scaffoldBackgroundColor: const Color(0xFF0A0D0F),
               useMaterial3: true,
             ),
-            home: const BottomNavigationBarView(),
+            home: const MainNavigation(),
           );
         },
       ),

@@ -21,11 +21,11 @@ class FetchUserPosts extends OtheruserEvent {}
 
 class upvotePost extends OtheruserEvent {
   final int index;
-  upvotePost({required this.index});
+  const upvotePost({required this.index});
 }
 
 class downvotePost extends OtheruserEvent {
   final int index;
-  downvotePost({required this.index});
+  const downvotePost({required this.index});
   // New event for deleting a user post
 }

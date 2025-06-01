@@ -170,45 +170,56 @@ class _ProfileViewState extends State<otherProfileView>
                         valueListenable: _scrollNotifier,
                         builder: (context, scrollOffset, child) {
                           final isCollapsed = _isAppBarCollapsed(scrollOffset);
-                          return AnimatedOpacity(
-                            opacity: isCollapsed ? 1 : 0,
-                            duration: Duration(seconds: 1),
-                            child: Container(
-                              padding: EdgeInsets.only(left: 2.w, bottom: 2.w),
-                              color: Color.fromARGB(255, 10, 13, 15),
-                              height: 20.h,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 6.w,
-                                    backgroundImage: AssetImage(
-                                      'assets/Avatars/avatar${widget.post.avatar}.jpg',
-                                    ),
-                                  ),
-                                  // Username in collapsed state
-                                  Spacer(),
-                                  SizedBox(
-                                    width: 40.w,
-                                    child: Text(
-                                      widget.post.name,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 4.w,
+                          return AnimatedSwitcher(
+                            duration: const Duration(seconds: 1),
+                            switchInCurve: Curves.easeIn,
+                            switchOutCurve: Curves.easeOut,
+                            child:
+                                isCollapsed
+                                    ? Container(
+                                      padding: EdgeInsets.only(
+                                        left: 2.w,
+                                        bottom: 2.w,
                                       ),
-                                    ),
-                                  ),
-                                  Spacer(flex: 8),
-                                  // Settings button in collapsed state
-                                  IconButton(
-                                    icon: Icon(Icons.message, size: 5.w),
-                                    color: primaryColor,
-                                    onPressed: () {},
-                                  ),
-                                ],
-                              ),
-                            ),
+                                      color: Color.fromARGB(255, 10, 13, 15),
+                                      height: 20.h,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 6.w,
+                                            backgroundImage: AssetImage(
+                                              'assets/Avatars/avatar${widget.post.avatar}.jpg',
+                                            ),
+                                          ),
+                                          // Username in collapsed state
+                                          Spacer(),
+                                          SizedBox(
+                                            width: 40.w,
+                                            child: Text(
+                                              widget.post.name,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 4.w,
+                                              ),
+                                            ),
+                                          ),
+                                          Spacer(flex: 8),
+                                          // Settings button in collapsed state
+                                          IconButton(
+                                            icon: Icon(
+                                              Icons.message,
+                                              size: 5.w,
+                                            ),
+                                            color: primaryColor,
+                                            onPressed: () {},
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                    : SizedBox.shrink(),
                           );
                         },
                       );

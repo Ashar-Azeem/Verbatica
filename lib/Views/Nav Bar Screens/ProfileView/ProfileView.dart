@@ -124,51 +124,66 @@ class _ProfileViewState extends State<ProfileView>
                         builder: (context, scrollOffset, child) {
                           final isCollapsed = _isAppBarCollapsed(scrollOffset);
 
-                          return AnimatedOpacity(
-                            opacity: isCollapsed ? 1 : 0,
-                            duration: Duration(seconds: 1),
-                            child: Container(
-                              padding: EdgeInsets.only(left: 2.w, bottom: 2.w),
-                              color: Color.fromARGB(255, 10, 13, 15),
-                              height: 20.h,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 6.w,
-                                    backgroundImage: AssetImage(
-                                      'assets/Avatars/avatar${state.user.avatarId}.jpg',
-                                    ),
-                                  ),
-                                  // Username in collapsed state
-                                  Spacer(),
-                                  SizedBox(
-                                    width: 40.w,
-                                    child: Text(
-                                      state.user.username,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 4.w,
+                          return AnimatedSwitcher(
+                            duration: const Duration(seconds: 1),
+                            switchInCurve: Curves.easeIn,
+                            switchOutCurve: Curves.easeOut,
+                            child:
+                                isCollapsed
+                                    ? Container(
+                                      key: const ValueKey('collapsedAppBar'),
+                                      padding: EdgeInsets.only(
+                                        left: 2.w,
+                                        bottom: 2.w,
                                       ),
-                                    ),
-                                  ),
-                                  Spacer(flex: 8),
-                                  // Settings button in collapsed state
-                                  IconButton(
-                                    icon: Icon(Icons.settings, size: 5.w),
-                                    color: Colors.white,
-                                    onPressed: () {
-                                      pushScreen(
-                                        context,
-                                        screen: const SettingsScreen(),
-                                        withNavBar: false,
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
+                                      color: const Color.fromARGB(
+                                        255,
+                                        10,
+                                        13,
+                                        15,
+                                      ),
+                                      height: 20.h,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 6.w,
+                                            backgroundImage: AssetImage(
+                                              'assets/Avatars/avatar${state.user.avatarId}.jpg',
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          SizedBox(
+                                            width: 40.w,
+                                            child: Text(
+                                              state.user.username,
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 4.w,
+                                              ),
+                                            ),
+                                          ),
+                                          const Spacer(flex: 8),
+                                          IconButton(
+                                            icon: Icon(
+                                              Icons.settings,
+                                              size: 5.w,
+                                            ),
+                                            color: Colors.white,
+                                            onPressed: () {
+                                              pushScreen(
+                                                context,
+                                                screen: const SettingsScreen(),
+                                                withNavBar: false,
+                                              );
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    )
+                                    : const SizedBox.shrink(), // Removed from tree when not collapsed
                           );
                         },
                       );
@@ -510,6 +525,9 @@ class _ProfileViewState extends State<ProfileView>
                                             // Edit Profile Button
                                             ElevatedButton.icon(
                                               onPressed: () {
+                                                print(
+                                                  'hggjdfhdhfjh!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',
+                                                );
                                                 showModalBottomSheet(
                                                   context: context,
                                                   isScrollControlled: true,
