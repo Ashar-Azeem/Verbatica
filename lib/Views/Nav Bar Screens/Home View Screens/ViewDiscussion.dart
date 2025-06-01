@@ -12,7 +12,6 @@ import 'package:verbatica/UI_Components/Comment%20Componenets/CommentBlock.dart'
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/UI_Components/PostComponents/otheruserpostui.dart';
 import 'package:verbatica/UI_Components/PostComponents/userpostUI.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/model/Post.dart';
 
 class ViewDiscussion extends StatefulWidget {
@@ -78,6 +77,7 @@ class _ViewDiscussionState extends State<ViewDiscussion>
     return BlocProvider(
       create: (context) => CommentsBloc(postId: widget.post.id),
       child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
           child: Stack(
             children: [
@@ -88,7 +88,6 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                     children: [
                       Align(
                         alignment: Alignment.topLeft,
-
                         child: Padding(
                           padding: EdgeInsets.only(
                             left: 1.5.w,
@@ -99,19 +98,17 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                             width: 10.w,
                             height: 10.w,
                             decoration: BoxDecoration(
-                              color: Color.fromARGB(
-                                255,
-                                13,
-                                18,
-                                21,
-                              ).withOpacity(0.4),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.surface.withOpacity(0.4),
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
                               icon: Center(
                                 child: Icon(
                                   Icons.arrow_back,
-                                  color: Colors.white,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
                                   size: 5.w,
                                 ),
                               ),
@@ -161,7 +158,8 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                 padding: EdgeInsets.only(top: 10.h),
                                 child: Center(
                                   child: LoadingAnimationWidget.dotsTriangle(
-                                    color: primaryColor,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                     size: 10.w,
                                   ),
                                 ),
@@ -178,12 +176,8 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                       child: Column(
                                         children: [
                                           Divider(
-                                            color: Color.fromARGB(
-                                              255,
-                                              22,
-                                              28,
-                                              33,
-                                            ),
+                                            color:
+                                                Theme.of(context).dividerColor,
                                             thickness: 0.5,
                                           ),
                                           Center(
@@ -196,12 +190,8 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                             ),
                                           ),
                                           Divider(
-                                            color: Color.fromARGB(
-                                              255,
-                                              22,
-                                              28,
-                                              33,
-                                            ),
+                                            color:
+                                                Theme.of(context).dividerColor,
                                             thickness: 0.5,
                                           ),
                                         ],
@@ -230,7 +220,7 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                               ? Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(6),
-                                  color: Color.fromARGB(255, 39, 52, 61),
+                                  color: Theme.of(context).cardColor,
                                 ),
                                 alignment: Alignment.center,
                                 width: 90.w,
@@ -245,7 +235,13 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                         Text(
                                           "Reply to ${state.replyToComment!.author}",
                                           style: TextStyle(
-                                            color: Colors.white,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).textTheme.bodyLarge?.color ??
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurface,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 4.w,
                                           ),
@@ -258,7 +254,10 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                           },
                                           child: Icon(
                                             Icons.highlight_remove_rounded,
-                                            color: Colors.white,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurface,
                                           ),
                                         ),
                                       ],
@@ -273,10 +272,17 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                       maxLines: 4,
                                       style: TextStyle(
                                         fontSize: 3.8.w,
-                                        color: Colors.white,
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.bodyMedium?.color ??
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
                                         fontWeight: FontWeight.w300,
                                       ),
-                                      linkColor: primaryColor,
+                                      linkColor:
+                                          Theme.of(context).colorScheme.primary,
                                     ),
                                   ],
                                 ),
@@ -286,7 +292,7 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                           Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.w),
-                              color: Color.fromARGB(255, 39, 52, 61),
+                              color: Theme.of(context).cardColor,
                             ),
                             alignment: Alignment.center,
                             width: 96.w,
@@ -320,17 +326,36 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                       maxLines: 5,
                                       expands: false,
                                       minLines: 1,
-                                      cursorColor: Colors.white,
-                                      style: const TextStyle(
-                                        color: Colors.white,
+                                      cursorColor:
+                                          Theme.of(context).colorScheme.primary,
+                                      style: TextStyle(
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.bodyLarge?.color ??
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
                                         fontWeight: FontWeight.normal,
                                       ),
                                       controller: comment,
                                       autocorrect: false,
                                       enableSuggestions: true,
-                                      decoration: const InputDecoration(
+                                      decoration: InputDecoration(
                                         border: InputBorder.none,
                                         hintText: 'Comment...',
+                                        hintStyle: TextStyle(
+                                          color:
+                                              Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.color
+                                                  ?.withOpacity(0.6) ??
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface
+                                                  .withOpacity(0.6),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -361,14 +386,20 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                             ? Center(
                                               child:
                                                   LoadingAnimationWidget.staggeredDotsWave(
-                                                    color: Colors.white,
+                                                    color:
+                                                        Theme.of(
+                                                          context,
+                                                        ).colorScheme.primary,
                                                     size: 5.w,
                                                   ),
                                             )
                                             : Center(
                                               child: Icon(
                                                 Icons.send,
-                                                color: Colors.white,
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary,
                                                 size: 5.w,
                                               ),
                                             ),

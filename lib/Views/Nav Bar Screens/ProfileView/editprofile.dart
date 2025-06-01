@@ -46,20 +46,24 @@ class _EditProfileContentState extends State<_EditProfileContent> {
   }
 
   void _showAvatarSelection() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     showDialog(
       context: context,
       builder:
           (context) => Dialog(
-            backgroundColor: Theme.of(context).cardColor,
+            backgroundColor: colorScheme.surface,
             insetPadding: const EdgeInsets.symmetric(horizontal: 20),
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
+                color: colorScheme.surface,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.white.withOpacity(0.03),
+                    color: colorScheme.shadow.withOpacity(0.1),
                     blurRadius: 12,
                     spreadRadius: 4,
                     offset: const Offset(0, 0),
@@ -72,7 +76,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                   Text(
                     'Choose Avatar',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: textTheme.titleLarge?.color,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
@@ -107,7 +111,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                               border: Border.all(
                                 color:
                                     _selectedAvatarId == avatarId
-                                        ? primaryColor
+                                        ? colorScheme.primary
                                         : Colors.transparent,
                                 width: 3,
                               ),
@@ -127,7 +131,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     style: TextButton.styleFrom(
-                      backgroundColor: primaryColor,
+                      backgroundColor: colorScheme.primary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 24,
                         vertical: 12,
@@ -136,10 +140,10 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Cancel',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: colorScheme.onPrimary,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -158,17 +162,28 @@ class _EditProfileContentState extends State<_EditProfileContent> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: const Text(
+        iconTheme: IconThemeData(color: colorScheme.onSurface),
+        title: Text(
           'Edit Profile',
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: textTheme.titleLarge?.color,
+          ),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.close),
+            color: colorScheme.onSurface,
             onPressed: () => Navigator.pop(context),
           ),
         ],
@@ -195,7 +210,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: primaryColor.withOpacity(0.3),
+                          color: colorScheme.primary.withOpacity(0.3),
                           blurRadius: 15,
                           spreadRadius: 2,
                         ),
@@ -211,7 +226,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: primaryColor,
+                                  color: colorScheme.primary,
                                   width: 3,
                                 ),
                               ),
@@ -228,20 +243,22 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                               child: Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: primaryColor,
+                                  color: colorScheme.primary,
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: Colors.black.withOpacity(0.3),
+                                      color: colorScheme.shadow.withOpacity(
+                                        0.3,
+                                      ),
                                       blurRadius: 5,
                                       offset: const Offset(0, 2),
                                     ),
                                   ],
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.edit,
                                   size: 18,
-                                  color: Colors.white,
+                                  color: colorScheme.onPrimary,
                                 ),
                               ),
                             ),
@@ -253,10 +270,16 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                   const SizedBox(height: 12),
                   TextButton.icon(
                     onPressed: _showAvatarSelection,
-                    icon: const Icon(Icons.photo_library_outlined),
-                    label: const Text('Change Avatar'),
+                    icon: Icon(
+                      Icons.photo_library_outlined,
+                      color: colorScheme.primary,
+                    ),
+                    label: Text(
+                      'Change Avatar',
+                      style: TextStyle(color: colorScheme.primary),
+                    ),
                     style: TextButton.styleFrom(
-                      foregroundColor: primaryColor,
+                      foregroundColor: colorScheme.primary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 8,
@@ -275,11 +298,11 @@ class _EditProfileContentState extends State<_EditProfileContent> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
+                color: colorScheme.surface,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.blue.withOpacity(0.2),
+                    color: colorScheme.primary.withOpacity(0.1),
                     blurRadius: 5,
                     spreadRadius: 2,
                     offset: const Offset(0, 0),
@@ -291,14 +314,14 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.person, color: primaryColor, size: 22),
+                      Icon(Icons.person, color: colorScheme.primary, size: 22),
                       const SizedBox(width: 8),
                       Text(
                         'About You',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: textTheme.titleMedium?.color,
                         ),
                       ),
                     ],
@@ -307,29 +330,37 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                   TextField(
                     controller: _aboutController,
                     maxLines: 5,
-                    style: const TextStyle(color: Colors.white, fontSize: 16),
+                    style: TextStyle(
+                      color: textTheme.bodyLarge?.color,
+                      fontSize: 16,
+                    ),
                     maxLength: 200,
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Theme.of(context).cardColor,
+                      fillColor: colorScheme.surfaceVariant,
                       hintText: 'Tell others about yourself...',
                       hintStyle: TextStyle(
-                        color: Colors.grey[400],
+                        color: textTheme.bodyMedium?.color?.withOpacity(0.6),
                         fontSize: 14,
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide(
-                          color: Colors.grey[700]!,
+                          color: colorScheme.outline,
                           width: 1,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(color: primaryColor, width: 2),
+                        borderSide: BorderSide(
+                          color: colorScheme.primary,
+                          width: 2,
+                        ),
                       ),
                       contentPadding: const EdgeInsets.all(16),
-                      counterStyle: TextStyle(color: Colors.grey[400]),
+                      counterStyle: TextStyle(
+                        color: textTheme.bodySmall?.color?.withOpacity(0.6),
+                      ),
                     ),
                   ),
                 ],
@@ -344,10 +375,10 @@ class _EditProfileContentState extends State<_EditProfileContent> {
               child: ElevatedButton(
                 onPressed: _saveChanges,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: primaryColor,
-                  foregroundColor: Colors.white,
+                  backgroundColor: colorScheme.primary,
+                  foregroundColor: colorScheme.onPrimary,
                   elevation: 8,
-                  shadowColor: primaryColor.withOpacity(0.5),
+                  shadowColor: colorScheme.primary.withOpacity(0.3),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),

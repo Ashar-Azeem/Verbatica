@@ -41,19 +41,25 @@ class _ClusterscreenState extends State<Clusterscreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         title: Text(
           'Discussion Detail',
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 18,
             letterSpacing: 0.3,
+            color: Theme.of(context).textTheme.titleLarge?.color,
           ),
         ),
-
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, size: 20),
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            size: 20,
+            color: Theme.of(context).iconTheme.color,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
@@ -68,7 +74,11 @@ class _ClusterscreenState extends State<Clusterscreen>
                 ),
               );
             },
-            icon: const Icon(Icons.bar_chart, size: 22),
+            icon: Icon(
+              Icons.bar_chart,
+              size: 22,
+              color: Theme.of(context).iconTheme.color,
+            ),
             tooltip: 'View Analytics',
           ),
         ],
@@ -86,10 +96,12 @@ class _ClusterscreenState extends State<Clusterscreen>
       child: TabBar(
         controller: _tabController,
         isScrollable: true,
-        indicatorColor: primaryColor,
+        indicatorColor: Theme.of(context).colorScheme.primary,
         indicatorWeight: 3,
-        labelColor: primaryColor,
-        unselectedLabelColor: Colors.white.withOpacity(0.6),
+        labelColor: Theme.of(context).colorScheme.primary,
+        unselectedLabelColor: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.color?.withOpacity(0.6),
         labelStyle: const TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 14,
@@ -116,14 +128,17 @@ class _ClusterscreenState extends State<Clusterscreen>
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: primaryColor.withOpacity(0.2),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.primary.withOpacity(0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
                               '13', //we will write logic of number of comments for each cluster later , for dummy here 13 is written
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                             ),
                           ),
@@ -154,22 +169,36 @@ class _ClusterscreenState extends State<Clusterscreen>
                         Icon(
                           Icons.chat_bubble_outline,
                           size: 64,
-                          color: Colors.grey[700],
+                          color: Theme.of(
+                            context,
+                          ).iconTheme.color?.withOpacity(0.5),
                         ),
                         const SizedBox(height: 16),
                         Text(
                           'No comments in this cluster yet',
                           style: TextStyle(
-                            color: Colors.grey[500],
+                            color: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.color?.withOpacity(0.7),
                             fontSize: 16,
                           ),
                         ),
                         const SizedBox(height: 24),
                         ElevatedButton.icon(
                           onPressed: () {},
-                          icon: const Icon(Icons.add_comment),
-                          label: const Text('Add First Comment'),
+                          icon: Icon(
+                            Icons.add_comment,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
+                          label: Text(
+                            'Add First Comment',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimary,
+                            ),
+                          ),
                           style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
                             padding: const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 10,

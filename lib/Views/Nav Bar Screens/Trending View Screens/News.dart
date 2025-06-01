@@ -25,6 +25,7 @@ class NewsView extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       elevation: 3,
       clipBehavior: Clip.antiAlias,
+      color: Theme.of(context).cardColor,
       child: InkWell(
         onTap: () {
           pushScreen(
@@ -38,22 +39,43 @@ class NewsView extends StatelessWidget {
           children: [
             CachedNetworkImage(
               imageUrl: news.image,
-
               placeholder:
                   (context, url) => Shimmer.fromColors(
-                    baseColor: const Color.fromARGB(255, 58, 76, 90),
-                    highlightColor: const Color.fromARGB(255, 81, 106, 125),
+                    baseColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Theme.of(
+                              context,
+                            ).colorScheme.surface.withOpacity(0.3)
+                            : Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest
+                                .withOpacity(0.3),
+                    highlightColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Theme.of(
+                              context,
+                            ).colorScheme.surface.withOpacity(0.6)
+                            : Theme.of(context)
+                                .colorScheme
+                                .surfaceContainerHighest
+                                .withOpacity(0.6),
                     child: AspectRatio(
                       aspectRatio: 16 / 9,
-                      child: Container(color: Colors.white),
+                      child: Container(
+                        color: Theme.of(context).colorScheme.surface,
+                      ),
                     ),
                   ),
               errorWidget:
                   (context, url, error) => AspectRatio(
                     aspectRatio: 16 / 9,
                     child: Container(
-                      color: Colors.grey[200],
-                      child: const Icon(Icons.error),
+                      color:
+                          Theme.of(context).colorScheme.surfaceContainerHighest,
+                      child: Icon(
+                        Icons.error,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
                     ),
                   ),
               fit: BoxFit.contain,
@@ -68,7 +90,7 @@ class NewsView extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Theme.of(context).textTheme.headlineSmall?.color,
                     ),
                   ),
                   SizedBox(height: 6),
@@ -82,12 +104,13 @@ class NewsView extends StatelessWidget {
                     maxLines: 2,
                     style: TextStyle(
                       fontSize: 3.8.w,
-                      color: const Color.fromARGB(255, 193, 192, 192),
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.color?.withOpacity(0.8),
                       fontWeight: FontWeight.w300,
                     ),
-                    linkColor: primaryColor,
+                    linkColor: Theme.of(context).colorScheme.primary,
                   ),
-
                   SizedBox(height: 8),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -104,13 +127,17 @@ class NewsView extends StatelessWidget {
                         },
                         child: Text(
                           news.sourceName,
-                          style: TextStyle(color: primaryColor),
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
                         ),
                       ),
                       Text(
                         timeago.format(news.publishedAt),
                         style: TextStyle(
-                          color: const Color.fromARGB(255, 201, 200, 200),
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodySmall?.color?.withOpacity(0.7),
                         ),
                       ),
                     ],

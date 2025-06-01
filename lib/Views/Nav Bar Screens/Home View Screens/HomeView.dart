@@ -29,7 +29,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: DefaultTabController(
         length: 2,
         child: SafeArea(
@@ -40,7 +45,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
               headerSliverBuilder:
                   (context, innerBoxIsScrolled) => [
                     SliverAppBar(
-                      backgroundColor: Color.fromARGB(255, 10, 13, 15),
+                      backgroundColor: theme.scaffoldBackgroundColor,
                       automaticallyImplyLeading: false,
                       toolbarHeight: 12.h,
                       floating: true,
@@ -64,7 +69,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                                 builder: (context, state) {
                                   return Material(
                                     color: Colors.transparent,
-
                                     child: InkWell(
                                       onTap: () {
                                         pushScreen(
@@ -72,7 +76,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                                           pageTransitionAnimation:
                                               PageTransitionAnimation.platform,
                                           screen: ChatsView(),
-
                                           withNavBar: false,
                                         );
                                       },
@@ -81,15 +84,10 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                                         padding: const EdgeInsets.all(8.0),
                                         child: Badge(
                                           isLabelVisible: state.isAnyUnread,
-                                          backgroundColor: const Color.fromARGB(
-                                            255,
-                                            219,
-                                            26,
-                                            12,
-                                          ),
+                                          backgroundColor: colorScheme.error,
                                           child: Icon(
                                             Icons.insert_comment_rounded,
-                                            color: primaryColor,
+                                            color: colorScheme.primary,
                                           ),
                                         ),
                                       ),
@@ -102,14 +100,12 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           BlocBuilder<HomeBloc, HomeState>(
                             builder: (context, state) {
                               return TabBar(
-                                indicatorColor: primaryColor,
-                                labelColor: primaryColor,
-                                unselectedLabelColor: const Color.fromARGB(
-                                  255,
-                                  196,
-                                  195,
-                                  195,
-                                ),
+                                indicatorColor: colorScheme.primary,
+                                labelColor: colorScheme.primary,
+                                unselectedLabelColor: textTheme
+                                    .bodyMedium
+                                    ?.color
+                                    ?.withOpacity(0.6),
                                 onTap: (value) {
                                   //Only Called once
                                   if (value == 1 && state.following.isEmpty) {
@@ -186,10 +182,12 @@ class _BuiltPostListState extends State<BuiltPostList>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    final colorScheme = Theme.of(context).colorScheme;
+
     return widget.loading
         ? Center(
           child: LoadingAnimationWidget.dotsTriangle(
-            color: primaryColor,
+            color: colorScheme.primary,
             size: 10.w,
           ),
         )

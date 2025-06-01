@@ -26,7 +26,6 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
   late Animation<double> _fadeAnimation;
   late AnimationController _chartController;
   final Random _random = Random();
-  Color containerColor = Color.fromARGB(255, 21, 28, 32);
 
   @override
   void initState() {
@@ -68,6 +67,11 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
   }
 
   Widget _buildHeaderSection() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+    final containerColor = colorScheme.surface;
+
     return SlideTransition(
       position: Tween<Offset>(
         begin: const Offset(0, -0.5),
@@ -79,6 +83,11 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
         opacity: _fadeAnimation,
         child: Card(
           color: containerColor,
+          elevation: 4,
+          shadowColor: colorScheme.shadow.withOpacity(0.1),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -86,8 +95,8 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
               children: [
                 Text(
                   widget.clusterTitle,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: textTheme.titleLarge?.color ?? colorScheme.onSurface,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
@@ -95,11 +104,20 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.comment_rounded, color: primaryColor, size: 16),
+                    Icon(
+                      Icons.comment_rounded,
+                      color: colorScheme.primary,
+                      size: 16,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       '${widget.numberOfComments.toInt()} comments',
-                      style: TextStyle(color: Colors.grey[300], fontSize: 14),
+                      style: TextStyle(
+                        color:
+                            textTheme.bodyMedium?.color ??
+                            colorScheme.onSurfaceVariant,
+                        fontSize: 14,
+                      ),
                     ),
                   ],
                 ),
@@ -112,6 +130,10 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
   }
 
   Widget _buildSectionTitle(String title) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return SlideTransition(
       position: Tween<Offset>(
         begin: const Offset(-0.5, 0),
@@ -123,8 +145,8 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
         opacity: _fadeAnimation,
         child: Text(
           title,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: textTheme.titleMedium?.color ?? colorScheme.onBackground,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -207,19 +229,29 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+    final containerColor = colorScheme.surface;
     final value = _random.nextDouble() * 30 + 10;
     final countryChartData = _generateCountryData();
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('Cluster Analytics'),
+        title: Text(
+          'Cluster Analytics',
+          style: TextStyle(
+            color: textTheme.titleLarge?.color ?? colorScheme.onSurface,
+          ),
+        ),
         centerTitle: true,
         backgroundColor: containerColor,
         elevation: 0,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
         ),
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: colorScheme.onSurface),
       ),
       body: FadeTransition(
         opacity: _fadeAnimation,

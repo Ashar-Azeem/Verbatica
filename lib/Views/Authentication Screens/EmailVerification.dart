@@ -76,7 +76,10 @@ class _EmailVerificationState extends State<EmailVerification> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -91,9 +94,9 @@ class _EmailVerificationState extends State<EmailVerification> {
               // Title
               Text(
                 'Verify Your Email',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: primaryColor,
+                  color: theme.colorScheme.primary,
                 ),
               ),
               SizedBox(height: 4.h),
@@ -102,8 +105,8 @@ class _EmailVerificationState extends State<EmailVerification> {
               Text(
                 'We\'ve sent a 5-digit code to your email address',
                 textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: const Color.fromARGB(255, 255, 255, 255),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.textTheme.bodyMedium?.color,
                 ),
               ),
               SizedBox(height: 2.h),
@@ -111,12 +114,12 @@ class _EmailVerificationState extends State<EmailVerification> {
               // OTP Field
               OtpTextField(
                 numberOfFields: _otpLength,
-                borderColor: Theme.of(context).primaryColor,
-                focusedBorderColor: primaryColor,
+                borderColor: theme.dividerColor,
+                focusedBorderColor: theme.colorScheme.primary,
                 styles: [
                   for (int i = 0; i < _otpLength; i++)
-                    Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      color: primaryColor,
+                    theme.textTheme.headlineMedium?.copyWith(
+                      color: theme.textTheme.headlineMedium?.color,
                       fontWeight: FontWeight.bold,
                     ),
                 ],
@@ -140,14 +143,17 @@ class _EmailVerificationState extends State<EmailVerification> {
                 children: [
                   Text(
                     _canResend ? 'Didn\'t receive code? ' : 'Resend code in ',
-                    style: const TextStyle(fontSize: 14, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: theme.textTheme.bodyMedium?.color,
+                    ),
                   ),
                   if (!_canResend)
                     Text(
                       '$_timerSeconds s',
                       style: TextStyle(
                         fontSize: 14,
-                        color: primaryColor,
+                        color: theme.colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -158,7 +164,7 @@ class _EmailVerificationState extends State<EmailVerification> {
                         'Resend OTP',
                         style: TextStyle(
                           fontSize: 14,
-                          color: primaryColor,
+                          color: theme.colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -173,13 +179,20 @@ class _EmailVerificationState extends State<EmailVerification> {
                 child: ElevatedButton(
                   onPressed: _verifyOtp,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryColor,
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Text('Verify', style: TextStyle(fontSize: 16)),
+                  child: Text(
+                    'Verify',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: theme.colorScheme.onPrimary,
+                    ),
+                  ),
                 ),
               ),
             ],

@@ -84,21 +84,39 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
 
   @override
   Widget build(BuildContext context) {
-    Color containerColor = Color.fromARGB(255, 21, 28, 32);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
     final total = _fixedRandomValues.reduce((a, b) => a + b);
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final textColor = isDarkMode ? Colors.white : const Color(0xFF2D3748);
-    final secondaryTextColor = isDarkMode ? Colors.grey[400] : Colors.grey[600];
+    final isDarkMode = theme.brightness == Brightness.dark;
+
+    // Theme-based colors
+    final containerColor =
+        isDarkMode ? colorScheme.surface : colorScheme.surface;
+    final textColor = textTheme.bodyLarge?.color ?? colorScheme.onSurface;
+    final secondaryTextColor =
+        textTheme.bodyMedium?.color ?? colorScheme.onSurfaceVariant;
+    final dividerColor = colorScheme.outline.withOpacity(0.2);
+    final listItemColor =
+        isDarkMode
+            ? colorScheme.surface.withOpacity(0.8)
+            : colorScheme.surfaceVariant.withOpacity(0.3);
 
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Cluster Analytics',
-          style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5),
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+            color: colorScheme.onSurface,
+          ),
         ),
         centerTitle: true,
         backgroundColor: containerColor,
         elevation: 0,
+        iconTheme: IconThemeData(color: colorScheme.onSurface),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
         ),
@@ -129,7 +147,7 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
                       child: Card(
                         color: containerColor,
                         elevation: 8,
-                        shadowColor: Colors.black26,
+                        shadowColor: colorScheme.shadow.withOpacity(0.2),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
@@ -146,14 +164,14 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
                                 children: [
                                   Icon(
                                     Icons.comment_rounded,
-                                    color: primaryColor,
+                                    color: colorScheme.primary,
                                     size: 22,
                                   ),
                                   const SizedBox(width: 8),
                                   Text(
                                     'Total Comments',
                                     style: TextStyle(
-                                      color: Colors.white.withOpacity(0.9),
+                                      color: textColor?.withOpacity(0.9),
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -164,8 +182,8 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
                               AnimatedCount(
                                 count: total.round(),
                                 duration: const Duration(milliseconds: 1500),
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: textColor,
                                   fontSize: 32,
                                   fontWeight: FontWeight.bold,
                                   letterSpacing: 0.5,
@@ -191,7 +209,7 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
                     ),
                     child: Card(
                       elevation: 4,
-                      shadowColor: Colors.black12,
+                      shadowColor: colorScheme.shadow.withOpacity(0.1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -242,7 +260,7 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
                     ),
                     child: Card(
                       elevation: 4,
-                      shadowColor: Colors.black12,
+                      shadowColor: colorScheme.shadow.withOpacity(0.1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -275,7 +293,7 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
                             itemCount: widget.clusters.length,
                             separatorBuilder:
                                 (_, __) => Divider(
-                                  color: Color.fromARGB(255, 30, 38, 45),
+                                  color: dividerColor,
                                   height: 1,
                                   indent: 16,
                                   endIndent: 16,
@@ -310,7 +328,7 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
                                     ),
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(12),
-                                      color: Color.fromARGB(255, 29, 39, 45),
+                                      color: listItemColor,
                                     ),
                                     child: ListTile(
                                       contentPadding:
@@ -499,6 +517,8 @@ class _PieChartWithClusterInfoState extends State<PieChartWithClusterInfo>
   }
 
   List<PieChartSectionData> showingSections() {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final total = widget.clusters.fold<double>(
       0,
       (sum, cluster) => sum + cluster.commentCount,
@@ -520,8 +540,10 @@ class _PieChartWithClusterInfoState extends State<PieChartWithClusterInfo>
         titleStyle: TextStyle(
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
-          color: Colors.white,
-          shadows: const [Shadow(color: Colors.black45, blurRadius: 2)],
+          color: colorScheme.onPrimary,
+          shadows: [
+            Shadow(color: colorScheme.shadow.withOpacity(0.5), blurRadius: 2),
+          ],
         ),
         badgeWidget: _ClusterBadge(
           title: cluster.title,
@@ -567,12 +589,15 @@ class _ClusterBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return AnimatedContainer(
       duration: PieChart.defaultDuration,
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: colorScheme.surface,
         shape: BoxShape.circle,
         border: Border.all(color: color, width: isTouched ? 3 : 2),
         boxShadow: [
@@ -613,7 +638,7 @@ class _ClusterBadge extends StatelessWidget {
                     title,
                     style: TextStyle(
                       fontSize: isTouched ? 10 : 8,
-                      color: Colors.grey.shade700,
+                      color: colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w500,
                     ),
                     textAlign: TextAlign.center,

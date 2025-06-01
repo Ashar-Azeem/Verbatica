@@ -12,7 +12,7 @@ class VideoPlayer extends StatefulWidget {
   const VideoPlayer({super.key, required this.videoUrl});
 
   @override
-  State<VideoPlayer> createState() => _VideoPlayerState();
+  State createState() => _VideoPlayerState();
 }
 
 class _VideoPlayerState extends State<VideoPlayer> {
@@ -38,7 +38,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
             DeviceOrientation.landscapeLeft,
             DeviceOrientation.landscapeRight,
           ],
-          showControlsOnInitialize: false, // No controls on start
+          showControlsOnInitialize: false,
           deviceOrientationsAfterFullScreen: [DeviceOrientation.portraitUp],
           fullScreenByDefault: false,
         );
@@ -55,15 +55,14 @@ class _VideoPlayerState extends State<VideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return VisibilityDetector(
       key: Key(widget.videoUrl),
       onVisibilityChanged: (info) {
-        // Pause if less than 50% visible
         if (info.visibleFraction < 0.5 && _videoController.value.isPlaying) {
           _videoController.pause();
-        }
-        //Resumes if greater then 50% visibility
-        else if (info.visibleFraction >= 0.5 &&
+        } else if (info.visibleFraction >= 0.5 &&
             !_videoController.value.isPlaying) {
           _videoController.play();
         }
@@ -75,12 +74,12 @@ class _VideoPlayerState extends State<VideoPlayer> {
                 child: Chewie(controller: _chewieController!),
               )
               : Container(
-                color: Color.fromARGB(255, 35, 44, 51),
+                color: theme.scaffoldBackgroundColor,
                 height: 25.h,
                 width: 100.w,
                 child: Center(
                   child: LoadingAnimationWidget.staggeredDotsWave(
-                    color: Colors.white,
+                    color: theme.colorScheme.onBackground,
                     size: 10.w,
                   ),
                 ),

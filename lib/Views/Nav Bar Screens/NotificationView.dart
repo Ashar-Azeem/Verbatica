@@ -381,23 +381,29 @@ class NotificationScreen extends StatelessWidget {
                 ]),
               ),
       child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
           elevation: 0,
-          title: const Text(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: Text(
             'Notifications',
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.w600,
               letterSpacing: 0.5,
+              color: Theme.of(context).textTheme.titleLarge?.color,
             ),
+          ),
+          iconTheme: IconThemeData(
+            color: Theme.of(context).textTheme.bodyLarge?.color,
           ),
         ),
         body: BlocBuilder<NotificationBloc, NotificationState>(
           builder: (context, state) {
             if (state.isLoading) {
-              return const Center(
+              return Center(
                 child: CircularProgressIndicator(
-                  color: Color(0xFF0073FF), // Match upvote color
+                  color: Theme.of(context).colorScheme.primary,
                 ),
               );
             }
@@ -415,8 +421,10 @@ class NotificationScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     Text(
                       'Error: ${state.error}',
-                      style: const TextStyle(
-                        color: Colors.white70,
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.color?.withOpacity(0.7),
                         fontSize: 16,
                       ),
                     ),
@@ -432,14 +440,18 @@ class NotificationScreen extends StatelessWidget {
                   children: [
                     Icon(
                       Icons.notifications_off_rounded,
-                      color: Colors.grey[600],
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.color?.withOpacity(0.6),
                       size: 64,
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       'No notifications yet',
                       style: TextStyle(
-                        color: Colors.white70,
+                        color: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.color?.withOpacity(0.7),
                         fontSize: 18,
                         fontWeight: FontWeight.w500,
                       ),
@@ -463,7 +475,10 @@ class NotificationScreen extends StatelessWidget {
                     .toList();
 
             return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 10,
+              ),
               child: CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
@@ -473,12 +488,13 @@ class NotificationScreen extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Today',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color:
+                                  Theme.of(context).textTheme.titleLarge?.color,
                               letterSpacing: 0.5,
                             ),
                           ),
@@ -486,11 +502,11 @@ class NotificationScreen extends StatelessWidget {
                             onTap: () {
                               // Placeholder for "Mark all as read" functionality
                             },
-                            child: const Text(
+                            child: Text(
                               'Mark all as read',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Color(0xFF0073FF),
+                                color: Theme.of(context).colorScheme.primary,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -501,14 +517,16 @@ class NotificationScreen extends StatelessWidget {
                   ),
 
                   if (todayNotifications.isEmpty)
-                    const SliverToBoxAdapter(
+                    SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
                           child: Text(
                             'No new notifications today',
                             style: TextStyle(
-                              color: Colors.white60,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.color?.withOpacity(0.6),
                               fontSize: 15,
                             ),
                           ),
@@ -532,12 +550,13 @@ class NotificationScreen extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Earlier',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color:
+                                  Theme.of(context).textTheme.titleLarge?.color,
                               letterSpacing: 0.5,
                             ),
                           ),
@@ -560,14 +579,16 @@ class NotificationScreen extends StatelessWidget {
                   ),
 
                   if (earlierNotifications.isEmpty)
-                    const SliverToBoxAdapter(
+                    SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 16.0),
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
                         child: Center(
                           child: Text(
                             'No earlier notifications',
                             style: TextStyle(
-                              color: Colors.white60,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.color?.withOpacity(0.6),
                               fontSize: 15,
                             ),
                           ),
@@ -609,17 +630,21 @@ class NotificationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 6.0),
       decoration: BoxDecoration(
         color:
             notification.isRead
-                ? const Color(0xFF1A1A1A)
-                : const Color(0xFF232733),
+                ? (isDarkMode ? const Color(0xFF1A1A1A) : Colors.grey[50])
+                : (isDarkMode
+                    ? const Color(0xFF232733)
+                    : Theme.of(context).colorScheme.primary.withOpacity(0.05)),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Theme.of(context).shadowColor.withOpacity(0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -639,7 +664,7 @@ class NotificationTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Avatar or Icon
-                _buildLeadingWidget(),
+                _buildLeadingWidget(context),
 
                 const SizedBox(width: 12),
 
@@ -656,8 +681,8 @@ class NotificationTile extends StatelessWidget {
                               width: 8,
                               height: 8,
                               margin: const EdgeInsets.only(right: 6),
-                              decoration: const BoxDecoration(
-                                color: Color(0xFF0073FF),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary,
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -669,7 +694,10 @@ class NotificationTile extends StatelessWidget {
                                     notification.isRead
                                         ? FontWeight.w500
                                         : FontWeight.bold,
-                                color: Colors.white,
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).textTheme.bodyLarge?.color,
                                 fontSize: 15,
                                 height: 1.3,
                               ),
@@ -687,9 +715,11 @@ class NotificationTile extends StatelessWidget {
                         notification.description,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          color: Colors.white70,
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.color?.withOpacity(0.7),
                           height: 1.4,
                         ),
                       ),
@@ -702,8 +732,10 @@ class NotificationTile extends StatelessWidget {
                         children: [
                           Text(
                             _formatTimeDifference(notification.createdAt),
-                            style: const TextStyle(
-                              color: Colors.grey,
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.color?.withOpacity(0.5),
                               fontSize: 12,
                             ),
                           ),
@@ -712,12 +744,14 @@ class NotificationTile extends StatelessWidget {
                           Row(
                             children: [
                               _buildActionIcon(
+                                context,
                                 Icons.reply_rounded,
                                 'Reply',
                                 () {},
                               ),
                               const SizedBox(width: 16),
                               _buildActionIcon(
+                                context,
                                 Icons.more_horiz_rounded,
                                 'More options',
                                 () {},
@@ -737,19 +771,19 @@ class NotificationTile extends StatelessWidget {
     );
   }
 
-  Widget _buildLeadingWidget() {
+  Widget _buildLeadingWidget(BuildContext context) {
     if (notification.isUpvoteNotification) {
       return Container(
         width: 42,
         height: 42,
         decoration: BoxDecoration(
-          color: const Color(0xFF0073FF).withOpacity(0.15),
+          color: Theme.of(context).colorScheme.primary.withOpacity(0.15),
           shape: BoxShape.circle,
         ),
-        child: const Center(
+        child: Center(
           child: Icon(
             Icons.arrow_upward_rounded,
-            color: Color(0xFF0073FF),
+            color: Theme.of(context).colorScheme.primary,
             size: 24,
           ),
         ),
@@ -770,9 +804,12 @@ class NotificationTile extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF0073FF),
+                  color: Theme.of(context).colorScheme.primary,
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFF121212), width: 2),
+                  border: Border.all(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    width: 2,
+                  ),
                 ),
                 child: const Icon(
                   Icons.comment_rounded,
@@ -790,7 +827,10 @@ class NotificationTile extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.green,
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFF121212), width: 2),
+                  border: Border.all(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    width: 2,
+                  ),
                 ),
                 child: const Icon(
                   Icons.reply_rounded,
@@ -808,7 +848,10 @@ class NotificationTile extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.purple,
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFF121212), width: 2),
+                  border: Border.all(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    width: 2,
+                  ),
                 ),
                 child: const Icon(
                   Icons.post_add_rounded,
@@ -822,13 +865,24 @@ class NotificationTile extends StatelessWidget {
     }
   }
 
-  Widget _buildActionIcon(IconData icon, String tooltip, VoidCallback onTap) {
+  Widget _buildActionIcon(
+    BuildContext context,
+    IconData icon,
+    String tooltip,
+    VoidCallback onTap,
+  ) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(50),
       child: Padding(
         padding: const EdgeInsets.all(4.0),
-        child: Icon(icon, color: Colors.grey, size: 18),
+        child: Icon(
+          icon,
+          color: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.color?.withOpacity(0.5),
+          size: 18,
+        ),
       ),
     );
   }

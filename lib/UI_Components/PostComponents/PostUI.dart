@@ -34,18 +34,23 @@ class PostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Center(
       child: SizedBox(
         width: 100.w,
-
         child: Column(
           children: [
-            Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
+            Divider(
+              color: colorScheme.outline.withOpacity(0.3),
+              thickness: 0.5,
+            ),
             SizedBox(
               height: 5.5.h,
               child: Padding(
                 padding: EdgeInsets.only(left: 1.w, top: 1.w),
-
                 child: GestureDetector(
                   onTap: () {
                     pushScreen(
@@ -70,12 +75,16 @@ class PostWidget extends StatelessWidget {
                           children: [
                             Text(
                               post.name,
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: textTheme.bodyLarge?.color,
+                              ),
                             ),
                             Text(
                               timeago.format(post.uploadTime),
                               style: TextStyle(
-                                color: Colors.white,
+                                color: textTheme.bodyMedium?.color?.withOpacity(
+                                  0.7,
+                                ),
                                 fontSize: 2.w,
                               ),
                             ),
@@ -112,20 +121,23 @@ class PostWidget extends StatelessWidget {
                         },
                         style: TextButton.styleFrom(
                           shape: StadiumBorder(),
-
-                          backgroundColor: primaryColor, // Button color
-                          foregroundColor: Colors.white, // Text color
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
                         ),
                         child: Text(
                           'Summary',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: colorScheme.onPrimary,
                             fontSize: 2.8.w,
                           ),
                         ),
                       ),
                       PopupMenuButton<String>(
-                        icon: Icon(Icons.more_vert),
+                        icon: Icon(
+                          Icons.more_vert,
+                          color: textTheme.bodyLarge?.color,
+                        ),
+                        color: colorScheme.surface,
                         onSelected: (String value) {
                           if (value == "report") {
                             context.read<HomeBloc>().add(
@@ -143,7 +155,7 @@ class PostWidget extends StatelessWidget {
                         },
                         itemBuilder:
                             (BuildContext context) => <PopupMenuEntry<String>>[
-                              const PopupMenuItem<String>(
+                              PopupMenuItem<String>(
                                 value: 'report',
                                 child: Row(
                                   mainAxisAlignment:
@@ -151,33 +163,52 @@ class PostWidget extends StatelessWidget {
                                   children: [
                                     Icon(
                                       Icons.report_gmailerrorred,
-                                      color: Colors.white,
+                                      color: textTheme.bodyLarge?.color,
                                     ),
-
-                                    Text('Report'),
+                                    Text(
+                                      'Report',
+                                      style: TextStyle(
+                                        color: textTheme.bodyLarge?.color,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-                              const PopupMenuItem<String>(
+                              PopupMenuItem<String>(
                                 value: 'save',
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: [
-                                    Icon(Icons.save, color: Colors.white),
-                                    Text('Save'),
+                                    Icon(
+                                      Icons.save,
+                                      color: textTheme.bodyLarge?.color,
+                                    ),
+                                    Text(
+                                      'Save',
+                                      style: TextStyle(
+                                        color: textTheme.bodyLarge?.color,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-
-                              const PopupMenuItem<String>(
+                              PopupMenuItem<String>(
                                 value: 'share',
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: [
-                                    Icon(Icons.share, color: Colors.white),
-                                    Text('Share'),
+                                    Icon(
+                                      Icons.share,
+                                      color: textTheme.bodyLarge?.color,
+                                    ),
+                                    Text(
+                                      'Share',
+                                      style: TextStyle(
+                                        color: textTheme.bodyLarge?.color,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -188,7 +219,10 @@ class PostWidget extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
+            Divider(
+              color: colorScheme.outline.withOpacity(0.3),
+              thickness: 0.5,
+            ),
             //Content, title, image or video
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -198,8 +232,8 @@ class PostWidget extends StatelessWidget {
                   padding: EdgeInsets.only(left: 1.w),
                   child: Text(
                     post.title,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: textTheme.headlineSmall?.color,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -218,9 +252,11 @@ class PostWidget extends StatelessWidget {
                     collapseText: 'show less',
                     linkEllipsis: false,
                     maxLines: 2,
-                    style: const TextStyle(fontSize: 15, color: Colors.white),
-
-                    linkColor: primaryColor,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: textTheme.bodyLarge?.color,
+                    ),
+                    linkColor: colorScheme.primary,
                   ),
                 ),
 
@@ -231,24 +267,23 @@ class PostWidget extends StatelessWidget {
                     imageUrl: post.postImageLink!,
                     placeholder:
                         (context, url) => Shimmer.fromColors(
-                          baseColor: const Color.fromARGB(255, 58, 76, 90),
-                          highlightColor: const Color.fromARGB(
-                            255,
-                            81,
-                            106,
-                            125,
-                          ),
+                          baseColor: colorScheme.surfaceVariant,
+                          highlightColor: colorScheme.surfaceVariant
+                              .withOpacity(0.8),
                           child: AspectRatio(
                             aspectRatio: 16 / 9,
-                            child: Container(color: Colors.white),
+                            child: Container(color: colorScheme.surface),
                           ),
                         ),
                     errorWidget:
                         (context, url, error) => AspectRatio(
                           aspectRatio: 16 / 9,
                           child: Container(
-                            color: Colors.grey[200],
-                            child: const Icon(Icons.error),
+                            color: colorScheme.errorContainer,
+                            child: Icon(
+                              Icons.error,
+                              color: colorScheme.onErrorContainer,
+                            ),
                           ),
                         ),
                     fit: BoxFit.contain,
@@ -300,7 +335,7 @@ class PostWidget extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: Color.fromARGB(255, 70, 79, 87),
+                            color: colorScheme.outline.withOpacity(0.5),
                           ),
                         ),
                         padding: EdgeInsets.symmetric(
@@ -338,15 +373,15 @@ class PostWidget extends StatelessWidget {
                                           size: 7.w,
                                           color:
                                               dynamicpost.isUpVote
-                                                  ? primaryColor
-                                                  : Colors.white,
+                                                  ? colorScheme.primary
+                                                  : textTheme.bodyLarge?.color,
                                         ),
                                       ),
 
                                       Text(
                                         "${dynamicpost.upvotes - dynamicpost.downvotes}",
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color: textTheme.bodyLarge?.color,
                                           fontSize: 3.w,
                                           height: 1,
                                           fontWeight: FontWeight.bold,
@@ -359,7 +394,7 @@ class PostWidget extends StatelessWidget {
                                 Container(
                                   width: 1,
                                   height: 6.h,
-                                  color: Color.fromARGB(255, 70, 79, 87),
+                                  color: colorScheme.outline.withOpacity(0.5),
                                 ),
 
                                 IconButton(
@@ -381,8 +416,8 @@ class PostWidget extends StatelessWidget {
                                     Icons.arrow_circle_down_outlined,
                                     color:
                                         dynamicpost.isDownVote
-                                            ? primaryColor
-                                            : Colors.white,
+                                            ? colorScheme.primary
+                                            : textTheme.bodyLarge?.color,
                                   ),
                                 ),
                               ],
@@ -397,7 +432,7 @@ class PostWidget extends StatelessWidget {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: Color.fromARGB(255, 70, 79, 87),
+                                color: colorScheme.outline.withOpacity(0.5),
                               ),
                             ),
                             padding: EdgeInsets.symmetric(
@@ -435,13 +470,13 @@ class PostWidget extends StatelessWidget {
                                   padding: EdgeInsets.zero,
                                   icon: Icon(
                                     Icons.mode_comment_outlined,
-                                    color: Colors.white,
+                                    color: textTheme.bodyLarge?.color,
                                   ),
                                 ),
                                 Text(
                                   "${post.comments}",
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: textTheme.bodyLarge?.color,
                                     fontSize: 3.w,
                                     height: 1,
                                     fontWeight: FontWeight.bold,
@@ -474,7 +509,7 @@ class PostWidget extends StatelessWidget {
                             icon: Icon(
                               Icons.analytics_outlined,
                               size: 7.w,
-                              color: primaryColor,
+                              color: colorScheme.primary,
                             ),
                           )
                           : SizedBox.shrink(),
@@ -484,7 +519,10 @@ class PostWidget extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
+            Divider(
+              color: colorScheme.outline.withOpacity(0.3),
+              thickness: 0.5,
+            ),
           ],
         ),
       ),

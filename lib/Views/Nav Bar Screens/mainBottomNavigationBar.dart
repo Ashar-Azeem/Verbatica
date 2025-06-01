@@ -29,6 +29,9 @@ class _BottomNavigationBarViewState extends State<BottomNavigationBarView> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
     return PersistentTabView(
       screenTransitionAnimation: ScreenTransitionAnimation.none(),
       tabs: [
@@ -36,35 +39,35 @@ class _BottomNavigationBarViewState extends State<BottomNavigationBarView> {
           screen: HomeView(),
           item: ItemConfig(
             icon: Icon(Icons.home),
-            activeForegroundColor: primaryColor,
+            activeForegroundColor: colorScheme.primary,
           ),
         ),
         PersistentTabConfig(
           screen: TrendingView(),
           item: ItemConfig(
             icon: Icon(Icons.trending_up),
-            activeForegroundColor: primaryColor,
+            activeForegroundColor: colorScheme.primary,
           ),
         ),
         PersistentTabConfig(
           screen: CreatePostScreen(),
           item: ItemConfig(
             icon: Icon(Icons.add_circle_outlined),
-            activeForegroundColor: primaryColor,
+            activeForegroundColor: colorScheme.primary,
           ),
         ),
         PersistentTabConfig(
           screen: NotificationScreen(),
           item: ItemConfig(
             icon: Icon(Icons.notifications_none_sharp),
-            activeForegroundColor: primaryColor,
+            activeForegroundColor: colorScheme.primary,
           ),
         ),
         PersistentTabConfig(
           screen: ProfileView(),
           item: ItemConfig(
             icon: Icon(Icons.person),
-            activeForegroundColor: primaryColor,
+            activeForegroundColor: colorScheme.primary,
           ),
         ),
       ],
@@ -74,11 +77,11 @@ class _BottomNavigationBarViewState extends State<BottomNavigationBarView> {
           navBarDecoration: NavBarDecoration(
             border: Border(
               top: BorderSide(
-                color: Colors.grey, // Your desired line color
-                width: 0.2, // Thickness of the line
+                color: colorScheme.outline.withOpacity(0.3),
+                width: 0.2,
               ),
             ),
-            color: Color.fromARGB(255, 10, 13, 15),
+            color: colorScheme.surface,
           ),
         );
       },

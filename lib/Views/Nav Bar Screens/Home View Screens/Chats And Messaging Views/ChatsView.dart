@@ -22,7 +22,16 @@ class _ChatsViewState extends State<ChatsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Chats")),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(
+        title: Text(
+          "Chats",
+          style: TextStyle(
+            color: Theme.of(context).textTheme.titleLarge?.color,
+          ),
+        ),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+      ),
       body: SingleChildScrollView(
         physics: BouncingScrollPhysics(),
         child: BlocBuilder<ChatBloc, ChatState>(
@@ -32,7 +41,7 @@ class _ChatsViewState extends State<ChatsView> {
                   padding: EdgeInsets.only(top: 40.h),
                   child: Center(
                     child: LoadingAnimationWidget.dotsTriangle(
-                      color: primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                       size: 13.w,
                     ),
                   ),
@@ -56,6 +65,7 @@ class _ChatsViewState extends State<ChatsView> {
                         child: Stack(
                           children: [
                             Card(
+                              color: Theme.of(context).cardColor,
                               child: InkWell(
                                 onTap: () {
                                   pushScreen(
@@ -80,7 +90,10 @@ class _ChatsViewState extends State<ChatsView> {
                                     children: [
                                       CircleAvatar(
                                         radius: 24,
-                                        backgroundColor: Colors.grey,
+                                        backgroundColor:
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.outline,
                                         backgroundImage: AssetImage(
                                           'assets/Avatars/avatar${otherUserData.userProfile}.jpg',
                                         ),
@@ -96,7 +109,11 @@ class _ChatsViewState extends State<ChatsView> {
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 16,
-                                                color: Colors.white,
+                                                color:
+                                                    Theme.of(context)
+                                                        .textTheme
+                                                        .titleMedium
+                                                        ?.color,
                                               ),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -105,7 +122,11 @@ class _ChatsViewState extends State<ChatsView> {
                                             Text(
                                               chat.lastMessage,
                                               style: TextStyle(
-                                                color: Colors.white,
+                                                color:
+                                                    Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium
+                                                        ?.color,
                                                 fontSize: 12,
                                                 fontWeight:
                                                     !chat.lastMessageSeenBy[context
@@ -131,7 +152,11 @@ class _ChatsViewState extends State<ChatsView> {
                                           Text(
                                             timeago.format(chat.lastUpdated),
                                             style: TextStyle(
-                                              color: Colors.grey,
+                                              color: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall
+                                                  ?.color
+                                                  ?.withOpacity(0.6),
                                               fontSize: 10,
                                             ),
                                           ),
@@ -139,7 +164,15 @@ class _ChatsViewState extends State<ChatsView> {
                                             icon: Icon(
                                               Icons.more_vert,
                                               size: 20,
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).iconTheme.color,
                                             ),
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).popupMenuTheme.color,
                                             onSelected: (String value) {
                                               if (value == "delete") {
                                                 context.read<ChatBloc>().add(
@@ -158,10 +191,24 @@ class _ChatsViewState extends State<ChatsView> {
                                                         Icon(
                                                           Icons
                                                               .delete_outline_rounded,
-                                                          color: Colors.white,
+                                                          color:
+                                                              Theme.of(
+                                                                context,
+                                                              ).iconTheme.color,
                                                         ),
                                                         SizedBox(width: 8),
-                                                        Text('Delete'),
+                                                        Text(
+                                                          'Delete',
+                                                          style: TextStyle(
+                                                            color:
+                                                                Theme.of(
+                                                                      context,
+                                                                    )
+                                                                    .textTheme
+                                                                    .bodyMedium
+                                                                    ?.color,
+                                                          ),
+                                                        ),
                                                       ],
                                                     ),
                                                   ),
@@ -184,7 +231,7 @@ class _ChatsViewState extends State<ChatsView> {
                                 left: 2.5.w,
                                 child: Icon(
                                   Icons.circle,
-                                  color: primaryColor,
+                                  color: Theme.of(context).colorScheme.primary,
                                   size: 2.w,
                                 ),
                               ),
