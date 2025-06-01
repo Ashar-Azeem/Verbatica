@@ -8,7 +8,6 @@ import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/Home/home_bloc.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/Chats%20And%20Messaging%20Views/ChatsView.dart';
 import 'package:verbatica/model/Post.dart';
 
@@ -31,7 +30,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -100,12 +98,14 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                           BlocBuilder<HomeBloc, HomeState>(
                             builder: (context, state) {
                               return TabBar(
-                                indicatorColor: colorScheme.primary,
-                                labelColor: colorScheme.primary,
-                                unselectedLabelColor: textTheme
-                                    .bodyMedium
-                                    ?.color
-                                    ?.withOpacity(0.6),
+                                dividerColor: Theme.of(context).dividerColor,
+                                indicatorColor:
+                                    Theme.of(context).colorScheme.primary,
+                                labelColor:
+                                    Theme.of(context).colorScheme.primary,
+                                unselectedLabelColor:
+                                    Theme.of(context).colorScheme.secondary,
+
                                 onTap: (value) {
                                   //Only Called once
                                   if (value == 1 && state.following.isEmpty) {

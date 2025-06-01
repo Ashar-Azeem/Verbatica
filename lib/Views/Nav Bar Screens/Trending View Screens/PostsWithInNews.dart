@@ -48,7 +48,6 @@ class _PostsWithInNewsState extends State<PostsWithInNews> {
                   news.title,
                   style: const TextStyle(
                     fontSize: 16,
-                    color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

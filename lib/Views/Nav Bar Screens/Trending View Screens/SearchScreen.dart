@@ -5,7 +5,6 @@ import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Search%20Bloc/search_bloc.dart';
 import 'package:verbatica/UI_Components/Search%20Componenets/SearchedPostUI.dart';
 import 'package:verbatica/UI_Components/Search%20Componenets/SearchedUserUI.dart';
-import 'package:verbatica/Utilities/Color.dart';
 
 class SearchView extends StatefulWidget {
   const SearchView({super.key});
@@ -40,6 +39,7 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -89,7 +89,9 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                           TextStyle(color: textTheme.bodyLarge?.color),
                         ),
                         backgroundColor: WidgetStatePropertyAll<Color>(
-                          colorScheme.surfaceVariant,
+                          isDarkMode
+                              ? const Color(0xFF27343D)
+                              : const Color.fromARGB(255, 227, 227, 227),
                         ),
                         controller: controller,
                         padding: const WidgetStatePropertyAll<EdgeInsets>(
@@ -136,7 +138,7 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                   unselectedLabelColor: textTheme.bodyMedium?.color
                       ?.withOpacity(0.7),
                   indicatorColor: colorScheme.primary,
-                  dividerColor: colorScheme.outline.withOpacity(0.2),
+                  dividerColor: Theme.of(context).dividerColor,
                   tabs: [Tab(text: "Users"), Tab(text: "Discussions")],
                 ),
                 Expanded(

@@ -38,20 +38,9 @@ class PrivacyPolicyContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Theme.of(context).colorScheme.surface,
-            isDarkMode
-                ? const Color(0xFF0A101D)
-                : Theme.of(context).colorScheme.surface.withOpacity(0.8),
-          ],
-        ),
+        color: Theme.of(context).scaffoldBackgroundColor,
       ),
       child: ListView(
         padding: const EdgeInsets.all(20),
@@ -241,7 +230,7 @@ class PrivacyPolicyContent extends StatelessWidget {
             Text(
               'Last Updated: May 20, 2025',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                color: Theme.of(context).textTheme.bodyLarge?.color,
                 fontSize: 12,
               ),
             ),

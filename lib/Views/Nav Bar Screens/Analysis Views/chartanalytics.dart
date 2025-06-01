@@ -2,7 +2,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:sizer/sizer.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/chartanalyticsDetail.dart';
 import 'package:verbatica/model/Post.dart';
 
@@ -96,7 +95,7 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
     final textColor = textTheme.bodyLarge?.color ?? colorScheme.onSurface;
     final secondaryTextColor =
         textTheme.bodyMedium?.color ?? colorScheme.onSurfaceVariant;
-    final dividerColor = colorScheme.outline.withOpacity(0.2);
+    final dividerColor = theme.dividerColor;
     final listItemColor =
         isDarkMode
             ? colorScheme.surface.withOpacity(0.8)
@@ -107,16 +106,11 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
       appBar: AppBar(
         title: Text(
           'Cluster Analytics',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-            color: colorScheme.onSurface,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5),
         ),
         centerTitle: true,
         backgroundColor: containerColor,
         elevation: 0,
-        iconTheme: IconThemeData(color: colorScheme.onSurface),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
         ),
@@ -171,7 +165,7 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
                                   Text(
                                     'Total Comments',
                                     style: TextStyle(
-                                      color: textColor?.withOpacity(0.9),
+                                      color: textColor.withOpacity(0.9),
                                       fontSize: 16,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -638,7 +632,7 @@ class _ClusterBadge extends StatelessWidget {
                     title,
                     style: TextStyle(
                       fontSize: isTouched ? 10 : 8,
-                      color: colorScheme.onSurfaceVariant,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                       fontWeight: FontWeight.w500,
                     ),
                     textAlign: TextAlign.center,

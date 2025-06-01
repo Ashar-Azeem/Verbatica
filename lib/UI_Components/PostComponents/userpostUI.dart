@@ -9,7 +9,6 @@ import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/SummaryView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/ProfileView.dart';
@@ -570,10 +569,9 @@ class UserPostWidget extends StatelessWidget {
                                                   ? Theme.of(
                                                     context,
                                                   ).colorScheme.primary
-                                                  : Theme.of(context)
-                                                      .iconTheme
-                                                      .color
-                                                      ?.withOpacity(0.6),
+                                                  : Theme.of(
+                                                    context,
+                                                  ).colorScheme.secondary,
                                         ),
                                       ),
                                       Text(
@@ -582,7 +580,7 @@ class UserPostWidget extends StatelessWidget {
                                           color:
                                               Theme.of(
                                                 context,
-                                              ).textTheme.bodyMedium?.color,
+                                              ).colorScheme.secondary,
                                           fontSize: 3.w,
                                           height: 1,
                                           fontWeight: FontWeight.bold,
@@ -623,7 +621,7 @@ class UserPostWidget extends StatelessWidget {
                                             ).colorScheme.primary
                                             : Theme.of(
                                               context,
-                                            ).iconTheme.color?.withOpacity(0.6),
+                                            ).colorScheme.secondary,
                                   ),
                                 ),
                               ],
@@ -674,16 +672,15 @@ class UserPostWidget extends StatelessWidget {
                                   padding: EdgeInsets.zero,
                                   icon: Icon(
                                     Icons.mode_comment_outlined,
-                                    color: Theme.of(context).iconTheme.color,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
                                   ),
                                 ),
                                 Text(
                                   "${post.comments}",
                                   style: TextStyle(
                                     color:
-                                        Theme.of(
-                                          context,
-                                        ).textTheme.bodyMedium?.color,
+                                        Theme.of(context).colorScheme.secondary,
                                     fontSize: 3.w,
                                     height: 1,
                                     fontWeight: FontWeight.bold,

@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/countrychart.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/emotional.dart';
 
@@ -231,7 +230,6 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final textTheme = theme.textTheme;
     final containerColor = colorScheme.surface;
     final value = _random.nextDouble() * 30 + 10;
     final countryChartData = _generateCountryData();
@@ -239,19 +237,13 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        title: Text(
-          'Cluster Analytics',
-          style: TextStyle(
-            color: textTheme.titleLarge?.color ?? colorScheme.onSurface,
-          ),
-        ),
+        title: Text('Cluster Analytics', style: TextStyle()),
         centerTitle: true,
         backgroundColor: containerColor,
         elevation: 0,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
         ),
-        iconTheme: IconThemeData(color: colorScheme.onSurface),
       ),
       body: FadeTransition(
         opacity: _fadeAnimation,

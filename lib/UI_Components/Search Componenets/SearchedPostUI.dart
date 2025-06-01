@@ -36,7 +36,7 @@ class SearchedPost extends StatelessWidget {
 
         child: Column(
           children: [
-            Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
+            Divider(thickness: 0.5, color: Theme.of(context).dividerColor),
             SizedBox(
               height: 5.5.h,
               child: Padding(
@@ -66,12 +66,20 @@ class SearchedPost extends StatelessWidget {
                           children: [
                             Text(
                               post.name,
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).textTheme.bodyLarge?.color,
+                              ),
                             ),
                             Text(
                               timeago.format(post.uploadTime),
                               style: TextStyle(
-                                color: Colors.white,
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).textTheme.bodyLarge?.color,
                                 fontSize: 2.w,
                               ),
                             ),
@@ -139,7 +147,7 @@ class SearchedPost extends StatelessWidget {
                         },
                         itemBuilder:
                             (BuildContext context) => <PopupMenuEntry<String>>[
-                              const PopupMenuItem<String>(
+                              PopupMenuItem<String>(
                                 value: 'report',
                                 child: Row(
                                   mainAxisAlignment:
@@ -147,33 +155,72 @@ class SearchedPost extends StatelessWidget {
                                   children: [
                                     Icon(
                                       Icons.report_gmailerrorred,
-                                      color: Colors.white,
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).textTheme.bodyLarge?.color,
                                     ),
 
-                                    Text('Report'),
+                                    Text(
+                                      'Report',
+                                      style: TextStyle(
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.bodyLarge?.color,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-                              const PopupMenuItem<String>(
+                              PopupMenuItem<String>(
                                 value: 'save',
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: [
-                                    Icon(Icons.save, color: Colors.white),
-                                    Text('Save'),
+                                    Icon(
+                                      Icons.save,
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).textTheme.bodyLarge?.color,
+                                    ),
+                                    Text(
+                                      'Save',
+                                      style: TextStyle(
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.bodyLarge?.color,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
 
-                              const PopupMenuItem<String>(
+                              PopupMenuItem<String>(
                                 value: 'share',
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: [
-                                    Icon(Icons.share, color: Colors.white),
-                                    Text('Share'),
+                                    Icon(
+                                      Icons.share,
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).textTheme.bodyLarge?.color,
+                                    ),
+                                    Text(
+                                      'Share',
+                                      style: TextStyle(
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.bodyLarge?.color,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -184,7 +231,7 @@ class SearchedPost extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
+            Divider(thickness: 0.5, color: Theme.of(context).dividerColor),
             //Content, title, image or video
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -194,8 +241,8 @@ class SearchedPost extends StatelessWidget {
                   padding: EdgeInsets.only(left: 1.w),
                   child: Text(
                     post.title,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -214,7 +261,10 @@ class SearchedPost extends StatelessWidget {
                     collapseText: 'show less',
                     linkEllipsis: false,
                     maxLines: 2,
-                    style: const TextStyle(fontSize: 15, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    ),
 
                     linkColor: primaryColor,
                   ),
@@ -294,7 +344,7 @@ class SearchedPost extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: Color.fromARGB(255, 70, 79, 87),
+                            color: Theme.of(context).dividerColor,
                           ),
                         ),
                         padding: EdgeInsets.symmetric(
@@ -326,14 +376,19 @@ class SearchedPost extends StatelessWidget {
                                           color:
                                               dynamicpost.isUpVote
                                                   ? primaryColor
-                                                  : Colors.white,
+                                                  : Theme.of(
+                                                    context,
+                                                  ).colorScheme.secondary,
                                         ),
                                       ),
 
                                       Text(
                                         "${dynamicpost.upvotes - dynamicpost.downvotes}",
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).textTheme.bodyLarge?.color,
                                           fontSize: 3.w,
                                           height: 1,
                                           fontWeight: FontWeight.bold,
@@ -346,7 +401,7 @@ class SearchedPost extends StatelessWidget {
                                 Container(
                                   width: 1,
                                   height: 6.h,
-                                  color: Color.fromARGB(255, 70, 79, 87),
+                                  color: Theme.of(context).dividerColor,
                                 ),
 
                                 IconButton(
@@ -366,7 +421,9 @@ class SearchedPost extends StatelessWidget {
                                     color:
                                         dynamicpost.isDownVote
                                             ? primaryColor
-                                            : Colors.white,
+                                            : Theme.of(
+                                              context,
+                                            ).colorScheme.secondary,
                                   ),
                                 ),
                               ],
@@ -381,7 +438,7 @@ class SearchedPost extends StatelessWidget {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: Color.fromARGB(255, 70, 79, 87),
+                                color: Theme.of(context).dividerColor,
                               ),
                             ),
                             padding: EdgeInsets.symmetric(
@@ -419,13 +476,17 @@ class SearchedPost extends StatelessWidget {
                                   padding: EdgeInsets.zero,
                                   icon: Icon(
                                     Icons.mode_comment_outlined,
-                                    color: Colors.white,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
                                   ),
                                 ),
                                 Text(
                                   "${post.comments}",
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color:
+                                        Theme.of(
+                                          context,
+                                        ).textTheme.bodyLarge?.color,
                                     fontSize: 3.w,
                                     height: 1,
                                     fontWeight: FontWeight.bold,
@@ -468,7 +529,11 @@ class SearchedPost extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
+            Divider(
+              thickness: 0.5,
+              color: Theme.of(context).dividerColor,
+              height: 8,
+            ),
           ],
         ),
       ),

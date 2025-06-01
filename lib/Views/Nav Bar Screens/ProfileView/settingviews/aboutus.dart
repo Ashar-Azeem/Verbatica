@@ -6,8 +6,6 @@ class AboutUsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       appBar: AppBar(title: const Text('About Us'), elevation: 0),
       body: SingleChildScrollView(
@@ -174,9 +172,7 @@ class AboutUsScreen extends StatelessWidget {
                 '© ${DateTime.now().year} Verbatica. All rights reserved.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                   fontSize: 12,
                 ),
               ),

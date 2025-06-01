@@ -96,6 +96,8 @@ class _ProfileViewState extends State<ProfileView>
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       body: DefaultTabController(
         length: 3,
@@ -136,12 +138,15 @@ class _ProfileViewState extends State<ProfileView>
                                         left: 2.w,
                                         bottom: 2.w,
                                       ),
-                                      color: const Color.fromARGB(
-                                        255,
-                                        10,
-                                        13,
-                                        15,
-                                      ),
+                                      color:
+                                          isDarkMode
+                                              ? const Color.fromARGB(
+                                                255,
+                                                10,
+                                                13,
+                                                15,
+                                              )
+                                              : Colors.white,
                                       height: 20.h,
                                       child: Row(
                                         mainAxisAlignment:
@@ -159,7 +164,10 @@ class _ProfileViewState extends State<ProfileView>
                                             child: Text(
                                               state.user.username,
                                               style: TextStyle(
-                                                color: Colors.white,
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).colorScheme.secondary,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 4.w,
                                               ),
@@ -171,7 +179,10 @@ class _ProfileViewState extends State<ProfileView>
                                               Icons.settings,
                                               size: 5.w,
                                             ),
-                                            color: Colors.white,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.secondary,
                                             onPressed: () {
                                               pushScreen(
                                                 context,
@@ -371,7 +382,7 @@ class _ProfileViewState extends State<ProfileView>
                               Theme.of(context).colorScheme.primary,
                               Theme.of(
                                 context,
-                              ).colorScheme.primary.withOpacity(0.7),
+                              ).colorScheme.primary.withOpacity(0.4),
                             ],
                             stops: [0.4, 1.0],
                           ),

@@ -14,7 +14,7 @@ import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/BLOC/summary/summary_bloc.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/theme_provider.dart';
-import 'package:verbatica/Views/Nav%20Bar%20Screens/mainBottomNavigationBar.dart'; // <-- Added
+import 'package:verbatica/Views/Nav%20Bar%20Screens/mainBottomNavigationBar.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,7 +51,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
-
     return Sizer(
       builder: (context, orientation, screenType) {
         return MaterialApp(
@@ -61,10 +60,22 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             brightness: Brightness.light,
             primaryColor: Colors.white,
-            scaffoldBackgroundColor: const Color(0xFFF6F6F6),
-            appBarTheme: const AppBarTheme(backgroundColor: Colors.white),
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 40, 188, 242),
+            dividerColor: const Color.fromARGB(255, 181, 181, 181),
+
+            scaffoldBackgroundColor: Colors.white,
+            appBarTheme: const AppBarTheme(
+              backgroundColor: Color.fromARGB(255, 246, 245, 245),
+              foregroundColor: Colors.black,
+            ),
+            colorScheme: ColorScheme(
+              primary: const Color.fromARGB(255, 102, 161, 221),
+              onPrimary: const Color.fromARGB(255, 255, 255, 255),
+              secondary: const Color.fromARGB(255, 106, 106, 106),
+              onSecondary: Colors.orange,
+              error: const Color.fromARGB(255, 252, 17, 0),
+              onError: Colors.white,
+              surface: const Color.fromARGB(255, 227, 227, 227),
+              onSurface: const Color.fromARGB(255, 208, 207, 207),
               brightness: Brightness.light,
             ),
             elevatedButtonTheme: ElevatedButtonThemeData(
@@ -84,9 +95,17 @@ class MyApp extends StatelessWidget {
             useMaterial3: true,
           ),
           darkTheme: ThemeData(
+            dividerColor: Color.fromARGB(255, 41, 54, 61),
             primaryColor: Colors.white,
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 40, 188, 242),
+            colorScheme: ColorScheme(
+              primary: primaryColor,
+              onPrimary: Colors.white,
+              secondary: Colors.white,
+              onSecondary: Colors.white,
+              error: const Color.fromARGB(255, 252, 17, 0),
+              onError: Colors.white,
+              surface: Color(0xFF0F1417),
+              onSurface: Colors.white,
               brightness: Brightness.dark,
             ),
             appBarTheme: const AppBarTheme(backgroundColor: Color(0xFF0F1417)),

@@ -8,7 +8,6 @@ import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/otherprofile.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Trending%20View%20Screens/TrendingViewDiscussion.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/clusterScreen.dart';
@@ -310,7 +309,7 @@ class TrendingPostWidget extends StatelessWidget {
                         height: 5.h,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: colorScheme.outline),
+                          border: Border.all(color: theme.dividerColor),
                         ),
                         padding: EdgeInsets.symmetric(
                           horizontal: 0.5.w,
@@ -357,14 +356,14 @@ class TrendingPostWidget extends StatelessWidget {
                                           color:
                                               dynamicpost.isUpVote
                                                   ? colorScheme.primary
-                                                  : textTheme.bodyLarge?.color,
+                                                  : colorScheme.secondary,
                                         ),
                                       ),
 
                                       Text(
                                         "${dynamicpost.upvotes - dynamicpost.downvotes}",
                                         style: TextStyle(
-                                          color: textTheme.bodyLarge?.color,
+                                          color: colorScheme.secondary,
                                           fontSize: 3.w,
                                           height: 1,
                                           fontWeight: FontWeight.bold,
@@ -376,8 +375,8 @@ class TrendingPostWidget extends StatelessWidget {
                                 ),
                                 Container(
                                   width: 1,
-                                  height: 6.h,
-                                  color: colorScheme.outline,
+                                  height: 5.h,
+                                  color: theme.dividerColor,
                                 ),
                                 IconButton(
                                   splashColor: Colors.transparent,
@@ -409,7 +408,7 @@ class TrendingPostWidget extends StatelessWidget {
                                     color:
                                         dynamicpost.isDownVote
                                             ? colorScheme.primary
-                                            : textTheme.bodyLarge?.color,
+                                            : colorScheme.secondary,
                                   ),
                                 ),
                               ],
@@ -423,7 +422,7 @@ class TrendingPostWidget extends StatelessWidget {
                             height: 5.h,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: colorScheme.outline),
+                              border: Border.all(color: theme.dividerColor),
                             ),
                             padding: EdgeInsets.symmetric(
                               horizontal: 0.5.w,
@@ -464,13 +463,13 @@ class TrendingPostWidget extends StatelessWidget {
                                   padding: EdgeInsets.zero,
                                   icon: Icon(
                                     Icons.mode_comment_outlined,
-                                    color: textTheme.bodyLarge?.color,
+                                    color: colorScheme.secondary,
                                   ),
                                 ),
                                 Text(
                                   "${post.comments}",
                                   style: TextStyle(
-                                    color: textTheme.bodyLarge?.color,
+                                    color: colorScheme.secondary,
                                     fontSize: 3.w,
                                     height: 1,
                                     fontWeight: FontWeight.bold,
@@ -513,7 +512,7 @@ class TrendingPostWidget extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(color: theme.dividerColor, thickness: 0.5),
+            Divider(color: theme.dividerColor, thickness: 0.5, height: 8),
           ],
         ),
       ),

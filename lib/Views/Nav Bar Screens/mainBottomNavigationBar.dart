@@ -5,7 +5,6 @@ import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart' show UserBloc;
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart' show UpdateUser;
 import 'package:verbatica/DummyData/UserDummyData.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/AddPostView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/HomeView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/NotificationView.dart';
@@ -81,7 +80,7 @@ class _BottomNavigationBarViewState extends State<BottomNavigationBarView> {
                 width: 0.2,
               ),
             ),
-            color: colorScheme.surface,
+            color: theme.scaffoldBackgroundColor,
           ),
         );
       },

@@ -5,7 +5,6 @@ import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_state.dart';
 import 'package:verbatica/UI_Components/PostComponents/otheruserpostui.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:shimmer/shimmer.dart';
@@ -147,6 +146,8 @@ class _ProfileViewState extends State<otherProfileView>
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: DefaultTabController(
@@ -187,7 +188,10 @@ class _ProfileViewState extends State<otherProfileView>
                                         left: 2.w,
                                         bottom: 2.w,
                                       ),
-                                      color: Color.fromARGB(255, 10, 13, 15),
+                                      color:
+                                          isDarkMode
+                                              ? Color.fromARGB(255, 10, 13, 15)
+                                              : Colors.white,
                                       height: 20.h,
                                       child: Row(
                                         mainAxisAlignment:
@@ -206,7 +210,10 @@ class _ProfileViewState extends State<otherProfileView>
                                             child: Text(
                                               widget.post.name,
                                               style: TextStyle(
-                                                color: Colors.white,
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).colorScheme.secondary,
                                                 fontWeight: FontWeight.bold,
                                                 fontSize: 4.w,
                                               ),
@@ -219,7 +226,10 @@ class _ProfileViewState extends State<otherProfileView>
                                               Icons.message,
                                               size: 5.w,
                                             ),
-                                            color: primaryColor,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.secondary,
                                             onPressed: () {},
                                           ),
                                         ],
@@ -405,6 +415,8 @@ class _ProfileViewState extends State<otherProfileView>
   }
 
   Widget _buildProfileHeader(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     // This is the expanded profile header view
     return ValueListenableBuilder<double>(
       valueListenable: _scrollNotifier,
@@ -426,9 +438,7 @@ class _ProfileViewState extends State<otherProfileView>
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              Theme.of(
-                                context,
-                              ).colorScheme.primary.withOpacity(0.8),
+                              Theme.of(context).colorScheme.primary,
                               Theme.of(
                                 context,
                               ).colorScheme.primary.withOpacity(0.4),
@@ -659,9 +669,10 @@ class _ProfileViewState extends State<otherProfileView>
                                                     onPressed: () {},
                                                     style: ElevatedButton.styleFrom(
                                                       backgroundColor:
-                                                          Theme.of(
-                                                            context,
-                                                          ).colorScheme.surface,
+                                                          isDarkMode
+                                                              ? Colors.grey[600]
+                                                              : Colors
+                                                                  .grey[400],
                                                       foregroundColor:
                                                           Theme.of(context)
                                                               .textTheme

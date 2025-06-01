@@ -8,7 +8,6 @@ import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
 import 'package:verbatica/UI_Components/TrendingPostComponents/TrendingPost.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Trending%20View%20Screens/News.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Trending%20View%20Screens/SearchScreen.dart';
 import 'package:verbatica/model/Post.dart';
@@ -30,6 +29,7 @@ class _TrendingViewState extends State<TrendingView> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: DefaultTabController(
@@ -57,9 +57,14 @@ class _TrendingViewState extends State<TrendingView> {
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
-                                    Theme.of(
-                                      context,
-                                    ).colorScheme.surfaceContainer,
+                                    isDarkMode
+                                        ? const Color(0xFF27343D)
+                                        : const Color.fromARGB(
+                                          255,
+                                          227,
+                                          227,
+                                          227,
+                                        ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(50),
                                 ),
@@ -77,9 +82,7 @@ class _TrendingViewState extends State<TrendingView> {
                                   Icon(
                                     Icons.search,
                                     color:
-                                        Theme.of(
-                                          context,
-                                        ).colorScheme.onSurfaceVariant,
+                                        Theme.of(context).colorScheme.secondary,
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 17),
@@ -103,13 +106,15 @@ class _TrendingViewState extends State<TrendingView> {
                           BlocBuilder<TrendingViewBloc, TrendingViewState>(
                             builder: (context, state) {
                               return TabBar(
+                                dividerColor: Theme.of(context).dividerColor,
+
                                 indicatorColor:
                                     Theme.of(context).colorScheme.primary,
                                 labelColor:
                                     Theme.of(context).colorScheme.primary,
-                                unselectedLabelColor: Theme.of(
-                                  context,
-                                ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                                unselectedLabelColor:
+                                    Theme.of(context).colorScheme.secondary,
+
                                 onTap: (value) {
                                   //Only Called once
                                   if (value == 1 && state.news.isEmpty) {

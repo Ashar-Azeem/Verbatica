@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'dart:async';
-
 import 'package:sizer/sizer.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/ErrorSnackBar.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/mainBottomNavigationBar.dart';
 

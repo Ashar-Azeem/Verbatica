@@ -8,7 +8,6 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/LOGIN%20AND%20REGISTRATION/login_registeration_bloc.dart';
 import 'package:verbatica/Utilities/Captcha/captcha.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/ErrorSnackBar.dart';
 import 'package:verbatica/Views/Authentication%20Screens/EmailVerification.dart';
 import 'package:verbatica/Views/Authentication%20Screens/login.dart'

@@ -41,44 +41,35 @@ class SummaryScreen extends StatelessWidget {
         ),
         elevation: 0,
         centerTitle: true,
-        backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         iconTheme: IconThemeData(
           color: Theme.of(context).colorScheme.onPrimary,
         ),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
+        ),
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).colorScheme.primary.withOpacity(0.05),
-              Colors.transparent,
-            ],
-          ),
-        ),
-        child: BlocBuilder<SummaryBloc, SummaryState>(
-          builder: (context, state) {
-            // Handle error state
-            if (state is SummaryError) {
-              return _buildErrorState(context, state.message);
-            }
+      body: BlocBuilder<SummaryBloc, SummaryState>(
+        builder: (context, state) {
+          // Handle error state
+          if (state is SummaryError) {
+            return _buildErrorState(context, state.message);
+          }
 
-            // Handle loading state
-            if (state is SummaryLoading || state is ClusterDetailsLoading) {
-              return _buildLoadingState(context);
-            }
+          // Handle loading state
+          if (state is SummaryLoading || state is ClusterDetailsLoading) {
+            return _buildLoadingState(context);
+          }
 
-            // Handle loaded states
-            return Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 12.0,
-              ),
-              child: _buildMainContent(context, state),
-            );
-          },
-        ),
+          // Handle loaded states
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 12.0,
+            ),
+            child: _buildMainContent(context, state),
+          );
+        },
       ),
     );
   }

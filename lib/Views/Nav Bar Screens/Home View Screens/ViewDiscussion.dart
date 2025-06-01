@@ -74,6 +74,8 @@ class _ViewDiscussionState extends State<ViewDiscussion>
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return BlocProvider(
       create: (context) => CommentsBloc(postId: widget.post.id),
       child: Scaffold(
@@ -108,7 +110,7 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                 child: Icon(
                                   Icons.arrow_back,
                                   color:
-                                      Theme.of(context).colorScheme.onSurface,
+                                      Theme.of(context).colorScheme.secondary,
                                   size: 5.w,
                                 ),
                               ),
@@ -220,7 +222,15 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                               ? Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(6),
-                                  color: Theme.of(context).cardColor,
+                                  color:
+                                      isDarkMode
+                                          ? const Color(0xFF27343D)
+                                          : const Color.fromARGB(
+                                            255,
+                                            227,
+                                            227,
+                                            227,
+                                          ),
                                 ),
                                 alignment: Alignment.center,
                                 width: 90.w,
@@ -257,7 +267,7 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                             color:
                                                 Theme.of(
                                                   context,
-                                                ).colorScheme.onSurface,
+                                                ).colorScheme.secondary,
                                           ),
                                         ),
                                       ],
@@ -292,7 +302,15 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                           Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.w),
-                              color: Theme.of(context).cardColor,
+                              color:
+                                  isDarkMode
+                                      ? const Color(0xFF27343D)
+                                      : const Color.fromARGB(
+                                        255,
+                                        227,
+                                        227,
+                                        227,
+                                      ),
                             ),
                             alignment: Alignment.center,
                             width: 96.w,

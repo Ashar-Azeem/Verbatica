@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/model/comment.dart';
 
 class SingleCommentUI extends StatefulWidget {
@@ -36,13 +35,6 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).shadowColor.withOpacity(0.15),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),

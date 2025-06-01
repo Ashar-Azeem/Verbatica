@@ -29,9 +29,7 @@ class UserReportsScreen extends StatelessWidget {
                     Icon(
                       Icons.description_outlined,
                       size: 80,
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -160,9 +158,7 @@ class UserReportsScreen extends StatelessWidget {
                   children: [
                     Icon(
                       typeIcon,
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withOpacity(0.7),
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -181,9 +177,7 @@ class UserReportsScreen extends StatelessWidget {
                   child: Text(
                     timeAgoText,
                     style: TextStyle(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                       fontSize: 12,
                     ),
                   ),
@@ -197,7 +191,7 @@ class UserReportsScreen extends StatelessWidget {
             Text(
               'Reason:',
               style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                color: Theme.of(context).textTheme.bodyLarge?.color,
                 fontWeight: FontWeight.w500,
                 fontSize: 14,
               ),
@@ -219,9 +213,7 @@ class UserReportsScreen extends StatelessWidget {
                 Text(
                   'Status: ',
                   style: TextStyle(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withOpacity(0.7),
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
                     fontSize: 14,
                   ),
                 ),

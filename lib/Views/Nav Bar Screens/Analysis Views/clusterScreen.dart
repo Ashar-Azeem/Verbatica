@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/comments_cluster/comment_cluster_bloc.dart';
 import 'package:verbatica/UI_Components/singlecomment.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/chartanalytics.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/comment.dart';
@@ -92,16 +91,15 @@ class _ClusterscreenState extends State<Clusterscreen>
 
   Widget _buildTabBar() {
     return Container(
-      decoration: BoxDecoration(color: Theme.of(context).cardColor),
+      color: Theme.of(context).scaffoldBackgroundColor,
       child: TabBar(
         controller: _tabController,
         isScrollable: true,
+        dividerColor: Theme.of(context).dividerColor,
         indicatorColor: Theme.of(context).colorScheme.primary,
         indicatorWeight: 3,
         labelColor: Theme.of(context).colorScheme.primary,
-        unselectedLabelColor: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+        unselectedLabelColor: Theme.of(context).colorScheme.secondary,
         labelStyle: const TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 14,

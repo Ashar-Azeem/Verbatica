@@ -11,7 +11,6 @@ import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_state.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/SummaryView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/clusterScreen.dart';
@@ -296,7 +295,9 @@ class OtherUserPostWidget extends StatelessWidget {
                         height: 5.h,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: theme.dividerColor),
+                          border: Border.all(
+                            color: Theme.of(context).dividerColor,
+                          ),
                         ),
                         padding: EdgeInsets.symmetric(
                           horizontal: 0.5.w,
@@ -332,15 +333,13 @@ class OtherUserPostWidget extends StatelessWidget {
                                           color:
                                               dynamicpost.isUpVote
                                                   ? theme.colorScheme.primary
-                                                  : theme.iconTheme.color
-                                                      ?.withOpacity(0.6),
+                                                  : theme.colorScheme.secondary,
                                         ),
                                       ),
                                       Text(
                                         "${dynamicpost.upvotes - dynamicpost.downvotes}",
                                         style: TextStyle(
-                                          color:
-                                              theme.textTheme.bodyLarge?.color,
+                                          color: theme.colorScheme.secondary,
                                           fontSize: 3.w,
                                           height: 1,
                                           fontWeight: FontWeight.bold,
@@ -370,8 +369,7 @@ class OtherUserPostWidget extends StatelessWidget {
                                     color:
                                         dynamicpost.isDownVote
                                             ? theme.colorScheme.primary
-                                            : theme.iconTheme.color
-                                                ?.withOpacity(0.6),
+                                            : theme.colorScheme.secondary,
                                   ),
                                 ),
                               ],
@@ -385,7 +383,9 @@ class OtherUserPostWidget extends StatelessWidget {
                             height: 5.h,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: theme.dividerColor),
+                              border: Border.all(
+                                color: Theme.of(context).dividerColor,
+                              ),
                             ),
                             padding: EdgeInsets.symmetric(
                               horizontal: 0.5.w,
@@ -423,13 +423,13 @@ class OtherUserPostWidget extends StatelessWidget {
                                   padding: EdgeInsets.zero,
                                   icon: Icon(
                                     Icons.mode_comment_outlined,
-                                    color: theme.iconTheme.color,
+                                    color: theme.colorScheme.secondary,
                                   ),
                                 ),
                                 Text(
                                   "${post.comments}",
                                   style: TextStyle(
-                                    color: theme.textTheme.bodyLarge?.color,
+                                    color: theme.colorScheme.secondary,
                                     fontSize: 3.w,
                                     height: 1,
                                     fontWeight: FontWeight.bold,

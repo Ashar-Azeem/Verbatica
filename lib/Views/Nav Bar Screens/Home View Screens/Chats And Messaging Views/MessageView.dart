@@ -9,7 +9,6 @@ import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/Messages%20Bloc/messages_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/model/Chat.dart';
 
 class MessageView extends StatefulWidget {
@@ -47,6 +46,7 @@ class _MessageViewState extends State<MessageView> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     OtherUserInfo otherUser = chat.getOtherUserInfo(
       context.read<UserBloc>().state.user.userId,
@@ -109,7 +109,7 @@ class _MessageViewState extends State<MessageView> {
                     },
                     repliedMessageConfig: RepliedMessageConfiguration(
                       repliedMsgAutoScrollConfig: RepliedMsgAutoScrollConfig(
-                        highlightColor: theme.colorScheme.secondary,
+                        highlightColor: Colors.purpleAccent,
                       ),
                       opacity: 1,
                       textStyle: TextStyle(
@@ -118,7 +118,7 @@ class _MessageViewState extends State<MessageView> {
                       replyTitleTextStyle: TextStyle(
                         color: theme.textTheme.titleMedium?.color,
                       ),
-                      backgroundColor: theme.colorScheme.primaryContainer,
+                      backgroundColor: const Color.fromARGB(255, 113, 180, 235),
                     ),
                     swipeToReplyConfig: SwipeToReplyConfiguration(
                       onLeftSwipe: (message, sentBy) {
@@ -200,7 +200,12 @@ class _MessageViewState extends State<MessageView> {
                       defaultSendButtonColor: theme.colorScheme.primary,
                       replyTitleColor: theme.colorScheme.primary,
                       replyDialogColor: theme.dialogBackgroundColor,
+                      textFieldBackgroundColor:
+                          isDarkMode ? Colors.white : Colors.grey[600],
                       textFieldConfig: TextFieldConfiguration(
+                        hintStyle: TextStyle(
+                          color: isDarkMode ? Colors.black : Colors.white,
+                        ),
                         borderRadius: BorderRadius.circular(30),
                         padding: EdgeInsets.all(0.4.w),
                         contentPadding: EdgeInsets.only(
@@ -209,7 +214,7 @@ class _MessageViewState extends State<MessageView> {
                           bottom: 1.w,
                         ),
                         textStyle: TextStyle(
-                          color: theme.textTheme.bodyLarge?.color,
+                          color: isDarkMode ? Colors.black : Colors.white,
                         ),
                       ),
                     ),
@@ -227,16 +232,8 @@ class _MessageViewState extends State<MessageView> {
                         textStyle: TextStyle(color: Colors.white),
                       ),
                       inComingChatBubbleConfig: ChatBubble(
-                        textStyle: TextStyle(
-                          color:
-                              theme.brightness == Brightness.dark
-                                  ? Colors.white
-                                  : Colors.black.withOpacity(0.8),
-                        ),
-                        color:
-                            theme.brightness == Brightness.dark
-                                ? theme.colorScheme.surfaceContainerHighest
-                                : theme.colorScheme.surfaceContainerHigh,
+                        textStyle: TextStyle(color: Colors.white),
+                        color: Colors.grey,
                         onMessageRead: (message) {
                           if (message.id == state.lastMessage!.id) {
                             message.setStatus = MessageStatus.read;
@@ -252,10 +249,8 @@ class _MessageViewState extends State<MessageView> {
                       backArrowColor:
                           theme.appBarTheme.iconTheme?.color ??
                           theme.iconTheme.color,
-                      elevation: 2,
-                      backGroundColor:
-                          theme.appBarTheme.backgroundColor ??
-                          theme.primaryColor,
+                      elevation: 0,
+                      backGroundColor: theme.scaffoldBackgroundColor,
                       chatTitle: otherUser.userName,
                       chatTitleTextStyle: TextStyle(
                         color:

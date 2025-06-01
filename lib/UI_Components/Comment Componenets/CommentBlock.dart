@@ -6,7 +6,6 @@ import 'package:sizer/sizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:verbatica/BLOC/Comments%20Bloc/comments_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/model/comment.dart';
 
 class CommentsBlock extends StatelessWidget {

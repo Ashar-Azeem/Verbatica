@@ -7,7 +7,6 @@ import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_bloc.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_event.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/model/Post.dart';
 
 class CreatePostScreen extends StatefulWidget {
@@ -231,6 +230,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
+
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -485,7 +485,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       Text(
                         'Add Content',
                         style: TextStyle(
-                          color: Theme.of(context).textTheme.titleMedium?.color,
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.color?.withOpacity(0.6),
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -523,10 +525,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           Text(
                             'Post Type:',
                             style: TextStyle(
-                              color:
-                                  Theme.of(
-                                    context,
-                                  ).textTheme.titleMedium?.color,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.color?.withOpacity(0.6),
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -540,16 +541,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                     polarity == ''
                                         ? Theme.of(context).colorScheme.primary
                                         : (polarity == 'polarize'
-                                            ? Colors.blue.withOpacity(0.2)
-                                            : Colors.green.withOpacity(0.2)),
+                                            ? Colors.blue.withOpacity(0.5)
+                                            : Colors.green.withOpacity(0.5)),
                                 foregroundColor:
-                                    polarity == ''
-                                        ? Theme.of(
-                                          context,
-                                        ).colorScheme.onPrimary
-                                        : (polarity == 'polarize'
-                                            ? Colors.blue
-                                            : Colors.green),
+                                    Theme.of(context).colorScheme.onPrimary,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(20),
                                 ),
@@ -613,10 +608,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color:
-                                      Theme.of(
-                                        context,
-                                      ).textTheme.titleMedium?.color,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.color
+                                      ?.withOpacity(0.6),
                                 ),
                               ),
                               const Spacer(),
@@ -800,12 +796,20 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         ),
         child: Column(
           children: [
-            Icon(icon, color: Theme.of(context).iconTheme.color, size: 28),
+            Icon(
+              icon,
+              color: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+              size: 28,
+            ),
             const SizedBox(height: 8),
             Text(
               label,
               style: TextStyle(
-                color: Theme.of(context).textTheme.bodyMedium?.color,
+                color: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.color?.withOpacity(0.6),
                 fontWeight: FontWeight.w500,
               ),
             ),

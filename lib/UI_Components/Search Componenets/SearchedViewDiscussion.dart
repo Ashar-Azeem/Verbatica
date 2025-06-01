@@ -148,15 +148,7 @@ class _SearchedViewDiscussionState extends State<SearchedViewDiscussion>
                                       padding: EdgeInsets.only(bottom: 0.6.h),
                                       child: Column(
                                         children: [
-                                          Divider(
-                                            color: Color.fromARGB(
-                                              255,
-                                              22,
-                                              28,
-                                              33,
-                                            ),
-                                            thickness: 0.5,
-                                          ),
+                                          Divider(thickness: 0.5),
                                           Center(
                                             child: SizedBox(
                                               width: 100.w,
@@ -166,15 +158,7 @@ class _SearchedViewDiscussionState extends State<SearchedViewDiscussion>
                                               ),
                                             ),
                                           ),
-                                          Divider(
-                                            color: Color.fromARGB(
-                                              255,
-                                              22,
-                                              28,
-                                              33,
-                                            ),
-                                            thickness: 0.5,
-                                          ),
+                                          Divider(thickness: 0.5),
                                         ],
                                       ),
                                     );

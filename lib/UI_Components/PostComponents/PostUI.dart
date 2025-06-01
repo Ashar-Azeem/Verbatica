@@ -10,7 +10,6 @@ import 'package:verbatica/BLOC/Home/home_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
-import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/SummaryView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/otherprofile.dart';
@@ -43,10 +42,7 @@ class PostWidget extends StatelessWidget {
         width: 100.w,
         child: Column(
           children: [
-            Divider(
-              color: colorScheme.outline.withOpacity(0.3),
-              thickness: 0.5,
-            ),
+            Divider(color: theme.dividerColor, thickness: 0.5),
             SizedBox(
               height: 5.5.h,
               child: Padding(
@@ -219,10 +215,7 @@ class PostWidget extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(
-              color: colorScheme.outline.withOpacity(0.3),
-              thickness: 0.5,
-            ),
+            Divider(color: theme.dividerColor, thickness: 0.5),
             //Content, title, image or video
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -298,231 +291,230 @@ class PostWidget extends StatelessWidget {
             //End of content, title, image or video
 
             //Bottom side of the post
-            Padding(
-              padding: EdgeInsets.only(right: 1.w, bottom: 1.w),
-              child: InkWell(
-                onTap: () {
-                  if (!onFullView) {
-                    pushScreen(
-                      context,
-                      pageTransitionAnimation: PageTransitionAnimation.scale,
-                      screen: MultiBlocProvider(
-                        providers: [
-                          BlocProvider<HomeBloc>.value(
-                            value:
-                                context
-                                    .read<HomeBloc>(), // Passing existing bloc
-                          ),
-                        ],
-                        child: ViewDiscussion(
-                          post: post,
-                          index: index,
-                          category: category,
-                        ),
-                      ),
-                      withNavBar: false,
-                    );
-                  }
-                },
-                child: SizedBox(
-                  height: 6.h,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(width: 1.w),
-                      Container(
-                        height: 5.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: colorScheme.outline.withOpacity(0.5),
+            Center(
+              child: Padding(
+                padding: EdgeInsets.only(right: 1.w),
+                child: InkWell(
+                  onTap: () {
+                    if (!onFullView) {
+                      pushScreen(
+                        context,
+                        pageTransitionAnimation: PageTransitionAnimation.scale,
+                        screen: MultiBlocProvider(
+                          providers: [
+                            BlocProvider<HomeBloc>.value(
+                              value:
+                                  context
+                                      .read<
+                                        HomeBloc
+                                      >(), // Passing existing bloc
+                            ),
+                          ],
+                          child: ViewDiscussion(
+                            post: post,
+                            index: index,
+                            category: category,
                           ),
                         ),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 0.5.w,
-                          vertical: 0.5.w,
-                        ),
-                        child: BlocBuilder<HomeBloc, HomeState>(
-                          builder: (context, state) {
-                            Post dynamicpost;
-                            if (category == 'ForYou') {
-                              dynamicpost = state.forYou[index];
-                            } else if (category == 'Following') {
-                              dynamicpost = state.following[index];
-                            } else {
-                              dynamicpost = post;
-                            }
-                            return Row(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    context.read<HomeBloc>().add(
-                                      UpVotePost(
-                                        index: index,
-                                        category: category,
-                                      ),
-                                    );
-                                  },
-                                  child: Row(
-                                    children: [
-                                      IconButton(
-                                        onPressed: null,
-                                        padding: EdgeInsets.zero,
-                                        icon: Icon(
-                                          Icons.arrow_circle_up_outlined,
-                                          size: 7.w,
-                                          color:
-                                              dynamicpost.isUpVote
-                                                  ? colorScheme.primary
-                                                  : textTheme.bodyLarge?.color,
-                                        ),
-                                      ),
-
-                                      Text(
-                                        "${dynamicpost.upvotes - dynamicpost.downvotes}",
-                                        style: TextStyle(
-                                          color: textTheme.bodyLarge?.color,
-                                          fontSize: 3.w,
-                                          height: 1,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      SizedBox(width: 4.w),
-                                    ],
-                                  ),
-                                ),
-                                Container(
-                                  width: 1,
-                                  height: 6.h,
-                                  color: colorScheme.outline.withOpacity(0.5),
-                                ),
-
-                                IconButton(
-                                  splashColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-
-                                  onPressed: () {
-                                    context.read<HomeBloc>().add(
-                                      DownVotePost(
-                                        index: index,
-                                        category: category,
-                                      ),
-                                    );
-                                  },
-                                  padding: EdgeInsets.zero,
-                                  icon: Icon(
-                                    size: 7.w,
-
-                                    Icons.arrow_circle_down_outlined,
-                                    color:
-                                        dynamicpost.isDownVote
-                                            ? colorScheme.primary
-                                            : textTheme.bodyLarge?.color,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
-                      Spacer(flex: 1),
-                      !onFullView
-                          ? Container(
-                            height: 5.h,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: colorScheme.outline.withOpacity(0.5),
-                              ),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 0.5.w,
-                              vertical: 0.5.w,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    //Move to the full view of the post with all the comments
-                                    pushScreen(
-                                      context,
-                                      pageTransitionAnimation:
-                                          PageTransitionAnimation.scale,
-                                      screen: MultiBlocProvider(
-                                        providers: [
-                                          BlocProvider<HomeBloc>(
-                                            create:
-                                                (_) => context.read<HomeBloc>(),
-                                          ),
-                                        ],
-                                        child: ViewDiscussion(
-                                          post: post,
+                        withNavBar: false,
+                      );
+                    }
+                  },
+                  child: SizedBox(
+                    height: 6.h,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 1.w),
+                        Container(
+                          height: 5.h,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: theme.dividerColor),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 0.5.w,
+                            vertical: 0.5.w,
+                          ),
+                          child: BlocBuilder<HomeBloc, HomeState>(
+                            builder: (context, state) {
+                              Post dynamicpost;
+                              if (category == 'ForYou') {
+                                dynamicpost = state.forYou[index];
+                              } else if (category == 'Following') {
+                                dynamicpost = state.following[index];
+                              } else {
+                                dynamicpost = post;
+                              }
+                              return Row(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      context.read<HomeBloc>().add(
+                                        UpVotePost(
                                           index: index,
                                           category: category,
                                         ),
-                                      ),
-                                      withNavBar: false,
-                                    );
-                                  },
-                                  splashColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  padding: EdgeInsets.zero,
-                                  icon: Icon(
-                                    Icons.mode_comment_outlined,
-                                    color: textTheme.bodyLarge?.color,
-                                  ),
-                                ),
-                                Text(
-                                  "${post.comments}",
-                                  style: TextStyle(
-                                    color: textTheme.bodyLarge?.color,
-                                    fontSize: 3.w,
-                                    height: 1,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(width: 4.w),
-                              ],
-                            ),
-                          )
-                          : SizedBox.shrink(),
+                                      );
+                                    },
+                                    child: Row(
+                                      children: [
+                                        IconButton(
+                                          onPressed: null,
+                                          padding: EdgeInsets.zero,
+                                          icon: Icon(
+                                            Icons.arrow_circle_up_outlined,
+                                            size: 7.w,
+                                            color:
+                                                dynamicpost.isUpVote
+                                                    ? colorScheme.primary
+                                                    : colorScheme.secondary,
+                                          ),
+                                        ),
 
-                      const Spacer(flex: 10),
+                                        Text(
+                                          "${dynamicpost.upvotes - dynamicpost.downvotes}",
+                                          style: TextStyle(
+                                            color: theme.colorScheme.secondary,
+                                            fontSize: 3.w,
+                                            height: 1,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(width: 4.w),
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    width: 1,
+                                    height: 5.h,
+                                    color: theme.dividerColor,
+                                  ),
 
-                      // Sentiment Analysis Button
-                      post.isDebate
-                          ? IconButton(
-                            onPressed: () {
-                              pushScreen(
-                                context,
-                                pageTransitionAnimation:
-                                    PageTransitionAnimation.scale,
-                                screen: Clusterscreen(
-                                  clusters: post.clusters!,
-                                  postid: post.id,
-                                ),
-                                withNavBar: false,
+                                  IconButton(
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+
+                                    onPressed: () {
+                                      context.read<HomeBloc>().add(
+                                        DownVotePost(
+                                          index: index,
+                                          category: category,
+                                        ),
+                                      );
+                                    },
+                                    padding: EdgeInsets.zero,
+                                    icon: Icon(
+                                      size: 7.w,
+
+                                      Icons.arrow_circle_down_outlined,
+                                      color:
+                                          dynamicpost.isDownVote
+                                              ? colorScheme.primary
+                                              : colorScheme.secondary,
+                                    ),
+                                  ),
+                                ],
                               );
                             },
+                          ),
+                        ),
+                        Spacer(flex: 1),
+                        !onFullView
+                            ? Container(
+                              height: 5.h,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: theme.dividerColor),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 0.5.w,
+                                vertical: 0.5.w,
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  IconButton(
+                                    onPressed: () {
+                                      //Move to the full view of the post with all the comments
+                                      pushScreen(
+                                        context,
+                                        pageTransitionAnimation:
+                                            PageTransitionAnimation.scale,
+                                        screen: MultiBlocProvider(
+                                          providers: [
+                                            BlocProvider<HomeBloc>(
+                                              create:
+                                                  (_) =>
+                                                      context.read<HomeBloc>(),
+                                            ),
+                                          ],
+                                          child: ViewDiscussion(
+                                            post: post,
+                                            index: index,
+                                            category: category,
+                                          ),
+                                        ),
+                                        withNavBar: false,
+                                      );
+                                    },
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
+                                    padding: EdgeInsets.zero,
+                                    icon: Icon(
+                                      Icons.mode_comment_outlined,
+                                      color: theme.colorScheme.secondary,
+                                    ),
+                                  ),
+                                  Text(
+                                    "${post.comments}",
+                                    style: TextStyle(
+                                      color: theme.colorScheme.secondary,
+                                      fontSize: 3.w,
+                                      height: 1,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(width: 4.w),
+                                ],
+                              ),
+                            )
+                            : SizedBox.shrink(),
 
-                            icon: Icon(
-                              Icons.analytics_outlined,
-                              size: 7.w,
-                              color: colorScheme.primary,
-                            ),
-                          )
-                          : SizedBox.shrink(),
-                      Spacer(flex: 1),
-                    ],
+                        const Spacer(flex: 10),
+
+                        // Sentiment Analysis Button
+                        post.isDebate
+                            ? IconButton(
+                              onPressed: () {
+                                pushScreen(
+                                  context,
+                                  pageTransitionAnimation:
+                                      PageTransitionAnimation.scale,
+                                  screen: Clusterscreen(
+                                    clusters: post.clusters!,
+                                    postid: post.id,
+                                  ),
+                                  withNavBar: false,
+                                );
+                              },
+
+                              icon: Icon(
+                                Icons.analytics_outlined,
+                                size: 7.w,
+                                color: colorScheme.primary,
+                              ),
+                            )
+                            : SizedBox.shrink(),
+                        Spacer(flex: 1),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-            Divider(
-              color: colorScheme.outline.withOpacity(0.3),
-              thickness: 0.5,
-            ),
+            Divider(color: theme.dividerColor, thickness: 0.5, height: 8),
           ],
         ),
       ),
