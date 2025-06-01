@@ -34,16 +34,14 @@ class SummaryScreen extends StatelessWidget {
           style: TextStyle(
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
-            color:
-                Theme.of(context).appBarTheme.titleTextStyle?.color ??
-                Theme.of(context).colorScheme.onPrimary,
+            color: Theme.of(context).textTheme.titleLarge?.color,
           ),
         ),
         elevation: 0,
         centerTitle: true,
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         iconTheme: IconThemeData(
-          color: Theme.of(context).colorScheme.onPrimary,
+          color: Theme.of(context).textTheme.titleLarge?.color,
         ),
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
