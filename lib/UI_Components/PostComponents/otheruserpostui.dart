@@ -32,6 +32,8 @@ class OtherUserPostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Center(
       child: SizedBox(
         width: 100.w,
@@ -58,12 +60,15 @@ class OtherUserPostWidget extends StatelessWidget {
                           children: [
                             Text(
                               post.name,
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: theme.textTheme.bodyLarge?.color,
+                              ),
                             ),
                             Text(
                               timeago.format(post.uploadTime),
                               style: TextStyle(
-                                color: Colors.white,
+                                color: theme.textTheme.bodyMedium?.color
+                                    ?.withOpacity(0.7),
                                 fontSize: 2.w,
                               ),
                             ),
@@ -100,19 +105,22 @@ class OtherUserPostWidget extends StatelessWidget {
                         },
                         style: TextButton.styleFrom(
                           shape: StadiumBorder(),
-                          backgroundColor: primaryColor,
-                          foregroundColor: Colors.white,
+                          backgroundColor: theme.colorScheme.primary,
+                          foregroundColor: theme.colorScheme.onPrimary,
                         ),
                         child: Text(
                           'Summary',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: theme.colorScheme.onPrimary,
                             fontSize: 2.8.w,
                           ),
                         ),
                       ),
                       PopupMenuButton<String>(
-                        icon: Icon(Icons.more_vert),
+                        icon: Icon(
+                          Icons.more_vert,
+                          color: theme.iconTheme.color,
+                        ),
                         onSelected: (String value) {
                           if (value == "edit") {
                             // context.read<OtheruserBloc>().add(
@@ -128,25 +136,41 @@ class OtherUserPostWidget extends StatelessWidget {
                         },
                         itemBuilder:
                             (BuildContext context) => <PopupMenuEntry<String>>[
-                              const PopupMenuItem<String>(
+                              PopupMenuItem<String>(
                                 value: 'save',
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: [
-                                    Icon(Icons.save, color: Colors.white),
-                                    Text('save'),
+                                    Icon(
+                                      Icons.save,
+                                      color: theme.iconTheme.color,
+                                    ),
+                                    Text(
+                                      'save',
+                                      style: TextStyle(
+                                        color: theme.textTheme.bodyLarge?.color,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-                              const PopupMenuItem<String>(
+                              PopupMenuItem<String>(
                                 value: 'share',
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: [
-                                    Icon(Icons.share, color: Colors.white),
-                                    Text('Share'),
+                                    Icon(
+                                      Icons.share,
+                                      color: theme.iconTheme.color,
+                                    ),
+                                    Text(
+                                      'Share',
+                                      style: TextStyle(
+                                        color: theme.textTheme.bodyLarge?.color,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -167,8 +191,8 @@ class OtherUserPostWidget extends StatelessWidget {
                   padding: EdgeInsets.only(left: 1.w),
                   child: Text(
                     post.title,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: theme.textTheme.headlineSmall?.color,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -187,8 +211,11 @@ class OtherUserPostWidget extends StatelessWidget {
                     collapseText: 'show less',
                     linkEllipsis: false,
                     maxLines: 2,
-                    style: const TextStyle(fontSize: 15, color: Colors.white),
-                    linkColor: primaryColor,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: theme.textTheme.bodyLarge?.color,
+                    ),
+                    linkColor: theme.colorScheme.primary,
                   ),
                 ),
 
@@ -199,24 +226,28 @@ class OtherUserPostWidget extends StatelessWidget {
                     imageUrl: post.postImageLink!,
                     placeholder:
                         (context, url) => Shimmer.fromColors(
-                          baseColor: const Color.fromARGB(255, 58, 76, 90),
-                          highlightColor: const Color.fromARGB(
-                            255,
-                            81,
-                            106,
-                            125,
-                          ),
+                          baseColor:
+                              theme.brightness == Brightness.dark
+                                  ? const Color.fromARGB(255, 58, 76, 90)
+                                  : Colors.grey[300]!,
+                          highlightColor:
+                              theme.brightness == Brightness.dark
+                                  ? const Color.fromARGB(255, 81, 106, 125)
+                                  : Colors.grey[100]!,
                           child: AspectRatio(
                             aspectRatio: 16 / 9,
-                            child: Container(color: Colors.white),
+                            child: Container(color: theme.cardColor),
                           ),
                         ),
                     errorWidget:
                         (context, url, error) => AspectRatio(
                           aspectRatio: 16 / 9,
                           child: Container(
-                            color: Colors.grey[200],
-                            child: const Icon(Icons.error),
+                            color: theme.cardColor,
+                            child: Icon(
+                              Icons.error,
+                              color: theme.iconTheme.color,
+                            ),
                           ),
                         ),
                     fit: BoxFit.contain,
@@ -265,9 +296,7 @@ class OtherUserPostWidget extends StatelessWidget {
                         height: 5.h,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Color.fromARGB(255, 70, 79, 87),
-                          ),
+                          border: Border.all(color: theme.dividerColor),
                         ),
                         padding: EdgeInsets.symmetric(
                           horizontal: 0.5.w,
@@ -302,14 +331,16 @@ class OtherUserPostWidget extends StatelessWidget {
                                           size: 7.w,
                                           color:
                                               dynamicpost.isUpVote
-                                                  ? Colors.blue
-                                                  : Colors.grey,
+                                                  ? theme.colorScheme.primary
+                                                  : theme.iconTheme.color
+                                                      ?.withOpacity(0.6),
                                         ),
                                       ),
                                       Text(
                                         "${dynamicpost.upvotes - dynamicpost.downvotes}",
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color:
+                                              theme.textTheme.bodyLarge?.color,
                                           fontSize: 3.w,
                                           height: 1,
                                           fontWeight: FontWeight.bold,
@@ -322,7 +353,7 @@ class OtherUserPostWidget extends StatelessWidget {
                                 Container(
                                   width: 1,
                                   height: 6.h,
-                                  color: Color.fromARGB(255, 70, 79, 87),
+                                  color: theme.dividerColor,
                                 ),
                                 IconButton(
                                   splashColor: Colors.transparent,
@@ -338,8 +369,9 @@ class OtherUserPostWidget extends StatelessWidget {
                                     Icons.arrow_circle_down_outlined,
                                     color:
                                         dynamicpost.isDownVote
-                                            ? Colors.blue
-                                            : Colors.grey,
+                                            ? theme.colorScheme.primary
+                                            : theme.iconTheme.color
+                                                ?.withOpacity(0.6),
                                   ),
                                 ),
                               ],
@@ -353,9 +385,7 @@ class OtherUserPostWidget extends StatelessWidget {
                             height: 5.h,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: Color.fromARGB(255, 70, 79, 87),
-                              ),
+                              border: Border.all(color: theme.dividerColor),
                             ),
                             padding: EdgeInsets.symmetric(
                               horizontal: 0.5.w,
@@ -393,13 +423,13 @@ class OtherUserPostWidget extends StatelessWidget {
                                   padding: EdgeInsets.zero,
                                   icon: Icon(
                                     Icons.mode_comment_outlined,
-                                    color: Colors.white,
+                                    color: theme.iconTheme.color,
                                   ),
                                 ),
                                 Text(
                                   "${post.comments}",
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: theme.textTheme.bodyLarge?.color,
                                     fontSize: 3.w,
                                     height: 1,
                                     fontWeight: FontWeight.bold,
@@ -429,7 +459,7 @@ class OtherUserPostWidget extends StatelessWidget {
                             icon: Icon(
                               Icons.analytics_outlined,
                               size: 7.w,
-                              color: primaryColor,
+                              color: theme.colorScheme.primary,
                             ),
                           )
                           : SizedBox.shrink(),

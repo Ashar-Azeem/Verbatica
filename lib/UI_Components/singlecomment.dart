@@ -38,7 +38,7 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Theme.of(context).shadowColor.withOpacity(0.15),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -73,7 +73,7 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
           color: Theme.of(context).cardColor,
           border: Border(
             bottom: BorderSide(
-              color: Color.fromARGB(255, 22, 28, 33),
+              color: Theme.of(context).dividerColor.withOpacity(0.3),
               width: 1,
             ),
           ),
@@ -98,10 +98,10 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
                         height: 8,
                         width: 8,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF43768A),
+                          color: Theme.of(context).colorScheme.primary,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: const Color(0xFF2A2A2A),
+                            color: Theme.of(context).cardColor,
                             width: 1,
                           ),
                         ),
@@ -113,8 +113,10 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
                 Expanded(
                   child: Text(
                     widget.parentComment!.author,
-                    style: const TextStyle(
-                      color: Colors.white70,
+                    style: TextStyle(
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -127,13 +129,15 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: primaryColor.withOpacity(0.2),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     timeago.format(widget.parentComment!.uploadTime),
                     style: TextStyle(
-                      color: primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                       fontSize: 9,
                       fontWeight: FontWeight.w400,
                     ),
@@ -146,8 +150,8 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
               _showFullParent
                   ? widget.parentComment!.text
                   : '${widget.parentComment!.text.substring(0, widget.parentComment!.text.length.clamp(0, 100))}${widget.parentComment!.text.length > 100 ? '...' : ''}',
-              style: const TextStyle(
-                color: Colors.grey,
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodySmall?.color,
                 fontSize: 12,
                 height: 1.4,
               ),
@@ -162,7 +166,7 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
               Text(
                 _showFullParent ? 'Show less' : 'Show more',
                 style: TextStyle(
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                   fontSize: 11,
                   fontWeight: FontWeight.w500,
                 ),
@@ -189,22 +193,28 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
                 margin: const EdgeInsets.only(bottom: 12),
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: primaryColor.withOpacity(0.1),
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(4),
                   border: Border.all(
-                    color: const Color(0xFF43768A).withOpacity(0.4),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.primary.withOpacity(0.4),
                     width: 1,
                   ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.reply, size: 12, color: Color(0xFF43768A)),
+                    Icon(
+                      Icons.reply,
+                      size: 12,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       'Replying to ${widget.parentComment!.author}',
-                      style: const TextStyle(
-                        color: Color(0xFF43768A),
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
                         fontSize: 11,
                         fontWeight: FontWeight.w500,
                       ),
@@ -222,7 +232,7 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: const Color(0xFF43768A),
+                          color: Theme.of(context).colorScheme.primary,
                           width: 2,
                         ),
                       ),
@@ -243,7 +253,7 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
                           color: Colors.green,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: const Color(0xFF1E1E1E),
+                            color: Theme.of(context).cardColor,
                             width: 1.5,
                           ),
                         ),
@@ -258,8 +268,8 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
                     children: [
                       Text(
                         widget.comment.author,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.2,
@@ -269,7 +279,7 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
                       Text(
                         timeago.format(widget.comment.uploadTime),
                         style: TextStyle(
-                          color: Colors.grey.shade500,
+                          color: Theme.of(context).textTheme.bodySmall?.color,
                           fontSize: 11,
                         ),
                       ),
@@ -277,10 +287,10 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.more_horiz,
                     size: 20,
-                    color: Colors.grey,
+                    color: Theme.of(context).iconTheme.color,
                   ),
                   onPressed: () {},
                   padding: EdgeInsets.zero,
@@ -298,15 +308,15 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
                 expandOnTextTap: true,
                 collapseOnTextTap: true,
                 maxLines: 3,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyMedium?.color,
                   fontSize: 14,
                   height: 1.5,
                   letterSpacing: 0.2,
                 ),
                 expandText: 'Show more',
                 collapseText: 'Show less',
-                linkColor: const Color(0xFF43768A),
+                linkColor: Theme.of(context).colorScheme.primary,
                 linkStyle: const TextStyle(
                   fontWeight: FontWeight.w500,
                   fontSize: 12,
@@ -328,15 +338,15 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
                     icon: Icons.arrow_upward_rounded,
                     color:
                         widget.comment.upVoteUserIds.contains(userId)
-                            ? primaryColor
-                            : Colors.white,
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).iconTheme.color ?? Colors.grey,
                     onPressed: () {},
                   ),
                   const SizedBox(width: 4),
                   Text(
                     '${widget.comment.totalUpVotes - widget.comment.totalDownVotes}',
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
                     ),
@@ -346,21 +356,21 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
                     icon: Icons.arrow_downward_rounded,
                     color:
                         widget.comment.downVoteUserIds.contains(userId)
-                            ? primaryColor
-                            : Colors.white,
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).iconTheme.color ?? Colors.grey,
                     onPressed: () {},
                   ),
                   const Spacer(),
                   _buildActionButton(
                     icon: Icons.reply_rounded,
-                    color: primaryColor,
+                    color: Theme.of(context).colorScheme.primary,
                     label: 'Reply',
                     onPressed: () {},
                   ),
                   const SizedBox(width: 8),
                   _buildActionButton(
                     icon: Icons.bookmark_border_rounded,
-                    color: primaryColor,
+                    color: Theme.of(context).colorScheme.primary,
                     onPressed: () {},
                   ),
                 ],

@@ -46,12 +46,15 @@ class _MessageViewState extends State<MessageView> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     OtherUserInfo otherUser = chat.getOtherUserInfo(
       context.read<UserBloc>().state.user.userId,
     );
     return BlocProvider.value(
       value: messagesBloc,
       child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
         body: SafeArea(
           child: BlocBuilder<MessagesBloc, MessagesState>(
             buildWhen:
@@ -63,7 +66,9 @@ class _MessageViewState extends State<MessageView> {
             builder: (context, state) {
               return state.controller == null
                   ? Center(
-                    child: CupertinoActivityIndicator(color: primaryColor),
+                    child: CupertinoActivityIndicator(
+                      color: theme.colorScheme.primary,
+                    ),
                   )
                   : ChatView(
                     reactionPopupConfig: ReactionPopupConfiguration(
@@ -104,12 +109,16 @@ class _MessageViewState extends State<MessageView> {
                     },
                     repliedMessageConfig: RepliedMessageConfiguration(
                       repliedMsgAutoScrollConfig: RepliedMsgAutoScrollConfig(
-                        highlightColor: Colors.purpleAccent,
+                        highlightColor: theme.colorScheme.secondary,
                       ),
                       opacity: 1,
-                      textStyle: TextStyle(color: Colors.white),
-                      replyTitleTextStyle: TextStyle(color: Colors.white),
-                      backgroundColor: const Color.fromARGB(255, 144, 178, 230),
+                      textStyle: TextStyle(
+                        color: theme.textTheme.bodyLarge?.color,
+                      ),
+                      replyTitleTextStyle: TextStyle(
+                        color: theme.textTheme.titleMedium?.color,
+                      ),
+                      backgroundColor: theme.colorScheme.primaryContainer,
                     ),
                     swipeToReplyConfig: SwipeToReplyConfiguration(
                       onLeftSwipe: (message, sentBy) {
@@ -126,8 +135,12 @@ class _MessageViewState extends State<MessageView> {
                             child: Container(
                               width: 90.w,
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: theme.cardColor,
                                 borderRadius: BorderRadius.circular(10),
+                                border: Border.all(
+                                  color: theme.dividerColor,
+                                  width: 0.5,
+                                ),
                               ),
                               padding: EdgeInsets.all(2.w),
                               child: Column(
@@ -140,7 +153,9 @@ class _MessageViewState extends State<MessageView> {
                                     children: [
                                       Text(
                                         chat.userNames[reply.replyTo]!,
-                                        style: TextStyle(color: primaryColor),
+                                        style: TextStyle(
+                                          color: theme.colorScheme.primary,
+                                        ),
                                       ),
                                       GestureDetector(
                                         onTap: () {
@@ -151,12 +166,7 @@ class _MessageViewState extends State<MessageView> {
                                         child: Icon(
                                           Icons.cancel_outlined,
                                           size: 5.w,
-                                          color: Color.fromARGB(
-                                            255,
-                                            10,
-                                            13,
-                                            15,
-                                          ),
+                                          color: theme.iconTheme.color,
                                         ),
                                       ),
                                     ],
@@ -172,10 +182,10 @@ class _MessageViewState extends State<MessageView> {
                                     maxLines: 2,
                                     style: TextStyle(
                                       fontSize: 3.8.w,
-                                      color: Colors.black,
+                                      color: theme.textTheme.bodyLarge?.color,
                                       fontWeight: FontWeight.w300,
                                     ),
-                                    linkColor: primaryColor,
+                                    linkColor: theme.colorScheme.primary,
                                   ),
                                 ],
                               ),
@@ -187,9 +197,9 @@ class _MessageViewState extends State<MessageView> {
                       enableCameraImagePicker: false,
                       enableGalleryImagePicker: false,
                       allowRecordingVoice: false,
-                      defaultSendButtonColor: primaryColor,
-                      replyTitleColor: primaryColor,
-                      replyDialogColor: Colors.grey,
+                      defaultSendButtonColor: theme.colorScheme.primary,
+                      replyTitleColor: theme.colorScheme.primary,
+                      replyDialogColor: theme.dialogBackgroundColor,
                       textFieldConfig: TextFieldConfiguration(
                         borderRadius: BorderRadius.circular(30),
                         padding: EdgeInsets.all(0.4.w),
@@ -198,21 +208,35 @@ class _MessageViewState extends State<MessageView> {
                           top: 1.w,
                           bottom: 1.w,
                         ),
-                        textStyle: TextStyle(color: Colors.black),
+                        textStyle: TextStyle(
+                          color: theme.textTheme.bodyLarge?.color,
+                        ),
                       ),
                     ),
                     featureActiveConfig: FeatureActiveConfig(
                       enablePagination: true,
                       enableReactionPopup: true,
-
                       enableOtherUserName: false,
                       enableScrollToBottomButton: true,
                     ),
 
                     chatBubbleConfig: ChatBubbleConfiguration(
                       onDoubleTap: (message) {},
-                      outgoingChatBubbleConfig: ChatBubble(color: primaryColor),
+                      outgoingChatBubbleConfig: ChatBubble(
+                        color: theme.colorScheme.primary,
+                        textStyle: TextStyle(color: Colors.white),
+                      ),
                       inComingChatBubbleConfig: ChatBubble(
+                        textStyle: TextStyle(
+                          color:
+                              theme.brightness == Brightness.dark
+                                  ? Colors.white
+                                  : Colors.black.withOpacity(0.8),
+                        ),
+                        color:
+                            theme.brightness == Brightness.dark
+                                ? theme.colorScheme.surfaceContainerHighest
+                                : theme.colorScheme.surfaceContainerHigh,
                         onMessageRead: (message) {
                           if (message.id == state.lastMessage!.id) {
                             message.setStatus = MessageStatus.read;
@@ -225,11 +249,19 @@ class _MessageViewState extends State<MessageView> {
                       padding: EdgeInsets.symmetric(vertical: 1.5.w),
                     ),
                     appBar: ChatViewAppBar(
-                      backArrowColor: Colors.white,
+                      backArrowColor:
+                          theme.appBarTheme.iconTheme?.color ??
+                          theme.iconTheme.color,
                       elevation: 2,
-                      backGroundColor: Color.fromARGB(255, 10, 13, 15),
+                      backGroundColor:
+                          theme.appBarTheme.backgroundColor ??
+                          theme.primaryColor,
                       chatTitle: otherUser.userName,
-                      chatTitleTextStyle: TextStyle(color: Colors.white),
+                      chatTitleTextStyle: TextStyle(
+                        color:
+                            theme.appBarTheme.titleTextStyle?.color ??
+                            theme.textTheme.titleLarge?.color,
+                      ),
                       imageType: ImageType.asset,
                       profilePicture:
                           'assets/Avatars/avatar${otherUser.userProfile}.jpg',
@@ -237,15 +269,24 @@ class _MessageViewState extends State<MessageView> {
 
                     chatBackgroundConfig: ChatBackgroundConfiguration(
                       loadingWidget: Center(
-                        child: CupertinoActivityIndicator(color: primaryColor),
+                        child: CupertinoActivityIndicator(
+                          color: theme.colorScheme.primary,
+                        ),
                       ),
-                      messageTimeIconColor: Colors.white,
-                      messageTimeTextStyle: TextStyle(color: Colors.white),
-                      backgroundColor: Color.fromARGB(255, 10, 13, 15),
+                      messageTimeIconColor: theme.textTheme.bodySmall?.color
+                          ?.withOpacity(0.7),
+                      messageTimeTextStyle: TextStyle(
+                        color: theme.textTheme.bodySmall?.color?.withOpacity(
+                          0.7,
+                        ),
+                      ),
+                      backgroundColor: theme.scaffoldBackgroundColor,
                       defaultGroupSeparatorConfig:
                           DefaultGroupSeparatorConfiguration(
                             padding: EdgeInsets.symmetric(vertical: 4.w),
-                            textStyle: TextStyle(color: Colors.white),
+                            textStyle: TextStyle(
+                              color: theme.textTheme.bodyMedium?.color,
+                            ),
                           ),
                     ),
                     chatController: state.controller!,

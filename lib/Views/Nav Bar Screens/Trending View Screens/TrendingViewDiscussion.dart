@@ -75,20 +75,25 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return BlocProvider(
       create: (context) => CommentsBloc(postId: widget.post.id),
       child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
         body: SafeArea(
           child: Stack(
             children: [
               Positioned.fill(
                 child: SingleChildScrollView(
-                  physics: BouncingScrollPhysics(),
+                  physics: const BouncingScrollPhysics(),
                   child: Column(
                     children: [
+                      // Back Button
                       Align(
                         alignment: Alignment.topLeft,
-
                         child: Padding(
                           padding: EdgeInsets.only(
                             left: 1.5.w,
@@ -99,19 +104,14 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                             width: 10.w,
                             height: 10.w,
                             decoration: BoxDecoration(
-                              color: Color.fromARGB(
-                                255,
-                                13,
-                                18,
-                                21,
-                              ).withOpacity(0.4),
+                              color: colorScheme.surface.withOpacity(0.8),
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
                               icon: Center(
                                 child: Icon(
                                   Icons.arrow_back,
-                                  color: Colors.white,
+                                  color: colorScheme.onSurface,
                                   size: 5.w,
                                 ),
                               ),
@@ -120,6 +120,8 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                           ),
                         ),
                       ),
+
+                      // Post Widget
                       TrendingPostWidget(
                         post: widget.post,
                         index: widget.index,
@@ -128,6 +130,7 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                         onFullView: true,
                       ),
 
+                      // Comments Section
                       BlocBuilder<CommentsBloc, CommentsState>(
                         buildWhen:
                             (previous, current) =>
@@ -138,7 +141,7 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                                 padding: EdgeInsets.only(top: 10.h),
                                 child: Center(
                                   child: LoadingAnimationWidget.dotsTriangle(
-                                    color: primaryColor,
+                                    color: colorScheme.primary,
                                     size: 10.w,
                                   ),
                                 ),
@@ -146,7 +149,7 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                               : Padding(
                                 padding: EdgeInsets.only(bottom: 8.h),
                                 child: ListView.builder(
-                                  physics: NeverScrollableScrollPhysics(),
+                                  physics: const NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
                                   itemCount: state.comments.length,
                                   itemBuilder: (context, index) {
@@ -155,12 +158,8 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                                       child: Column(
                                         children: [
                                           Divider(
-                                            color: Color.fromARGB(
-                                              255,
-                                              22,
-                                              28,
-                                              33,
-                                            ),
+                                            color: colorScheme.outline
+                                                .withOpacity(0.3),
                                             thickness: 0.5,
                                           ),
                                           Center(
@@ -173,12 +172,8 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                                             ),
                                           ),
                                           Divider(
-                                            color: Color.fromARGB(
-                                              255,
-                                              22,
-                                              28,
-                                              33,
-                                            ),
+                                            color: colorScheme.outline
+                                                .withOpacity(0.3),
                                             thickness: 0.5,
                                           ),
                                         ],
@@ -194,6 +189,7 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                 ),
               ),
 
+              // Comment Input Section
               Positioned(
                 bottom: 0.5.h,
                 left: 1.w,
@@ -203,11 +199,12 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                     builder: (context, state) {
                       return Column(
                         children: [
+                          // Reply Preview Container
                           state.replyToComment != null
                               ? Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(6),
-                                  color: Color.fromARGB(255, 39, 52, 61),
+                                  color: colorScheme.surfaceVariant,
                                 ),
                                 alignment: Alignment.center,
                                 width: 90.w,
@@ -222,7 +219,7 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                                         Text(
                                           "Reply to ${state.replyToComment!.author}",
                                           style: TextStyle(
-                                            color: Colors.white,
+                                            color: textTheme.bodyLarge?.color,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 4.w,
                                           ),
@@ -235,7 +232,7 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                                           },
                                           child: Icon(
                                             Icons.highlight_remove_rounded,
-                                            color: Colors.white,
+                                            color: colorScheme.onSurfaceVariant,
                                           ),
                                         ),
                                       ],
@@ -250,20 +247,22 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                                       maxLines: 4,
                                       style: TextStyle(
                                         fontSize: 3.8.w,
-                                        color: Colors.white,
+                                        color: textTheme.bodyMedium?.color,
                                         fontWeight: FontWeight.w300,
                                       ),
-                                      linkColor: primaryColor,
+                                      linkColor: colorScheme.primary,
                                     ),
                                   ],
                                 ),
                               )
-                              : SizedBox.shrink(),
+                              : const SizedBox.shrink(),
                           SizedBox(height: 0.2.h),
+
+                          // Comment Input Container
                           Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.w),
-                              color: Color.fromARGB(255, 39, 52, 61),
+                              color: colorScheme.surfaceVariant,
                             ),
                             alignment: Alignment.center,
                             width: 96.w,
@@ -271,6 +270,7 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
+                                // User Avatar
                                 Padding(
                                   padding: EdgeInsets.all(1.w),
                                   child: BlocBuilder<UserBloc, UserState>(
@@ -288,6 +288,8 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                                     },
                                   ),
                                 ),
+
+                                // Text Input Field
                                 Padding(
                                   padding: EdgeInsets.only(left: 3.w, right: 0),
                                   child: SizedBox(
@@ -297,21 +299,27 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                                       maxLines: 5,
                                       expands: false,
                                       minLines: 1,
-                                      cursorColor: Colors.white,
-                                      style: const TextStyle(
-                                        color: Colors.white,
+                                      cursorColor: colorScheme.primary,
+                                      style: TextStyle(
+                                        color: textTheme.bodyLarge?.color,
                                         fontWeight: FontWeight.normal,
                                       ),
                                       controller: comment,
                                       autocorrect: false,
                                       enableSuggestions: true,
-                                      decoration: const InputDecoration(
+                                      decoration: InputDecoration(
                                         border: InputBorder.none,
                                         hintText: 'Comment...',
+                                        hintStyle: TextStyle(
+                                          color: textTheme.bodyMedium?.color
+                                              ?.withOpacity(0.6),
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
+
+                                // Send Button
                                 GestureDetector(
                                   onTap: () {
                                     if (comment.text.trim().isNotEmpty) {
@@ -338,14 +346,16 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                                             ? Center(
                                               child:
                                                   LoadingAnimationWidget.staggeredDotsWave(
-                                                    color: Colors.white,
+                                                    color: colorScheme.primary,
                                                     size: 5.w,
                                                   ),
                                             )
                                             : Center(
                                               child: Icon(
                                                 Icons.send,
-                                                color: Colors.white,
+                                                color:
+                                                    colorScheme
+                                                        .onSurfaceVariant,
                                                 size: 5.w,
                                               ),
                                             ),

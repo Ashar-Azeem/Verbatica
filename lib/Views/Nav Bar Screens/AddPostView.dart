@@ -66,21 +66,24 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     if (_titleController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Colors.red.shade900,
+          backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          content: const Row(
+          content: Row(
             children: [
-              Icon(Icons.error_outline, color: Colors.white),
-              SizedBox(width: 12),
+              Icon(
+                Icons.error_outline,
+                color: Theme.of(context).colorScheme.onError,
+              ),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   "Title is required",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onError,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -95,21 +98,24 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     if (polarity == 'polarize' && validClusters.length < 2) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Colors.red.shade900,
+          backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          content: const Row(
+          content: Row(
             children: [
-              Icon(Icons.error_outline, color: Colors.white),
-              SizedBox(width: 12),
+              Icon(
+                Icons.error_outline,
+                color: Theme.of(context).colorScheme.onError,
+              ),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   "At least 2 clusters are required for polarize posts",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onError,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -122,21 +128,24 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     } else if (polarity == '') {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          backgroundColor: Colors.red.shade900,
+          backgroundColor: Theme.of(context).colorScheme.error,
           behavior: SnackBarBehavior.floating,
           margin: const EdgeInsets.all(16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          content: const Row(
+          content: Row(
             children: [
-              Icon(Icons.error_outline, color: Colors.white),
-              SizedBox(width: 12),
+              Icon(
+                Icons.error_outline,
+                color: Theme.of(context).colorScheme.onError,
+              ),
+              const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   "Select tag of post",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onError,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
@@ -184,14 +193,17 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         uiSettings: [
           AndroidUiSettings(
             toolbarTitle: 'Crop Image',
-            toolbarColor: Colors.black,
-            toolbarWidgetColor: Colors.white,
+            toolbarColor: Theme.of(context).primaryColor,
+            toolbarWidgetColor:
+                Theme.of(context).brightness == Brightness.dark
+                    ? Colors.white
+                    : Colors.black,
             initAspectRatio: CropAspectRatioPreset.ratio16x9,
             lockAspectRatio: true,
             hideBottomControls: true,
             showCropGrid: false,
-            statusBarColor: Colors.black,
-            backgroundColor: Colors.black,
+            statusBarColor: Theme.of(context).primaryColor,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           ),
         ],
       );
@@ -211,10 +223,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text(
+            backgroundColor: Theme.of(context).cardColor,
+            title: Text(
               "Select Type of Post",
               style: TextStyle(
-                color: Colors.white,
+                color: Theme.of(context).textTheme.titleLarge?.color,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -225,7 +238,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   icon: Icons.people,
                   iconColor: Colors.blue,
                   title: "Polarize",
-
                   subtitle: "There will be divided opinion on this post",
                   onTap: () {
                     setState(() {
@@ -235,7 +247,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     Navigator.pop(context, selectedOption);
                   },
                 ),
-                const Divider(height: 24, thickness: 1),
+                Divider(
+                  height: 24,
+                  thickness: 1,
+                  color: Theme.of(context).dividerColor,
+                ),
                 _buildDialogOption(
                   icon: Icons.person,
                   iconColor: Colors.green,
@@ -255,7 +271,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text("Cancel"),
+                child: Text(
+                  "Cancel",
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
               ),
             ],
             shape: RoundedRectangleBorder(
@@ -297,16 +318,21 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        color: Colors.white,
+                        color: Theme.of(context).textTheme.titleMedium?.color,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
-                      style: TextStyle(color: Colors.grey[400], fontSize: 12),
+                      style: TextStyle(
+                        color: Theme.of(
+                          context,
+                        ).textTheme.bodySmall?.color?.withOpacity(0.7),
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
@@ -334,13 +360,17 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         elevation: 0,
         backgroundColor: Theme.of(context).cardColor,
-        title: const Text(
+        title: Text(
           'Create Post',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: Theme.of(context).textTheme.titleLarge?.color,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         actions: [
           Padding(
@@ -348,7 +378,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
             child: TextButton(
               onPressed: _handlePostSubmission,
               style: TextButton.styleFrom(
-                foregroundColor: primaryColor,
+                foregroundColor: Theme.of(context).colorScheme.primary,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
               ),
               child: const Text(
@@ -379,28 +409,41 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       // Title Field
                       TextField(
                         controller: _titleController,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.titleLarge?.color,
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
                         decoration: InputDecoration(
                           hintText: 'Title',
-                          hintStyle: TextStyle(color: Colors.grey[400]),
+                          hintStyle: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                          ),
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
                         ),
                       ),
-                      const Divider(color: Colors.white24, height: 24),
+                      Divider(
+                        color: Theme.of(context).dividerColor,
+                        height: 24,
+                      ),
 
                       // Description Field
                       TextField(
                         controller: _descriptionController,
-                        style: const TextStyle(color: Colors.white),
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                        ),
                         maxLines: 5,
                         decoration: InputDecoration(
                           hintText: 'Description ',
-                          hintStyle: TextStyle(color: Colors.grey[400]),
+                          hintStyle: TextStyle(
+                            color: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                          ),
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.zero,
                         ),
@@ -439,10 +482,10 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Add Content',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: Theme.of(context).textTheme.titleMedium?.color,
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
@@ -471,16 +514,19 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       ),
 
                       const SizedBox(height: 24),
-                      const Divider(color: Colors.white24, height: 1),
+                      Divider(color: Theme.of(context).dividerColor, height: 1),
                       const SizedBox(height: 24),
 
                       // Tag Selection
                       Row(
                         children: [
-                          const Text(
+                          Text(
                             'Post Type:',
                             style: TextStyle(
-                              color: Colors.white,
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).textTheme.titleMedium?.color,
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -492,13 +538,15 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
                                     polarity == ''
-                                        ? primaryColor
+                                        ? Theme.of(context).colorScheme.primary
                                         : (polarity == 'polarize'
                                             ? Colors.blue.withOpacity(0.2)
                                             : Colors.green.withOpacity(0.2)),
                                 foregroundColor:
                                     polarity == ''
-                                        ? Colors.white
+                                        ? Theme.of(
+                                          context,
+                                        ).colorScheme.onPrimary
                                         : (polarity == 'polarize'
                                             ? Colors.blue
                                             : Colors.green),
@@ -560,12 +608,15 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                 size: 20,
                               ),
                               const SizedBox(width: 8),
-                              const Text(
+                              Text(
                                 "Add Cluster Names",
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).textTheme.titleMedium?.color,
                                 ),
                               ),
                               const Spacer(),
@@ -614,14 +665,21 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: TextField(
-                                      style: const TextStyle(
-                                        color: Colors.white,
+                                      style: TextStyle(
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.bodyLarge?.color,
                                       ),
                                       controller: _controllers[index],
                                       decoration: InputDecoration(
                                         hintText: "Enter cluster name",
                                         hintStyle: TextStyle(
-                                          color: Colors.white,
+                                          color: Theme.of(context)
+                                              .textTheme
+                                              .bodyMedium
+                                              ?.color
+                                              ?.withOpacity(0.6),
                                         ),
                                         contentPadding:
                                             const EdgeInsets.symmetric(
@@ -629,12 +687,17 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                               vertical: 12,
                                             ),
                                         filled: true,
-                                        fillColor: const Color.fromARGB(
-                                          255,
-                                          28,
-                                          40,
-                                          52,
-                                        ),
+                                        fillColor:
+                                            Theme.of(context).brightness ==
+                                                    Brightness.dark
+                                                ? Theme.of(context)
+                                                    .colorScheme
+                                                    .surface
+                                                    .withOpacity(0.3)
+                                                : Theme.of(context)
+                                                    .colorScheme
+                                                    .surfaceVariant
+                                                    .withOpacity(0.3),
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(
                                             10,
@@ -733,16 +796,16 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         decoration: BoxDecoration(
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.grey[700]!, width: 1),
+          border: Border.all(color: Theme.of(context).dividerColor, width: 1),
         ),
         child: Column(
           children: [
-            Icon(icon, color: Colors.white, size: 28),
+            Icon(icon, color: Theme.of(context).iconTheme.color, size: 28),
             const SizedBox(height: 8),
             Text(
               label,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyMedium?.color,
                 fontWeight: FontWeight.w500,
               ),
             ),

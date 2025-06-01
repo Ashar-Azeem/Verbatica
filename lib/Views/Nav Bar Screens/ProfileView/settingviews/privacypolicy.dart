@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:verbatica/Utilities/Color.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
@@ -8,10 +7,12 @@ class PrivacyPolicyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Privacy Policy',
           style: TextStyle(
-            color: Colors.white,
+            color:
+                Theme.of(context).appBarTheme.titleTextStyle?.color ??
+                Theme.of(context).textTheme.titleLarge?.color,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
@@ -37,6 +38,8 @@ class PrivacyPolicyContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -44,7 +47,9 @@ class PrivacyPolicyContent extends StatelessWidget {
           end: Alignment.bottomCenter,
           colors: [
             Theme.of(context).colorScheme.surface,
-            const Color(0xFF0A101D),
+            isDarkMode
+                ? const Color(0xFF0A101D)
+                : Theme.of(context).colorScheme.surface.withOpacity(0.8),
           ],
         ),
       ),
@@ -117,18 +122,20 @@ class PrivacyPolicyContent extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: RichText(
                   text: TextSpan(
-                    style: const TextStyle(
-                      color: Colors.white70,
+                    style: TextStyle(
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.color?.withOpacity(0.8),
                       height: 1.5,
                       fontSize: 13,
                     ),
                     children: [
                       const TextSpan(text: 'We do '),
-                      const TextSpan(
+                      TextSpan(
                         text: 'not ',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
                         ),
                       ),
                       const TextSpan(
@@ -175,14 +182,12 @@ class PrivacyPolicyContent extends StatelessWidget {
                 'If you have any questions or concerns about this Privacy Policy, please contact us at:',
               ),
               const SizedBox(height: 10),
-              Material(
-                child: Text(
-                  'Abdullahzh2003@email.com',
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
+              Text(
+                'Abdullahzh2003@email.com',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
                 ),
               ),
             ],
@@ -198,7 +203,7 @@ class PrivacyPolicyContent extends StatelessWidget {
   Widget _buildHeaderCard(BuildContext context) {
     return Card(
       elevation: 10,
-
+      color: Theme.of(context).cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -210,12 +215,12 @@ class PrivacyPolicyContent extends StatelessWidget {
               color: Theme.of(context).colorScheme.primary,
             ),
             const SizedBox(height: 15),
-            const Text(
+            Text(
               'Privacy Policy',
               style: TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Theme.of(context).textTheme.headlineSmall?.color,
               ),
             ),
             const SizedBox(height: 15),
@@ -223,17 +228,22 @@ class PrivacyPolicyContent extends StatelessWidget {
               'We value your privacy and are committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you use our app.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.white70,
+                color: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.color?.withOpacity(0.8),
                 height: 1.5,
                 fontSize: 14,
               ),
             ),
             const SizedBox(height: 10),
-            const Divider(color: Colors.white24),
+            Divider(color: Theme.of(context).dividerColor),
             const SizedBox(height: 10),
-            const Text(
+            Text(
               'Last Updated: May 20, 2025',
-              style: TextStyle(color: Colors.white38, fontSize: 12),
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                fontSize: 12,
+              ),
             ),
           ],
         ),
@@ -251,21 +261,19 @@ class PrivacyPolicyContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Material(
-            child: Text(
-              title,
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+          Text(
+            title,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.primary,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 10),
           Container(
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface.withOpacity(0.5),
+              color: Theme.of(context).cardColor.withOpacity(0.5),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
@@ -308,8 +316,8 @@ class PrivacyPolicyContent extends StatelessWidget {
                   if (title.isNotEmpty)
                     TextSpan(
                       text: title,
-                      style: const TextStyle(
-                        color: Colors.white,
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.bodyLarge?.color,
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
                         height: 1.5,
@@ -317,8 +325,10 @@ class PrivacyPolicyContent extends StatelessWidget {
                     ),
                   TextSpan(
                     text: content,
-                    style: const TextStyle(
-                      color: Colors.white70,
+                    style: TextStyle(
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.color?.withOpacity(0.8),
                       fontSize: 13,
                       height: 1.5,
                     ),
@@ -335,14 +345,14 @@ class PrivacyPolicyContent extends StatelessWidget {
   Widget _buildParagraph(BuildContext context, String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Material(
-        child: Text(
-          text,
-          style: TextStyle(
-            color: Colors.white70,
-            height: 1.5,
-            fontSize: 13 * MediaQuery.of(context).textScaleFactor,
-          ),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.color?.withOpacity(0.8),
+          height: 1.5,
+          fontSize: 13 * MediaQuery.of(context).textScaleFactor,
         ),
       ),
     );
@@ -355,7 +365,6 @@ class PrivacyPolicyContent extends StatelessWidget {
           SnackBar(
             content: const Text('Privacy Policy Accepted'),
             backgroundColor: Theme.of(context).colorScheme.secondary,
-            // Optional: set duration for clarity
           ),
         );
 
@@ -363,17 +372,17 @@ class PrivacyPolicyContent extends StatelessWidget {
         await Future.delayed(const Duration(seconds: 2));
         Navigator.pop(context);
       },
-
       style: ElevatedButton.styleFrom(
-        backgroundColor: primaryColor,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         padding: const EdgeInsets.symmetric(vertical: 15),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 5,
       ),
-      child: const Text(
+      child: Text(
         'I Accept',
         style: TextStyle(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.onPrimary,
           fontSize: 16,
           fontWeight: FontWeight.bold,
         ),

@@ -29,7 +29,10 @@ class CommentsBlock extends StatelessWidget {
             left: level * 0.6.w,
             top: 0,
             bottom: 0,
-            child: Container(width: 1, color: Color.fromARGB(255, 49, 63, 74)),
+            child: Container(
+              width: 1,
+              color: Theme.of(context).dividerColor.withOpacity(0.5),
+            ),
           ),
 
         Padding(
@@ -61,14 +64,20 @@ class CommentsBlock extends StatelessWidget {
                               Text(
                                 comment.author,
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).textTheme.bodyLarge?.color,
                                   fontSize: 3.w,
                                 ),
                               ),
                               Text(
                                 timeago.format(comment.uploadTime),
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).textTheme.bodySmall?.color,
                                   fontSize: 1.5.w,
                                 ),
                               ),
@@ -77,7 +86,11 @@ class CommentsBlock extends StatelessWidget {
                         ),
                         const Spacer(),
                         PopupMenuButton<String>(
-                          icon: Icon(Icons.more_vert, size: 5.w),
+                          icon: Icon(
+                            Icons.more_vert,
+                            size: 5.w,
+                            color: Theme.of(context).iconTheme.color,
+                          ),
                           onSelected: (String value) {
                             if (value == "report") {
                               context.read<CommentsBloc>().add(
@@ -86,23 +99,33 @@ class CommentsBlock extends StatelessWidget {
                             }
                           },
                           itemBuilder:
-                              (BuildContext context) =>
-                                  <PopupMenuEntry<String>>[
-                                    PopupMenuItem<String>(
-                                      value: 'report',
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          Icon(
-                                            Icons.report_gmailerrorred,
-                                            color: Colors.white,
-                                          ),
-                                          Text('Report'),
-                                        ],
+                              (
+                                BuildContext context,
+                              ) => <PopupMenuEntry<String>>[
+                                PopupMenuItem<String>(
+                                  value: 'report',
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Icon(
+                                        Icons.report_gmailerrorred,
+                                        color:
+                                            Theme.of(context).iconTheme.color,
                                       ),
-                                    ),
-                                  ],
+                                      Text(
+                                        'Report',
+                                        style: TextStyle(
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).textTheme.bodyMedium?.color,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                         ),
                       ],
                     ),
@@ -117,10 +140,10 @@ class CommentsBlock extends StatelessWidget {
                       maxLines: 2,
                       style: TextStyle(
                         fontSize: 3.8.w,
-                        color: Colors.white,
+                        color: Theme.of(context).textTheme.bodyMedium?.color,
                         fontWeight: FontWeight.w300,
                       ),
-                      linkColor: primaryColor,
+                      linkColor: Theme.of(context).colorScheme.primary,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
@@ -137,14 +160,14 @@ class CommentsBlock extends StatelessWidget {
                             size: 5.5.w,
                             color:
                                 comment.upVoteUserIds.contains(userId)
-                                    ? primaryColor
-                                    : Colors.white,
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).iconTheme.color,
                           ),
                         ),
                         Text(
                           "${comment.totalUpVotes - comment.totalDownVotes}",
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
                             fontSize: 3.w,
                             height: 1,
                             fontWeight: FontWeight.bold,
@@ -163,8 +186,8 @@ class CommentsBlock extends StatelessWidget {
                             size: 5.5.w,
                             color:
                                 comment.downVoteUserIds.contains(userId)
-                                    ? primaryColor
-                                    : Colors.white,
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(context).iconTheme.color,
                           ),
                         ),
                         level > 7
@@ -177,7 +200,10 @@ class CommentsBlock extends StatelessWidget {
                               label: Text(
                                 "Reply",
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).textTheme.bodyLarge?.color,
                                   fontSize: 3.5.w,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -185,7 +211,7 @@ class CommentsBlock extends StatelessWidget {
                               icon: Icon(
                                 Icons.reply,
                                 size: 5.5.w,
-                                color: primaryColor,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                             )
                             : IconButton(
@@ -195,7 +221,7 @@ class CommentsBlock extends StatelessWidget {
                               icon: Icon(
                                 Icons.reply,
                                 size: 5.5.w,
-                                color: primaryColor,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                             ),
                       ],

@@ -94,6 +94,7 @@ class _RegisterState extends State<Register> {
       create: (context) => LoginRegisterationBloc(),
 
       child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
           child: SingleChildScrollView(
             child: SizedBox(
@@ -117,39 +118,51 @@ class _RegisterState extends State<Register> {
                       child: TextFormField(
                         keyboardType: TextInputType.emailAddress,
                         enableSuggestions: false,
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                        ),
 
                         autocorrect: false,
-                        cursorColor: Colors.white,
+                        cursorColor:
+                            Theme.of(context).textTheme.bodyLarge?.color,
                         controller: email,
                         validator: validateEmail,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           isDense: true, // Added this
                           contentPadding: EdgeInsets.all(16),
                           border: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.outline,
+                            ),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: Theme.of(context).colorScheme.outline,
                             ),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                           labelText: 'Email',
                           errorStyle: TextStyle(
-                            color: Colors.red,
+                            color: Theme.of(context).colorScheme.error,
                             fontSize: 10,
                           ),
                           errorBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: Color.fromARGB(255, 199, 78, 69),
+                              color: Theme.of(context).colorScheme.error,
                             ),
                           ),
-                          labelStyle: TextStyle(color: Colors.white),
+                          labelStyle: TextStyle(
+                            color:
+                                Theme.of(context).textTheme.bodyMedium?.color,
+                          ),
                         ),
                       ),
                     ),
@@ -161,9 +174,12 @@ class _RegisterState extends State<Register> {
                       key: _password,
                       child: TextFormField(
                         obscureText: !visibility,
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                        ),
 
-                        cursorColor: Colors.white,
+                        cursorColor:
+                            Theme.of(context).textTheme.bodyLarge?.color,
                         enableSuggestions: false,
                         autocorrect: false,
                         controller: password,
@@ -180,30 +196,39 @@ class _RegisterState extends State<Register> {
                         decoration: InputDecoration(
                           isDense: true, // Added this
                           contentPadding: const EdgeInsets.all(16),
-                          border: const OutlineInputBorder(
+                          border: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.outline,
                             ),
                           ),
-                          focusedBorder: const OutlineInputBorder(
+                          enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.outline,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                           labelText: 'Password',
-                          errorStyle: const TextStyle(
-                            color: Colors.red,
+                          errorStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
                             fontSize: 10,
                           ),
-                          errorBorder: const OutlineInputBorder(
+                          errorBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: Color.fromARGB(255, 199, 78, 69),
+                              color: Theme.of(context).colorScheme.error,
                             ),
                           ),
-                          labelStyle: const TextStyle(color: Colors.white),
+                          labelStyle: TextStyle(
+                            color:
+                                Theme.of(context).textTheme.bodyMedium?.color,
+                          ),
                           suffixIcon: IconButton(
                             onPressed: () {
                               setState(() {
@@ -215,6 +240,7 @@ class _RegisterState extends State<Register> {
                               visibility
                                   ? Icons.visibility
                                   : Icons.visibility_off,
+                              color: Theme.of(context).iconTheme.color,
                             ),
                           ),
                         ),
@@ -228,10 +254,13 @@ class _RegisterState extends State<Register> {
                       key: _confirmPassword,
                       child: TextFormField(
                         obscureText: !confirmVisibility,
-                        cursorColor: Colors.white,
+                        cursorColor:
+                            Theme.of(context).textTheme.bodyLarge?.color,
                         enableSuggestions: false,
                         autocorrect: false,
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyLarge?.color,
+                        ),
 
                         controller: confirmPassword,
                         validator: (value) {
@@ -245,30 +274,39 @@ class _RegisterState extends State<Register> {
                         decoration: InputDecoration(
                           isDense: true, // Added this
                           contentPadding: const EdgeInsets.all(16),
-                          border: const OutlineInputBorder(
+                          border: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.outline,
                             ),
                           ),
-                          focusedBorder: const OutlineInputBorder(
+                          enabledBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.outline,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                              width: 1,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           ),
                           labelText: 'Confirm Password',
-                          errorStyle: const TextStyle(
-                            color: Colors.red,
+                          errorStyle: TextStyle(
+                            color: Theme.of(context).colorScheme.error,
                             fontSize: 10,
                           ),
-                          errorBorder: const OutlineInputBorder(
+                          errorBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: Color.fromARGB(255, 199, 78, 69),
+                              color: Theme.of(context).colorScheme.error,
                             ),
                           ),
-                          labelStyle: const TextStyle(color: Colors.white),
+                          labelStyle: TextStyle(
+                            color:
+                                Theme.of(context).textTheme.bodyMedium?.color,
+                          ),
                           suffixIcon: IconButton(
                             onPressed: () {
                               setState(() {
@@ -279,6 +317,7 @@ class _RegisterState extends State<Register> {
                               confirmVisibility
                                   ? Icons.visibility
                                   : Icons.visibility_off,
+                              color: Theme.of(context).iconTheme.color,
                             ),
                           ),
                         ),
@@ -293,10 +332,15 @@ class _RegisterState extends State<Register> {
                         useSafeArea: true,
 
                         countryListTheme: CountryListThemeData(
-                          searchTextStyle: TextStyle(color: Colors.white),
+                          searchTextStyle: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                          ),
                           flagSize: 10.w,
-                          backgroundColor: const Color(0xFF121416),
-                          textStyle: TextStyle(color: Colors.white),
+                          backgroundColor:
+                              Theme.of(context).scaffoldBackgroundColor,
+                          textStyle: TextStyle(
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                          ),
                         ),
                         context: context,
                         showPhoneCode: false,
@@ -318,8 +362,8 @@ class _RegisterState extends State<Register> {
                           border: Border.all(
                             color:
                                 isCountryValid
-                                    ? const Color.fromARGB(255, 153, 153, 153)
-                                    : const Color.fromARGB(255, 227, 30, 16),
+                                    ? Theme.of(context).colorScheme.outline
+                                    : Theme.of(context).colorScheme.error,
                           ),
                           borderRadius: BorderRadius.circular(5),
                         ),
@@ -330,10 +374,16 @@ class _RegisterState extends State<Register> {
                               selectedCountry ?? 'Select your country',
                               style: TextStyle(
                                 fontSize: 16,
-                                color: Colors.white,
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).textTheme.bodyLarge?.color,
                               ),
                             ),
-                            const Icon(Icons.arrow_drop_down),
+                            Icon(
+                              Icons.arrow_drop_down,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
                           ],
                         ),
                       ),
@@ -348,28 +398,39 @@ class _RegisterState extends State<Register> {
                           'Gender:',
                           style: TextStyle(
                             fontSize: 16.0,
-                            color: Colors.white,
+                            color: Theme.of(context).textTheme.bodyLarge?.color,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         SizedBox(width: 5.w),
                         Container(
                           decoration: BoxDecoration(
-                            border: Border.all(color: Colors.white54, width: 1),
+                            border: Border.all(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.outline.withOpacity(0.7),
+                              width: 1,
+                            ),
                             borderRadius: BorderRadius.circular(5),
                           ),
                           padding: EdgeInsets.symmetric(horizontal: 7.w),
                           child: DropdownButtonHideUnderline(
                             child: DropdownButton<String>(
-                              dropdownColor: Colors.grey[900],
+                              dropdownColor: Theme.of(context).cardColor,
                               icon: Icon(
                                 Icons.arrow_drop_down,
-                                color: Colors.white70,
+                                color: Theme.of(
+                                  context,
+                                ).iconTheme.color?.withOpacity(0.7),
                               ),
                               hint: Text(
                                 'Select Gender',
                                 style: TextStyle(
-                                  color: Colors.white70,
+                                  color: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.color
+                                      ?.withOpacity(0.7),
                                   fontSize: 15,
                                 ),
                               ),
@@ -386,7 +447,10 @@ class _RegisterState extends State<Register> {
                                       child: Text(
                                         gender,
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).textTheme.bodyLarge?.color,
                                           fontSize: 15,
                                         ),
                                       ),
@@ -455,7 +519,10 @@ class _RegisterState extends State<Register> {
                           },
                           style: ElevatedButton.styleFrom(
                             minimumSize: const Size(370, 47),
-                            backgroundColor: primaryColor,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onPrimary,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -464,12 +531,18 @@ class _RegisterState extends State<Register> {
                               state.status ==
                                       Loginandregisterationstatus.loading
                                   ? LoadingAnimationWidget.staggeredDotsWave(
-                                    color: Colors.white,
+                                    color:
+                                        Theme.of(context).colorScheme.onPrimary,
                                     size: 10.w,
                                   )
-                                  : const Text(
+                                  : Text(
                                     "Sign Up",
-                                    style: TextStyle(color: Colors.white),
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).colorScheme.onPrimary,
+                                    ),
                                   ),
                         );
                       },
@@ -488,12 +561,14 @@ class _RegisterState extends State<Register> {
                     child: Text.rich(
                       TextSpan(
                         text: "Already registered?",
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyMedium?.color,
+                        ),
                         children: [
                           TextSpan(
                             text: " Login here",
                             style: TextStyle(
-                              color: primaryColor,
+                              color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

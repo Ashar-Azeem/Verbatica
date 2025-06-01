@@ -31,6 +31,7 @@ class _TrendingViewState extends State<TrendingView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: DefaultTabController(
         length: 2,
         child: SafeArea(
@@ -41,7 +42,8 @@ class _TrendingViewState extends State<TrendingView> {
               headerSliverBuilder:
                   (context, innerBoxIsScrolled) => [
                     SliverAppBar(
-                      backgroundColor: Color.fromARGB(255, 10, 13, 15),
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
                       automaticallyImplyLeading: false,
                       toolbarHeight: 12.h,
                       floating: true,
@@ -54,12 +56,10 @@ class _TrendingViewState extends State<TrendingView> {
                             width: 90.w,
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Color.fromARGB(
-                                  255,
-                                  39,
-                                  52,
-                                  61,
-                                ),
+                                backgroundColor:
+                                    Theme.of(
+                                      context,
+                                    ).colorScheme.surfaceContainer,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(50),
                                 ),
@@ -74,14 +74,24 @@ class _TrendingViewState extends State<TrendingView> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  const Icon(Icons.search, color: Colors.white),
+                                  Icon(
+                                    Icons.search,
+                                    color:
+                                        Theme.of(
+                                          context,
+                                        ).colorScheme.onSurfaceVariant,
+                                  ),
                                   Padding(
                                     padding: const EdgeInsets.only(left: 17),
                                     child: Text(
                                       'Search',
                                       style: TextStyle(
                                         fontSize: 17,
-                                        color: Colors.grey.shade400,
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyLarge
+                                            ?.color
+                                            ?.withOpacity(0.7),
                                       ),
                                     ),
                                   ),
@@ -93,14 +103,13 @@ class _TrendingViewState extends State<TrendingView> {
                           BlocBuilder<TrendingViewBloc, TrendingViewState>(
                             builder: (context, state) {
                               return TabBar(
-                                indicatorColor: primaryColor,
-                                labelColor: primaryColor,
-                                unselectedLabelColor: const Color.fromARGB(
-                                  255,
-                                  196,
-                                  195,
-                                  195,
-                                ),
+                                indicatorColor:
+                                    Theme.of(context).colorScheme.primary,
+                                labelColor:
+                                    Theme.of(context).colorScheme.primary,
+                                unselectedLabelColor: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium?.color?.withOpacity(0.6),
                                 onTap: (value) {
                                   //Only Called once
                                   if (value == 1 && state.news.isEmpty) {
@@ -196,7 +205,7 @@ class _BuiltPostListState extends State<BuiltPostList>
     return widget.loading
         ? Center(
           child: LoadingAnimationWidget.dotsTriangle(
-            color: primaryColor,
+            color: Theme.of(context).colorScheme.primary,
             size: 10.w,
           ),
         )
@@ -245,8 +254,10 @@ class _BuiltPostListState extends State<BuiltPostList>
                                   120,
                                   48,
                                 ), // width, height
-                                backgroundColor: primaryColor,
-
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                foregroundColor:
+                                    Theme.of(context).colorScheme.onPrimary,
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 16,
                                 ),
@@ -258,14 +269,22 @@ class _BuiltPostListState extends State<BuiltPostList>
                                 showCountryPicker(
                                   exclude: ["IL"],
                                   useSafeArea: true,
-
                                   countryListTheme: CountryListThemeData(
                                     searchTextStyle: TextStyle(
-                                      color: Colors.white,
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).textTheme.bodyLarge?.color,
                                     ),
                                     flagSize: 10.w,
-                                    backgroundColor: const Color(0xFF121416),
-                                    textStyle: TextStyle(color: Colors.white),
+                                    backgroundColor:
+                                        Theme.of(context).dialogBackgroundColor,
+                                    textStyle: TextStyle(
+                                      color:
+                                          Theme.of(
+                                            context,
+                                          ).textTheme.bodyLarge?.color,
+                                    ),
                                   ),
                                   context: context,
                                   showPhoneCode: false,
@@ -279,7 +298,10 @@ class _BuiltPostListState extends State<BuiltPostList>
                               icon: const Icon(Icons.flag),
                               label: Text(
                                 selectedCountry?.name ?? 'Select Country',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.onPrimary,
+                                ),
                               ),
                             ),
 
@@ -287,7 +309,7 @@ class _BuiltPostListState extends State<BuiltPostList>
                             DecoratedBox(
                               decoration: BoxDecoration(
                                 border: Border.all(
-                                  color: Colors.white,
+                                  color: Theme.of(context).colorScheme.outline,
                                   width: 0.5,
                                 ),
                                 borderRadius: BorderRadius.circular(12),
@@ -298,6 +320,10 @@ class _BuiltPostListState extends State<BuiltPostList>
                                   child: DropdownButton<DateTime>(
                                     borderRadius: BorderRadius.circular(10),
                                     value: selectedDay,
+                                    dropdownColor:
+                                        Theme.of(
+                                          context,
+                                        ).colorScheme.surfaceContainer,
                                     items:
                                         last7Days.map((day) {
                                           return DropdownMenuItem(
@@ -307,7 +333,11 @@ class _BuiltPostListState extends State<BuiltPostList>
                                                 'EEE, MMM d',
                                               ).format(day),
                                               style: TextStyle(
-                                                color: Colors.white,
+                                                color:
+                                                    Theme.of(context)
+                                                        .textTheme
+                                                        .bodyLarge
+                                                        ?.color,
                                               ),
                                             ),
                                           );

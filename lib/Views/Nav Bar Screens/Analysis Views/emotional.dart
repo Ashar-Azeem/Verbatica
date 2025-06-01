@@ -24,7 +24,6 @@ class _EmotionalChartState extends State<EmotionalChart>
   late AnimationController _indicatorsController;
 
   int touchedIndex = -1;
-  final Color containerColor = const Color.fromARGB(255, 21, 28, 32);
   late List<double> emotionValues;
 
   @override
@@ -55,6 +54,7 @@ class _EmotionalChartState extends State<EmotionalChart>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final title =
         widget.index == 1
             ? 'Emotional Distribution Analysis'
@@ -68,17 +68,17 @@ class _EmotionalChartState extends State<EmotionalChart>
       builder: (context, constraints) {
         return Card(
           elevation: 12,
-          shadowColor: Colors.black38,
+          shadowColor: theme.shadowColor.withOpacity(0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(24),
           ),
           child: Container(
             decoration: BoxDecoration(
-              color: containerColor,
+              color: theme.cardColor,
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: theme.shadowColor.withOpacity(0.1),
                   blurRadius: 10,
                   spreadRadius: 1,
                   offset: const Offset(0, 4),
@@ -94,9 +94,7 @@ class _EmotionalChartState extends State<EmotionalChart>
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
+                      style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.5,
                       ),
@@ -104,12 +102,16 @@ class _EmotionalChartState extends State<EmotionalChart>
                     const SizedBox(height: 4),
                     Text(
                       subtitle,
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
-                        fontSize: 12,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.textTheme.bodySmall?.color?.withOpacity(
+                          0.7,
+                        ),
                       ),
                     ),
-                    const Divider(color: Colors.white12, height: 24),
+                    Divider(
+                      color: theme.dividerColor.withOpacity(0.3),
+                      height: 24,
+                    ),
                   ],
                 ),
 
@@ -152,6 +154,7 @@ class _EmotionalChartState extends State<EmotionalChart>
   }
 
   List<PieChartSectionData> _buildSections(List<String> emotions) {
+    final theme = Theme.of(context);
     return List.generate(emotions.length, (index) {
       final double fontSize = 13;
       final double radius = 50;
@@ -164,7 +167,7 @@ class _EmotionalChartState extends State<EmotionalChart>
         titleStyle: TextStyle(
           fontSize: fontSize,
           fontWeight: FontWeight.bold,
-          color: Colors.white,
+          color: theme.colorScheme.onPrimary,
         ),
         badgePositionPercentageOffset: 1.3,
       );
@@ -202,6 +205,7 @@ class _EmotionalChartState extends State<EmotionalChart>
   }
 
   Widget _buildIndicatorItem(List<String> emotions, int index) {
+    final theme = Theme.of(context);
     final isSelected = index == touchedIndex;
     final color = _getColor(index);
 
@@ -215,10 +219,10 @@ class _EmotionalChartState extends State<EmotionalChart>
           color:
               isSelected
                   ? color.withOpacity(0.25)
-                  : Colors.black.withOpacity(0.1),
+                  : theme.colorScheme.surface.withOpacity(0.1),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? color : Colors.white.withOpacity(0.15),
+            color: isSelected ? color : theme.dividerColor.withOpacity(0.3),
             width: isSelected ? 1.5 : 1,
           ),
         ),
@@ -250,8 +254,8 @@ class _EmotionalChartState extends State<EmotionalChart>
                 style: TextStyle(
                   color:
                       isSelected
-                          ? Colors.white
-                          : Colors.white.withOpacity(0.85),
+                          ? theme.textTheme.bodyLarge?.color
+                          : theme.textTheme.bodyLarge?.color?.withOpacity(0.85),
                   fontSize: isSelected ? 13 : 12,
                   fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),

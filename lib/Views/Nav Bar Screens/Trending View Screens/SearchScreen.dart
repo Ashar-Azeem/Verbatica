@@ -37,7 +37,12 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Scaffold(
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: SafeArea(
@@ -73,14 +78,23 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                           minWidth: 90.w,
                         ),
                         hintText: 'Search',
-                        backgroundColor: const WidgetStatePropertyAll<Color>(
-                          Color.fromARGB(255, 39, 52, 61),
+                        hintStyle: WidgetStatePropertyAll<TextStyle>(
+                          TextStyle(
+                            color: textTheme.bodyMedium?.color?.withOpacity(
+                              0.6,
+                            ),
+                          ),
+                        ),
+                        textStyle: WidgetStatePropertyAll<TextStyle>(
+                          TextStyle(color: textTheme.bodyLarge?.color),
+                        ),
+                        backgroundColor: WidgetStatePropertyAll<Color>(
+                          colorScheme.surfaceVariant,
                         ),
                         controller: controller,
                         padding: const WidgetStatePropertyAll<EdgeInsets>(
                           EdgeInsets.symmetric(horizontal: 16.0),
                         ),
-
                         onChanged: (value) {
                           if (_tabController.index == 0) {
                             context.read<SearchBloc>().add(
@@ -92,7 +106,10 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                             );
                           }
                         },
-                        leading: const Icon(Icons.search),
+                        leading: Icon(
+                          Icons.search,
+                          color: textTheme.bodyMedium?.color?.withOpacity(0.7),
+                        ),
                       ),
                     );
                   },
@@ -115,8 +132,11 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                     }
                   },
                   controller: _tabController,
-                  labelColor: primaryColor,
-                  indicatorColor: primaryColor,
+                  labelColor: colorScheme.primary,
+                  unselectedLabelColor: textTheme.bodyMedium?.color
+                      ?.withOpacity(0.7),
+                  indicatorColor: colorScheme.primary,
+                  dividerColor: colorScheme.outline.withOpacity(0.2),
                   tabs: [Tab(text: "Users"), Tab(text: "Discussions")],
                 ),
                 Expanded(
@@ -131,10 +151,11 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                       return TabBarView(
                         controller: _tabController,
                         children: [
+                          // Users Tab
                           state.loadingUsers
                               ? Center(
                                 child: LoadingAnimationWidget.dotsTriangle(
-                                  color: primaryColor,
+                                  color: colorScheme.primary,
                                   size: 10.w,
                                 ),
                               )
@@ -142,11 +163,14 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                               ? Center(
                                 child: Text(
                                   "No Users Found",
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                    color: textTheme.bodyLarge?.color,
+                                    fontSize: textTheme.bodyLarge?.fontSize,
+                                  ),
                                 ),
                               )
                               : ListView.builder(
-                                physics: BouncingScrollPhysics(),
+                                physics: const BouncingScrollPhysics(),
                                 padding: EdgeInsets.only(top: 8),
                                 addRepaintBoundaries: true,
                                 cacheExtent: 500,
@@ -156,10 +180,11 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                                 },
                               ),
 
+                          // Posts Tab
                           state.loadingPosts
                               ? Center(
                                 child: LoadingAnimationWidget.dotsTriangle(
-                                  color: primaryColor,
+                                  color: colorScheme.primary,
                                   size: 10.w,
                                 ),
                               )
@@ -167,11 +192,14 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                               ? Center(
                                 child: Text(
                                   "No Posts Found",
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                    color: textTheme.bodyLarge?.color,
+                                    fontSize: textTheme.bodyLarge?.fontSize,
+                                  ),
                                 ),
                               )
                               : ListView.builder(
-                                physics: BouncingScrollPhysics(),
+                                physics: const BouncingScrollPhysics(),
                                 padding: EdgeInsets.only(top: 8),
                                 addRepaintBoundaries: true,
                                 cacheExtent: 500,

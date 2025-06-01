@@ -1,4 +1,3 @@
-// ignore_for_file: file_names
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
@@ -42,18 +41,32 @@ class UserPostWidget extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          title: const Text(
+          title: Text(
             'Delete Post',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              color: Theme.of(context).textTheme.titleLarge?.color,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          content: const Text(
+          content: Text(
             'Are you sure you want to delete this post?',
-            style: TextStyle(color: Colors.white70),
+            style: TextStyle(
+              color: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.color?.withOpacity(0.7),
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel', style: TextStyle(color: Colors.grey[400])),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                ),
+              ),
             ),
             TextButton(
               onPressed: () {
@@ -61,7 +74,10 @@ class UserPostWidget extends StatelessWidget {
                 context.read<UserBloc>().add(DeleteUserPost(postId: post.id));
                 Navigator.of(context).pop();
               },
-              child: Text('Delete', style: TextStyle(color: Colors.blue)),
+              child: Text(
+                'Delete',
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
             ),
           ],
         );
@@ -113,12 +129,20 @@ class UserPostWidget extends StatelessWidget {
                             children: [
                               Text(
                                 post.name,
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).textTheme.bodyLarge?.color,
+                                ),
                               ),
                               Text(
                                 timeago.format(post.uploadTime),
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium?.color,
                                   fontSize: 2.w,
                                 ),
                               ),
@@ -155,19 +179,24 @@ class UserPostWidget extends StatelessWidget {
                           },
                           style: TextButton.styleFrom(
                             shape: StadiumBorder(),
-                            backgroundColor: primaryColor,
-                            foregroundColor: Colors.white,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.primary,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onPrimary,
                           ),
                           child: Text(
                             'Summary',
                             style: TextStyle(
-                              color: Colors.white,
+                              color: Theme.of(context).colorScheme.onPrimary,
                               fontSize: 2.8.w,
                             ),
                           ),
                         ),
                         PopupMenuButton<String>(
-                          icon: Icon(Icons.more_vert),
+                          icon: Icon(
+                            Icons.more_vert,
+                            color: Theme.of(context).iconTheme.color,
+                          ),
                           onSelected: (String value) {
                             if (isUserPost) {
                               // User's own posts - edit/delete/share options
@@ -205,7 +234,7 @@ class UserPostWidget extends StatelessWidget {
                               (BuildContext context) =>
                                   isUserPost
                                       ? <PopupMenuEntry<String>>[
-                                        const PopupMenuItem<String>(
+                                        PopupMenuItem<String>(
                                           value: 'edit',
                                           child: Row(
                                             mainAxisAlignment:
@@ -213,13 +242,25 @@ class UserPostWidget extends StatelessWidget {
                                             children: [
                                               Icon(
                                                 Icons.edit,
-                                                color: Colors.white,
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).iconTheme.color,
                                               ),
-                                              Text('Edit'),
+                                              Text(
+                                                'Edit',
+                                                style: TextStyle(
+                                                  color:
+                                                      Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium
+                                                          ?.color,
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         ),
-                                        const PopupMenuItem<String>(
+                                        PopupMenuItem<String>(
                                           value: 'delete',
                                           child: Row(
                                             mainAxisAlignment:
@@ -227,13 +268,25 @@ class UserPostWidget extends StatelessWidget {
                                             children: [
                                               Icon(
                                                 Icons.delete,
-                                                color: Colors.white,
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).iconTheme.color,
                                               ),
-                                              Text('Delete'),
+                                              Text(
+                                                'Delete',
+                                                style: TextStyle(
+                                                  color:
+                                                      Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium
+                                                          ?.color,
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         ),
-                                        const PopupMenuItem<String>(
+                                        PopupMenuItem<String>(
                                           value: 'share',
                                           child: Row(
                                             mainAxisAlignment:
@@ -241,15 +294,27 @@ class UserPostWidget extends StatelessWidget {
                                             children: [
                                               Icon(
                                                 Icons.share,
-                                                color: Colors.white,
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).iconTheme.color,
                                               ),
-                                              Text('Share'),
+                                              Text(
+                                                'Share',
+                                                style: TextStyle(
+                                                  color:
+                                                      Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium
+                                                          ?.color,
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         ),
                                       ]
                                       : <PopupMenuEntry<String>>[
-                                        const PopupMenuItem<String>(
+                                        PopupMenuItem<String>(
                                           value: 'report',
                                           child: Row(
                                             mainAxisAlignment:
@@ -257,13 +322,25 @@ class UserPostWidget extends StatelessWidget {
                                             children: [
                                               Icon(
                                                 Icons.report_gmailerrorred,
-                                                color: Colors.white,
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).iconTheme.color,
                                               ),
-                                              Text('Report'),
+                                              Text(
+                                                'Report',
+                                                style: TextStyle(
+                                                  color:
+                                                      Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium
+                                                          ?.color,
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         ),
-                                        const PopupMenuItem<String>(
+                                        PopupMenuItem<String>(
                                           value: 'unsave',
                                           child: Row(
                                             mainAxisAlignment:
@@ -271,13 +348,25 @@ class UserPostWidget extends StatelessWidget {
                                             children: [
                                               Icon(
                                                 Icons.bookmark_remove,
-                                                color: Colors.white,
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).iconTheme.color,
                                               ),
-                                              Text('Unsave'),
+                                              Text(
+                                                'Unsave',
+                                                style: TextStyle(
+                                                  color:
+                                                      Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium
+                                                          ?.color,
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         ),
-                                        const PopupMenuItem<String>(
+                                        PopupMenuItem<String>(
                                           value: 'share',
                                           child: Row(
                                             mainAxisAlignment:
@@ -285,9 +374,21 @@ class UserPostWidget extends StatelessWidget {
                                             children: [
                                               Icon(
                                                 Icons.share,
-                                                color: Colors.white,
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).iconTheme.color,
                                               ),
-                                              Text('Share'),
+                                              Text(
+                                                'Share',
+                                                style: TextStyle(
+                                                  color:
+                                                      Theme.of(context)
+                                                          .textTheme
+                                                          .bodyMedium
+                                                          ?.color,
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -308,8 +409,8 @@ class UserPostWidget extends StatelessWidget {
                   padding: EdgeInsets.only(left: 1.w),
                   child: Text(
                     post.title,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: Theme.of(context).textTheme.titleLarge?.color,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -328,8 +429,11 @@ class UserPostWidget extends StatelessWidget {
                     collapseText: 'show less',
                     linkEllipsis: false,
                     maxLines: 2,
-                    style: const TextStyle(fontSize: 15, color: Colors.white),
-                    linkColor: primaryColor,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: Theme.of(context).textTheme.bodyLarge?.color,
+                    ),
+                    linkColor: Theme.of(context).colorScheme.primary,
                   ),
                 ),
 
@@ -340,24 +444,30 @@ class UserPostWidget extends StatelessWidget {
                     imageUrl: post.postImageLink!,
                     placeholder:
                         (context, url) => Shimmer.fromColors(
-                          baseColor: const Color.fromARGB(255, 58, 76, 90),
-                          highlightColor: const Color.fromARGB(
-                            255,
-                            81,
-                            106,
-                            125,
-                          ),
+                          baseColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? const Color.fromARGB(255, 58, 76, 90)
+                                  : Colors.grey[300]!,
+                          highlightColor:
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? const Color.fromARGB(255, 81, 106, 125)
+                                  : Colors.grey[100]!,
                           child: AspectRatio(
                             aspectRatio: 16 / 9,
-                            child: Container(color: Colors.white),
+                            child: Container(
+                              color: Theme.of(context).cardColor,
+                            ),
                           ),
                         ),
                     errorWidget:
                         (context, url, error) => AspectRatio(
                           aspectRatio: 16 / 9,
                           child: Container(
-                            color: Colors.grey[200],
-                            child: const Icon(Icons.error),
+                            color: Theme.of(context).colorScheme.surfaceVariant,
+                            child: Icon(
+                              Icons.error,
+                              color: Theme.of(context).iconTheme.color,
+                            ),
                           ),
                         ),
                     fit: BoxFit.contain,
@@ -407,7 +517,7 @@ class UserPostWidget extends StatelessWidget {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: Color.fromARGB(255, 70, 79, 87),
+                            color: Theme.of(context).dividerColor,
                           ),
                         ),
                         padding: EdgeInsets.symmetric(
@@ -457,14 +567,22 @@ class UserPostWidget extends StatelessWidget {
                                           size: 7.w,
                                           color:
                                               dynamicpost.isUpVote
-                                                  ? primaryColor
-                                                  : Colors.grey,
+                                                  ? Theme.of(
+                                                    context,
+                                                  ).colorScheme.primary
+                                                  : Theme.of(context)
+                                                      .iconTheme
+                                                      .color
+                                                      ?.withOpacity(0.6),
                                         ),
                                       ),
                                       Text(
                                         "${dynamicpost.upvotes - dynamicpost.downvotes}",
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color:
+                                              Theme.of(
+                                                context,
+                                              ).textTheme.bodyMedium?.color,
                                           fontSize: 3.w,
                                           height: 1,
                                           fontWeight: FontWeight.bold,
@@ -477,7 +595,7 @@ class UserPostWidget extends StatelessWidget {
                                 Container(
                                   width: 1,
                                   height: 6.h,
-                                  color: Color.fromARGB(255, 70, 79, 87),
+                                  color: Theme.of(context).dividerColor,
                                 ),
                                 IconButton(
                                   splashColor: Colors.transparent,
@@ -500,8 +618,12 @@ class UserPostWidget extends StatelessWidget {
                                     Icons.arrow_circle_down_outlined,
                                     color:
                                         dynamicpost.isDownVote
-                                            ? primaryColor
-                                            : Colors.grey,
+                                            ? Theme.of(
+                                              context,
+                                            ).colorScheme.primary
+                                            : Theme.of(
+                                              context,
+                                            ).iconTheme.color?.withOpacity(0.6),
                                   ),
                                 ),
                               ],
@@ -516,7 +638,7 @@ class UserPostWidget extends StatelessWidget {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: Color.fromARGB(255, 70, 79, 87),
+                                color: Theme.of(context).dividerColor,
                               ),
                             ),
                             padding: EdgeInsets.symmetric(
@@ -552,13 +674,16 @@ class UserPostWidget extends StatelessWidget {
                                   padding: EdgeInsets.zero,
                                   icon: Icon(
                                     Icons.mode_comment_outlined,
-                                    color: Colors.white,
+                                    color: Theme.of(context).iconTheme.color,
                                   ),
                                 ),
                                 Text(
                                   "${post.comments}",
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color:
+                                        Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium?.color,
                                     fontSize: 3.w,
                                     height: 1,
                                     fontWeight: FontWeight.bold,
@@ -588,7 +713,7 @@ class UserPostWidget extends StatelessWidget {
                             icon: Icon(
                               Icons.analytics_outlined,
                               size: 7.w,
-                              color: primaryColor,
+                              color: Theme.of(context).colorScheme.primary,
                             ),
                           )
                           : SizedBox(height: 6.h, width: 15.w),
@@ -597,9 +722,9 @@ class UserPostWidget extends StatelessWidget {
                       if (isUserPost) ...[
                         Spacer(),
                         IconButton(
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.delete_outline,
-                            color: Colors.red,
+                            color: Theme.of(context).colorScheme.error,
                           ),
                           onPressed: () {
                             _showDeleteConfirmation(context, post);

@@ -27,19 +27,24 @@ class SummaryScreen extends StatelessWidget {
     }
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Summary',
-          style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5),
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+            color:
+                Theme.of(context).appBarTheme.titleTextStyle?.color ??
+                Theme.of(context).colorScheme.onPrimary,
+          ),
         ),
         elevation: 0,
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(
-          255,
-          67,
-          118,
-          138,
-        ).withOpacity(0.6),
+        backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.6),
+        iconTheme: IconThemeData(
+          color: Theme.of(context).colorScheme.onPrimary,
+        ),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -47,7 +52,7 @@ class SummaryScreen extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Theme.of(context).primaryColor.withOpacity(0.05),
+              Theme.of(context).colorScheme.primary.withOpacity(0.05),
               Colors.transparent,
             ],
           ),
@@ -93,7 +98,9 @@ class SummaryScreen extends StatelessWidget {
             message,
             style: TextStyle(
               fontSize: 16,
-              color: Theme.of(context).colorScheme.onSurface,
+              color:
+                  Theme.of(context).textTheme.bodyLarge?.color ??
+                  Theme.of(context).colorScheme.onSurface,
             ),
             textAlign: TextAlign.center,
           ),
@@ -111,6 +118,8 @@ class SummaryScreen extends StatelessWidget {
             icon: const Icon(Icons.refresh),
             label: const Text('Try Again'),
             style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
@@ -127,13 +136,19 @@ class SummaryScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const CircularProgressIndicator(),
+          CircularProgressIndicator(
+            color: Theme.of(context).colorScheme.primary,
+          ),
           const SizedBox(height: 24),
           Text(
             'Generating summary...',
             style: TextStyle(
               fontSize: 16,
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color:
+                  Theme.of(
+                    context,
+                  ).textTheme.bodyLarge?.color?.withOpacity(0.7) ??
+                  Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
             ),
           ),
         ],
@@ -145,7 +160,7 @@ class SummaryScreen extends StatelessWidget {
     if (state is SummaryLoaded) {
       // Ensure bulletPoints is not empty
       if (state.bulletPoints.isEmpty) {
-        return _buildEmptyContent('No bullet points available');
+        return _buildEmptyContent(context, 'No bullet points available');
       }
       return _buildBulletPointsContent(context, state.bulletPoints);
     } else if (state is ClusterDetailsLoaded) {
@@ -153,32 +168,41 @@ class SummaryScreen extends StatelessWidget {
       if (clusters == null ||
           clusters!.isEmpty ||
           state.summaryOfCluster.isEmpty) {
-        return _buildEmptyContent('No cluster summaries available');
+        return _buildEmptyContent(context, 'No cluster summaries available');
       }
 
       // Use TabView for cluster summaries instead of the previous layout
       return _buildClusterTabView(context, clusters!, state.summaryOfCluster);
     }
 
-    return _buildEmptyContent('No content available');
+    return _buildEmptyContent(context, 'No content available');
   }
 
-  Widget _buildEmptyContent(String message) {
+  Widget _buildEmptyContent(BuildContext context, String message) {
     return Card(
       elevation: 3,
-      shadowColor: Colors.black26,
+      shadowColor: Theme.of(context).shadowColor.withOpacity(0.26),
+      color: Theme.of(context).cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Center(
           child: Column(
             children: [
-              const Icon(Icons.info_outline, size: 48, color: Colors.blue),
+              Icon(
+                Icons.info_outline,
+                size: 48,
+                color: Theme.of(context).colorScheme.primary,
+              ),
               const SizedBox(height: 16),
               Text(
                 message,
-                style: const TextStyle(
-                  color: Colors.white70,
+                style: TextStyle(
+                  color:
+                      Theme.of(
+                        context,
+                      ).textTheme.bodyLarge?.color?.withOpacity(0.7) ??
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
                 ),
@@ -198,7 +222,8 @@ class SummaryScreen extends StatelessWidget {
     return SingleChildScrollView(
       child: Card(
         elevation: 4,
-        shadowColor: Colors.black26,
+        shadowColor: Theme.of(context).shadowColor.withOpacity(0.26),
+        color: Theme.of(context).cardColor,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -210,30 +235,38 @@ class SummaryScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
                       Icons.lightbulb_outline,
                       size: 20,
-                      color: Theme.of(context).primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   const SizedBox(width: 12),
-                  const Text(
+                  Text(
                     'Key Points',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color:
+                          Theme.of(context).textTheme.headlineSmall?.color ??
+                          Theme.of(context).colorScheme.onSurface,
                       fontSize: 20,
                       letterSpacing: 0.5,
                     ),
                   ),
                 ],
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: Divider(height: 1, thickness: 1, color: Colors.white12),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Theme.of(context).dividerColor.withOpacity(0.12),
+                ),
               ),
               ListView.separated(
                 physics: const NeverScrollableScrollPhysics(),
@@ -250,15 +283,17 @@ class SummaryScreen extends StatelessWidget {
                         height: 8,
                         width: 8,
                         decoration: BoxDecoration(
-                          color: Theme.of(context).primaryColor,
+                          color: Theme.of(context).colorScheme.primary,
                           shape: BoxShape.circle,
                         ),
                       ),
                       Expanded(
                         child: Text(
                           bulletPoints[index],
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color:
+                                Theme.of(context).textTheme.bodyLarge?.color ??
+                                Theme.of(context).colorScheme.onSurface,
                             fontSize: 16,
                             height: 1.5,
                           ),
@@ -297,7 +332,7 @@ class SummaryScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
+                    color: Theme.of(context).shadowColor.withOpacity(0.1),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -306,9 +341,11 @@ class SummaryScreen extends StatelessWidget {
               child: TabBar(
                 isScrollable: true,
                 labelColor: Theme.of(context).colorScheme.onPrimary,
-                unselectedLabelColor: Theme.of(
-                  context,
-                ).colorScheme.onSurface.withOpacity(0.6),
+                unselectedLabelColor:
+                    Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.color?.withOpacity(0.6) ??
+                    Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
                 labelStyle: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
@@ -318,7 +355,7 @@ class SummaryScreen extends StatelessWidget {
                   fontSize: 14,
                 ),
                 indicator: BoxDecoration(
-                  color: Theme.of(context).primaryColor,
+                  color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(30),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
@@ -365,7 +402,8 @@ class SummaryScreen extends StatelessWidget {
   ) {
     return Card(
       elevation: 4,
-      shadowColor: Colors.black26,
+      shadowColor: Theme.of(context).shadowColor.withOpacity(0.26),
+      color: Theme.of(context).cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       margin: const EdgeInsets.all(2), // Add small margin
       child: SingleChildScrollView(
@@ -381,22 +419,26 @@ class SummaryScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).primaryColor.withOpacity(0.1),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(
                       Icons.category_outlined,
                       size: 20,
-                      color: Theme.of(context).primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       cluster.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                        color:
+                            Theme.of(context).textTheme.headlineSmall?.color ??
+                            Theme.of(context).colorScheme.onSurface,
                         fontSize: 20,
                         letterSpacing: 0.5,
                       ),
@@ -405,14 +447,20 @@ class SummaryScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 12),
-                child: Divider(height: 1, thickness: 1, color: Colors.white12),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: Divider(
+                  height: 1,
+                  thickness: 1,
+                  color: Theme.of(context).dividerColor.withOpacity(0.12),
+                ),
               ),
               Text(
                 summary,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color:
+                      Theme.of(context).textTheme.bodyLarge?.color ??
+                      Theme.of(context).colorScheme.onSurface,
                   fontSize: 16,
                   height: 1.5,
                 ),

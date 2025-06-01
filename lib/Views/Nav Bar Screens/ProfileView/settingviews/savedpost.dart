@@ -14,22 +14,22 @@ class SavedPostsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          icon: Icon(Icons.arrow_back, color: theme.textTheme.bodyLarge?.color),
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Row(
           children: [
-            Icon(Icons.bookmark, color: primaryColor, size: 6.w),
+            Icon(Icons.bookmark, color: theme.colorScheme.primary, size: 6.w),
             SizedBox(width: 2.w),
-            const Text(
+            Text(
               'Saved Posts',
-              style: TextStyle(
-                color: Colors.white,
+              style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                fontSize: 20,
               ),
             ),
           ],
@@ -44,13 +44,20 @@ class SavedPostsScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      theme.colorScheme.primary,
+                    ),
                     strokeWidth: 3,
                   ),
                   SizedBox(height: 2.h),
                   Text(
                     'Loading saved posts...',
-                    style: TextStyle(color: Colors.white70, fontSize: 3.5.w),
+                    style: TextStyle(
+                      color: theme.textTheme.bodyMedium?.color?.withOpacity(
+                        0.7,
+                      ),
+                      fontSize: 3.5.w,
+                    ),
                   ),
                 ],
               ),
@@ -63,15 +70,15 @@ class SavedPostsScreen extends StatelessWidget {
                 margin: EdgeInsets.symmetric(horizontal: 5.w),
                 padding: EdgeInsets.all(6.w),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF1A2027),
+                  color: theme.cardColor,
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                    color: const Color.fromARGB(255, 40, 48, 56),
+                    color: theme.dividerColor.withOpacity(0.3),
                     width: 1,
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: theme.shadowColor.withOpacity(0.3),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -83,25 +90,23 @@ class SavedPostsScreen extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.all(4.w),
                       decoration: BoxDecoration(
-                        color: primaryColor.withOpacity(0.1),
+                        color: theme.colorScheme.primary.withOpacity(0.1),
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: primaryColor.withOpacity(0.3),
+                          color: theme.colorScheme.primary.withOpacity(0.3),
                           width: 2,
                         ),
                       ),
                       child: Icon(
                         Icons.bookmark_outline,
                         size: 12.w,
-                        color: primaryColor,
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                     SizedBox(height: 3.h),
                     Text(
                       'No Saved Posts Yet',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 4.5.w,
+                      style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -109,9 +114,10 @@ class SavedPostsScreen extends StatelessWidget {
                     Text(
                       'Start saving posts that interest you!\nThey will appear here for easy access.',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white70,
-                        fontSize: 3.2.w,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.textTheme.bodyMedium?.color?.withOpacity(
+                          0.7,
+                        ),
                         height: 1.4,
                       ),
                     ),
@@ -123,12 +129,15 @@ class SavedPostsScreen extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [primaryColor.withOpacity(0.8), primaryColor],
+                          colors: [
+                            theme.colorScheme.primary.withOpacity(0.8),
+                            theme.colorScheme.primary,
+                          ],
                         ),
                         borderRadius: BorderRadius.circular(25),
                         boxShadow: [
                           BoxShadow(
-                            color: primaryColor.withOpacity(0.3),
+                            color: theme.colorScheme.primary.withOpacity(0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -137,7 +146,7 @@ class SavedPostsScreen extends StatelessWidget {
                       child: Text(
                         'Explore Posts',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: theme.colorScheme.onPrimary,
                           fontSize: 3.5.w,
                           fontWeight: FontWeight.w600,
                         ),
@@ -163,15 +172,15 @@ class SavedPostsScreen extends StatelessWidget {
                   ),
                   padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.w),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).cardColor,
+                    color: theme.cardColor,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: const Color.fromARGB(255, 40, 48, 56),
+                      color: theme.dividerColor.withOpacity(0.3),
                       width: 1,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: theme.shadowColor.withOpacity(0.2),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),
@@ -182,12 +191,12 @@ class SavedPostsScreen extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.all(2.w),
                         decoration: BoxDecoration(
-                          color: primaryColor.withOpacity(0.1),
+                          color: theme.colorScheme.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(
                           Icons.bookmark,
-                          color: primaryColor,
+                          color: theme.colorScheme.primary,
                           size: 5.w,
                         ),
                       ),
@@ -198,17 +207,15 @@ class SavedPostsScreen extends StatelessWidget {
                           children: [
                             Text(
                               '${state.savedPosts.length} Saved Posts',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 4.w,
+                              style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             Text(
                               'Your bookmarked content',
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 3.w,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.textTheme.bodySmall?.color
+                                    ?.withOpacity(0.7),
                               ),
                             ),
                           ],
@@ -220,16 +227,16 @@ class SavedPostsScreen extends StatelessWidget {
                           vertical: 1.5.w,
                         ),
                         decoration: BoxDecoration(
-                          color: primaryColor.withOpacity(0.1),
+                          color: theme.colorScheme.primary.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                            color: primaryColor.withOpacity(0.3),
+                            color: theme.colorScheme.primary.withOpacity(0.3),
                           ),
                         ),
                         child: Text(
                           '${state.savedPosts.length}',
                           style: TextStyle(
-                            color: primaryColor,
+                            color: theme.colorScheme.primary,
                             fontSize: 3.2.w,
                             fontWeight: FontWeight.bold,
                           ),
@@ -253,15 +260,15 @@ class SavedPostsScreen extends StatelessWidget {
                         return Container(
                           margin: EdgeInsets.only(bottom: 1.h),
                           decoration: BoxDecoration(
-                            color: Theme.of(context).cardColor,
+                            color: theme.cardColor,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
-                              color: const Color.fromARGB(255, 40, 48, 56),
+                              color: theme.dividerColor.withOpacity(0.3),
                               width: 0.5,
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
+                                color: theme.shadowColor.withOpacity(0.2),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
@@ -287,23 +294,29 @@ class SavedPostsScreen extends StatelessWidget {
   }
 
   void _showUnsaveConfirmation(BuildContext context, Post post) {
+    final theme = Theme.of(context);
+
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          backgroundColor: Color.fromARGB(255, 22, 28, 33),
-          title: Text(
-            'Remove from saved',
-            style: TextStyle(color: Colors.white),
-          ),
+          backgroundColor: theme.dialogBackgroundColor,
+          title: Text('Remove from saved', style: theme.textTheme.titleMedium),
           content: Text(
             'Are you sure you want to remove this post from your saved list?',
-            style: TextStyle(color: Colors.white70),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
+                ),
+              ),
             ),
             TextButton(
               onPressed: () {
@@ -313,7 +326,10 @@ class SavedPostsScreen extends StatelessWidget {
                 // context.read<UserBloc>().add(RemoveSavedPost(post: post));
                 Navigator.of(dialogContext).pop();
               },
-              child: Text('Remove', style: TextStyle(color: primaryColor)),
+              child: Text(
+                'Remove',
+                style: TextStyle(color: theme.colorScheme.primary),
+              ),
             ),
           ],
         );
@@ -336,6 +352,8 @@ class SavedPostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Stack(
       children: [
         // Wrap with a SizedBox or Container to constrain width
@@ -351,12 +369,16 @@ class SavedPostWidget extends StatelessWidget {
           right: 2.w,
           child: Container(
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.6),
+              color: theme.shadowColor.withOpacity(0.6),
               borderRadius: BorderRadius.circular(8),
             ),
             padding: EdgeInsets.all(1.w),
             child: IconButton(
-              icon: Icon(Icons.bookmark, color: primaryColor, size: 7.w),
+              icon: Icon(
+                Icons.bookmark,
+                color: theme.colorScheme.primary,
+                size: 7.w,
+              ),
               onPressed: onUnsave,
               tooltip: 'Remove from saved',
             ),

@@ -115,16 +115,21 @@ class _ProfileViewState extends State<otherProfileView>
               // Subreddit + time + upvotes
               Text(
                 post.title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
-                  color: Colors.white,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),
 
               Text(
                 '/${comment.text}    • ${timeago.format(comment.uploadTime)}',
-                style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                ),
               ),
 
               const SizedBox(height: 4),
@@ -143,6 +148,7 @@ class _ProfileViewState extends State<otherProfileView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: DefaultTabController(
         length: 3,
         child: NestedScrollView(
@@ -175,7 +181,7 @@ class _ProfileViewState extends State<otherProfileView>
                             duration: Duration(seconds: 1),
                             child: Container(
                               padding: EdgeInsets.only(left: 2.w, bottom: 2.w),
-                              color: Color.fromARGB(255, 10, 13, 15),
+                              color: Theme.of(context).scaffoldBackgroundColor,
                               height: 20.h,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -193,7 +199,10 @@ class _ProfileViewState extends State<otherProfileView>
                                     child: Text(
                                       widget.post.name,
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.bodyLarge?.color,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 4.w,
                                       ),
@@ -203,7 +212,8 @@ class _ProfileViewState extends State<otherProfileView>
                                   // Settings button in collapsed state
                                   IconButton(
                                     icon: Icon(Icons.message, size: 5.w),
-                                    color: primaryColor,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
                                     onPressed: () {},
                                   ),
                                 ],
@@ -253,15 +263,19 @@ class _ProfileViewState extends State<otherProfileView>
                           ),
                         ),
                       ],
-                      labelColor: primaryColor,
-
-                      unselectedLabelColor: Colors.grey,
+                      labelColor: Theme.of(context).colorScheme.primary,
+                      unselectedLabelColor: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.color?.withOpacity(0.6),
                       labelStyle: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
                       indicator: UnderlineTabIndicator(
-                        borderSide: BorderSide(width: 3.0, color: primaryColor),
+                        borderSide: BorderSide(
+                          width: 3.0,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                         insets: const EdgeInsets.symmetric(horizontal: 16.0),
                       ),
                       dividerColor: Colors.transparent,
@@ -298,7 +312,7 @@ class _ProfileViewState extends State<otherProfileView>
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Theme.of(context).shadowColor.withOpacity(0.1),
                         blurRadius: 10,
                         offset: const Offset(0, 2),
                       ),
@@ -314,7 +328,7 @@ class _ProfileViewState extends State<otherProfileView>
                             children: [
                               Icon(
                                 Icons.person_outline,
-                                color: Theme.of(context).primaryColor,
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                               SizedBox(width: 2.0.w),
                               Text(
@@ -322,7 +336,7 @@ class _ProfileViewState extends State<otherProfileView>
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).primaryColor,
+                                  color: Theme.of(context).colorScheme.primary,
                                 ),
                               ),
                             ],
@@ -334,7 +348,9 @@ class _ProfileViewState extends State<otherProfileView>
                           Container(
                             padding: EdgeInsets.all(3.0.w),
                             decoration: BoxDecoration(
-                              color: Colors.grey.withOpacity(0.1),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.surface.withOpacity(0.5),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
@@ -342,7 +358,9 @@ class _ProfileViewState extends State<otherProfileView>
                               style: TextStyle(
                                 fontSize: 15,
                                 height: 1.5,
-                                color: Colors.white.withOpacity(0.8),
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodyLarge?.color?.withOpacity(0.8),
                               ),
                             ),
                           ),
@@ -401,13 +419,12 @@ class _ProfileViewState extends State<otherProfileView>
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              Color.fromARGB(
-                                255,
-                                25,
-                                129,
-                                255,
-                              ), // Deeper indigo
-                              Color.fromARGB(255, 157, 192, 245), // Royal blue
+                              Theme.of(
+                                context,
+                              ).colorScheme.primary.withOpacity(0.8),
+                              Theme.of(
+                                context,
+                              ).colorScheme.primary.withOpacity(0.4),
                             ],
                             stops: [0.4, 1.0],
                           ),
@@ -454,7 +471,9 @@ class _ProfileViewState extends State<otherProfileView>
                                       borderRadius: BorderRadius.circular(16),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.1),
+                                          color: Theme.of(
+                                            context,
+                                          ).shadowColor.withOpacity(0.2),
                                           blurRadius: 10,
                                           offset: const Offset(0, 5),
                                         ),
@@ -472,13 +491,17 @@ class _ProfileViewState extends State<otherProfileView>
                                               decoration: BoxDecoration(
                                                 shape: BoxShape.circle,
                                                 border: Border.all(
-                                                  color: Colors.white,
+                                                  color:
+                                                      Theme.of(
+                                                        context,
+                                                      ).colorScheme.surface,
                                                   width: 3,
                                                 ),
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: Colors.black
-                                                        .withOpacity(0.2),
+                                                    color: Theme.of(context)
+                                                        .shadowColor
+                                                        .withOpacity(0.3),
                                                     blurRadius: 8,
                                                     offset: const Offset(0, 2),
                                                   ),
@@ -497,11 +520,15 @@ class _ProfileViewState extends State<otherProfileView>
                                             // Username
                                             Text(
                                               widget.post.name,
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.bold,
                                                 letterSpacing: 0.5,
-                                                color: Colors.white,
+                                                color:
+                                                    Theme.of(context)
+                                                        .textTheme
+                                                        .bodyLarge
+                                                        ?.color,
                                               ),
                                             ),
 
@@ -514,10 +541,15 @@ class _ProfileViewState extends State<otherProfileView>
                                                 vertical: 1.0.h,
                                               ),
                                               decoration: BoxDecoration(
-                                                gradient: const LinearGradient(
+                                                gradient: LinearGradient(
                                                   colors: [
-                                                    Color(0xFF3949AB),
-                                                    Color(0xFF1E88E5),
+                                                    Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary,
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .primary
+                                                        .withOpacity(0.7),
                                                   ],
                                                 ),
                                                 borderRadius:
@@ -554,13 +586,21 @@ class _ProfileViewState extends State<otherProfileView>
                                                 Icon(
                                                   Icons.cake,
                                                   size: 18,
-                                                  color: Colors.grey[600],
+                                                  color: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.color
+                                                      ?.withOpacity(0.6),
                                                 ),
                                                 SizedBox(width: 1.0.w),
                                                 Text(
                                                   'Member since ${formatJoinedDate(state.user.joinedDate)}',
                                                   style: TextStyle(
-                                                    color: Colors.grey[600],
+                                                    color: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium
+                                                        ?.color
+                                                        ?.withOpacity(0.6),
                                                     fontSize: 14,
                                                   ),
                                                 ),
@@ -585,9 +625,13 @@ class _ProfileViewState extends State<otherProfileView>
                                                     label: const Text('Follow'),
                                                     style: ElevatedButton.styleFrom(
                                                       backgroundColor:
-                                                          Colors.blue[700],
+                                                          Theme.of(
+                                                            context,
+                                                          ).colorScheme.primary,
                                                       foregroundColor:
-                                                          Colors.white,
+                                                          Theme.of(context)
+                                                              .colorScheme
+                                                              .onPrimary,
                                                       padding:
                                                           EdgeInsets.symmetric(
                                                             vertical: 1.2.h,
@@ -608,9 +652,14 @@ class _ProfileViewState extends State<otherProfileView>
                                                     onPressed: () {},
                                                     style: ElevatedButton.styleFrom(
                                                       backgroundColor:
-                                                          Colors.grey[800],
+                                                          Theme.of(
+                                                            context,
+                                                          ).colorScheme.surface,
                                                       foregroundColor:
-                                                          Colors.white,
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyLarge
+                                                              ?.color,
                                                       padding:
                                                           EdgeInsets.symmetric(
                                                             horizontal: 4.0.w,
@@ -657,11 +706,22 @@ class _ProfileViewState extends State<otherProfileView>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 48, color: Colors.grey[400]),
+          Icon(
+            icon,
+            size: 48,
+            color: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.color?.withOpacity(0.4),
+          ),
           const SizedBox(height: 16),
           Text(
             message,
-            style: TextStyle(fontSize: 16, color: Colors.grey[500]),
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.color?.withOpacity(0.5),
+            ),
           ),
         ],
       ),
@@ -690,14 +750,19 @@ class _ProfileViewState extends State<otherProfileView>
           children: [
             Text(
               label,
-              style: const TextStyle(fontSize: 12, color: Colors.white),
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+              ),
             ),
             Text(
               value,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
-                color: Colors.grey[600],
+                color: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.color?.withOpacity(0.6),
               ),
             ),
           ],
@@ -716,8 +781,8 @@ class CommentShimmerTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       child: Shimmer.fromColors(
-        baseColor: Colors.grey.shade800,
-        highlightColor: Colors.grey.shade700,
+        baseColor: Theme.of(context).colorScheme.surface.withOpacity(0.3),
+        highlightColor: Theme.of(context).colorScheme.surface.withOpacity(0.1),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -726,7 +791,7 @@ class CommentShimmerTile extends StatelessWidget {
               height: 14,
               width: 220,
               decoration: BoxDecoration(
-                color: Colors.grey.shade800,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(6),
               ),
             ),
@@ -737,7 +802,7 @@ class CommentShimmerTile extends StatelessWidget {
               height: 10,
               width: 160,
               decoration: BoxDecoration(
-                color: Colors.grey.shade800,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -748,7 +813,7 @@ class CommentShimmerTile extends StatelessWidget {
               height: 12,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.grey.shade800,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -757,7 +822,7 @@ class CommentShimmerTile extends StatelessWidget {
               height: 12,
               width: MediaQuery.of(context).size.width * 0.75,
               decoration: BoxDecoration(
-                color: Colors.grey.shade800,
+                color: Theme.of(context).colorScheme.surface,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -780,7 +845,10 @@ class PostTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor.withOpacity(0.7),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey.withOpacity(0.2), width: 1),
+        border: Border.all(
+          color: Theme.of(context).dividerColor.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: OtherUserPostWidget(post: post, index: index, onFullView: false),
     );

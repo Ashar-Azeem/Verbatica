@@ -33,12 +33,16 @@ class TrendingPostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
     return Center(
       child: SizedBox(
         width: 100.w,
         child: Column(
           children: [
-            Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
+            Divider(color: theme.dividerColor, thickness: 0.5),
             SizedBox(
               height: 5.5.h,
               child: Padding(
@@ -68,12 +72,16 @@ class TrendingPostWidget extends StatelessWidget {
                           children: [
                             Text(
                               post.name,
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: textTheme.bodyLarge?.color,
+                              ),
                             ),
                             Text(
                               timeago.format(post.uploadTime),
                               style: TextStyle(
-                                color: Colors.white,
+                                color: textTheme.bodyMedium?.color?.withOpacity(
+                                  0.7,
+                                ),
                                 fontSize: 2.w,
                               ),
                             ),
@@ -87,20 +95,22 @@ class TrendingPostWidget extends StatelessWidget {
                         },
                         style: TextButton.styleFrom(
                           shape: StadiumBorder(),
-
-                          backgroundColor: primaryColor, // Button color
-                          foregroundColor: Colors.white, // Text color
+                          backgroundColor: colorScheme.primary, // Button color
+                          foregroundColor: colorScheme.onPrimary, // Text color
                         ),
                         child: Text(
                           'Summary',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: colorScheme.onPrimary,
                             fontSize: 2.8.w,
                           ),
                         ),
                       ),
                       PopupMenuButton<String>(
-                        icon: Icon(Icons.more_vert),
+                        icon: Icon(
+                          Icons.more_vert,
+                          color: textTheme.bodyLarge?.color,
+                        ),
                         onSelected: (String value) {
                           if (value == "report") {
                             context.read<TrendingViewBloc>().add(
@@ -122,7 +132,7 @@ class TrendingPostWidget extends StatelessWidget {
                         },
                         itemBuilder:
                             (BuildContext context) => <PopupMenuEntry<String>>[
-                              const PopupMenuItem<String>(
+                              PopupMenuItem<String>(
                                 value: 'report',
                                 child: Row(
                                   mainAxisAlignment:
@@ -130,33 +140,52 @@ class TrendingPostWidget extends StatelessWidget {
                                   children: [
                                     Icon(
                                       Icons.report_gmailerrorred,
-                                      color: Colors.white,
+                                      color: textTheme.bodyLarge?.color,
                                     ),
-
-                                    Text('Report'),
+                                    Text(
+                                      'Report',
+                                      style: TextStyle(
+                                        color: textTheme.bodyLarge?.color,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-                              const PopupMenuItem<String>(
+                              PopupMenuItem<String>(
                                 value: 'save',
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: [
-                                    Icon(Icons.save, color: Colors.white),
-                                    Text('Save'),
+                                    Icon(
+                                      Icons.save,
+                                      color: textTheme.bodyLarge?.color,
+                                    ),
+                                    Text(
+                                      'Save',
+                                      style: TextStyle(
+                                        color: textTheme.bodyLarge?.color,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
-
-                              const PopupMenuItem<String>(
+                              PopupMenuItem<String>(
                                 value: 'share',
                                 child: Row(
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceAround,
                                   children: [
-                                    Icon(Icons.share, color: Colors.white),
-                                    Text('Share'),
+                                    Icon(
+                                      Icons.share,
+                                      color: textTheme.bodyLarge?.color,
+                                    ),
+                                    Text(
+                                      'Share',
+                                      style: TextStyle(
+                                        color: textTheme.bodyLarge?.color,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -167,7 +196,7 @@ class TrendingPostWidget extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
+            Divider(color: theme.dividerColor, thickness: 0.5),
             //Content, title, image or video
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -177,8 +206,8 @@ class TrendingPostWidget extends StatelessWidget {
                   padding: EdgeInsets.only(left: 1.w),
                   child: Text(
                     post.title,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: textTheme.titleLarge?.color,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -197,9 +226,11 @@ class TrendingPostWidget extends StatelessWidget {
                     collapseText: 'show less',
                     linkEllipsis: false,
                     maxLines: 2,
-                    style: const TextStyle(fontSize: 15, color: Colors.white),
-
-                    linkColor: primaryColor,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: textTheme.bodyLarge?.color,
+                    ),
+                    linkColor: colorScheme.primary,
                   ),
                 ),
 
@@ -210,24 +241,22 @@ class TrendingPostWidget extends StatelessWidget {
                     imageUrl: post.postImageLink!,
                     placeholder:
                         (context, url) => Shimmer.fromColors(
-                          baseColor: const Color.fromARGB(255, 58, 76, 90),
-                          highlightColor: const Color.fromARGB(
-                            255,
-                            81,
-                            106,
-                            125,
+                          baseColor: colorScheme.surfaceVariant.withOpacity(
+                            0.3,
                           ),
+                          highlightColor: colorScheme.surfaceVariant
+                              .withOpacity(0.1),
                           child: AspectRatio(
                             aspectRatio: 16 / 9,
-                            child: Container(color: Colors.white),
+                            child: Container(color: colorScheme.surfaceVariant),
                           ),
                         ),
                     errorWidget:
                         (context, url, error) => AspectRatio(
                           aspectRatio: 16 / 9,
                           child: Container(
-                            color: Colors.grey[200],
-                            child: const Icon(Icons.error),
+                            color: colorScheme.errorContainer,
+                            child: Icon(Icons.error, color: colorScheme.error),
                           ),
                         ),
                     fit: BoxFit.contain,
@@ -281,9 +310,7 @@ class TrendingPostWidget extends StatelessWidget {
                         height: 5.h,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Color.fromARGB(255, 70, 79, 87),
-                          ),
+                          border: Border.all(color: colorScheme.outline),
                         ),
                         padding: EdgeInsets.symmetric(
                           horizontal: 0.5.w,
@@ -329,15 +356,15 @@ class TrendingPostWidget extends StatelessWidget {
                                           size: 7.w,
                                           color:
                                               dynamicpost.isUpVote
-                                                  ? primaryColor
-                                                  : Colors.white,
+                                                  ? colorScheme.primary
+                                                  : textTheme.bodyLarge?.color,
                                         ),
                                       ),
 
                                       Text(
                                         "${dynamicpost.upvotes - dynamicpost.downvotes}",
                                         style: TextStyle(
-                                          color: Colors.white,
+                                          color: textTheme.bodyLarge?.color,
                                           fontSize: 3.w,
                                           height: 1,
                                           fontWeight: FontWeight.bold,
@@ -350,7 +377,7 @@ class TrendingPostWidget extends StatelessWidget {
                                 Container(
                                   width: 1,
                                   height: 6.h,
-                                  color: Color.fromARGB(255, 70, 79, 87),
+                                  color: colorScheme.outline,
                                 ),
                                 IconButton(
                                   splashColor: Colors.transparent,
@@ -381,8 +408,8 @@ class TrendingPostWidget extends StatelessWidget {
                                     Icons.arrow_circle_down_outlined,
                                     color:
                                         dynamicpost.isDownVote
-                                            ? primaryColor
-                                            : Colors.white,
+                                            ? colorScheme.primary
+                                            : textTheme.bodyLarge?.color,
                                   ),
                                 ),
                               ],
@@ -396,9 +423,7 @@ class TrendingPostWidget extends StatelessWidget {
                             height: 5.h,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: Color.fromARGB(255, 70, 79, 87),
-                              ),
+                              border: Border.all(color: colorScheme.outline),
                             ),
                             padding: EdgeInsets.symmetric(
                               horizontal: 0.5.w,
@@ -439,13 +464,13 @@ class TrendingPostWidget extends StatelessWidget {
                                   padding: EdgeInsets.zero,
                                   icon: Icon(
                                     Icons.mode_comment_outlined,
-                                    color: Colors.white,
+                                    color: textTheme.bodyLarge?.color,
                                   ),
                                 ),
                                 Text(
                                   "${post.comments}",
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: textTheme.bodyLarge?.color,
                                     fontSize: 3.w,
                                     height: 1,
                                     fontWeight: FontWeight.bold,
@@ -478,7 +503,7 @@ class TrendingPostWidget extends StatelessWidget {
                             icon: Icon(
                               Icons.analytics_outlined,
                               size: 7.w,
-                              color: primaryColor,
+                              color: colorScheme.primary,
                             ),
                           )
                           : SizedBox.shrink(),
@@ -488,7 +513,7 @@ class TrendingPostWidget extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(color: Color.fromARGB(255, 22, 28, 33), thickness: 0.5),
+            Divider(color: theme.dividerColor, thickness: 0.5),
           ],
         ),
       ),

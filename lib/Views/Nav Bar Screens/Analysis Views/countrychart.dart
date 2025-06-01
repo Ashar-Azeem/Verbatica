@@ -73,6 +73,7 @@ class _CountrychartState extends State<Countrychart>
   }
 
   List<BarChartGroupData> _getBarGroups() {
+    final theme = Theme.of(context);
     return widget.countryData.map((barGroup) {
       final isTouched = barGroup.x == _touchedIndex;
       final color = _getColor(barGroup.x);
@@ -83,7 +84,7 @@ class _CountrychartState extends State<Countrychart>
           BarChartRodData(
             toY: barGroup.barRods.first.toY,
             width: isTouched ? _pulseAnimation.value * 22 : 18,
-            color: isTouched ? Colors.amber : color,
+            color: isTouched ? theme.colorScheme.secondary : color,
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(6),
               topRight: Radius.circular(6),
@@ -109,20 +110,22 @@ class _CountrychartState extends State<Countrychart>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ScaleTransition(
       scale: _chartScaleAnimation,
       child: SizedBox(
         height: 300, // Increased height for better spacing
         child: Card(
           elevation: 8,
-          shadowColor: Colors.black26,
+          shadowColor: theme.shadowColor.withOpacity(0.3),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
-              color: Color.fromARGB(255, 21, 28, 32),
+              color: theme.cardColor,
             ),
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -151,11 +154,9 @@ class _CountrychartState extends State<Countrychart>
                           curve: const Interval(0.1, 0.6, curve: Curves.easeIn),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Comment Distribution by Country',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
+                        style: theme.textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -180,7 +181,7 @@ class _CountrychartState extends State<Countrychart>
                           ),
                           getDrawingHorizontalLine:
                               (value) => FlLine(
-                                color: Colors.white.withOpacity(0.15),
+                                color: theme.dividerColor.withOpacity(0.3),
                                 strokeWidth: 1,
                                 dashArray: [4, 4],
                               ),
@@ -195,9 +196,9 @@ class _CountrychartState extends State<Countrychart>
                               getTitlesWidget:
                                   (value, _) => Text(
                                     value.toInt().toString(),
-                                    style: const TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 10,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.textTheme.bodySmall?.color
+                                          ?.withOpacity(0.7),
                                     ),
                                   ),
                             ),
@@ -212,9 +213,9 @@ class _CountrychartState extends State<Countrychart>
                                     value.toInt() < countries.length
                                         ? countries[value.toInt()]
                                         : '',
-                                    style: const TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 10,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.textTheme.bodySmall?.color
+                                          ?.withOpacity(0.7),
                                     ),
                                   ),
                                 );
@@ -251,12 +252,12 @@ class _CountrychartState extends State<Countrychart>
                           },
                           touchTooltipData: BarTouchTooltipData(
                             tooltipMargin: 12,
-                            // tooltipBgColor: Colors.black87,
+                            // tooltipBgColor: theme.colorScheme.surface,
                             getTooltipItem: (group, groupIndex, rod, rodIndex) {
                               return BarTooltipItem(
                                 '${countries[group.x]}\n',
-                                const TextStyle(
-                                  color: Colors.white,
+                                TextStyle(
+                                  color: theme.textTheme.bodyLarge?.color,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
                                 ),
@@ -264,8 +265,9 @@ class _CountrychartState extends State<Countrychart>
                                   TextSpan(
                                     text:
                                         '${rod.toY.toStringAsFixed(0)} comments',
-                                    style: const TextStyle(
-                                      color: Colors.white70,
+                                    style: TextStyle(
+                                      color: theme.textTheme.bodyMedium?.color
+                                          ?.withOpacity(0.7),
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -302,11 +304,12 @@ class _CountrychartState extends State<Countrychart>
                           curve: const Interval(0.3, 0.8, curve: Curves.easeIn),
                         ),
                       ),
-                      child: const Text(
+                      child: Text(
                         'Geographical distribution of commenters',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 12,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.textTheme.bodySmall?.color?.withOpacity(
+                            0.7,
+                          ),
                           fontStyle: FontStyle.italic,
                         ),
                       ),

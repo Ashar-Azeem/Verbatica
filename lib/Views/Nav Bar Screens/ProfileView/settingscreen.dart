@@ -4,11 +4,13 @@ import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/report/report_bloc.dart';
 import 'package:verbatica/BLOC/report/report_event.dart';
 import 'package:verbatica/Utilities/DialogueBox.dart';
+import 'package:verbatica/Utilities/theme_provider.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/aboutus.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/privacypolicy.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/reportdata.dart'; // Import your reports screen
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/savedpost.dart'; // Import your report bloc
+import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -17,19 +19,24 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'Settings',
-          style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5),
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+            color: Theme.of(context).textTheme.titleLarge?.color,
+          ),
         ),
         centerTitle: true,
         elevation: 0,
-
-        foregroundColor:
-            Theme.of(context).brightness == Brightness.dark
-                ? Colors.white
-                : Color(0xFF1A237E),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        foregroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, size: 20),
+          icon: Icon(
+            Icons.arrow_back_ios_new,
+            size: 20,
+            color: Theme.of(context).colorScheme.primary,
+          ),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
@@ -52,14 +59,14 @@ class SettingsScreen extends StatelessWidget {
                   _buildSettingData(
                     title: 'Explore Saved posts',
                     icon: Icons.bookmark_outline,
-                    iconColor: Colors.blue,
+                    iconColor: Theme.of(context).colorScheme.primary,
                     onTap: () => _navigateToScreen(context, 'saved_posts'),
                   ),
 
                   _buildSettingData(
                     title: 'Explore Report feedback',
                     icon: Icons.flag_outlined,
-                    iconColor: Colors.orange,
+                    iconColor: Theme.of(context).colorScheme.secondary,
                     onTap: () => _navigateToScreen(context, 'report_feedback'),
                   ),
                 ]),
@@ -69,26 +76,26 @@ class SettingsScreen extends StatelessWidget {
                   _buildSettingData(
                     title: 'Reset content preferences',
                     icon: Icons.restart_alt_outlined,
-                    iconColor: Colors.green,
+                    iconColor: Theme.of(context).colorScheme.tertiary,
                     onTap: () => _showResetPreferencesDialog(context),
                   ),
                   _buildSettingData(
                     title: 'Reset password',
                     icon: Icons.lock_outline,
-                    iconColor: Colors.purple,
+                    iconColor: Theme.of(context).colorScheme.secondary,
                     onTap: () => _navigateToScreen(context, 'reset_password'),
                   ),
                   _buildSettingData(
                     title: 'Dark mode',
                     icon: Icons.dark_mode_outlined,
-                    iconColor: Colors.indigo,
+                    iconColor: Theme.of(context).colorScheme.primary,
                     trailing: Switch(
                       value: Theme.of(context).brightness == Brightness.dark,
                       onChanged: (val) {
                         // Toggle theme would go here if implemented
                         _toggleTheme(context);
                       },
-                      activeColor: Colors.blue,
+                      activeColor: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ]),
@@ -98,19 +105,19 @@ class SettingsScreen extends StatelessWidget {
                   _buildSettingData(
                     title: 'About us',
                     icon: Icons.info_outline,
-                    iconColor: Colors.blue,
+                    iconColor: Theme.of(context).colorScheme.primary,
                     onTap: () => _navigateToScreen(context, 'about_us'),
                   ),
                   _buildSettingData(
                     title: 'Privacy Policy',
                     icon: Icons.privacy_tip_outlined,
-                    iconColor: Colors.teal,
+                    iconColor: Theme.of(context).colorScheme.tertiary,
                     onTap: () => _navigateToScreen(context, 'privacy_policy'),
                   ),
                   _buildSettingData(
                     title: 'Logout',
                     icon: Icons.logout,
-                    iconColor: Colors.red,
+                    iconColor: Theme.of(context).colorScheme.error,
                     onTap: () => showLogoutDialog(context),
                   ),
                 ]),
@@ -195,18 +202,28 @@ class SettingsScreen extends StatelessWidget {
       context: context,
       builder:
           (context) => AlertDialog(
+            backgroundColor: Theme.of(context).dialogBackgroundColor,
             title: Text(
               'Reset Content Preferences',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: Theme.of(context).textTheme.titleLarge?.color,
+              ),
             ),
             content: Text(
               'Are you sure you want to reset all your content preferences? This action cannot be undone.',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+              ),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: Text('Cancel', style: TextStyle(color: Colors.white)),
+                child: Text(
+                  'Cancel',
+                  style: TextStyle(
+                    color: Theme.of(context).textTheme.bodyLarge?.color,
+                  ),
+                ),
               ),
               TextButton(
                 onPressed: () {
@@ -216,12 +233,17 @@ class SettingsScreen extends StatelessWidget {
                     SnackBar(
                       content: Text(
                         'Content preferences have been reset',
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
                       ),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                     ),
                   );
                 },
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.error,
+                ),
                 child: Text('Reset'),
               ),
             ],
@@ -229,12 +251,10 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  // Toggle theme function (placeholder)
   void _toggleTheme(BuildContext context) {
-    // This would be implemented with your theme provider
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Theme toggle would be implemented here')),
-    );
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final isDarkMode = themeProvider.themeMode == ThemeMode.dark;
+    themeProvider.toggleTheme(!isDarkMode);
   }
 
   Widget _buildSectionHeader(BuildContext context, String title) {
@@ -246,7 +266,7 @@ class SettingsScreen extends StatelessWidget {
             width: 4,
             height: 18,
             decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).colorScheme.primary,
               borderRadius: BorderRadius.circular(4),
             ),
           ),
@@ -257,7 +277,7 @@ class SettingsScreen extends StatelessWidget {
               fontSize: 13,
               fontWeight: FontWeight.bold,
               letterSpacing: 1.2,
-              color: Theme.of(context).primaryColor,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
         ],
@@ -273,7 +293,7 @@ class SettingsScreen extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Theme.of(context).shadowColor.withOpacity(0.1),
             blurRadius: 10,
             offset: Offset(0, 2),
           ),
@@ -295,7 +315,11 @@ class SettingsScreen extends StatelessWidget {
               if (index < items.length - 1)
                 Padding(
                   padding: const EdgeInsets.only(left: 56, right: 16),
-                  child: Divider(height: 1, thickness: 0.5),
+                  child: Divider(
+                    height: 1,
+                    thickness: 0.5,
+                    color: Theme.of(context).dividerColor,
+                  ),
                 ),
             ],
           );
@@ -312,7 +336,6 @@ class SettingsScreen extends StatelessWidget {
     Widget? trailing,
     VoidCallback? onTap,
   }) {
-    final bool isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final bool isLogout = title == 'Logout';
 
     return ListTile(
@@ -320,12 +343,13 @@ class SettingsScreen extends StatelessWidget {
       leading: Container(
         padding: EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: (iconColor ?? Theme.of(context).primaryColor).withOpacity(0.1),
+          color: (iconColor ?? Theme.of(context).colorScheme.primary)
+              .withOpacity(0.1),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(
           icon ?? Icons.settings,
-          color: iconColor ?? Theme.of(context).primaryColor,
+          color: iconColor ?? Theme.of(context).colorScheme.primary,
           size: 22,
         ),
       ),
@@ -336,10 +360,8 @@ class SettingsScreen extends StatelessWidget {
           fontWeight: FontWeight.w500,
           color:
               isLogout
-                  ? Colors.red
-                  : isDarkMode
-                  ? Colors.white
-                  : Colors.black87,
+                  ? Theme.of(context).colorScheme.error
+                  : Theme.of(context).textTheme.bodyLarge?.color,
         ),
       ),
       trailing: Container(
@@ -348,7 +370,9 @@ class SettingsScreen extends StatelessWidget {
             trailing ??
             Icon(
               Icons.chevron_right,
-              color: Colors.grey.withOpacity(0.7),
+              color: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.color?.withOpacity(0.7),
               size: 22,
             ),
       ),

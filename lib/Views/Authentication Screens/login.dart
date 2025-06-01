@@ -47,11 +47,13 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     final keyboardVisible = MediaQuery.of(context).viewInsets.bottom > 0;
+    final theme = Theme.of(context);
 
     return BlocProvider(
       create: (context) => LoginRegisterationBloc(),
 
       child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
         resizeToAvoidBottomInset: true,
         body: SafeArea(
           child: Padding(
@@ -70,10 +72,10 @@ class _LoginState extends State<Login> {
                   key: _email,
                   child: TextFormField(
                     enableSuggestions: false,
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: theme.textTheme.bodyLarge?.color),
 
                     autocorrect: false,
-                    cursorColor: Colors.white,
+                    cursorColor: theme.textTheme.bodyLarge?.color,
                     controller: email,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -81,24 +83,36 @@ class _LoginState extends State<Login> {
                       }
                       return null;
                     },
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       isDense: true, // Added this
                       contentPadding: EdgeInsets.all(16),
                       border: OutlineInputBorder(
-                        borderSide: BorderSide(width: 1, color: Colors.white),
+                        borderSide: BorderSide(
+                          width: 1,
+                          color:
+                              theme.textTheme.bodyLarge?.color ?? Colors.grey,
+                        ),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(width: 1, color: Colors.white),
+                        borderSide: BorderSide(
+                          width: 1,
+                          color: theme.colorScheme.primary,
+                        ),
                       ),
                       labelText: 'Email',
-                      errorStyle: TextStyle(color: Colors.red, fontSize: 10),
+                      errorStyle: TextStyle(
+                        color: theme.colorScheme.error,
+                        fontSize: 10,
+                      ),
                       errorBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                           width: 1,
-                          color: Color.fromARGB(255, 199, 78, 69),
+                          color: theme.colorScheme.error,
                         ),
                       ),
-                      labelStyle: TextStyle(color: Colors.white),
+                      labelStyle: TextStyle(
+                        color: theme.textTheme.bodyLarge?.color,
+                      ),
                     ),
                   ),
                 ),
@@ -111,9 +125,11 @@ class _LoginState extends State<Login> {
                       key: _password,
                       child: TextFormField(
                         obscureText: !visibility,
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                          color: theme.textTheme.bodyLarge?.color,
+                        ),
 
-                        cursorColor: Colors.white,
+                        cursorColor: theme.textTheme.bodyLarge?.color,
                         enableSuggestions: false,
                         autocorrect: false,
                         controller: password,
@@ -126,30 +142,34 @@ class _LoginState extends State<Login> {
                         decoration: InputDecoration(
                           isDense: true, // Added this
                           contentPadding: const EdgeInsets.all(16),
-                          border: const OutlineInputBorder(
+                          border: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: Colors.white,
+                              color:
+                                  theme.textTheme.bodyLarge?.color ??
+                                  Colors.grey,
                             ),
                           ),
-                          focusedBorder: const OutlineInputBorder(
+                          focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: Colors.white,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
                           labelText: 'Password',
-                          errorStyle: const TextStyle(
-                            color: Colors.red,
+                          errorStyle: TextStyle(
+                            color: theme.colorScheme.error,
                             fontSize: 10,
                           ),
-                          errorBorder: const OutlineInputBorder(
+                          errorBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                               width: 1,
-                              color: Color.fromARGB(255, 199, 78, 69),
+                              color: theme.colorScheme.error,
                             ),
                           ),
-                          labelStyle: const TextStyle(color: Colors.white),
+                          labelStyle: TextStyle(
+                            color: theme.textTheme.bodyLarge?.color,
+                          ),
                           suffixIcon: IconButton(
                             onPressed: () {
                               setState(() {
@@ -161,6 +181,7 @@ class _LoginState extends State<Login> {
                               visibility
                                   ? Icons.visibility
                                   : Icons.visibility_off,
+                              color: theme.iconTheme.color,
                             ),
                           ),
                         ),
@@ -178,7 +199,7 @@ class _LoginState extends State<Login> {
                       child: Text(
                         "Forgot Password?",
                         style: TextStyle(
-                          color: primaryColor,
+                          color: theme.colorScheme.primary,
                           fontSize: 12,
                           fontWeight: FontWeight.w100,
                         ),
@@ -208,6 +229,10 @@ class _LoginState extends State<Login> {
                   >(
                     builder: (context, state) {
                       return ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.colorScheme.primary,
+                          foregroundColor: theme.colorScheme.onPrimary,
+                        ),
                         onPressed: () async {
                           bool value = _validateAllFields();
                           if (value) {
@@ -243,12 +268,14 @@ class _LoginState extends State<Login> {
                         child:
                             state.status == Loginandregisterationstatus.loading
                                 ? LoadingAnimationWidget.staggeredDotsWave(
-                                  color: Colors.white,
+                                  color: theme.colorScheme.onPrimary,
                                   size: 10.w,
                                 )
-                                : const Text(
+                                : Text(
                                   "Login",
-                                  style: TextStyle(color: Colors.white),
+                                  style: TextStyle(
+                                    color: theme.colorScheme.onPrimary,
+                                  ),
                                 ),
                       );
                     },
@@ -260,7 +287,7 @@ class _LoginState extends State<Login> {
                 if (!keyboardVisible)
                   Text(
                     'Or continue with',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(color: theme.textTheme.bodyMedium?.color),
                   ),
 
                 const Spacer(flex: 1),
@@ -272,7 +299,7 @@ class _LoginState extends State<Login> {
                     },
                     style: OutlinedButton.styleFrom(
                       minimumSize: Size(95.w, 6.h),
-                      side: const BorderSide(color: Colors.grey),
+                      side: BorderSide(color: theme.dividerColor),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
@@ -286,11 +313,11 @@ class _LoginState extends State<Login> {
                           width: 24,
                         ),
                         const SizedBox(width: 12),
-                        const Text(
+                        Text(
                           'Google',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.white,
+                            color: theme.textTheme.bodyLarge?.color,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -310,12 +337,14 @@ class _LoginState extends State<Login> {
                     child: Text.rich(
                       TextSpan(
                         text: "Not registered yet?",
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                          color: theme.textTheme.bodyMedium?.color,
+                        ),
                         children: [
                           TextSpan(
                             text: " Register here",
                             style: TextStyle(
-                              color: primaryColor,
+                              color: theme.colorScheme.primary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

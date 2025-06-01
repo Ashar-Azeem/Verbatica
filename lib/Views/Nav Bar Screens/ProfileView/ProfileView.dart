@@ -129,7 +129,7 @@ class _ProfileViewState extends State<ProfileView>
                             duration: Duration(seconds: 1),
                             child: Container(
                               padding: EdgeInsets.only(left: 2.w, bottom: 2.w),
-                              color: Color.fromARGB(255, 10, 13, 15),
+                              color: Theme.of(context).scaffoldBackgroundColor,
                               height: 20.h,
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -147,7 +147,10 @@ class _ProfileViewState extends State<ProfileView>
                                     child: Text(
                                       state.user.username,
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.bodyLarge?.color,
                                         fontWeight: FontWeight.bold,
                                         fontSize: 4.w,
                                       ),
@@ -157,7 +160,10 @@ class _ProfileViewState extends State<ProfileView>
                                   // Settings button in collapsed state
                                   IconButton(
                                     icon: Icon(Icons.settings, size: 5.w),
-                                    color: Colors.white,
+                                    color:
+                                        Theme.of(
+                                          context,
+                                        ).textTheme.bodyLarge?.color,
                                     onPressed: () {
                                       pushScreen(
                                         context,
@@ -213,14 +219,19 @@ class _ProfileViewState extends State<ProfileView>
                           ),
                         ),
                       ],
-                      labelColor: Colors.blue,
-                      unselectedLabelColor: Colors.grey,
+                      labelColor: Theme.of(context).colorScheme.primary,
+                      unselectedLabelColor: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.color?.withOpacity(0.6),
                       labelStyle: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
                       indicator: UnderlineTabIndicator(
-                        borderSide: BorderSide(width: 3.0, color: Colors.blue),
+                        borderSide: BorderSide(
+                          width: 3.0,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
                         insets: const EdgeInsets.symmetric(horizontal: 16.0),
                       ),
                       dividerColor: Colors.transparent,
@@ -273,7 +284,12 @@ class _ProfileViewState extends State<ProfileView>
     }
 
     if (state.userComments.isEmpty) {
-      return const Center(child: Text("No comments yet"));
+      return Center(
+        child: Text(
+          "No comments yet",
+          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
+        ),
+      );
     }
 
     return ListView.builder(
@@ -291,16 +307,21 @@ class _ProfileViewState extends State<ProfileView>
               // Subreddit + time + upvotes
               Text(
                 post.title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 15,
-                  color: Colors.white,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
                 ),
               ),
 
               Text(
                 '/${comment.text}    • ${timeago.format(comment.uploadTime)}',
-                style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                ),
               ),
 
               const SizedBox(height: 4),
@@ -338,13 +359,10 @@ class _ProfileViewState extends State<ProfileView>
                             begin: Alignment.topCenter,
                             end: Alignment.bottomCenter,
                             colors: [
-                              Color.fromARGB(
-                                255,
-                                25,
-                                129,
-                                255,
-                              ), // Deeper indigo
-                              Color.fromARGB(255, 157, 192, 245), // Royal blue
+                              Theme.of(context).colorScheme.primary,
+                              Theme.of(
+                                context,
+                              ).colorScheme.primary.withOpacity(0.7),
                             ],
                             stops: [0.4, 1.0],
                           ),
@@ -395,7 +413,9 @@ class _ProfileViewState extends State<ProfileView>
                                       borderRadius: BorderRadius.circular(16),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withOpacity(0.1),
+                                          color: Theme.of(
+                                            context,
+                                          ).shadowColor.withOpacity(0.1),
                                           blurRadius: 10,
                                           offset: const Offset(0, 5),
                                         ),
@@ -415,7 +435,8 @@ class _ProfileViewState extends State<ProfileView>
                                                 ),
                                                 boxShadow: [
                                                   BoxShadow(
-                                                    color: Colors.black
+                                                    color: Theme.of(context)
+                                                        .shadowColor
                                                         .withOpacity(0.2),
                                                     blurRadius: 8,
                                                     offset: const Offset(0, 2),
@@ -435,11 +456,15 @@ class _ProfileViewState extends State<ProfileView>
                                             // Username
                                             Text(
                                               state.user.username,
-                                              style: const TextStyle(
+                                              style: TextStyle(
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.bold,
                                                 letterSpacing: 0.5,
-                                                color: Colors.white,
+                                                color:
+                                                    Theme.of(context)
+                                                        .textTheme
+                                                        .headlineSmall
+                                                        ?.color,
                                               ),
                                             ),
 
@@ -452,10 +477,15 @@ class _ProfileViewState extends State<ProfileView>
                                                 vertical: 1.0.h,
                                               ),
                                               decoration: BoxDecoration(
-                                                gradient: const LinearGradient(
+                                                gradient: LinearGradient(
                                                   colors: [
-                                                    Color(0xFF3949AB),
-                                                    Color(0xFF1E88E5),
+                                                    Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary,
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .primary
+                                                        .withOpacity(0.8),
                                                   ],
                                                 ),
                                                 borderRadius:
@@ -492,13 +522,21 @@ class _ProfileViewState extends State<ProfileView>
                                                 Icon(
                                                   Icons.cake,
                                                   size: 18,
-                                                  color: Colors.grey[600],
+                                                  color: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium
+                                                      ?.color
+                                                      ?.withOpacity(0.6),
                                                 ),
                                                 SizedBox(width: 1.0.w),
                                                 Text(
                                                   'Member since ${formatJoinedDate(state.user.joinedDate)}',
                                                   style: TextStyle(
-                                                    color: Colors.grey[600],
+                                                    color: Theme.of(context)
+                                                        .textTheme
+                                                        .bodyMedium
+                                                        ?.color
+                                                        ?.withOpacity(0.6),
                                                     fontSize: 14,
                                                   ),
                                                 ),
@@ -553,7 +591,9 @@ class _ProfileViewState extends State<ProfileView>
                                               label: const Text('Edit Profile'),
                                               style: ElevatedButton.styleFrom(
                                                 backgroundColor:
-                                                    Colors.blue[700],
+                                                    Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary,
                                                 foregroundColor: Colors.white,
                                                 padding: EdgeInsets.symmetric(
                                                   horizontal: 6.0.w,
@@ -593,7 +633,7 @@ class _ProfileViewState extends State<ProfileView>
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Theme.of(context).shadowColor.withOpacity(0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               ),
@@ -605,14 +645,17 @@ class _ProfileViewState extends State<ProfileView>
               // About Section Header
               Row(
                 children: [
-                  Icon(Icons.person_outline, color: Colors.blue),
+                  Icon(
+                    Icons.person_outline,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
                   SizedBox(width: 2.0.w),
                   Text(
                     'About',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
-                      color: Colors.blue,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ],
@@ -624,7 +667,9 @@ class _ProfileViewState extends State<ProfileView>
               Container(
                 padding: EdgeInsets.all(3.0.w),
                 decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.1),
+                  color: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.color?.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
@@ -632,7 +677,9 @@ class _ProfileViewState extends State<ProfileView>
                   style: TextStyle(
                     fontSize: 15,
                     height: 1.5,
-                    color: Colors.white.withOpacity(0.8),
+                    color: Theme.of(
+                      context,
+                    ).textTheme.bodyLarge?.color?.withOpacity(0.8),
                   ),
                 ),
               ),
@@ -642,7 +689,7 @@ class _ProfileViewState extends State<ProfileView>
               // Member Since Info
               _buildInfoItem(
                 icon: Icons.date_range,
-                iconColor: Colors.blue[700]!,
+                iconColor: Theme.of(context).colorScheme.primary,
                 label: 'Member since',
                 value: formatJoinedDate(state.user.joinedDate),
               ),
@@ -652,7 +699,7 @@ class _ProfileViewState extends State<ProfileView>
               // Location Info
               _buildInfoItem(
                 icon: Icons.location_on,
-                iconColor: Colors.red[400]!,
+                iconColor: Theme.of(context).colorScheme.secondary,
                 label: 'Location',
                 value: state.user.country,
               ),
@@ -671,11 +718,22 @@ class _ProfileViewState extends State<ProfileView>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 48, color: Colors.grey[400]),
+          Icon(
+            icon,
+            size: 48,
+            color: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.color?.withOpacity(0.4),
+          ),
           const SizedBox(height: 16),
           Text(
             message,
-            style: TextStyle(fontSize: 16, color: Colors.grey[500]),
+            style: TextStyle(
+              fontSize: 16,
+              color: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.color?.withOpacity(0.5),
+            ),
           ),
         ],
       ),
@@ -702,13 +760,21 @@ class _ProfileViewState extends State<ProfileView>
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(label, style: TextStyle(fontSize: 12, color: Colors.white)),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                color: Theme.of(context).textTheme.bodyLarge?.color,
+              ),
+            ),
             Text(
               value,
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
-                color: Colors.grey[600],
+                color: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.color?.withOpacity(0.6),
               ),
             ),
           ],
@@ -726,8 +792,14 @@ class CommentShimmerTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       child: Shimmer.fromColors(
-        baseColor: Colors.grey.shade800,
-        highlightColor: Colors.grey.shade700,
+        baseColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey.shade800
+                : Colors.grey.shade300,
+        highlightColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey.shade700
+                : Colors.grey.shade100,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -736,7 +808,10 @@ class CommentShimmerTile extends StatelessWidget {
               height: 14,
               width: 220,
               decoration: BoxDecoration(
-                color: Colors.grey.shade800,
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey.shade800
+                        : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(6),
               ),
             ),
@@ -747,7 +822,10 @@ class CommentShimmerTile extends StatelessWidget {
               height: 10,
               width: 160,
               decoration: BoxDecoration(
-                color: Colors.grey.shade800,
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey.shade800
+                        : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -758,7 +836,10 @@ class CommentShimmerTile extends StatelessWidget {
               height: 12,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: Colors.grey.shade800,
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey.shade800
+                        : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -767,7 +848,10 @@ class CommentShimmerTile extends StatelessWidget {
               height: 12,
               width: MediaQuery.of(context).size.width * 0.75,
               decoration: BoxDecoration(
-                color: Colors.grey.shade800,
+                color:
+                    Theme.of(context).brightness == Brightness.dark
+                        ? Colors.grey.shade800
+                        : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
@@ -797,7 +881,10 @@ class PostTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor.withOpacity(0.7),
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.grey.withOpacity(0.2), width: 1),
+        border: Border.all(
+          color: Theme.of(context).dividerColor.withOpacity(0.2),
+          width: 1,
+        ),
       ),
       child: UserPostWidget(
         post: post,
@@ -805,142 +892,6 @@ class PostTile extends StatelessWidget {
         onFullView: false,
         category: 'user',
       ),
-
-      // Delete button
-
-      // Post content with expandable text
-      // if (post.description.isNotEmpty)
-      //   Padding(
-      //     padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
-      //     child: ExpandableText(
-      //       post.description,
-      //       expandOnTextTap: true,
-      //       collapseOnTextTap: true,
-      //       expandText: 'show more',
-      //       collapseText: 'show less',
-      //       linkEllipsis: false,
-      //       maxLines: 3,
-      //       style: TextStyle(
-      //         fontSize: 14,
-      //         color: Colors.grey[300],
-      //         height: 1.4,
-      //       ),
-      //       linkColor: Colors.blue,
-      //     ),
-      //   ),
-
-      // // Post image if available (using CachedNetworkImage)
-      // if (post.postImageLink != null)
-      //   CachedNetworkImage(
-      //     imageUrl: post.postImageLink!,
-      //     placeholder:
-      //         (context, url) => Shimmer.fromColors(
-      //           baseColor: const Color.fromARGB(255, 58, 76, 90),
-      //           highlightColor: const Color.fromARGB(255, 81, 106, 125),
-      //           child: AspectRatio(
-      //             aspectRatio: 16 / 9,
-      //             child: Container(color: Colors.white),
-      //           ),
-      //         ),
-      //     errorWidget:
-      //         (context, url, error) => AspectRatio(
-      //           aspectRatio: 16 / 9,
-      //           child: Container(
-      //             color: Colors.grey[200],
-      //             child: const Icon(Icons.error),
-      //           ),
-      //         ),
-      //     fit: BoxFit.cover,
-      //   ),
-
-      // // Video player if video link is available
-      // if (post.postVideoLink != null)
-      //   VideoPlayer(videoUrl: post.postVideoLink!),
-
-      // // Stats and metadata
-      // Padding(
-      //   padding: const EdgeInsets.all(12.0),
-      //   child: Row(
-      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //     children: [
-      //       // Interaction stats (upvotes, downvotes, comments)
-      //       Row(
-      //         children: [
-      //           // Upvotes
-      //           Row(
-      //             children: [
-      //               Icon(
-      //                 Icons.arrow_circle_up_outlined,
-      //                 size: 5.w,
-      //                 color: post.isUpVote ? Colors.blue : Colors.grey,
-      //               ),
-      //               const SizedBox(width: 4),
-      //               Text(
-      //                 '${post.upvotes}',
-      //                 style: TextStyle(
-      //                   color: post.isUpVote ? Colors.blue : Colors.grey,
-      //                   fontWeight: FontWeight.bold,
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //           SizedBox(width: 4.w),
-      //           // Downvotes
-      //           Row(
-      //             children: [
-      //               Icon(
-      //                 Icons.arrow_circle_down_outlined,
-      //                 size: 5.w,
-      //                 color: post.isDownVote ? Colors.blue : Colors.grey,
-      //               ),
-      //               const SizedBox(width: 4),
-      //               Text(
-      //                 '${post.downvotes}',
-      //                 style: TextStyle(
-      //                   color:
-      //                       post.isDownVote ? Colors.blue : Colors.grey,
-      //                   fontWeight: FontWeight.bold,
-      //                 ),
-      //               ),
-      //             ],
-      //           ),
-      //           SizedBox(width: 4.w),
-      //           // Comments
-      //           Row(
-      //             children: [
-      //               Icon(
-      //                 Icons.mode_comment_outlined,
-      //                 size: 5.w,
-      //                 color: Colors.grey,
-      //               ),
-      //               const SizedBox(width: 4),
-      //               Text(
-      //                 '${post.comments}',
-      //                 style: const TextStyle(color: Colors.grey),
-      //               ),
-      //             ],
-      //           ),
-      //         ],
-      //       ),
-
-      //       // Debate/Analytics indicator if applicable
-      //       if (post.isDebate)
-      //         Icon(
-      //           Icons.analytics_outlined,
-      //           size: 5.w,
-      //           color: Colors.blue,
-      //         ),
-
-      //       // Timestamp
-      //       Text(
-      //         timeago.format(post.uploadTime),
-      //         style: TextStyle(fontSize: 12, color: Colors.grey[500]),
-      //       ),
-      //     ],
-      //   ),
-      // ),
-      //   ],
-      // ),
     );
   }
 }
@@ -957,8 +908,14 @@ class PostShimmerTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Shimmer.fromColors(
-        baseColor: Colors.grey.shade800,
-        highlightColor: Colors.grey.shade700,
+        baseColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey.shade800
+                : Colors.grey.shade300,
+        highlightColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey.shade700
+                : Colors.grey.shade100,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -972,11 +929,20 @@ class PostShimmerTile extends StatelessWidget {
                     height: 18,
                     width: MediaQuery.of(context).size.width * 0.6,
                     decoration: BoxDecoration(
-                      color: Colors.grey.shade800,
+                      color:
+                          Theme.of(context).brightness == Brightness.dark
+                              ? Colors.grey.shade800
+                              : Colors.grey.shade300,
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
-                  const CircleAvatar(radius: 12, backgroundColor: Colors.grey),
+                  CircleAvatar(
+                    radius: 12,
+                    backgroundColor:
+                        Theme.of(context).brightness == Brightness.dark
+                            ? Colors.grey.shade800
+                            : Colors.grey.shade300,
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -986,7 +952,10 @@ class PostShimmerTile extends StatelessWidget {
                 height: 14,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade800,
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -995,7 +964,10 @@ class PostShimmerTile extends StatelessWidget {
                 height: 14,
                 width: MediaQuery.of(context).size.width * 0.8,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade800,
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -1004,12 +976,13 @@ class PostShimmerTile extends StatelessWidget {
                 height: 14,
                 width: MediaQuery.of(context).size.width * 0.5,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade800,
+                  color:
+                      Theme.of(context).brightness == Brightness.dark
+                          ? Colors.grey.shade800
+                          : Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
-              const SizedBox(height: 16),
-
               // Stats shimmer
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

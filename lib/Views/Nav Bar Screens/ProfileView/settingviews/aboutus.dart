@@ -6,6 +6,8 @@ class AboutUsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(title: const Text('About Us'), elevation: 0),
       body: SingleChildScrollView(
@@ -15,7 +17,6 @@ class AboutUsScreen extends StatelessWidget {
             // Hero section
             SizedBox(
               width: double.infinity,
-
               child: SafeArea(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
@@ -31,9 +32,11 @@ class AboutUsScreen extends StatelessWidget {
                           shape: BoxShape.circle,
                           gradient: LinearGradient(
                             colors: [
-                              const Color.fromARGB(255, 70, 64, 251),
+                              Theme.of(context).colorScheme.primary,
                               Colors.blue,
-                              const Color.fromARGB(255, 38, 111, 228),
+                              Theme.of(
+                                context,
+                              ).colorScheme.primary.withOpacity(0.8),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -68,6 +71,7 @@ class AboutUsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildContentSection(
+                    context,
                     icon: Icons.lightbulb_outline,
                     title: 'Our Mission',
                     content:
@@ -75,6 +79,7 @@ class AboutUsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
                   _buildContentSection(
+                    context,
                     icon: Icons.explore_outlined,
                     title: 'The Experience',
                     content:
@@ -82,6 +87,7 @@ class AboutUsScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
                   _buildContentSection(
+                    context,
                     icon: Icons.star_outline,
                     title: 'Our Values',
                     content:
@@ -100,33 +106,28 @@ class AboutUsScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(16),
                         gradient: LinearGradient(
                           colors: [
-                            const Color.fromARGB(
-                              255,
-                              64,
-                              214,
-                              251,
-                            ).withOpacity(0.1),
-                            Colors.blue.withOpacity(0.1),
+                            Theme.of(
+                              context,
+                            ).colorScheme.primary.withOpacity(0.1),
+                            Theme.of(
+                              context,
+                            ).colorScheme.secondary.withOpacity(0.1),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
                         border: Border.all(
-                          color: const Color.fromARGB(
-                            255,
-                            64,
-                            214,
-                            251,
-                          ).withOpacity(0.3),
-
+                          color: Theme.of(
+                            context,
+                          ).colorScheme.primary.withOpacity(0.3),
                           width: 1,
                         ),
                       ),
                       child: Column(
                         children: [
-                          const Icon(
+                          Icon(
                             Icons.favorite,
-                            color: Color.fromARGB(255, 64, 142, 251),
+                            color: Theme.of(context).colorScheme.primary,
                             size: 36,
                           ),
                           const SizedBox(height: 16),
@@ -134,7 +135,8 @@ class AboutUsScreen extends StatelessWidget {
                             'Thank you for being a part of our growing community.',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: Colors.grey[200],
+                              color:
+                                  Theme.of(context).textTheme.bodyLarge?.color,
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
                               height: 1.5,
@@ -154,11 +156,11 @@ class AboutUsScreen extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _buildSocialButton(Icons.facebook_outlined),
+                  _buildSocialButton(context, Icons.facebook_outlined),
                   const SizedBox(width: 24),
-                  _buildSocialButton(Icons.flutter_dash),
+                  _buildSocialButton(context, Icons.flutter_dash),
                   const SizedBox(width: 24),
-                  _buildSocialButton(Icons.alternate_email),
+                  _buildSocialButton(context, Icons.alternate_email),
                 ],
               ),
             ),
@@ -171,7 +173,12 @@ class AboutUsScreen extends StatelessWidget {
               child: Text(
                 '© ${DateTime.now().year} Verbatica. All rights reserved.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey[500], fontSize: 12),
+                style: TextStyle(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurface.withOpacity(0.6),
+                  fontSize: 12,
+                ),
               ),
             ),
           ],
@@ -180,7 +187,8 @@ class AboutUsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildContentSection({
+  Widget _buildContentSection(
+    BuildContext context, {
     required IconData icon,
     required String title,
     required String content,
@@ -193,21 +201,20 @@ class AboutUsScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: const Color.fromARGB(255, 64, 214, 251).withOpacity(0.1),
-
+                color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 icon,
-                color: const Color.fromARGB(255, 64, 214, 251),
+                color: Theme.of(context).colorScheme.primary,
                 size: 22,
               ),
             ),
             const SizedBox(width: 12),
             Text(
               title,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: Theme.of(context).textTheme.headlineSmall?.color,
                 fontSize: 20,
                 fontWeight: FontWeight.w600,
               ),
@@ -217,13 +224,19 @@ class AboutUsScreen extends StatelessWidget {
         const SizedBox(height: 16),
         Text(
           content,
-          style: TextStyle(color: Colors.grey[300], fontSize: 15, height: 1.6),
+          style: TextStyle(
+            color: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.color?.withOpacity(0.8),
+            fontSize: 15,
+            height: 1.6,
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildSocialButton(IconData icon) {
+  Widget _buildSocialButton(BuildContext context, IconData icon) {
     return InkWell(
       onTap: () {},
       borderRadius: BorderRadius.circular(50),
@@ -231,9 +244,9 @@ class AboutUsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: Colors.grey[700]!, width: 1),
+          border: Border.all(color: Theme.of(context).dividerColor, width: 1),
         ),
-        child: Icon(icon, color: Colors.white, size: 20),
+        child: Icon(icon, color: Theme.of(context).iconTheme.color, size: 20),
       ),
     );
   }
@@ -286,8 +299,8 @@ class _AnimatedHeadlineState extends State<_AnimatedHeadline>
         Text(
           widget.text,
           textAlign: TextAlign.center,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: Theme.of(context).textTheme.headlineLarge?.color,
             fontSize: 28,
             fontWeight: FontWeight.bold,
             letterSpacing: 0.5,
@@ -302,7 +315,10 @@ class _AnimatedHeadlineState extends State<_AnimatedHeadline>
               height: 3,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.purpleAccent, Colors.blue],
+                  colors: [
+                    Theme.of(context).colorScheme.primary,
+                    Theme.of(context).colorScheme.secondary,
+                  ],
                 ),
                 borderRadius: BorderRadius.circular(2),
               ),
