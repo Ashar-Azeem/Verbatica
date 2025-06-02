@@ -572,9 +572,10 @@ class UserPostWidget extends StatelessWidget {
                                                   ? Theme.of(
                                                     context,
                                                   ).colorScheme.primary
-                                                  : Theme.of(
-                                                    context,
-                                                  ).colorScheme.secondary,
+                                                  : Theme.of(context)
+                                                      .iconTheme
+                                                      .color
+                                                      ?.withOpacity(0.6),
                                         ),
                                       ),
                                       Text(
@@ -583,7 +584,7 @@ class UserPostWidget extends StatelessWidget {
                                           color:
                                               Theme.of(
                                                 context,
-                                              ).colorScheme.secondary,
+                                              ).textTheme.bodyMedium?.color,
                                           fontSize: 3.w,
                                           height: 1,
                                           fontWeight: FontWeight.bold,
@@ -624,7 +625,7 @@ class UserPostWidget extends StatelessWidget {
                                             ).colorScheme.primary
                                             : Theme.of(
                                               context,
-                                            ).colorScheme.secondary,
+                                            ).iconTheme.color?.withOpacity(0.6),
                                   ),
                                 ),
                               ],
@@ -675,15 +676,16 @@ class UserPostWidget extends StatelessWidget {
                                   padding: EdgeInsets.zero,
                                   icon: Icon(
                                     Icons.mode_comment_outlined,
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
+                                    color: Theme.of(context).iconTheme.color,
                                   ),
                                 ),
                                 Text(
                                   "${post.comments}",
                                   style: TextStyle(
                                     color:
-                                        Theme.of(context).colorScheme.secondary,
+                                        Theme.of(
+                                          context,
+                                        ).textTheme.bodyMedium?.color,
                                     fontSize: 3.w,
                                     height: 1,
                                     fontWeight: FontWeight.bold,
