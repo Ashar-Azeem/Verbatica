@@ -204,9 +204,7 @@ class UserPostWidget extends StatelessWidget {
                                 //   EditUserPost(postId: post.id),
                                 // );
                               } else if (value == "delete") {
-                                context.read<UserBloc>().add(
-                                  DeleteUserPost(postId: post.id),
-                                );
+                                _showDeleteConfirmation(context, post);
                               } else if (value == "share") {
                                 // context.read<UserBloc>().add(
                                 //   ShareUserPost(post: post),
@@ -584,7 +582,7 @@ class UserPostWidget extends StatelessWidget {
                                           color:
                                               Theme.of(
                                                 context,
-                                              ).textTheme.bodyMedium?.color,
+                                              ).colorScheme.secondary,
                                           fontSize: 3.w,
                                           height: 1,
                                           fontWeight: FontWeight.bold,
@@ -676,16 +674,15 @@ class UserPostWidget extends StatelessWidget {
                                   padding: EdgeInsets.zero,
                                   icon: Icon(
                                     Icons.mode_comment_outlined,
-                                    color: Theme.of(context).iconTheme.color,
+                                    color:
+                                        Theme.of(context).colorScheme.secondary,
                                   ),
                                 ),
                                 Text(
                                   "${post.comments}",
                                   style: TextStyle(
                                     color:
-                                        Theme.of(
-                                          context,
-                                        ).textTheme.bodyMedium?.color,
+                                        Theme.of(context).colorScheme.secondary,
                                     fontSize: 3.w,
                                     height: 1,
                                     fontWeight: FontWeight.bold,
@@ -697,7 +694,9 @@ class UserPostWidget extends StatelessWidget {
                           )
                           : SizedBox.shrink(),
 
-                      // Sentiment Analysis Button or spacing
+                      // Sentiment Analysis Button or
+                      Spacer(flex: 11),
+
                       post.isDebate
                           ? IconButton(
                             onPressed: () {
@@ -718,24 +717,7 @@ class UserPostWidget extends StatelessWidget {
                               color: Theme.of(context).colorScheme.primary,
                             ),
                           )
-                          : SizedBox(height: 6.h, width: 15.w),
-
-                      // Delete button only for user's own posts
-                      if (isUserPost) ...[
-                        Spacer(),
-                        IconButton(
-                          icon: Icon(
-                            Icons.delete_outline,
-                            color: Theme.of(context).colorScheme.error,
-                          ),
-                          onPressed: () {
-                            _showDeleteConfirmation(context, post);
-                          },
-                          tooltip: 'Delete post',
-                        ),
-                        Spacer(flex: 2),
-                      ] else
-                        const Spacer(flex: 10),
+                          : SizedBox.shrink(),
                     ],
                   ),
                 ),

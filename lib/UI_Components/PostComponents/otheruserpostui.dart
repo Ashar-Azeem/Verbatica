@@ -377,7 +377,7 @@ class OtherUserPostWidget extends StatelessWidget {
                           },
                         ),
                       ),
-                      SizedBox(width: 4.w),
+                      Spacer(),
                       !onFullView
                           ? Container(
                             height: 5.h,
@@ -440,7 +440,7 @@ class OtherUserPostWidget extends StatelessWidget {
                             ),
                           )
                           : SizedBox.shrink(),
-                      Spacer(),
+                      Spacer(flex: 14),
                       // Sentiment Analysis Button
                       post.isDebate
                           ? IconButton(

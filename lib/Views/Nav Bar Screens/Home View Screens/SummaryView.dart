@@ -311,7 +311,7 @@ class SummaryScreen extends StatelessWidget {
             TabBar(
               dividerColor: Theme.of(context).dividerColor,
               isScrollable: true,
-              labelColor: Theme.of(context).colorScheme.onPrimary,
+              labelColor: Theme.of(context).colorScheme.primary,
               unselectedLabelColor:
                   Theme.of(
                     context,
