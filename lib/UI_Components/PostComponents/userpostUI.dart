@@ -462,7 +462,10 @@ class UserPostWidget extends StatelessWidget {
                         (context, url, error) => AspectRatio(
                           aspectRatio: 16 / 9,
                           child: Container(
-                            color: Theme.of(context).colorScheme.surfaceVariant,
+                            color:
+                                Theme.of(
+                                  context,
+                                ).colorScheme.surfaceContainerHighest,
                             child: Icon(
                               Icons.error,
                               color: Theme.of(context).iconTheme.color,

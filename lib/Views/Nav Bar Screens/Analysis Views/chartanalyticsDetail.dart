@@ -145,7 +145,7 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
         child: Text(
           title,
           style: TextStyle(
-            color: textTheme.titleMedium?.color ?? colorScheme.onBackground,
+            color: textTheme.titleMedium?.color ?? colorScheme.onSurface,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),

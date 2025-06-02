@@ -336,7 +336,7 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                     maxLength: 200,
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: colorScheme.surfaceVariant,
+                      fillColor: colorScheme.surfaceContainerHighest,
                       hintText: 'Tell others about yourself...',
                       hintStyle: TextStyle(
                         color: textTheme.bodyMedium?.color?.withOpacity(0.6),

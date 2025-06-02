@@ -692,7 +692,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                                     .withOpacity(0.3)
                                                 : Theme.of(context)
                                                     .colorScheme
-                                                    .surfaceVariant
+                                                    .surfaceContainerHighest
                                                     .withOpacity(0.3),
                                         border: OutlineInputBorder(
                                           borderRadius: BorderRadius.circular(

@@ -222,14 +222,18 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                               ? Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(6),
+                                  border: Border.all(
+                                    color: Theme.of(context).dividerColor,
+                                  ),
+
                                   color:
                                       isDarkMode
                                           ? const Color(0xFF27343D)
                                           : const Color.fromARGB(
                                             255,
-                                            227,
-                                            227,
-                                            227,
+                                            247,
+                                            246,
+                                            246,
                                           ),
                                 ),
                                 alignment: Alignment.center,
@@ -302,14 +306,18 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                           Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.w),
+                              border: Border.all(
+                                color: Theme.of(context).dividerColor,
+                              ),
+
                               color:
                                   isDarkMode
                                       ? const Color(0xFF27343D)
                                       : const Color.fromARGB(
                                         255,
-                                        227,
-                                        227,
-                                        227,
+                                        247,
+                                        246,
+                                        246,
                                       ),
                             ),
                             alignment: Alignment.center,

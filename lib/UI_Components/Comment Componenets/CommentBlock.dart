@@ -160,13 +160,13 @@ class CommentsBlock extends StatelessWidget {
                             color:
                                 comment.upVoteUserIds.contains(userId)
                                     ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context).iconTheme.color,
+                                    : Theme.of(context).colorScheme.secondary,
                           ),
                         ),
                         Text(
                           "${comment.totalUpVotes - comment.totalDownVotes}",
                           style: TextStyle(
-                            color: Theme.of(context).textTheme.bodyLarge?.color,
+                            color: Theme.of(context).colorScheme.secondary,
                             fontSize: 3.w,
                             height: 1,
                             fontWeight: FontWeight.bold,
@@ -186,7 +186,7 @@ class CommentsBlock extends StatelessWidget {
                             color:
                                 comment.downVoteUserIds.contains(userId)
                                     ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context).iconTheme.color,
+                                    : Theme.of(context).colorScheme.secondary,
                           ),
                         ),
                         level > 7
@@ -200,9 +200,7 @@ class CommentsBlock extends StatelessWidget {
                                 "Reply",
                                 style: TextStyle(
                                   color:
-                                      Theme.of(
-                                        context,
-                                      ).textTheme.bodyLarge?.color,
+                                      Theme.of(context).colorScheme.secondary,
                                   fontSize: 3.5.w,
                                   fontWeight: FontWeight.w500,
                                 ),

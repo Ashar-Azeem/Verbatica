@@ -99,7 +99,7 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
     final listItemColor =
         isDarkMode
             ? colorScheme.surface.withOpacity(0.8)
-            : colorScheme.surfaceVariant.withOpacity(0.3);
+            : colorScheme.surfaceContainerHighest.withOpacity(0.3);
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,

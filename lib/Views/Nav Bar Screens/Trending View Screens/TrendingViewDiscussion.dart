@@ -158,8 +158,7 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                                       child: Column(
                                         children: [
                                           Divider(
-                                            color: colorScheme.outline
-                                                .withOpacity(0.3),
+                                            color: theme.dividerColor,
                                             thickness: 0.5,
                                           ),
                                           Center(
@@ -172,8 +171,7 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                                             ),
                                           ),
                                           Divider(
-                                            color: colorScheme.outline
-                                                .withOpacity(0.3),
+                                            color: theme.dividerColor,
                                             thickness: 0.5,
                                           ),
                                         ],
@@ -203,15 +201,17 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                           state.replyToComment != null
                               ? Container(
                                 decoration: BoxDecoration(
+                                  border: Border.all(color: theme.dividerColor),
+
                                   borderRadius: BorderRadius.circular(6),
                                   color:
                                       isDarkMode
                                           ? const Color(0xFF27343D)
                                           : const Color.fromARGB(
                                             255,
-                                            227,
-                                            227,
-                                            227,
+                                            247,
+                                            246,
+                                            246,
                                           ),
                                 ),
                                 alignment: Alignment.center,
@@ -270,14 +270,15 @@ class _TrendingViewDiscussionState extends State<TrendingViewDiscussion>
                           Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10.w),
+                              border: Border.all(color: theme.dividerColor),
                               color:
                                   isDarkMode
                                       ? const Color(0xFF27343D)
                                       : const Color.fromARGB(
                                         255,
-                                        227,
-                                        227,
-                                        227,
+                                        247,
+                                        246,
+                                        246,
                                       ),
                             ),
                             alignment: Alignment.center,

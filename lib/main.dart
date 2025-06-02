@@ -19,16 +19,11 @@ import 'package:verbatica/Views/Nav%20Bar%20Screens/mainBottomNavigationBar.dart
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  // SystemChrome.setSystemUIOverlayStyle(
-  //   const SystemUiOverlayStyle(
-  //     systemNavigationBarIconBrightness: Brightness.light,
-  //     systemNavigationBarColor: Color.fromARGB(255, 10, 13, 15),
-  //   ),
-  // );
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()), // <-- Added
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         BlocProvider<UserBloc>(create: (context) => UserBloc()),
         BlocProvider<OtheruserBloc>(create: (context) => OtheruserBloc()),
         BlocProvider<SummaryBloc>(create: (context) => SummaryBloc()),
@@ -62,9 +57,9 @@ class MyApp extends StatelessWidget {
             primaryColor: Colors.white,
             dividerColor: const Color.fromARGB(255, 181, 181, 181),
 
-            scaffoldBackgroundColor: Colors.white,
+            scaffoldBackgroundColor: const Color.fromARGB(255, 230, 230, 230),
             appBarTheme: const AppBarTheme(
-              backgroundColor: Color.fromARGB(255, 246, 245, 245),
+              backgroundColor: Color.fromARGB(255, 230, 230, 230),
               foregroundColor: Colors.black,
             ),
             colorScheme: ColorScheme(
@@ -74,7 +69,7 @@ class MyApp extends StatelessWidget {
               onSecondary: Colors.orange,
               error: const Color.fromARGB(255, 252, 17, 0),
               onError: Colors.white,
-              surface: const Color.fromARGB(255, 227, 227, 227),
+              surface: const Color.fromARGB(255, 238, 237, 237),
               onSurface: const Color.fromARGB(255, 208, 207, 207),
               brightness: Brightness.light,
             ),

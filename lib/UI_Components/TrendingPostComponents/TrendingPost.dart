@@ -240,14 +240,15 @@ class TrendingPostWidget extends StatelessWidget {
                     imageUrl: post.postImageLink!,
                     placeholder:
                         (context, url) => Shimmer.fromColors(
-                          baseColor: colorScheme.surfaceVariant.withOpacity(
-                            0.3,
-                          ),
-                          highlightColor: colorScheme.surfaceVariant
+                          baseColor: colorScheme.surfaceContainerHighest
+                              .withOpacity(0.3),
+                          highlightColor: colorScheme.surfaceContainerHighest
                               .withOpacity(0.1),
                           child: AspectRatio(
                             aspectRatio: 16 / 9,
-                            child: Container(color: colorScheme.surfaceVariant),
+                            child: Container(
+                              color: colorScheme.surfaceContainerHighest,
+                            ),
                           ),
                         ),
                     errorWidget:

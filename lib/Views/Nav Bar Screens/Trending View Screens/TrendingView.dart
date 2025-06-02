@@ -61,9 +61,9 @@ class _TrendingViewState extends State<TrendingView> {
                                         ? const Color(0xFF27343D)
                                         : const Color.fromARGB(
                                           255,
-                                          227,
-                                          227,
-                                          227,
+                                          247,
+                                          246,
+                                          246,
                                         ),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(50),

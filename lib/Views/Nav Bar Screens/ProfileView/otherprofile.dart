@@ -191,7 +191,12 @@ class _ProfileViewState extends State<otherProfileView>
                                       color:
                                           isDarkMode
                                               ? Color.fromARGB(255, 10, 13, 15)
-                                              : Colors.white,
+                                              : const Color.fromARGB(
+                                                255,
+                                                230,
+                                                230,
+                                                230,
+                                              ),
                                       height: 20.h,
                                       child: Row(
                                         mainAxisAlignment:

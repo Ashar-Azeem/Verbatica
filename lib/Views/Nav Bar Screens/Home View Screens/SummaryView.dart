@@ -31,20 +31,12 @@ class SummaryScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text(
           'Summary',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            letterSpacing: 0.5,
-            color:
-                Theme.of(context).appBarTheme.titleTextStyle?.color ??
-                Theme.of(context).colorScheme.onPrimary,
-          ),
+          style: TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5),
         ),
         elevation: 0,
         centerTitle: true,
         backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-        iconTheme: IconThemeData(
-          color: Theme.of(context).colorScheme.onPrimary,
-        ),
+
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
         ),
@@ -316,54 +308,36 @@ class SummaryScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min, // Shrink wrap content
           children: [
             // Tab Bar with cluster titles
-            Container(
-              margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(30),
-                boxShadow: [
-                  BoxShadow(
-                    color: Theme.of(context).shadowColor.withOpacity(0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+            TabBar(
+              dividerColor: Theme.of(context).dividerColor,
+              isScrollable: true,
+              labelColor: Theme.of(context).colorScheme.onPrimary,
+              unselectedLabelColor:
+                  Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.color?.withOpacity(0.6) ??
+                  Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 14,
               ),
-              child: TabBar(
-                isScrollable: true,
-                labelColor: Theme.of(context).colorScheme.onPrimary,
-                unselectedLabelColor:
-                    Theme.of(
-                      context,
-                    ).textTheme.bodyMedium?.color?.withOpacity(0.6) ??
-                    Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
-                labelStyle: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-                unselectedLabelStyle: const TextStyle(
-                  fontWeight: FontWeight.normal,
-                  fontSize: 14,
-                ),
-                indicator: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primary,
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-                tabs:
-                    clusters
-                        .map(
-                          (cluster) => Tab(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              child: Text(cluster.title),
-                            ),
+              unselectedLabelStyle: const TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 14,
+              ),
+
+              padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+              tabs:
+                  clusters
+                      .map(
+                        (cluster) => Tab(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                            child: Text(cluster.title),
                           ),
-                        )
-                        .toList(),
-              ),
+                        ),
+                      )
+                      .toList(),
             ),
 
             // Tab content area - using Flexible instead of Expanded

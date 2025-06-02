@@ -71,6 +71,8 @@ class _SearchedViewDiscussionState extends State<SearchedViewDiscussion>
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return BlocProvider(
       create: (context) => CommentsBloc(postId: widget.post.id),
       child: Scaffold(
@@ -95,19 +97,17 @@ class _SearchedViewDiscussionState extends State<SearchedViewDiscussion>
                             width: 10.w,
                             height: 10.w,
                             decoration: BoxDecoration(
-                              color: Color.fromARGB(
-                                255,
-                                13,
-                                18,
-                                21,
-                              ).withOpacity(0.4),
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.surface.withOpacity(0.4),
                               shape: BoxShape.circle,
                             ),
                             child: IconButton(
                               icon: Center(
                                 child: Icon(
                                   Icons.arrow_back,
-                                  color: Colors.white,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
                                   size: 5.w,
                                 ),
                               ),
@@ -185,7 +185,18 @@ class _SearchedViewDiscussionState extends State<SearchedViewDiscussion>
                               ? Container(
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(6),
-                                  color: Color.fromARGB(255, 39, 52, 61),
+                                  border: Border.all(
+                                    color: Theme.of(context).dividerColor,
+                                  ),
+                                  color:
+                                      isDarkMode
+                                          ? const Color(0xFF27343D)
+                                          : const Color.fromARGB(
+                                            255,
+                                            247,
+                                            246,
+                                            246,
+                                          ),
                                 ),
                                 alignment: Alignment.center,
                                 width: 90.w,
@@ -200,7 +211,16 @@ class _SearchedViewDiscussionState extends State<SearchedViewDiscussion>
                                         Text(
                                           "Reply to ${state.replyToComment!.author}",
                                           style: TextStyle(
-                                            color: Colors.white,
+                                            color:
+                                                Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.color
+                                                    ?.withOpacity(0.6) ??
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurface
+                                                    .withOpacity(0.6),
                                             fontWeight: FontWeight.bold,
                                             fontSize: 4.w,
                                           ),
@@ -213,7 +233,16 @@ class _SearchedViewDiscussionState extends State<SearchedViewDiscussion>
                                           },
                                           child: Icon(
                                             Icons.highlight_remove_rounded,
-                                            color: Colors.white,
+                                            color:
+                                                Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.color
+                                                    ?.withOpacity(0.6) ??
+                                                Theme.of(context)
+                                                    .colorScheme
+                                                    .onSurface
+                                                    .withOpacity(0.6),
                                           ),
                                         ),
                                       ],
@@ -228,7 +257,16 @@ class _SearchedViewDiscussionState extends State<SearchedViewDiscussion>
                                       maxLines: 4,
                                       style: TextStyle(
                                         fontSize: 3.8.w,
-                                        color: Colors.white,
+                                        color:
+                                            Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.color
+                                                ?.withOpacity(0.6) ??
+                                            Theme.of(context)
+                                                .colorScheme
+                                                .onSurface
+                                                .withOpacity(0.6),
                                         fontWeight: FontWeight.w300,
                                       ),
                                       linkColor: primaryColor,
@@ -240,8 +278,19 @@ class _SearchedViewDiscussionState extends State<SearchedViewDiscussion>
                           SizedBox(height: 0.2.h),
                           Container(
                             decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Theme.of(context).dividerColor,
+                              ),
                               borderRadius: BorderRadius.circular(10.w),
-                              color: Color.fromARGB(255, 39, 52, 61),
+                              color:
+                                  isDarkMode
+                                      ? const Color(0xFF27343D)
+                                      : const Color.fromARGB(
+                                        255,
+                                        247,
+                                        246,
+                                        246,
+                                      ),
                             ),
                             alignment: Alignment.center,
                             width: 96.w,
@@ -275,17 +324,36 @@ class _SearchedViewDiscussionState extends State<SearchedViewDiscussion>
                                       maxLines: 5,
                                       expands: false,
                                       minLines: 1,
-                                      cursorColor: Colors.white,
-                                      style: const TextStyle(
-                                        color: Colors.white,
+                                      cursorColor:
+                                          Theme.of(context).colorScheme.primary,
+                                      style: TextStyle(
+                                        color:
+                                            Theme.of(
+                                              context,
+                                            ).textTheme.bodyLarge?.color ??
+                                            Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
                                         fontWeight: FontWeight.normal,
                                       ),
                                       controller: comment,
                                       autocorrect: false,
                                       enableSuggestions: true,
-                                      decoration: const InputDecoration(
+                                      decoration: InputDecoration(
                                         border: InputBorder.none,
                                         hintText: 'Comment...',
+                                        hintStyle: TextStyle(
+                                          color:
+                                              Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium
+                                                  ?.color
+                                                  ?.withOpacity(0.6) ??
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurface
+                                                  .withOpacity(0.6),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -316,14 +384,20 @@ class _SearchedViewDiscussionState extends State<SearchedViewDiscussion>
                                             ? Center(
                                               child:
                                                   LoadingAnimationWidget.staggeredDotsWave(
-                                                    color: Colors.white,
+                                                    color:
+                                                        Theme.of(
+                                                          context,
+                                                        ).colorScheme.primary,
                                                     size: 5.w,
                                                   ),
                                             )
                                             : Center(
                                               child: Icon(
                                                 Icons.send,
-                                                color: Colors.white,
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).colorScheme.primary,
                                                 size: 5.w,
                                               ),
                                             ),

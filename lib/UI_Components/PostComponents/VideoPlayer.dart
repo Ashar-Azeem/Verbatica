@@ -79,7 +79,7 @@ class _VideoPlayerState extends State<VideoPlayer> {
                 width: 100.w,
                 child: Center(
                   child: LoadingAnimationWidget.staggeredDotsWave(
-                    color: theme.colorScheme.onBackground,
+                    color: theme.colorScheme.onSurface,
                     size: 10.w,
                   ),
                 ),

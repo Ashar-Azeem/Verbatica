@@ -91,7 +91,7 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                         backgroundColor: WidgetStatePropertyAll<Color>(
                           isDarkMode
                               ? const Color(0xFF27343D)
-                              : const Color.fromARGB(255, 227, 227, 227),
+                              : const Color.fromARGB(255, 247, 246, 246),
                         ),
                         controller: controller,
                         padding: const WidgetStatePropertyAll<EdgeInsets>(
