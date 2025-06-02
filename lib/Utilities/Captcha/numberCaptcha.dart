@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 class NumberCaptcha extends StatefulWidget {
-  const NumberCaptcha(this.code, {super.key});
-
+  const NumberCaptcha(this.code, {super.key, required this.isDark});
+  final bool isDark;
   final String code;
 
   @override
@@ -15,12 +15,6 @@ class _NumberCaptchaState extends State<NumberCaptcha> {
   final double width = 65.w;
   final double height = 6.h;
   final int dotCount = 350;
-  final Color backgroundColor = Color.fromARGB(
-    255,
-    8,
-    10,
-    12,
-  ); // Dark background
 
   Map getRandomData() {
     List list = widget.code.split("");
@@ -29,12 +23,20 @@ class _NumberCaptchaState extends State<NumberCaptcha> {
 
     List mList = [];
     for (String item in list) {
-      Color color = Color.fromARGB(
-        255,
-        150 + Random().nextInt(100),
-        150 + Random().nextInt(100),
-        150 + Random().nextInt(100),
-      );
+      Color color =
+          widget.isDark
+              ? Color.fromARGB(
+                255,
+                150 + Random().nextInt(100),
+                150 + Random().nextInt(100),
+                150 + Random().nextInt(100),
+              )
+              : Color.fromARGB(
+                255,
+                150 + Random().nextInt(105), // 150–255 range
+                150 + Random().nextInt(105),
+                150 + Random().nextInt(105),
+              );
 
       int fontWeight = Random().nextInt(9);
 
@@ -96,7 +98,7 @@ class _NumberCaptchaState extends State<NumberCaptcha> {
       width: max(maxWidth, width),
       height: height,
       decoration: BoxDecoration(
-        color: backgroundColor,
+        color: widget.isDark ? Color.fromARGB(255, 8, 10, 12) : Colors.white,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
           color: const Color.fromARGB(255, 81, 144, 221), // Your button color

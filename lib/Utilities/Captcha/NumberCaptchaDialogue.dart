@@ -78,9 +78,10 @@ class _NumberCaptchaDialogState extends State<NumberCaptchaDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Center(
       child: Card(
-        color: const Color(0xFF121416),
+        color: isDarkMode ? const Color(0xFF121416) : Colors.white,
         elevation: 12,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
@@ -88,7 +89,7 @@ class _NumberCaptchaDialogState extends State<NumberCaptchaDialog> {
           constraints: const BoxConstraints(maxWidth: 420),
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: const Color(0xFF121416),
+            color: isDarkMode ? const Color(0xFF121416) : Colors.white,
             borderRadius: BorderRadius.circular(16),
           ),
           child: Material(
@@ -111,7 +112,7 @@ class _NumberCaptchaDialogState extends State<NumberCaptchaDialog> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      NumberCaptcha(code),
+                      NumberCaptcha(code, isDark: isDarkMode),
                       Ink(
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 81, 144, 221),
@@ -141,7 +142,9 @@ class _NumberCaptchaDialogState extends State<NumberCaptchaDialog> {
                           flex: 3,
                           child: TextField(
                             controller: textController,
-                            style: const TextStyle(color: Colors.white),
+                            style: TextStyle(
+                              color: isDarkMode ? Colors.white : Colors.black,
+                            ),
 
                             decoration: InputDecoration(
                               hintText: widget.placeholderText,
