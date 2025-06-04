@@ -5,7 +5,6 @@ import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
-import 'package:verbatica/UI_Components/PostComponents/userpostUI.dart';
 import 'package:verbatica/model/Post.dart';
 
 class SavedPostsScreen extends StatelessWidget {
@@ -253,32 +252,14 @@ class SavedPostsScreen extends StatelessWidget {
                       topRight: Radius.circular(20),
                     ),
                     child: ListView.builder(
-                      padding: EdgeInsets.only(top: 2.h, bottom: 2.h),
+                      padding: EdgeInsets.only(top: 0.5.h, bottom: 2.h),
                       itemCount: state.savedPosts.length,
                       itemBuilder: (context, index) {
-                        return Container(
-                          margin: EdgeInsets.only(bottom: 1.h),
-                          decoration: BoxDecoration(
-                            color: theme.cardColor,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
-                              color: theme.dividerColor.withOpacity(0.3),
-                              width: 0.5,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: theme.shadowColor.withOpacity(0.2),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: UserPostWidget(
-                            post: state.savedPosts[index],
-                            index: index,
-                            category: 'saved',
-                            onFullView: false,
-                          ),
+                        return PostWidget(
+                          post: state.savedPosts[index],
+                          index: index,
+                          category: 'saved',
+                          onFullView: false,
                         );
                       },
                     ),

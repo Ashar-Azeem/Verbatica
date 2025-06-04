@@ -6,9 +6,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
-import 'package:verbatica/BLOC/Home/home_bloc.dart';
+import 'package:verbatica/BLOC/Home/home_bloc.dart' as homeBloc;
+import 'package:verbatica/BLOC/Search%20Bloc/search_bloc.dart' as searchBloc;
+import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
+import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/SummaryView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
@@ -20,6 +23,7 @@ import 'package:timeago/timeago.dart' as timeago;
 class PostWidget extends StatelessWidget {
   final Post post;
   final int index;
+  final int? newsIndex;
   final String category;
   final bool onFullView;
 
@@ -29,7 +33,61 @@ class PostWidget extends StatelessWidget {
     required this.index,
     required this.category,
     required this.onFullView,
+    this.newsIndex,
   });
+
+  void _showDeleteConfirmation(BuildContext context, Post post) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).cardColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          title: Text(
+            'Delete Post',
+            style: TextStyle(
+              color: Theme.of(context).textTheme.titleLarge?.color,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            'Are you sure you want to delete this post?',
+            style: TextStyle(
+              color: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.color?.withOpacity(0.7),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(
+                'Cancel',
+                style: TextStyle(
+                  color: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                // Dispatch delete post event
+                context.read<UserBloc>().add(DeleteUserPost(postId: post.id));
+                Navigator.of(context).pop();
+              },
+              child: Text(
+                'Delete',
+                style: TextStyle(color: Theme.of(context).colorScheme.primary),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -132,59 +190,114 @@ class PostWidget extends StatelessWidget {
                       color: colorScheme.surface,
                       onSelected: (String value) {
                         if (value == "report") {
-                          context.read<HomeBloc>().add(
-                            ReportPost(
-                              index: index,
-                              category: category,
-                              postId: post.id,
-                            ),
-                          );
+                          if (category == 'ForYou' || category == 'Following') {
+                            context.read<homeBloc.HomeBloc>().add(
+                              homeBloc.ReportPost(
+                                index: index,
+                                category: category,
+                                postId: post.id,
+                              ),
+                            );
+                          } else if (category == 'Trending' ||
+                              category == 'Top 10 news') {
+                            context.read<TrendingViewBloc>().add(
+                              ReportPost(
+                                index: index,
+                                category: category,
+                                postId: post.id,
+                              ),
+                            );
+                          } else if (category == 'other') {
+                          } else if (category == 'searched') {}
                         } else if (value == "save") {
                           context.read<UserBloc>().add(SavePost1(post: post));
                         } else if (value == "share") {
-                          context.read<HomeBloc>().add(SharePost(post: post));
+                        } else if (value == 'delete') {
+                          _showDeleteConfirmation(context, post);
+                        } else if (value == 'unSave') {
+                          context.read<UserBloc>().add(UnsavePost1(post: post));
                         }
                       },
                       itemBuilder:
                           (BuildContext context) => <PopupMenuEntry<String>>[
-                            PopupMenuItem<String>(
-                              value: 'report',
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Icon(
-                                    Icons.report_gmailerrorred,
-                                    color: textTheme.bodyLarge?.color,
+                            category != 'user'
+                                ? PopupMenuItem<String>(
+                                  value: 'report',
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Icon(
+                                        Icons.report_gmailerrorred,
+                                        color: textTheme.bodyLarge?.color,
+                                      ),
+                                      Text(
+                                        'Report',
+                                        style: TextStyle(
+                                          color: textTheme.bodyLarge?.color,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    'Report',
-                                    style: TextStyle(
-                                      color: textTheme.bodyLarge?.color,
-                                    ),
+                                )
+                                : PopupMenuItem<String>(
+                                  value: 'delete',
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Icon(
+                                        Icons.delete,
+                                        color: textTheme.bodyLarge?.color,
+                                      ),
+                                      Text(
+                                        'Delete',
+                                        style: TextStyle(
+                                          color: textTheme.bodyLarge?.color,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
-                            PopupMenuItem<String>(
-                              value: 'save',
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  Icon(
-                                    Icons.save,
-                                    color: textTheme.bodyLarge?.color,
+                                ),
+                            category != 'saved'
+                                ? PopupMenuItem<String>(
+                                  value: 'save',
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Icon(
+                                        Icons.save,
+                                        color: textTheme.bodyLarge?.color,
+                                      ),
+                                      Text(
+                                        'Save',
+                                        style: TextStyle(
+                                          color: textTheme.bodyLarge?.color,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    'Save',
-                                    style: TextStyle(
-                                      color: textTheme.bodyLarge?.color,
-                                    ),
+                                )
+                                : PopupMenuItem<String>(
+                                  value: 'unSave',
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Icon(
+                                        Icons.remove_circle_outline,
+                                        color: textTheme.bodyLarge?.color,
+                                      ),
+                                      Text(
+                                        'UnSave',
+                                        style: TextStyle(
+                                          color: textTheme.bodyLarge?.color,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
+                                ),
                             PopupMenuItem<String>(
                               value: 'share',
                               child: Row(
@@ -296,20 +409,13 @@ class PostWidget extends StatelessWidget {
                     pushScreen(
                       context,
                       pageTransitionAnimation: PageTransitionAnimation.scale,
-                      screen: MultiBlocProvider(
-                        providers: [
-                          BlocProvider<HomeBloc>.value(
-                            value:
-                                context
-                                    .read<HomeBloc>(), // Passing existing bloc
-                          ),
-                        ],
-                        child: ViewDiscussion(
-                          post: post,
-                          index: index,
-                          category: category,
-                        ),
+                      screen: ViewDiscussion(
+                        post: post,
+                        index: index,
+                        newIndex: newsIndex,
+                        category: category,
                       ),
+
                       withNavBar: false,
                     );
                   }
@@ -330,87 +436,149 @@ class PostWidget extends StatelessWidget {
                           horizontal: 0.5.w,
                           vertical: 0.5.w,
                         ),
-                        child: BlocBuilder<HomeBloc, HomeState>(
-                          builder: (context, state) {
-                            Post dynamicpost;
-                            if (category == 'ForYou') {
-                              dynamicpost = state.forYou[index];
-                            } else if (category == 'Following') {
-                              dynamicpost = state.following[index];
-                            } else {
-                              dynamicpost = post;
-                            }
-                            return Row(
-                              children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    context.read<HomeBloc>().add(
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                if (category == 'ForYou' ||
+                                    category == 'Following') {
+                                  context.read<homeBloc.HomeBloc>().add(
+                                    homeBloc.UpVotePost(
+                                      index: index,
+                                      category: category,
+                                    ),
+                                  );
+                                } else if (category == 'Trending' ||
+                                    category == 'Top 10 news') {
+                                  if (newsIndex != null) {
+                                    context.read<TrendingViewBloc>().add(
+                                      UpVoteNewsPost(
+                                        index: index,
+                                        category: category,
+                                        newsIndex: newsIndex!,
+                                      ),
+                                    );
+                                  } else {
+                                    context.read<TrendingViewBloc>().add(
                                       UpVotePost(
                                         index: index,
                                         category: category,
                                       ),
                                     );
-                                  },
-                                  child: Row(
-                                    children: [
-                                      IconButton(
-                                        onPressed: null,
-                                        padding: EdgeInsets.zero,
-                                        icon: Icon(
-                                          Icons.arrow_circle_up_outlined,
-                                          size: 7.w,
-                                          color:
-                                              dynamicpost.isUpVote
-                                                  ? colorScheme.primary
-                                                  : colorScheme.secondary,
-                                        ),
-                                      ),
-
-                                      Text(
-                                        "${dynamicpost.upvotes - dynamicpost.downvotes}",
-                                        style: TextStyle(
-                                          color: theme.colorScheme.secondary,
-                                          fontSize: 3.w,
-                                          height: 1,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      SizedBox(width: 4.w),
-                                    ],
+                                  }
+                                } else if (category == 'user') {
+                                  context.read<UserBloc>().add(
+                                    upvotePost1(index: index),
+                                  );
+                                } else if (category == 'other') {
+                                  context.read<OtheruserBloc>().add(
+                                    upvotePost(index: index),
+                                  );
+                                } else if (category == 'saved') {
+                                  context.read<UserBloc>().add(
+                                    upvotesavedPost1(index: index),
+                                  );
+                                } else {
+                                  context.read<searchBloc.SearchBloc>().add(
+                                    searchBloc.UpVotePost(index: index),
+                                  );
+                                }
+                              },
+                              child: Row(
+                                children: [
+                                  IconButton(
+                                    onPressed: null,
+                                    padding: EdgeInsets.zero,
+                                    icon: Icon(
+                                      Icons.arrow_circle_up_outlined,
+                                      size: 7.w,
+                                      color:
+                                          post.isUpVote
+                                              ? colorScheme.primary
+                                              : colorScheme.secondary,
+                                    ),
                                   ),
-                                ),
-                                Container(
-                                  width: 1,
-                                  height: 5.h,
-                                  color: theme.dividerColor,
-                                ),
 
-                                IconButton(
-                                  splashColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
+                                  Text(
+                                    "${post.upvotes - post.downvotes}",
+                                    style: TextStyle(
+                                      color: theme.colorScheme.secondary,
+                                      fontSize: 3.w,
+                                      height: 1,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(width: 4.w),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              width: 1,
+                              height: 5.h,
+                              color: theme.dividerColor,
+                            ),
 
-                                  onPressed: () {
-                                    context.read<HomeBloc>().add(
+                            IconButton(
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
+
+                              onPressed: () {
+                                if (category == 'ForYou' ||
+                                    category == 'Following') {
+                                  context.read<homeBloc.HomeBloc>().add(
+                                    homeBloc.DownVotePost(
+                                      index: index,
+                                      category: category,
+                                    ),
+                                  );
+                                } else if (category == 'Trending' ||
+                                    category == 'Top 10 news') {
+                                  if (newsIndex != null) {
+                                    context.read<TrendingViewBloc>().add(
+                                      DownVoteNewsPost(
+                                        index: index,
+                                        category: category,
+                                        newsIndex: newsIndex!,
+                                      ),
+                                    );
+                                  } else {
+                                    context.read<TrendingViewBloc>().add(
                                       DownVotePost(
                                         index: index,
                                         category: category,
                                       ),
                                     );
-                                  },
-                                  padding: EdgeInsets.zero,
-                                  icon: Icon(
-                                    size: 7.w,
+                                  }
+                                } else if (category == 'user') {
+                                  context.read<UserBloc>().add(
+                                    downvotePost1(index: index),
+                                  );
+                                } else if (category == 'other') {
+                                  context.read<OtheruserBloc>().add(
+                                    downvotePost(index: index),
+                                  );
+                                } else if (category == 'saved') {
+                                  context.read<UserBloc>().add(
+                                    downvotesavedPost(index: index),
+                                  );
+                                } else {
+                                  context.read<searchBloc.SearchBloc>().add(
+                                    searchBloc.DownVotePost(index: index),
+                                  );
+                                }
+                              },
+                              padding: EdgeInsets.zero,
+                              icon: Icon(
+                                size: 7.w,
 
-                                    Icons.arrow_circle_down_outlined,
-                                    color:
-                                        dynamicpost.isDownVote
-                                            ? colorScheme.primary
-                                            : colorScheme.secondary,
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
+                                Icons.arrow_circle_down_outlined,
+                                color:
+                                    post.isDownVote
+                                        ? colorScheme.primary
+                                        : colorScheme.secondary,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                       Spacer(flex: 1),
@@ -435,19 +603,13 @@ class PostWidget extends StatelessWidget {
                                       context,
                                       pageTransitionAnimation:
                                           PageTransitionAnimation.scale,
-                                      screen: MultiBlocProvider(
-                                        providers: [
-                                          BlocProvider<HomeBloc>(
-                                            create:
-                                                (_) => context.read<HomeBloc>(),
-                                          ),
-                                        ],
-                                        child: ViewDiscussion(
-                                          post: post,
-                                          index: index,
-                                          category: category,
-                                        ),
+                                      screen: ViewDiscussion(
+                                        post: post,
+                                        index: index,
+                                        newIndex: newsIndex,
+                                        category: category,
                                       ),
+
                                       withNavBar: false,
                                     );
                                   },

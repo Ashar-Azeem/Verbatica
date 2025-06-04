@@ -1,13 +1,15 @@
 // ignore_for_file: file_names
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:sizer/sizer.dart';
-import 'package:verbatica/UI_Components/TrendingPostComponents/TrendingPost.dart';
+import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
+import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/AddPostView.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/news.dart';
 
-class PostsWithInNews extends StatefulWidget {
+class PostsWithInNews extends StatelessWidget {
   final News news;
   final int newsIndex;
   const PostsWithInNews({
@@ -15,22 +17,6 @@ class PostsWithInNews extends StatefulWidget {
     required this.news,
     required this.newsIndex,
   });
-
-  @override
-  State<PostsWithInNews> createState() => _PostsWithInNewsState();
-}
-
-class _PostsWithInNewsState extends State<PostsWithInNews> {
-  late News news;
-  late int newsIndex;
-  late List<Post> discussions;
-  @override
-  void initState() {
-    super.initState();
-    news = widget.news;
-    newsIndex = widget.newsIndex;
-    discussions = news.discussions;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,24 +49,32 @@ class _PostsWithInNewsState extends State<PostsWithInNews> {
             ],
           ),
 
-          discussions.isEmpty
-              ? SliverToBoxAdapter(
-                child: Center(child: Text('No Discussions yet')),
-              )
-              :
-              // Discussion List
-              SliverList(
-                delegate: SliverChildBuilderDelegate((context, index) {
-                  final discussion = discussions[index];
-                  return TrendingPostWidget(
-                    post: discussion,
-                    index: index,
-                    category: "Top 10 news",
-                    onFullView: false,
-                    newsIndex: newsIndex,
+          BlocBuilder<TrendingViewBloc, TrendingViewState>(
+            buildWhen:
+                (previous, current) =>
+                    previous.news[newsIndex] != current.news[newsIndex],
+            builder: (context, state) {
+              List<Post> discussions = state.news[newsIndex].discussions;
+              return discussions.isEmpty
+                  ? SliverToBoxAdapter(
+                    child: Center(child: Text('No Discussions yet')),
+                  )
+                  :
+                  // Discussion List
+                  SliverList(
+                    delegate: SliverChildBuilderDelegate((context, index) {
+                      final discussion = discussions[index];
+                      return PostWidget(
+                        post: discussion,
+                        index: index,
+                        category: "Top 10 news",
+                        onFullView: false,
+                        newsIndex: newsIndex,
+                      );
+                    }, childCount: discussions.length),
                   );
-                }, childCount: discussions.length),
-              ),
+            },
+          ),
         ],
       ),
     );

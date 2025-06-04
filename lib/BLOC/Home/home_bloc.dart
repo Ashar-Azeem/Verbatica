@@ -22,7 +22,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     FetchInitialForYouPosts event,
     Emitter<HomeState> emit,
   ) async {
-    print("For you initial call");
     //Dummy Logic
     await Future.delayed(Duration(seconds: 2));
     emit(

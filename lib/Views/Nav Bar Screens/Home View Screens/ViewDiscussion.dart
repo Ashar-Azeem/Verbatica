@@ -6,23 +6,28 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Comments%20Bloc/comments_bloc.dart';
+import 'package:verbatica/BLOC/Home/home_bloc.dart';
+import 'package:verbatica/BLOC/Search%20Bloc/search_bloc.dart';
+import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
+import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
+import 'package:verbatica/BLOC/otheruser/otheruser_state.dart';
 import 'package:verbatica/UI_Components/Comment%20Componenets/CommentBlock.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
-import 'package:verbatica/UI_Components/PostComponents/otheruserpostui.dart';
-import 'package:verbatica/UI_Components/PostComponents/userpostUI.dart';
 import 'package:verbatica/model/Post.dart';
 
 class ViewDiscussion extends StatefulWidget {
   final Post post;
   final int index;
   final String category;
+  final int? newIndex;
   const ViewDiscussion({
     super.key,
     required this.post,
     required this.index,
     required this.category,
+    this.newIndex,
   });
 
   @override
@@ -120,34 +125,105 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                         ),
                       ),
                       if (widget.category == 'user')
-                        UserPostWidget(
-                          post: widget.post,
-                          index: widget.index,
-                          onFullView: true,
-                          category: widget.category,
+                        BlocBuilder<UserBloc, UserState>(
+                          buildWhen:
+                              (previous, current) =>
+                                  previous.userPosts[widget.index] !=
+                                  current.userPosts[widget.index],
+                          builder: (context, state) {
+                            return PostWidget(
+                              post: state.userPosts[widget.index],
+                              index: widget.index,
+                              onFullView: true,
+                              category: widget.category,
+                            );
+                          },
                         ),
                       if (widget.category == 'other')
-                        OtherUserPostWidget(
-                          post: widget.post,
-                          index: widget.index,
-                          onFullView: true,
+                        BlocBuilder<OtheruserBloc, OtheruserState>(
+                          buildWhen:
+                              (previous, current) =>
+                                  previous.userPosts[widget.index] !=
+                                  current.userPosts[widget.index],
+
+                          builder: (context, state) {
+                            return PostWidget(
+                              post: state.userPosts[widget.index],
+                              category: widget.category,
+                              index: widget.index,
+                              onFullView: true,
+                            );
+                          },
                         ),
                       if (widget.category == 'saved')
-                        UserPostWidget(
-                          post: widget.post,
-                          index: widget.index,
-                          onFullView: true,
-                          category: widget.category,
+                        BlocBuilder<UserBloc, UserState>(
+                          buildWhen:
+                              (previous, current) =>
+                                  previous.savedPosts[widget.index] !=
+                                  current.savedPosts[widget.index],
+
+                          builder: (context, state) {
+                            return PostWidget(
+                              post: state.savedPosts[widget.index],
+                              index: widget.index,
+                              onFullView: true,
+                              category: widget.category,
+                            );
+                          },
+                        ),
+                      if (widget.category == 'Trending' ||
+                          widget.category == 'Top 10 news')
+                        BlocBuilder<TrendingViewBloc, TrendingViewState>(
+                          builder: (context, state) {
+                            Post dynamicpost;
+                            if (widget.category == 'Trending') {
+                              dynamicpost = state.trending[widget.index];
+                            } else {
+                              dynamicpost =
+                                  state
+                                      .news[widget.newIndex!]
+                                      .discussions[widget.index];
+                            }
+                            return PostWidget(
+                              post: dynamicpost,
+                              index: widget.index,
+                              newsIndex: widget.newIndex,
+                              category: widget.category,
+                              onFullView: true,
+                            );
+                          },
                         ),
 
-                      if (widget.category != 'user' &&
-                          widget.category != 'other' &&
-                          widget.category != 'saved')
-                        PostWidget(
-                          post: widget.post,
-                          index: widget.index,
-                          category: widget.category,
-                          onFullView: true,
+                      if (widget.category == 'ForYou' ||
+                          widget.category == 'Following')
+                        BlocBuilder<HomeBloc, HomeState>(
+                          builder: (context, state) {
+                            Post dynamicpost;
+                            if (widget.category == 'ForYou') {
+                              dynamicpost = state.forYou[widget.index];
+                            } else {
+                              dynamicpost = state.following[widget.index];
+                            }
+                            return PostWidget(
+                              post: dynamicpost,
+                              index: widget.index,
+                              category: widget.category,
+                              onFullView: true,
+                            );
+                          },
+                        ),
+
+                      if (widget.category == 'searched')
+                        BlocBuilder<SearchBloc, SearchState>(
+                          builder: (context, state) {
+                            Post dynamicpost = state.posts[widget.index];
+                            return PostWidget(
+                              post: dynamicpost,
+                              index: widget.index,
+                              category: widget.category,
+                              onFullView: true,
+                            );
+                          },
                         ),
 
                       BlocBuilder<CommentsBloc, CommentsState>(

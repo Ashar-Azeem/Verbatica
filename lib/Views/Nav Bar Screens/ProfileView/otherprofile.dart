@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_state.dart';
-import 'package:verbatica/UI_Components/PostComponents/otheruserpostui.dart';
+import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:shimmer/shimmer.dart';
@@ -71,11 +71,22 @@ class _ProfileViewState extends State<otherProfileView>
 
     return ListView.builder(
       // Add bottom padding to account for the navigation bar
-      padding: EdgeInsets.only(bottom: 16.0.h), // Added bottom padding
+      padding: EdgeInsets.only(
+        top: 1.h,
+        bottom: 16.0.h,
+      ), // Added bottom padding
       itemCount: state.userPosts.length,
       itemBuilder: (context, index) {
         final post = state.userPosts[index];
-        return PostTile(post: post, index: index);
+        return Padding(
+          padding: EdgeInsets.only(left: 1.w, right: 1.w),
+          child: PostWidget(
+            post: post,
+            index: index,
+            onFullView: false,
+            category: 'other',
+          ),
+        );
       },
     );
   }
@@ -852,28 +863,6 @@ class CommentShimmerTile extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class PostTile extends StatelessWidget {
-  final Post post;
-  final int index;
-  const PostTile({super.key, required this.index, required this.post});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8.0),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor.withOpacity(0.7),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Theme.of(context).dividerColor.withOpacity(0.2),
-          width: 1,
-        ),
-      ),
-      child: OtherUserPostWidget(post: post, index: index, onFullView: false),
     );
   }
 }

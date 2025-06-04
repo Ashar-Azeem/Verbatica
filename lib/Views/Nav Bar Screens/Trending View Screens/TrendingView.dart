@@ -7,7 +7,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
-import 'package:verbatica/UI_Components/TrendingPostComponents/TrendingPost.dart';
+import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Trending%20View%20Screens/News.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Trending%20View%20Screens/SearchScreen.dart';
 import 'package:verbatica/model/Post.dart';
@@ -223,7 +223,7 @@ class _BuiltPostListState extends State<BuiltPostList>
           cacheExtent: 500,
           itemCount: widget.posts!.length,
           itemBuilder: (context, index) {
-            return TrendingPostWidget(
+            return PostWidget(
               post: widget.posts![index],
               index: index,
               category: widget.category,

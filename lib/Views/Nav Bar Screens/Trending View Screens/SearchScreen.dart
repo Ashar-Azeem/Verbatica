@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Search%20Bloc/search_bloc.dart';
-import 'package:verbatica/UI_Components/Search%20Componenets/SearchedPostUI.dart';
+import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/UI_Components/Search%20Componenets/SearchedUserUI.dart';
 
 class SearchView extends StatefulWidget {
@@ -207,9 +207,10 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                                 cacheExtent: 500,
                                 itemCount: state.posts.length,
                                 itemBuilder: (context, index) {
-                                  return SearchedPost(
+                                  return PostWidget(
                                     post: state.posts[index],
                                     index: index,
+                                    category: 'searched',
                                     onFullView: false,
                                   );
                                 },

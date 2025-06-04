@@ -7,13 +7,11 @@ import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
-import 'package:verbatica/UI_Components/PostComponents/userpostUI.dart';
+import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/editprofile.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingscreen.dart';
-
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:verbatica/model/Post.dart';
 
 class ProfileView extends StatefulWidget {
   const ProfileView({super.key});
@@ -74,14 +72,21 @@ class _ProfileViewState extends State<ProfileView>
 
     return ListView.builder(
       // Add bottom padding to account for the navigation bar
-      padding: EdgeInsets.only(bottom: 16.0.h), // Added bottom padding
+      padding: EdgeInsets.only(
+        top: 2.h,
+        bottom: 16.0.h,
+      ), // Added bottom padding
       itemCount: state.userPosts.length,
       itemBuilder: (context, index) {
         final post = state.userPosts[index];
-        return PostTile(
-          post: post,
-          index: index,
-          // onDelete: () => _showDeleteConfirmation(context, post),
+        return Padding(
+          padding: EdgeInsets.only(left: 1.w, right: 1.w),
+          child: PostWidget(
+            post: post,
+            index: index,
+            onFullView: false,
+            category: 'user',
+          ),
         );
       },
     );
@@ -885,40 +890,6 @@ class CommentShimmerTile extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class PostTile extends StatelessWidget {
-  final Post post;
-  // final VoidCallback onDelete;
-  final int index;
-
-  const PostTile({
-    super.key,
-    required this.post,
-    required this.index,
-    // required this.onDelete,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 4, vertical: 8.0),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor.withOpacity(0.7),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: Theme.of(context).dividerColor.withOpacity(0.2),
-          width: 1,
-        ),
-      ),
-      child: UserPostWidget(
-        post: post,
-        index: index,
-        onFullView: false,
-        category: 'user',
       ),
     );
   }
