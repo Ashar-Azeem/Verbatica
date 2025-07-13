@@ -91,7 +91,7 @@ class _ClusterscreenState extends State<Clusterscreen>
 
   Widget _buildTabBar() {
     return Container(
-      color: Theme.of(context).scaffoldBackgroundColor,
+      color: Theme.of(context).cardColor,
       child: TabBar(
         controller: _tabController,
         isScrollable: true,

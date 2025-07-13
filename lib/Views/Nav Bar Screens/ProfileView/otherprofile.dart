@@ -5,6 +5,7 @@ import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_state.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
+import 'package:verbatica/UI_Components/PostComponents/ShimmerLoader.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:shimmer/shimmer.dart';
@@ -861,114 +862,6 @@ class CommentShimmerTile extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class PostShimmerTile extends StatelessWidget {
-  const PostShimmerTile({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor.withOpacity(0.7),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Shimmer.fromColors(
-        baseColor: Colors.grey.shade800,
-        highlightColor: Colors.grey.shade700,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Title shimmer
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    height: 18,
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade800,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                  const CircleAvatar(radius: 12, backgroundColor: Colors.grey),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Content shimmer
-              Container(
-                height: 14,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade800,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                height: 14,
-                width: MediaQuery.of(context).size.width * 0.8,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade800,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                height: 14,
-                width: MediaQuery.of(context).size.width * 0.5,
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade800,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Stats shimmer
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        height: 12,
-                        width: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade800,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Container(
-                        height: 12,
-                        width: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade800,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    height: 10,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade800,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
         ),
       ),
     );

@@ -8,6 +8,7 @@ import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
+import 'package:verbatica/UI_Components/PostComponents/ShimmerLoader.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/editprofile.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingscreen.dart';
@@ -889,136 +890,6 @@ class CommentShimmerTile extends StatelessWidget {
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-class PostShimmerTile extends StatelessWidget {
-  const PostShimmerTile({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-      decoration: BoxDecoration(
-        color: Theme.of(context).cardColor.withOpacity(0.7),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Shimmer.fromColors(
-        baseColor:
-            Theme.of(context).brightness == Brightness.dark
-                ? Colors.grey.shade800
-                : Colors.grey.shade300,
-        highlightColor:
-            Theme.of(context).brightness == Brightness.dark
-                ? Colors.grey.shade700
-                : Colors.grey.shade100,
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Title shimmer
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    height: 18,
-                    width: MediaQuery.of(context).size.width * 0.6,
-                    decoration: BoxDecoration(
-                      color:
-                          Theme.of(context).brightness == Brightness.dark
-                              ? Colors.grey.shade800
-                              : Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                  CircleAvatar(
-                    radius: 12,
-                    backgroundColor:
-                        Theme.of(context).brightness == Brightness.dark
-                            ? Colors.grey.shade800
-                            : Colors.grey.shade300,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Content shimmer
-              Container(
-                height: 14,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? Colors.grey.shade800
-                          : Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                height: 14,
-                width: MediaQuery.of(context).size.width * 0.8,
-                decoration: BoxDecoration(
-                  color:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? Colors.grey.shade800
-                          : Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                height: 14,
-                width: MediaQuery.of(context).size.width * 0.5,
-                decoration: BoxDecoration(
-                  color:
-                      Theme.of(context).brightness == Brightness.dark
-                          ? Colors.grey.shade800
-                          : Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              // Stats shimmer
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        height: 12,
-                        width: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade800,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Container(
-                        height: 12,
-                        width: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade800,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Container(
-                    height: 10,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      color: Colors.grey.shade800,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
         ),
       ),
     );

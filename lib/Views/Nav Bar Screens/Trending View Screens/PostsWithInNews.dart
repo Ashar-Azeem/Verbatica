@@ -48,6 +48,7 @@ class PostsWithInNews extends StatelessWidget {
               ),
             ],
           ),
+          SliverToBoxAdapter(child: SizedBox(height: 2.w)),
 
           BlocBuilder<TrendingViewBloc, TrendingViewState>(
             buildWhen:

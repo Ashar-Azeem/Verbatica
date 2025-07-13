@@ -84,6 +84,19 @@ class _ViewDiscussionState extends State<ViewDiscussion>
     return BlocProvider(
       create: (context) => CommentsBloc(postId: widget.post.id),
       child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: 6.h,
+          title: Text(
+            'Discussion',
+            style: TextStyle(fontWeight: FontWeight.w600),
+          ),
+          elevation: 0,
+          centerTitle: true,
+          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+          ),
+        ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SafeArea(
           child: Stack(
@@ -91,174 +104,190 @@ class _ViewDiscussionState extends State<ViewDiscussion>
               Positioned.fill(
                 child: SingleChildScrollView(
                   physics: BouncingScrollPhysics(),
-                  child: Column(
-                    children: [
-                      Align(
-                        alignment: Alignment.topLeft,
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            left: 1.5.w,
-                            bottom: 2.w,
-                            top: 2.w,
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 1.5.h),
+                    child: Column(
+                      children: [
+                        if (widget.category == 'user')
+                          BlocBuilder<UserBloc, UserState>(
+                            buildWhen:
+                                (previous, current) =>
+                                    previous.userPosts[widget.index] !=
+                                    current.userPosts[widget.index],
+                            builder: (context, state) {
+                              return Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 1.w),
+                                child: PostWidget(
+                                  post: state.userPosts[widget.index],
+                                  index: widget.index,
+                                  onFullView: true,
+                                  category: widget.category,
+                                ),
+                              );
+                            },
                           ),
-                          child: Container(
-                            width: 10.w,
-                            height: 10.w,
-                            decoration: BoxDecoration(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.surface.withOpacity(0.4),
-                              shape: BoxShape.circle,
+                        if (widget.category == 'other')
+                          BlocBuilder<OtheruserBloc, OtheruserState>(
+                            buildWhen:
+                                (previous, current) =>
+                                    previous.userPosts[widget.index] !=
+                                    current.userPosts[widget.index],
+
+                            builder: (context, state) {
+                              return Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 1.w),
+                                child: PostWidget(
+                                  post: state.userPosts[widget.index],
+                                  category: widget.category,
+                                  index: widget.index,
+                                  onFullView: true,
+                                ),
+                              );
+                            },
+                          ),
+                        if (widget.category == 'saved')
+                          BlocBuilder<UserBloc, UserState>(
+                            buildWhen:
+                                (previous, current) =>
+                                    previous.savedPosts[widget.index] !=
+                                    current.savedPosts[widget.index],
+
+                            builder: (context, state) {
+                              return Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 1.w),
+                                child: PostWidget(
+                                  post: state.savedPosts[widget.index],
+                                  index: widget.index,
+                                  onFullView: true,
+                                  category: widget.category,
+                                ),
+                              );
+                            },
+                          ),
+                        if (widget.category == 'Trending' ||
+                            widget.category == 'Top 10 news')
+                          BlocBuilder<TrendingViewBloc, TrendingViewState>(
+                            builder: (context, state) {
+                              Post dynamicpost;
+                              if (widget.category == 'Trending') {
+                                dynamicpost = state.trending[widget.index];
+                              } else {
+                                dynamicpost =
+                                    state
+                                        .news[widget.newIndex!]
+                                        .discussions[widget.index];
+                              }
+                              return Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 1.w),
+                                child: PostWidget(
+                                  post: dynamicpost,
+                                  index: widget.index,
+                                  newsIndex: widget.newIndex,
+                                  category: widget.category,
+                                  onFullView: true,
+                                ),
+                              );
+                            },
+                          ),
+
+                        if (widget.category == 'ForYou' ||
+                            widget.category == 'Following')
+                          BlocBuilder<HomeBloc, HomeState>(
+                            builder: (context, state) {
+                              Post dynamicpost;
+                              if (widget.category == 'ForYou') {
+                                dynamicpost = state.forYou[widget.index];
+                              } else {
+                                dynamicpost = state.following[widget.index];
+                              }
+                              return Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 1.w),
+                                child: PostWidget(
+                                  post: dynamicpost,
+                                  index: widget.index,
+                                  category: widget.category,
+                                  onFullView: true,
+                                ),
+                              );
+                            },
+                          ),
+
+                        if (widget.category == 'searched')
+                          BlocBuilder<SearchBloc, SearchState>(
+                            builder: (context, state) {
+                              Post dynamicpost = state.posts[widget.index];
+                              return Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 1.w),
+                                child: PostWidget(
+                                  post: dynamicpost,
+                                  index: widget.index,
+                                  category: widget.category,
+                                  onFullView: true,
+                                ),
+                              );
+                            },
+                          ),
+                        SizedBox(height: 1.h),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Divider(
+                                thickness: 1.5,
+                                color: Theme.of(context).dividerColor,
+                              ),
                             ),
-                            child: IconButton(
-                              icon: Center(
-                                child: Icon(
-                                  Icons.arrow_back,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                  size: 5.w,
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8.0,
+                              ),
+                              child: Text(
+                                '223 Comments',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              onPressed: () => Navigator.of(context).pop(),
                             ),
-                          ),
+                            Expanded(
+                              child: Divider(
+                                thickness: 1.5,
+                                color: Theme.of(context).dividerColor,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      if (widget.category == 'user')
-                        BlocBuilder<UserBloc, UserState>(
+                        SizedBox(height: 1.h),
+                        BlocBuilder<CommentsBloc, CommentsState>(
                           buildWhen:
                               (previous, current) =>
-                                  previous.userPosts[widget.index] !=
-                                  current.userPosts[widget.index],
+                                  previous.comments != current.comments,
                           builder: (context, state) {
-                            return PostWidget(
-                              post: state.userPosts[widget.index],
-                              index: widget.index,
-                              onFullView: true,
-                              category: widget.category,
-                            );
-                          },
-                        ),
-                      if (widget.category == 'other')
-                        BlocBuilder<OtheruserBloc, OtheruserState>(
-                          buildWhen:
-                              (previous, current) =>
-                                  previous.userPosts[widget.index] !=
-                                  current.userPosts[widget.index],
-
-                          builder: (context, state) {
-                            return PostWidget(
-                              post: state.userPosts[widget.index],
-                              category: widget.category,
-                              index: widget.index,
-                              onFullView: true,
-                            );
-                          },
-                        ),
-                      if (widget.category == 'saved')
-                        BlocBuilder<UserBloc, UserState>(
-                          buildWhen:
-                              (previous, current) =>
-                                  previous.savedPosts[widget.index] !=
-                                  current.savedPosts[widget.index],
-
-                          builder: (context, state) {
-                            return PostWidget(
-                              post: state.savedPosts[widget.index],
-                              index: widget.index,
-                              onFullView: true,
-                              category: widget.category,
-                            );
-                          },
-                        ),
-                      if (widget.category == 'Trending' ||
-                          widget.category == 'Top 10 news')
-                        BlocBuilder<TrendingViewBloc, TrendingViewState>(
-                          builder: (context, state) {
-                            Post dynamicpost;
-                            if (widget.category == 'Trending') {
-                              dynamicpost = state.trending[widget.index];
-                            } else {
-                              dynamicpost =
-                                  state
-                                      .news[widget.newIndex!]
-                                      .discussions[widget.index];
-                            }
-                            return PostWidget(
-                              post: dynamicpost,
-                              index: widget.index,
-                              newsIndex: widget.newIndex,
-                              category: widget.category,
-                              onFullView: true,
-                            );
-                          },
-                        ),
-
-                      if (widget.category == 'ForYou' ||
-                          widget.category == 'Following')
-                        BlocBuilder<HomeBloc, HomeState>(
-                          builder: (context, state) {
-                            Post dynamicpost;
-                            if (widget.category == 'ForYou') {
-                              dynamicpost = state.forYou[widget.index];
-                            } else {
-                              dynamicpost = state.following[widget.index];
-                            }
-                            return PostWidget(
-                              post: dynamicpost,
-                              index: widget.index,
-                              category: widget.category,
-                              onFullView: true,
-                            );
-                          },
-                        ),
-
-                      if (widget.category == 'searched')
-                        BlocBuilder<SearchBloc, SearchState>(
-                          builder: (context, state) {
-                            Post dynamicpost = state.posts[widget.index];
-                            return PostWidget(
-                              post: dynamicpost,
-                              index: widget.index,
-                              category: widget.category,
-                              onFullView: true,
-                            );
-                          },
-                        ),
-
-                      BlocBuilder<CommentsBloc, CommentsState>(
-                        buildWhen:
-                            (previous, current) =>
-                                previous.comments != current.comments,
-                        builder: (context, state) {
-                          return state.initialLoader
-                              ? Padding(
-                                padding: EdgeInsets.only(top: 10.h),
-                                child: Center(
-                                  child: LoadingAnimationWidget.dotsTriangle(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                    size: 10.w,
+                            return state.initialLoader
+                                ? Padding(
+                                  padding: EdgeInsets.only(top: 10.h),
+                                  child: Center(
+                                    child: LoadingAnimationWidget.dotsTriangle(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                      size: 10.w,
+                                    ),
                                   ),
-                                ),
-                              )
-                              : Padding(
-                                padding: EdgeInsets.only(bottom: 8.h),
-                                child: ListView.builder(
-                                  physics: NeverScrollableScrollPhysics(),
-                                  shrinkWrap: true,
-                                  itemCount: state.comments.length,
-                                  itemBuilder: (context, index) {
-                                    return Padding(
-                                      padding: EdgeInsets.only(bottom: 0.6.h),
-                                      child: Column(
-                                        children: [
-                                          Divider(
-                                            color:
-                                                Theme.of(context).dividerColor,
-                                            thickness: 0.5,
-                                          ),
-                                          Center(
+                                )
+                                : Padding(
+                                  padding: EdgeInsets.only(bottom: 8.h),
+                                  child: ListView.builder(
+                                    physics: NeverScrollableScrollPhysics(),
+                                    shrinkWrap: true,
+                                    itemCount: state.comments.length,
+                                    itemBuilder: (context, index) {
+                                      return Padding(
+                                        padding: EdgeInsets.only(
+                                          bottom: 0.6.h,
+                                          left: 1.w,
+                                          right: 1.w,
+                                        ),
+                                        child: Card(
+                                          child: Center(
                                             child: SizedBox(
                                               width: 100.w,
                                               child: CommentsBlock(
@@ -267,20 +296,15 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                               ),
                                             ),
                                           ),
-                                          Divider(
-                                            color:
-                                                Theme.of(context).dividerColor,
-                                            thickness: 0.5,
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                ),
-                              );
-                        },
-                      ),
-                    ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                );
+                          },
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

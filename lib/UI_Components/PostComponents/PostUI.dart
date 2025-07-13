@@ -2,6 +2,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:shimmer/shimmer.dart';
@@ -20,6 +21,7 @@ import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/clusterScre
 import 'package:verbatica/model/Post.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+// ignore: must_be_immutable
 class PostWidget extends StatelessWidget {
   final Post post;
   final int index;
@@ -94,413 +96,550 @@ class PostWidget extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
-
     return Center(
-      child: Column(
-        children: [
-          Divider(color: theme.dividerColor, thickness: 0.5, height: 6),
-          SizedBox(
-            height: 5.5.h,
-            child: Padding(
-              padding: EdgeInsets.only(left: 1.w, top: 1.w),
-              child: GestureDetector(
-                onTap: () {
-                  pushScreen(
-                    context,
-                    pageTransitionAnimation: PageTransitionAnimation.scale,
-                    screen: otherProfileView(post: post),
-                    withNavBar: false,
-                  );
-                },
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: AssetImage(
-                        'assets/Avatars/avatar${post.avatar}.jpg',
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 1.w),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            post.name,
-                            style: TextStyle(color: textTheme.bodyLarge?.color),
-                          ),
-                          Text(
-                            timeago.format(post.uploadTime),
-                            style: TextStyle(
-                              color: textTheme.bodyMedium?.color?.withOpacity(
-                                0.7,
-                              ),
-                              fontSize: 2.w,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Spacer(flex: 1),
-                    TextButton(
-                      onPressed: () {
-                        if (post.isDebate) {
-                          pushScreen(
-                            context,
-                            pageTransitionAnimation:
-                                PageTransitionAnimation.scale,
-                            screen: SummaryScreen(
-                              showClusters: true,
-                              clusters: post.clusters,
-                              postId: '',
-                            ),
-                            withNavBar: false,
-                          );
-                        } else {
-                          pushScreen(
-                            context,
-                            pageTransitionAnimation:
-                                PageTransitionAnimation.scale,
-                            screen: SummaryScreen(
-                              showClusters: false,
-                              postId: '',
-                            ),
-                            withNavBar: false,
-                          );
-                        }
-                      },
-                      style: TextButton.styleFrom(
-                        shape: StadiumBorder(),
-                        backgroundColor: colorScheme.primary,
-                        foregroundColor: colorScheme.onPrimary,
-                      ),
-                      child: Text(
-                        'Summary',
-                        style: TextStyle(
-                          color: colorScheme.onPrimary,
-                          fontSize: 2.8.w,
+      child: Card(
+        child: Column(
+          children: [
+            SizedBox(
+              height: 5.5.h,
+              child: Padding(
+                padding: EdgeInsets.only(left: 1.w, top: 1.w),
+                child: GestureDetector(
+                  onTap: () {
+                    pushScreen(
+                      context,
+                      pageTransitionAnimation: PageTransitionAnimation.scale,
+                      screen: otherProfileView(post: post),
+                      withNavBar: false,
+                    );
+                  },
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: AssetImage(
+                          'assets/Avatars/avatar${post.avatar}.jpg',
                         ),
                       ),
-                    ),
-                    PopupMenuButton<String>(
-                      icon: Icon(
-                        Icons.more_vert,
-                        color: textTheme.bodyLarge?.color,
+                      Padding(
+                        padding: EdgeInsets.only(left: 1.w),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              post.name,
+                              style: TextStyle(
+                                color: textTheme.bodyLarge?.color,
+                              ),
+                            ),
+                            Text(
+                              timeago.format(post.uploadTime),
+                              style: TextStyle(
+                                color: textTheme.bodyMedium?.color?.withOpacity(
+                                  0.7,
+                                ),
+                                fontSize: 2.w,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      color: colorScheme.surface,
-                      onSelected: (String value) {
-                        if (value == "report") {
-                          if (category == 'ForYou' || category == 'Following') {
-                            context.read<homeBloc.HomeBloc>().add(
-                              homeBloc.ReportPost(
-                                index: index,
-                                category: category,
-                                postId: post.id,
+                      Spacer(flex: 1),
+                      TextButton(
+                        onPressed: () {
+                          if (post.isDebate) {
+                            pushScreen(
+                              context,
+                              pageTransitionAnimation:
+                                  PageTransitionAnimation.scale,
+                              screen: SummaryScreen(
+                                showClusters: true,
+                                clusters: post.clusters,
+                                postId: '',
                               ),
+                              withNavBar: false,
                             );
-                          } else if (category == 'Trending' ||
-                              category == 'Top 10 news') {
-                            context.read<TrendingViewBloc>().add(
-                              ReportPost(
-                                index: index,
-                                category: category,
-                                postId: post.id,
+                          } else {
+                            pushScreen(
+                              context,
+                              pageTransitionAnimation:
+                                  PageTransitionAnimation.scale,
+                              screen: SummaryScreen(
+                                showClusters: false,
+                                postId: '',
                               ),
+                              withNavBar: false,
                             );
-                          } else if (category == 'other') {
-                          } else if (category == 'searched') {}
-                        } else if (value == "save") {
-                          context.read<UserBloc>().add(SavePost1(post: post));
-                        } else if (value == "share") {
-                        } else if (value == 'delete') {
-                          _showDeleteConfirmation(context, post);
-                        } else if (value == 'unSave') {
-                          context.read<UserBloc>().add(UnsavePost1(post: post));
-                        }
-                      },
-                      itemBuilder:
-                          (BuildContext context) => <PopupMenuEntry<String>>[
-                            category != 'user'
-                                ? PopupMenuItem<String>(
-                                  value: 'report',
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Icon(
-                                        Icons.report_gmailerrorred,
-                                        color: textTheme.bodyLarge?.color,
-                                      ),
-                                      Text(
-                                        'Report',
-                                        style: TextStyle(
-                                          color: textTheme.bodyLarge?.color,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                                : PopupMenuItem<String>(
-                                  value: 'delete',
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Icon(
-                                        Icons.delete,
-                                        color: textTheme.bodyLarge?.color,
-                                      ),
-                                      Text(
-                                        'Delete',
-                                        style: TextStyle(
-                                          color: textTheme.bodyLarge?.color,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                          }
+                        },
+                        style: TextButton.styleFrom(
+                          shape: StadiumBorder(),
+                          backgroundColor: colorScheme.primary,
+                          foregroundColor: colorScheme.onPrimary,
+                        ),
+                        child: Text(
+                          'Summary',
+                          style: TextStyle(
+                            color: colorScheme.onPrimary,
+                            fontSize: 2.8.w,
+                          ),
+                        ),
+                      ),
+                      PopupMenuButton<String>(
+                        icon: Icon(
+                          Icons.more_vert,
+                          color: textTheme.bodyLarge?.color,
+                        ),
+                        color: colorScheme.surface,
+                        onSelected: (String value) {
+                          if (value == "report") {
+                            if (category == 'ForYou' ||
+                                category == 'Following') {
+                              context.read<homeBloc.HomeBloc>().add(
+                                homeBloc.ReportPost(
+                                  index: index,
+                                  category: category,
+                                  postId: post.id,
                                 ),
-                            category != 'saved'
-                                ? PopupMenuItem<String>(
-                                  value: 'save',
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Icon(
-                                        Icons.save,
-                                        color: textTheme.bodyLarge?.color,
-                                      ),
-                                      Text(
-                                        'Save',
-                                        style: TextStyle(
-                                          color: textTheme.bodyLarge?.color,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                )
-                                : PopupMenuItem<String>(
-                                  value: 'unSave',
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceAround,
-                                    children: [
-                                      Icon(
-                                        Icons.remove_circle_outline,
-                                        color: textTheme.bodyLarge?.color,
-                                      ),
-                                      Text(
-                                        'UnSave',
-                                        style: TextStyle(
-                                          color: textTheme.bodyLarge?.color,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                              );
+                            } else if (category == 'Trending' ||
+                                category == 'Top 10 news') {
+                              context.read<TrendingViewBloc>().add(
+                                ReportPost(
+                                  index: index,
+                                  category: category,
+                                  postId: post.id,
                                 ),
-                            PopupMenuItem<String>(
-                              value: 'share',
+                              );
+                            } else if (category == 'other') {
+                            } else if (category == 'searched') {}
+                          } else if (value == "save") {
+                            context.read<UserBloc>().add(SavePost1(post: post));
+                          } else if (value == "share") {
+                          } else if (value == 'delete') {
+                            _showDeleteConfirmation(context, post);
+                          } else if (value == 'unSave') {
+                            context.read<UserBloc>().add(
+                              UnsavePost1(post: post),
+                            );
+                          }
+                        },
+                        itemBuilder:
+                            (BuildContext context) => <PopupMenuEntry<String>>[
+                              category != 'user'
+                                  ? PopupMenuItem<String>(
+                                    value: 'report',
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Icon(
+                                          Icons.report_gmailerrorred,
+                                          color: textTheme.bodyLarge?.color,
+                                        ),
+                                        Text(
+                                          'Report',
+                                          style: TextStyle(
+                                            color: textTheme.bodyLarge?.color,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                  : PopupMenuItem<String>(
+                                    value: 'delete',
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Icon(
+                                          Icons.delete,
+                                          color: textTheme.bodyLarge?.color,
+                                        ),
+                                        Text(
+                                          'Delete',
+                                          style: TextStyle(
+                                            color: textTheme.bodyLarge?.color,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              category != 'saved'
+                                  ? PopupMenuItem<String>(
+                                    value: 'save',
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Icon(
+                                          Icons.save,
+                                          color: textTheme.bodyLarge?.color,
+                                        ),
+                                        Text(
+                                          'Save',
+                                          style: TextStyle(
+                                            color: textTheme.bodyLarge?.color,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                  : PopupMenuItem<String>(
+                                    value: 'unSave',
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        Icon(
+                                          Icons.remove_circle_outline,
+                                          color: textTheme.bodyLarge?.color,
+                                        ),
+                                        Text(
+                                          'UnSave',
+                                          style: TextStyle(
+                                            color: textTheme.bodyLarge?.color,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                              PopupMenuItem<String>(
+                                value: 'share',
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceAround,
+                                  children: [
+                                    Icon(
+                                      Icons.share,
+                                      color: textTheme.bodyLarge?.color,
+                                    ),
+                                    Text(
+                                      'Share',
+                                      style: TextStyle(
+                                        color: textTheme.bodyLarge?.color,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(height: 1.w),
+            //Content, title, image or video
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                /// Title
+                Padding(
+                  padding: EdgeInsets.only(left: 1.w),
+                  child: Text(
+                    post.title,
+                    style: TextStyle(
+                      color: textTheme.headlineSmall?.color,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 0.2.h),
+
+                Padding(
+                  padding: EdgeInsets.only(left: 1.w),
+                  child: ExpandableText(
+                    post.description,
+                    expandOnTextTap: true,
+                    collapseOnTextTap: true,
+                    expandText: 'show more',
+                    collapseText: 'show less',
+                    linkEllipsis: false,
+                    maxLines: 2,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: textTheme.bodyLarge?.color,
+                    ),
+                    linkColor: colorScheme.primary,
+                  ),
+                ),
+
+                SizedBox(height: 0.5.h),
+
+                if (post.postImageLink != null)
+                  CachedNetworkImage(
+                    imageUrl: post.postImageLink!,
+                    placeholder:
+                        (context, url) => Shimmer.fromColors(
+                          baseColor: colorScheme.surfaceContainerHighest,
+                          highlightColor: colorScheme.surfaceContainerHighest
+                              .withOpacity(0.8),
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: Container(color: colorScheme.surface),
+                          ),
+                        ),
+                    errorWidget:
+                        (context, url, error) => AspectRatio(
+                          aspectRatio: 16 / 9,
+                          child: Container(
+                            color: colorScheme.errorContainer,
+                            child: Icon(
+                              Icons.error,
+                              color: colorScheme.onErrorContainer,
+                            ),
+                          ),
+                        ),
+                    fit: BoxFit.contain,
+                  ),
+
+                /// Video placeholder (show only if video link is not null)
+                if (post.postVideoLink != null)
+                  VideoPlayer(videoUrl: post.postVideoLink!),
+              ],
+            ),
+
+            //End of content, title, image or video
+
+            //Bottom side of the post
+            Center(
+              child: Padding(
+                padding: EdgeInsets.only(right: 1.w),
+                child: InkWell(
+                  onTap: () {
+                    if (!onFullView) {
+                      pushScreen(
+                        context,
+                        pageTransitionAnimation: PageTransitionAnimation.scale,
+                        screen: ViewDiscussion(
+                          post: post,
+                          index: index,
+                          newIndex: newsIndex,
+                          category: category,
+                        ),
+
+                        withNavBar: false,
+                      );
+                    }
+                  },
+                  child: SizedBox(
+                    height: 6.h,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(width: 1.w),
+                        Container(
+                          height: 5.h,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(color: theme.dividerColor),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 0.5.w,
+                            vertical: 0.5.w,
+                          ),
+                          child: Row(
+                            children: [
+                              GestureDetector(
+                                key: ValueKey(post.isUpVote),
+                                onTap: () {
+                                  if (category == 'ForYou' ||
+                                      category == 'Following') {
+                                    context.read<homeBloc.HomeBloc>().add(
+                                      homeBloc.UpVotePost(
+                                        index: index,
+                                        category: category,
+                                      ),
+                                    );
+                                  } else if (category == 'Trending' ||
+                                      category == 'Top 10 news') {
+                                    if (newsIndex != null) {
+                                      context.read<TrendingViewBloc>().add(
+                                        UpVoteNewsPost(
+                                          index: index,
+                                          category: category,
+                                          newsIndex: newsIndex!,
+                                        ),
+                                      );
+                                    } else {
+                                      context.read<TrendingViewBloc>().add(
+                                        UpVotePost(
+                                          index: index,
+                                          category: category,
+                                        ),
+                                      );
+                                    }
+                                  } else if (category == 'user') {
+                                    context.read<UserBloc>().add(
+                                      upvotePost1(index: index),
+                                    );
+                                  } else if (category == 'other') {
+                                    context.read<OtheruserBloc>().add(
+                                      upvotePost(index: index),
+                                    );
+                                  } else if (category == 'saved') {
+                                    context.read<UserBloc>().add(
+                                      upvotesavedPost1(index: index),
+                                    );
+                                  } else {
+                                    context.read<searchBloc.SearchBloc>().add(
+                                      searchBloc.UpVotePost(index: index),
+                                    );
+                                  }
+                                },
+                                child: Row(
+                                  children: [
+                                    IconButton(
+                                          onPressed: null,
+                                          padding: EdgeInsets.zero,
+                                          icon: Icon(
+                                            Icons.arrow_circle_up_outlined,
+                                            size: 7.w,
+                                            color:
+                                                post.isUpVote
+                                                    ? colorScheme.primary
+                                                    : colorScheme.secondary,
+                                          ),
+                                        )
+                                        .animate(
+                                          onPlay: (controller) {
+                                            controller.forward(from: 0);
+                                          },
+                                        )
+                                        .scale(
+                                          duration: 300.ms,
+                                          curve: Curves.easeOutBack,
+                                        ),
+
+                                    Text(
+                                      "${post.upvotes - post.downvotes}",
+                                      style: TextStyle(
+                                        color: theme.colorScheme.secondary,
+                                        fontSize: 3.w,
+                                        height: 1,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(width: 4.w),
+                                  ],
+                                ),
+                              ),
+                              Container(
+                                width: 1,
+                                height: 5.h,
+                                color: theme.dividerColor,
+                              ),
+
+                              IconButton(
+                                splashColor: Colors.transparent,
+                                highlightColor: Colors.transparent,
+
+                                onPressed: () {
+                                  if (category == 'ForYou' ||
+                                      category == 'Following') {
+                                    context.read<homeBloc.HomeBloc>().add(
+                                      homeBloc.DownVotePost(
+                                        index: index,
+                                        category: category,
+                                      ),
+                                    );
+                                  } else if (category == 'Trending' ||
+                                      category == 'Top 10 news') {
+                                    if (newsIndex != null) {
+                                      context.read<TrendingViewBloc>().add(
+                                        DownVoteNewsPost(
+                                          index: index,
+                                          category: category,
+                                          newsIndex: newsIndex!,
+                                        ),
+                                      );
+                                    } else {
+                                      context.read<TrendingViewBloc>().add(
+                                        DownVotePost(
+                                          index: index,
+                                          category: category,
+                                        ),
+                                      );
+                                    }
+                                  } else if (category == 'user') {
+                                    context.read<UserBloc>().add(
+                                      downvotePost1(index: index),
+                                    );
+                                  } else if (category == 'other') {
+                                    context.read<OtheruserBloc>().add(
+                                      downvotePost(index: index),
+                                    );
+                                  } else if (category == 'saved') {
+                                    context.read<UserBloc>().add(
+                                      downvotesavedPost(index: index),
+                                    );
+                                  } else {
+                                    context.read<searchBloc.SearchBloc>().add(
+                                      searchBloc.DownVotePost(index: index),
+                                    );
+                                  }
+                                },
+                                padding: EdgeInsets.zero,
+                                icon: Icon(
+                                  size: 7.w,
+
+                                  Icons.arrow_circle_down_outlined,
+                                  color:
+                                      post.isDownVote
+                                          ? colorScheme.primary
+                                          : colorScheme.secondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Spacer(flex: 1),
+                        !onFullView
+                            ? Container(
+                              height: 5.h,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: theme.dividerColor),
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 0.5.w,
+                                vertical: 0.5.w,
+                              ),
                               child: Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  Icon(
-                                    Icons.share,
-                                    color: textTheme.bodyLarge?.color,
-                                  ),
-                                  Text(
-                                    'Share',
-                                    style: TextStyle(
-                                      color: textTheme.bodyLarge?.color,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Divider(color: theme.dividerColor, thickness: 0.5, height: 6),
-          //Content, title, image or video
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              /// Title
-              Padding(
-                padding: EdgeInsets.only(left: 1.w),
-                child: Text(
-                  post.title,
-                  style: TextStyle(
-                    color: textTheme.headlineSmall?.color,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 0.2.h),
-
-              Padding(
-                padding: EdgeInsets.only(left: 1.w),
-                child: ExpandableText(
-                  post.description,
-                  expandOnTextTap: true,
-                  collapseOnTextTap: true,
-                  expandText: 'show more',
-                  collapseText: 'show less',
-                  linkEllipsis: false,
-                  maxLines: 2,
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: textTheme.bodyLarge?.color,
-                  ),
-                  linkColor: colorScheme.primary,
-                ),
-              ),
-
-              SizedBox(height: 0.5.h),
-
-              if (post.postImageLink != null)
-                CachedNetworkImage(
-                  imageUrl: post.postImageLink!,
-                  placeholder:
-                      (context, url) => Shimmer.fromColors(
-                        baseColor: colorScheme.surfaceContainerHighest,
-                        highlightColor: colorScheme.surfaceContainerHighest
-                            .withOpacity(0.8),
-                        child: AspectRatio(
-                          aspectRatio: 16 / 9,
-                          child: Container(color: colorScheme.surface),
-                        ),
-                      ),
-                  errorWidget:
-                      (context, url, error) => AspectRatio(
-                        aspectRatio: 16 / 9,
-                        child: Container(
-                          color: colorScheme.errorContainer,
-                          child: Icon(
-                            Icons.error,
-                            color: colorScheme.onErrorContainer,
-                          ),
-                        ),
-                      ),
-                  fit: BoxFit.contain,
-                ),
-
-              /// Video placeholder (show only if video link is not null)
-              if (post.postVideoLink != null)
-                VideoPlayer(videoUrl: post.postVideoLink!),
-            ],
-          ),
-
-          //End of content, title, image or video
-
-          //Bottom side of the post
-          Center(
-            child: Padding(
-              padding: EdgeInsets.only(right: 1.w),
-              child: InkWell(
-                onTap: () {
-                  if (!onFullView) {
-                    pushScreen(
-                      context,
-                      pageTransitionAnimation: PageTransitionAnimation.scale,
-                      screen: ViewDiscussion(
-                        post: post,
-                        index: index,
-                        newIndex: newsIndex,
-                        category: category,
-                      ),
-
-                      withNavBar: false,
-                    );
-                  }
-                },
-                child: SizedBox(
-                  height: 6.h,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SizedBox(width: 1.w),
-                      Container(
-                        height: 5.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: theme.dividerColor),
-                        ),
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 0.5.w,
-                          vertical: 0.5.w,
-                        ),
-                        child: Row(
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                if (category == 'ForYou' ||
-                                    category == 'Following') {
-                                  context.read<homeBloc.HomeBloc>().add(
-                                    homeBloc.UpVotePost(
-                                      index: index,
-                                      category: category,
-                                    ),
-                                  );
-                                } else if (category == 'Trending' ||
-                                    category == 'Top 10 news') {
-                                  if (newsIndex != null) {
-                                    context.read<TrendingViewBloc>().add(
-                                      UpVoteNewsPost(
-                                        index: index,
-                                        category: category,
-                                        newsIndex: newsIndex!,
-                                      ),
-                                    );
-                                  } else {
-                                    context.read<TrendingViewBloc>().add(
-                                      UpVotePost(
-                                        index: index,
-                                        category: category,
-                                      ),
-                                    );
-                                  }
-                                } else if (category == 'user') {
-                                  context.read<UserBloc>().add(
-                                    upvotePost1(index: index),
-                                  );
-                                } else if (category == 'other') {
-                                  context.read<OtheruserBloc>().add(
-                                    upvotePost(index: index),
-                                  );
-                                } else if (category == 'saved') {
-                                  context.read<UserBloc>().add(
-                                    upvotesavedPost1(index: index),
-                                  );
-                                } else {
-                                  context.read<searchBloc.SearchBloc>().add(
-                                    searchBloc.UpVotePost(index: index),
-                                  );
-                                }
-                              },
-                              child: Row(
-                                children: [
                                   IconButton(
-                                    onPressed: null,
+                                    onPressed: () {
+                                      //Move to the full view of the post with all the comments
+                                      pushScreen(
+                                        context,
+                                        pageTransitionAnimation:
+                                            PageTransitionAnimation.scale,
+                                        screen: ViewDiscussion(
+                                          post: post,
+                                          index: index,
+                                          newIndex: newsIndex,
+                                          category: category,
+                                        ),
+
+                                        withNavBar: false,
+                                      );
+                                    },
+                                    splashColor: Colors.transparent,
+                                    highlightColor: Colors.transparent,
                                     padding: EdgeInsets.zero,
                                     icon: Icon(
-                                      Icons.arrow_circle_up_outlined,
-                                      size: 7.w,
-                                      color:
-                                          post.isUpVote
-                                              ? colorScheme.primary
-                                              : colorScheme.secondary,
+                                      Icons.mode_comment_outlined,
+                                      color: theme.colorScheme.secondary,
                                     ),
                                   ),
-
                                   Text(
-                                    "${post.upvotes - post.downvotes}",
+                                    "${post.comments}",
                                     style: TextStyle(
                                       color: theme.colorScheme.secondary,
                                       fontSize: 3.w,
@@ -511,165 +650,43 @@ class PostWidget extends StatelessWidget {
                                   SizedBox(width: 4.w),
                                 ],
                               ),
-                            ),
-                            Container(
-                              width: 1,
-                              height: 5.h,
-                              color: theme.dividerColor,
-                            ),
+                            )
+                            : SizedBox.shrink(),
 
-                            IconButton(
-                              splashColor: Colors.transparent,
-                              highlightColor: Colors.transparent,
+                        const Spacer(flex: 10),
 
+                        // Sentiment Analysis Button
+                        post.isDebate
+                            ? IconButton(
                               onPressed: () {
-                                if (category == 'ForYou' ||
-                                    category == 'Following') {
-                                  context.read<homeBloc.HomeBloc>().add(
-                                    homeBloc.DownVotePost(
-                                      index: index,
-                                      category: category,
-                                    ),
-                                  );
-                                } else if (category == 'Trending' ||
-                                    category == 'Top 10 news') {
-                                  if (newsIndex != null) {
-                                    context.read<TrendingViewBloc>().add(
-                                      DownVoteNewsPost(
-                                        index: index,
-                                        category: category,
-                                        newsIndex: newsIndex!,
-                                      ),
-                                    );
-                                  } else {
-                                    context.read<TrendingViewBloc>().add(
-                                      DownVotePost(
-                                        index: index,
-                                        category: category,
-                                      ),
-                                    );
-                                  }
-                                } else if (category == 'user') {
-                                  context.read<UserBloc>().add(
-                                    downvotePost1(index: index),
-                                  );
-                                } else if (category == 'other') {
-                                  context.read<OtheruserBloc>().add(
-                                    downvotePost(index: index),
-                                  );
-                                } else if (category == 'saved') {
-                                  context.read<UserBloc>().add(
-                                    downvotesavedPost(index: index),
-                                  );
-                                } else {
-                                  context.read<searchBloc.SearchBloc>().add(
-                                    searchBloc.DownVotePost(index: index),
-                                  );
-                                }
+                                pushScreen(
+                                  context,
+                                  pageTransitionAnimation:
+                                      PageTransitionAnimation.scale,
+                                  screen: Clusterscreen(
+                                    clusters: post.clusters!,
+                                    postid: post.id,
+                                  ),
+                                  withNavBar: false,
+                                );
                               },
-                              padding: EdgeInsets.zero,
+
                               icon: Icon(
+                                Icons.analytics_outlined,
                                 size: 7.w,
-
-                                Icons.arrow_circle_down_outlined,
-                                color:
-                                    post.isDownVote
-                                        ? colorScheme.primary
-                                        : colorScheme.secondary,
+                                color: colorScheme.primary,
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Spacer(flex: 1),
-                      !onFullView
-                          ? Container(
-                            height: 5.h,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: theme.dividerColor),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 0.5.w,
-                              vertical: 0.5.w,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                IconButton(
-                                  onPressed: () {
-                                    //Move to the full view of the post with all the comments
-                                    pushScreen(
-                                      context,
-                                      pageTransitionAnimation:
-                                          PageTransitionAnimation.scale,
-                                      screen: ViewDiscussion(
-                                        post: post,
-                                        index: index,
-                                        newIndex: newsIndex,
-                                        category: category,
-                                      ),
-
-                                      withNavBar: false,
-                                    );
-                                  },
-                                  splashColor: Colors.transparent,
-                                  highlightColor: Colors.transparent,
-                                  padding: EdgeInsets.zero,
-                                  icon: Icon(
-                                    Icons.mode_comment_outlined,
-                                    color: theme.colorScheme.secondary,
-                                  ),
-                                ),
-                                Text(
-                                  "${post.comments}",
-                                  style: TextStyle(
-                                    color: theme.colorScheme.secondary,
-                                    fontSize: 3.w,
-                                    height: 1,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(width: 4.w),
-                              ],
-                            ),
-                          )
-                          : SizedBox.shrink(),
-
-                      const Spacer(flex: 10),
-
-                      // Sentiment Analysis Button
-                      post.isDebate
-                          ? IconButton(
-                            onPressed: () {
-                              pushScreen(
-                                context,
-                                pageTransitionAnimation:
-                                    PageTransitionAnimation.scale,
-                                screen: Clusterscreen(
-                                  clusters: post.clusters!,
-                                  postid: post.id,
-                                ),
-                                withNavBar: false,
-                              );
-                            },
-
-                            icon: Icon(
-                              Icons.analytics_outlined,
-                              size: 7.w,
-                              color: colorScheme.primary,
-                            ),
-                          )
-                          : SizedBox.shrink(),
-                      Spacer(flex: 1),
-                    ],
+                            )
+                            : SizedBox.shrink(),
+                        Spacer(flex: 1),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Divider(color: theme.dividerColor, thickness: 0.5, height: 8),
-        ],
+          ],
+        ),
       ),
     );
   }

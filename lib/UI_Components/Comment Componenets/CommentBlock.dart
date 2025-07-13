@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -148,6 +149,7 @@ class CommentsBlock extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         IconButton(
+                          key: ValueKey(comment.upVoteUserIds),
                           onPressed: () {
                             context.read<CommentsBloc>().add(
                               UpVoteComment(comment: comment, userId: userId),
@@ -155,13 +157,24 @@ class CommentsBlock extends StatelessWidget {
                           },
                           padding: EdgeInsets.zero,
                           icon: Icon(
-                            Icons.arrow_circle_up_outlined,
-                            size: 5.5.w,
-                            color:
-                                comment.upVoteUserIds.contains(userId)
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context).colorScheme.secondary,
-                          ),
+                                Icons.arrow_circle_up_outlined,
+                                size: 5.5.w,
+                                color:
+                                    comment.upVoteUserIds.contains(userId)
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(
+                                          context,
+                                        ).colorScheme.secondary,
+                              )
+                              .animate(
+                                onPlay: (controller) {
+                                  controller.forward(from: 0);
+                                },
+                              )
+                              .scale(
+                                duration: 300.ms,
+                                curve: Curves.easeOutBack,
+                              ),
                         ),
                         Text(
                           "${comment.totalUpVotes - comment.totalDownVotes}",

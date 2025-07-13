@@ -1,3 +1,4 @@
+// ignore_for_file: depend_on_referenced_packages
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -91,7 +92,7 @@ class MyApp extends StatelessWidget {
             useMaterial3: true,
           ),
           darkTheme: ThemeData(
-            dividerColor: Color.fromARGB(255, 41, 54, 61),
+            dividerColor: Color.fromARGB(255, 57, 75, 85),
             primaryColor: Colors.white,
             colorScheme: ColorScheme(
               primary: primaryColor,
