@@ -2,12 +2,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/Home/home_bloc.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
+import 'package:verbatica/UI_Components/PostComponents/ShimmerLoader.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/Chats%20And%20Messaging%20Views/ChatsView.dart';
 import 'package:verbatica/model/Post.dart';
 
@@ -182,18 +182,17 @@ class _BuiltPostListState extends State<BuiltPostList>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final colorScheme = Theme.of(context).colorScheme;
 
     return widget.loading
-        ? Center(
-          child: LoadingAnimationWidget.dotsTriangle(
-            color: colorScheme.primary,
-            size: 10.w,
-          ),
+        ? ListView.builder(
+          itemCount: 10,
+          itemBuilder: (context, index) {
+            return PostShimmerTile();
+          },
         )
         : ListView.builder(
           physics: BouncingScrollPhysics(),
-          padding: EdgeInsets.only(top: 8),
+          padding: EdgeInsets.only(top: 0),
           addAutomaticKeepAlives: true,
           addRepaintBoundaries: true,
           cacheExtent: 500,

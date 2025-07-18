@@ -55,11 +55,14 @@ class _ProfileViewState extends State<otherProfileView>
   Widget buildUserPostsTab(OtheruserState state) {
     if (state.isLoadingPosts) {
       // Show shimmer while loading
-      return ListView.builder(
-        // Add bottom padding to account for the navigation bar
-        padding: EdgeInsets.only(bottom: 16.0.h), // Added bottom padding
-        itemCount: 5,
-        itemBuilder: (_, index) => const PostShimmerTile(),
+      return Padding(
+        padding: EdgeInsets.only(top: 2.h),
+        child: ListView.builder(
+          // Add bottom padding to account for the navigation bar
+          padding: EdgeInsets.only(bottom: 16.0.h), // Added bottom padding
+          itemCount: 5,
+          itemBuilder: (_, index) => const PostShimmerTile(),
+        ),
       );
     }
 

@@ -62,9 +62,6 @@ class _VideoPlayerState extends State<VideoPlayer> {
       onVisibilityChanged: (info) {
         if (info.visibleFraction < 0.5 && _videoController.value.isPlaying) {
           _videoController.pause();
-        } else if (info.visibleFraction >= 0.5 &&
-            !_videoController.value.isPlaying) {
-          _videoController.play();
         }
       },
       child:

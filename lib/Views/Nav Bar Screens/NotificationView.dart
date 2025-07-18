@@ -406,9 +406,7 @@ class NotificationScreen extends StatelessWidget {
                   color: Theme.of(context).colorScheme.primary,
                 ),
               );
-            }
-
-            if (state.error != null) {
+            } else if (state.error != null) {
               return Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -431,9 +429,7 @@ class NotificationScreen extends StatelessWidget {
                   ],
                 ),
               );
-            }
-
-            if (state.notifications.isEmpty) {
+            } else if (state.notifications.isEmpty) {
               return Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

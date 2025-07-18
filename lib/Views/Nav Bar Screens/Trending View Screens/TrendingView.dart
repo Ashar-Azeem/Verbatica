@@ -3,11 +3,11 @@ import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
+import 'package:verbatica/UI_Components/PostComponents/ShimmerLoader.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Trending%20View%20Screens/News.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Trending%20View%20Screens/SearchScreen.dart';
 import 'package:verbatica/model/Post.dart';
@@ -208,11 +208,13 @@ class _BuiltPostListState extends State<BuiltPostList>
   Widget build(BuildContext context) {
     super.build(context);
     return widget.loading
-        ? Center(
-          child: LoadingAnimationWidget.dotsTriangle(
-            color: Theme.of(context).colorScheme.primary,
-            size: 10.w,
-          ),
+        ? ListView.builder(
+          itemCount: 10,
+          itemBuilder: (context, index) {
+            return widget.category == 'Trending'
+                ? PostShimmerTile()
+                : NewsShimmerTile();
+          },
         )
         : widget.category == 'Trending'
         ? ListView.builder(

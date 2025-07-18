@@ -9,7 +9,7 @@ class NotificationState extends Equatable {
 
   const NotificationState({
     this.notifications = const [],
-    this.isLoading = false,
+    this.isLoading = true,
     this.error,
   });
 
