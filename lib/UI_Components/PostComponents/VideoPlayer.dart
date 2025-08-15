@@ -1,55 +1,85 @@
-// ignore_for_file: file_names
-import 'package:chewie/chewie.dart';
+import 'dart:io';
+import 'package:better_player_plus/better_player_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
-import 'package:video_player/video_player.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
-class VideoPlayer extends StatefulWidget {
-  final String videoUrl;
-  const VideoPlayer({super.key, required this.videoUrl});
+class BetterCacheVideoPlayer extends StatefulWidget {
+  final String? videoUrl;
+  final File? videoFileLocation;
+
+  const BetterCacheVideoPlayer({
+    super.key,
+    this.videoUrl,
+    this.videoFileLocation,
+  });
 
   @override
-  State createState() => _VideoPlayerState();
+  State createState() => _BetterCacheVideoPlayerState();
 }
 
-class _VideoPlayerState extends State<VideoPlayer> {
-  late VideoPlayerController _videoController;
-  ChewieController? _chewieController;
+class _BetterCacheVideoPlayerState extends State<BetterCacheVideoPlayer> {
+  BetterPlayerController? _betterController;
+  double _aspectRatio = 16 / 9; // default before video loads
 
   @override
   void initState() {
     super.initState();
 
-    _videoController = VideoPlayerController.networkUrl(
-      Uri.parse(widget.videoUrl),
+    BetterPlayerDataSource dataSource;
+    if (widget.videoUrl != null) {
+      dataSource = BetterPlayerDataSource(
+        BetterPlayerDataSourceType.network,
+        widget.videoUrl!,
+        cacheConfiguration: BetterPlayerCacheConfiguration(
+          useCache: true,
+          key: widget.videoUrl!, // ensures reuse across sessions
+        ),
+      );
+    } else {
+      dataSource = BetterPlayerDataSource(
+        BetterPlayerDataSourceType.file,
+        widget.videoFileLocation!.path,
+      );
+    }
+
+    _betterController = BetterPlayerController(
+      BetterPlayerConfiguration(
+        autoPlay: false,
+        looping: false,
+        fullScreenByDefault: false,
+        allowedScreenSleep: false,
+        fit: BoxFit.contain,
+        aspectRatio: _aspectRatio,
+        controlsConfiguration: BetterPlayerControlsConfiguration(),
+      ),
+      betterPlayerDataSource: dataSource,
     );
-    _videoController.initialize().then((value) {
-      setState(() {
-        _chewieController = ChewieController(
-          videoPlayerController: _videoController,
-          autoPlay: false,
-          looping: false,
-          allowFullScreen: true,
-          deviceOrientationsOnEnterFullScreen: [
-            DeviceOrientation.portraitUp,
-            DeviceOrientation.landscapeLeft,
-            DeviceOrientation.landscapeRight,
-          ],
-          showControlsOnInitialize: false,
-          deviceOrientationsAfterFullScreen: [DeviceOrientation.portraitUp],
-          fullScreenByDefault: false,
-        );
-      });
+
+    // Listen for when the video is initialized
+    _betterController!.addEventsListener((event) {
+      if (event.betterPlayerEventType == BetterPlayerEventType.initialized) {
+        final videoAspectRatio =
+            _betterController!.videoPlayerController!.value.aspectRatio;
+        setState(() {
+          _aspectRatio = videoAspectRatio;
+          // If portrait, fill height (cover); if landscape, keep contain
+          //aspect ratio = width/height => height greater so potrait then covers the whole video meaning the display is now potrait
+          if (videoAspectRatio < 1) {
+            _betterController!.setOverriddenFit(BoxFit.cover);
+            _betterController!.setOverriddenAspectRatio(videoAspectRatio);
+          } else {
+            _betterController!.setOverriddenFit(BoxFit.contain);
+          }
+        });
+      }
     });
   }
 
   @override
   void dispose() {
-    _videoController.dispose();
-    _chewieController?.dispose();
+    _betterController?.dispose();
     super.dispose();
   }
 
@@ -58,17 +88,18 @@ class _VideoPlayerState extends State<VideoPlayer> {
     final theme = Theme.of(context);
 
     return VisibilityDetector(
-      key: Key(widget.videoUrl),
+      key: Key(widget.videoUrl ?? widget.videoFileLocation!.path),
       onVisibilityChanged: (info) {
-        if (info.visibleFraction < 0.5 && _videoController.value.isPlaying) {
-          _videoController.pause();
+        if (info.visibleFraction < 0.5 &&
+            _betterController?.isPlaying() == true) {
+          _betterController?.pause();
         }
       },
       child:
-          _chewieController != null && _videoController.value.isInitialized
+          _betterController != null
               ? AspectRatio(
-                aspectRatio: _videoController.value.aspectRatio,
-                child: Chewie(controller: _chewieController!),
+                aspectRatio: _aspectRatio,
+                child: BetterPlayer(controller: _betterController!),
               )
               : Container(
                 color: theme.scaffoldBackgroundColor,

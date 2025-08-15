@@ -92,7 +92,7 @@ class _ViewDiscussionState extends State<ViewDiscussion>
           ),
           elevation: 0,
           centerTitle: true,
-          backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+          backgroundColor: Theme.of(context).cardColor,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
           ),
@@ -243,7 +243,8 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                               child: Text(
                                 '223 Comments',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -431,13 +432,13 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                   child: BlocBuilder<UserBloc, UserState>(
                                     buildWhen:
                                         (previous, current) =>
-                                            previous.user.avatarId !=
-                                            current.user.avatarId,
+                                            previous.user!.avatarId !=
+                                            current.user!.avatarId,
                                     builder: (context, state) {
                                       return CircleAvatar(
                                         radius: 6.w,
                                         backgroundImage: AssetImage(
-                                          'assets/Avatars/avatar${state.user.avatarId}.jpg',
+                                          'assets/Avatars/avatar${state.user!.avatarId}.jpg',
                                         ),
                                       );
                                     },
@@ -497,7 +498,7 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                               context
                                                   .read<UserBloc>()
                                                   .state
-                                                  .user,
+                                                  .user!,
                                           postId: widget.post.id,
                                         ),
                                       );

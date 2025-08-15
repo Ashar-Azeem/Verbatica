@@ -61,6 +61,13 @@ dependencies:
   url_launcher: ^6.3.1
   rxdart: ^0.28.0
   flutter_animate: ^4.5.2
+  dio: ^5.8.0+1
+  google_sign_in: ^7.1.1
+  video_compress: ^3.1.4
+  flutter_image_compress: ^2.4.0
+  encrypt: ^5.0.3
+  better_player_plus: ^1.0.8
+  extended_nested_scroll_view: ^6.2.1
 
 dev_dependencies:
   flutter_test:
@@ -89,6 +96,8 @@ flutter:
     - assets/Logo.png
     - assets/googleIcon.png
     - assets/EmailIcon.png
+    - assets/reset-password.png
+    - assets/
     - assets/Avatars/avatar1.jpg
     - assets/Avatars/avatar2.jpg
     - assets/Avatars/avatar3.jpg

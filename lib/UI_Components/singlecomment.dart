@@ -25,7 +25,7 @@ class _SingleCommentUIState extends State<SingleCommentUI> {
   @override
   void initState() {
     super.initState();
-    userId = context.read<UserBloc>().state.user.userId;
+    userId = context.read<UserBloc>().state.user!.id.toString();
   }
 
   @override

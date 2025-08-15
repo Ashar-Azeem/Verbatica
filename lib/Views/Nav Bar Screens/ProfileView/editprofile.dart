@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
@@ -12,7 +14,7 @@ class EditProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<UserBloc, UserState>(
       builder: (context, state) {
-        return _EditProfileContent(user: state.user);
+        return _EditProfileContent(user: state.user!);
       },
     );
   }
@@ -98,9 +100,6 @@ class _EditProfileContentState extends State<_EditProfileContent> {
                         return GestureDetector(
                           onTap: () {
                             setState(() => _selectedAvatarId = avatarId);
-                            context.read<UserBloc>().add(
-                              UpdateAvatar(avatarId),
-                            );
                             Navigator.pop(context);
                           },
                           child: AnimatedContainer(
@@ -155,8 +154,10 @@ class _EditProfileContentState extends State<_EditProfileContent> {
   }
 
   void _saveChanges() {
-    context.read<UserBloc>().add(UpdateAbout(_aboutController.text));
-    Navigator.pop(context);
+    print(_selectedAvatarId);
+    context.read<UserBloc>().add(
+      UpdateAvatarAndAbout(_selectedAvatarId, _aboutController.text.trim()),
+    );
   }
 
   @override
@@ -165,235 +166,260 @@ class _EditProfileContentState extends State<_EditProfileContent> {
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: IconThemeData(color: colorScheme.onSurface),
-        title: Text(
-          'Edit Profile',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.bold,
-            color: textTheme.titleLarge?.color,
+    return BlocListener<UserBloc, UserState>(
+      listenWhen:
+          (previous, current) =>
+              previous.isLoadingUpdatingProfile !=
+              current.isLoadingUpdatingProfile,
+      listener: (context, state) {
+        if (!state.isLoadingUpdatingProfile) {
+          Navigator.pop(context);
+        }
+      },
+      child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: IconThemeData(color: colorScheme.onSurface),
+          title: Text(
+            'Edit Profile',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: textTheme.titleLarge?.color,
+            ),
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.close),
+              color: colorScheme.onSurface,
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close),
-            color: colorScheme.onSurface,
-            onPressed: () => Navigator.pop(context),
+        body: SingleChildScrollView(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+            left: 20,
+            right: 20,
+            top: 10,
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-          left: 20,
-          right: 20,
-          top: 10,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Avatar Section
-            Center(
-              child: Column(
-                children: [
-                  Container(
-                    height: 100,
-                    width: 100,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: colorScheme.primary.withOpacity(0.3),
-                          blurRadius: 15,
-                          spreadRadius: 2,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Avatar Section
+              Center(
+                child: Column(
+                  children: [
+                    Container(
+                      height: 100,
+                      width: 100,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: colorScheme.primary.withOpacity(0.3),
+                            blurRadius: 15,
+                            spreadRadius: 2,
+                          ),
+                        ],
+                      ),
+                      child: Hero(
+                        tag: 'avatar',
+                        child: GestureDetector(
+                          onTap: _showAvatarSelection,
+                          child: Stack(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: colorScheme.primary,
+                                    width: 3,
+                                  ),
+                                ),
+                                child: CircleAvatar(
+                                  radius: 50,
+                                  backgroundImage: AssetImage(
+                                    'assets/Avatars/avatar$_selectedAvatarId.jpg',
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                bottom: 0,
+                                right: 0,
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: colorScheme.primary,
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: colorScheme.shadow.withOpacity(
+                                          0.3,
+                                        ),
+                                        blurRadius: 5,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  child: Icon(
+                                    Icons.edit,
+                                    size: 18,
+                                    color: colorScheme.onPrimary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextButton.icon(
+                      onPressed: _showAvatarSelection,
+                      icon: Icon(
+                        Icons.photo_library_outlined,
+                        color: colorScheme.primary,
+                      ),
+                      label: Text(
+                        'Change Avatar',
+                        style: TextStyle(color: colorScheme.primary),
+                      ),
+                      style: TextButton.styleFrom(
+                        foregroundColor: colorScheme.primary,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 32),
+
+              // About Section
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: colorScheme.primary.withOpacity(0.1),
+                      blurRadius: 5,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 0),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.person,
+                          color: colorScheme.primary,
+                          size: 22,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'About You',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: textTheme.titleMedium?.color,
+                          ),
                         ),
                       ],
                     ),
-                    child: Hero(
-                      tag: 'avatar',
-                      child: GestureDetector(
-                        onTap: _showAvatarSelection,
-                        child: Stack(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: colorScheme.primary,
-                                  width: 3,
-                                ),
-                              ),
-                              child: CircleAvatar(
-                                radius: 50,
-                                backgroundImage: AssetImage(
-                                  'assets/Avatars/avatar$_selectedAvatarId.jpg',
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: colorScheme.primary,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: colorScheme.shadow.withOpacity(
-                                        0.3,
-                                      ),
-                                      blurRadius: 5,
-                                      offset: const Offset(0, 2),
-                                    ),
-                                  ],
-                                ),
-                                child: Icon(
-                                  Icons.edit,
-                                  size: 18,
-                                  color: colorScheme.onPrimary,
-                                ),
-                              ),
-                            ),
-                          ],
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: _aboutController,
+                      maxLines: 5,
+                      style: TextStyle(
+                        color: textTheme.bodyLarge?.color,
+                        fontSize: 16,
+                      ),
+                      maxLength: 200,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: colorScheme.surfaceContainerHighest,
+                        hintText: 'Tell others about yourself...',
+                        hintStyle: TextStyle(
+                          color: textTheme.bodyMedium?.color?.withOpacity(0.6),
+                          fontSize: 14,
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: colorScheme.outline,
+                            width: 1,
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: colorScheme.primary,
+                            width: 2,
+                          ),
+                        ),
+                        contentPadding: const EdgeInsets.all(16),
+                        counterStyle: TextStyle(
+                          color: textTheme.bodySmall?.color?.withOpacity(0.6),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextButton.icon(
-                    onPressed: _showAvatarSelection,
-                    icon: Icon(
-                      Icons.photo_library_outlined,
-                      color: colorScheme.primary,
-                    ),
-                    label: Text(
-                      'Change Avatar',
-                      style: TextStyle(color: colorScheme.primary),
-                    ),
-                    style: TextButton.styleFrom(
-                      foregroundColor: colorScheme.primary,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 32),
-
-            // About Section
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: colorScheme.surface,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: colorScheme.primary.withOpacity(0.1),
-                    blurRadius: 5,
-                    spreadRadius: 2,
-                    offset: const Offset(0, 0),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Icon(Icons.person, color: colorScheme.primary, size: 22),
-                      const SizedBox(width: 8),
-                      Text(
-                        'About You',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: textTheme.titleMedium?.color,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _aboutController,
-                    maxLines: 5,
-                    style: TextStyle(
-                      color: textTheme.bodyLarge?.color,
-                      fontSize: 16,
-                    ),
-                    maxLength: 200,
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: colorScheme.surfaceContainerHighest,
-                      hintText: 'Tell others about yourself...',
-                      hintStyle: TextStyle(
-                        color: textTheme.bodyMedium?.color?.withOpacity(0.6),
-                        fontSize: 14,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          color: colorScheme.outline,
-                          width: 1,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide(
-                          color: colorScheme.primary,
-                          width: 2,
-                        ),
-                      ),
-                      contentPadding: const EdgeInsets.all(16),
-                      counterStyle: TextStyle(
-                        color: textTheme.bodySmall?.color?.withOpacity(0.6),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 40),
-
-            // Save Button
-            SizedBox(
-              width: double.infinity,
-              height: 55,
-              child: ElevatedButton(
-                onPressed: _saveChanges,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colorScheme.primary,
-                  foregroundColor: colorScheme.onPrimary,
-                  elevation: 8,
-                  shadowColor: colorScheme.primary.withOpacity(0.3),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                ),
-                child: const Text(
-                  'Save Changes',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 0.5,
-                  ),
+                  ],
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-          ],
+              const SizedBox(height: 40),
+
+              // Save Button
+              BlocBuilder<UserBloc, UserState>(
+                builder: (context, state) {
+                  return SizedBox(
+                    width: double.infinity,
+                    height: 55,
+                    child: ElevatedButton(
+                      onPressed: _saveChanges,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: colorScheme.primary,
+                        foregroundColor: colorScheme.onPrimary,
+                        elevation: 8,
+                        shadowColor: colorScheme.primary.withOpacity(0.3),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child:
+                          state.isLoadingUpdatingProfile
+                              ? LoadingAnimationWidget.staggeredDotsWave(
+                                color: theme.colorScheme.onPrimary,
+                                size: 10.w,
+                              )
+                              : const Text(
+                                'Save Changes',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+            ],
+          ),
         ),
       ),
     );

@@ -1,4 +1,5 @@
 // ignore_for_file: file_names
+import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
@@ -7,6 +8,7 @@ import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
+import 'package:verbatica/UI_Components/PostComponents/EmptyPosts.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/UI_Components/PostComponents/ShimmerLoader.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
@@ -33,6 +35,8 @@ class _ProfileViewState extends State<ProfileView>
     super.initState();
     context.read<UserBloc>().add(updateCommentWithPost());
     context.read<UserBloc>().add(FetchUserPosts());
+    context.read<UserBloc>().add(UpdateAura());
+
     _tabController = TabController(length: 3, vsync: this);
     _scrollNotifier = ValueNotifier(0.0);
     _scrollController.addListener(_updateScrollNotifier);
@@ -52,51 +56,6 @@ class _ProfileViewState extends State<ProfileView>
   }
 
   // Add this method to the _ProfileViewState class
-  // Modify the buildUserPostsTab method to add bottom padding
-  Widget buildUserPostsTab(UserState state) {
-    if (state.isLoadingPosts) {
-      // Show shimmer while loading
-      return Padding(
-        padding: EdgeInsets.only(top: 2.h),
-        child: ListView.builder(
-          // Add bottom padding to account for the navigation bar
-          padding: EdgeInsets.only(bottom: 16.0.h), // Added bottom padding
-          itemCount: 5,
-          itemBuilder: (_, index) => const PostShimmerTile(),
-        ),
-      );
-    }
-
-    if (state.userPosts.isEmpty) {
-      return _buildEmptyTabContent(
-        icon: Icons.article_outlined,
-        message: 'No posts yet',
-      );
-    }
-
-    return ListView.builder(
-      // Add bottom padding to account for the navigation bar
-      padding: EdgeInsets.only(
-        top: 2.h,
-        bottom: 16.0.h,
-      ), // Added bottom padding
-      itemCount: state.userPosts.length,
-      itemBuilder: (context, index) {
-        final post = state.userPosts[index];
-        return Padding(
-          padding: EdgeInsets.only(left: 1.w, right: 1.w),
-          child: PostWidget(
-            post: post,
-            index: index,
-            onFullView: false,
-            category: 'user',
-          ),
-        );
-      },
-    );
-  }
-
-  // Add this method to the _ProfileViewState class
 
   bool _isAppBarCollapsed(double shrinkOffset) {
     // Simpler condition to determine when to show the collapsed state
@@ -110,7 +69,9 @@ class _ProfileViewState extends State<ProfileView>
     return Scaffold(
       body: DefaultTabController(
         length: 3,
-        child: NestedScrollView(
+        child: ExtendedNestedScrollView(
+          pinnedHeaderSliverHeightBuilder: () => 18.h,
+          onlyOneScrollInBody: true,
           controller: _scrollController,
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
@@ -134,7 +95,6 @@ class _ProfileViewState extends State<ProfileView>
                         valueListenable: _scrollNotifier,
                         builder: (context, scrollOffset, child) {
                           final isCollapsed = _isAppBarCollapsed(scrollOffset);
-
                           return AnimatedSwitcher(
                             duration: const Duration(seconds: 1),
                             switchInCurve: Curves.easeIn,
@@ -145,7 +105,7 @@ class _ProfileViewState extends State<ProfileView>
                                       key: const ValueKey('collapsedAppBar'),
                                       padding: EdgeInsets.only(
                                         left: 2.w,
-                                        bottom: 2.w,
+                                        bottom: 10.w,
                                       ),
                                       color:
                                           isDarkMode
@@ -169,14 +129,14 @@ class _ProfileViewState extends State<ProfileView>
                                           CircleAvatar(
                                             radius: 6.w,
                                             backgroundImage: AssetImage(
-                                              'assets/Avatars/avatar${state.user.avatarId}.jpg',
+                                              'assets/Avatars/avatar${state.user!.avatarId}.jpg',
                                             ),
                                           ),
                                           const Spacer(),
                                           SizedBox(
                                             width: 40.w,
                                             child: Text(
-                                              state.user.username,
+                                              state.user!.userName,
                                               style: TextStyle(
                                                 color:
                                                     Theme.of(
@@ -208,7 +168,7 @@ class _ProfileViewState extends State<ProfileView>
                                         ],
                                       ),
                                     )
-                                    : const SizedBox.shrink(), // Removed from tree when not collapsed
+                                    : const SizedBox.shrink(),
                           );
                         },
                       );
@@ -216,42 +176,18 @@ class _ProfileViewState extends State<ProfileView>
                   ),
                 ),
                 bottom: PreferredSize(
-                  preferredSize: const Size.fromHeight(48.0),
+                  preferredSize: Size(100.w, 8.h),
                   child: Container(
                     color: Theme.of(context).scaffoldBackgroundColor,
                     child: TabBar(
                       controller: _tabController,
                       tabs: const [
+                        Tab(icon: Icon(Icons.article, size: 18), text: 'Posts'),
                         Tab(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.article, size: 18),
-                              SizedBox(width: 8),
-                              Text('Posts'),
-                            ],
-                          ),
+                          icon: Icon(Icons.comment, size: 18),
+                          text: 'Comments',
                         ),
-                        Tab(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.comment, size: 18),
-                              SizedBox(width: 8),
-                              Text('Comments'),
-                            ],
-                          ),
-                        ),
-                        Tab(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.person, size: 18),
-                              SizedBox(width: 8),
-                              Text('About'),
-                            ],
-                          ),
-                        ),
+                        Tab(icon: Icon(Icons.person, size: 18), text: 'About'),
                       ],
                       labelColor: Theme.of(context).colorScheme.primary,
                       unselectedLabelColor: Theme.of(
@@ -266,9 +202,8 @@ class _ProfileViewState extends State<ProfileView>
                           width: 3.0,
                           color: Theme.of(context).colorScheme.primary,
                         ),
-                        insets: const EdgeInsets.symmetric(horizontal: 16.0),
+                        insets: EdgeInsets.symmetric(horizontal: 100.w / 4),
                       ),
-                      dividerColor: Colors.transparent,
                     ),
                   ),
                 ),
@@ -278,96 +213,40 @@ class _ProfileViewState extends State<ProfileView>
           body: TabBarView(
             controller: _tabController,
             children: [
-              // Posts Tab
+              // Posts
               BlocBuilder<UserBloc, UserState>(
                 builder: (context, state) {
-                  return buildUserPostsTab(state);
+                  return BuildUserPostsTab(
+                    state: context.read<UserBloc>().state,
+                  );
                 },
               ),
 
-              // Comments Tab
+              // Comments
               BlocBuilder<UserBloc, UserState>(
                 builder: (context, state) {
-                  return buildUserCommentsTab(state);
+                  return BuildUserCommentTab(
+                    state: context.read<UserBloc>().state,
+                  );
                 },
               ),
 
-              // About Tab
-              SingleChildScrollView(
-                child: Padding(
-                  padding: EdgeInsets.all(5.0.w),
-                  child: _buildAboutSection(),
+              // About
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8.0,
+                  vertical: 18,
+                ),
+                child: Column(
+                  children: [
+                    SizedBox(width: 90.w, child: _buildAboutSection()),
+                  ],
                 ),
               ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  Widget buildUserCommentsTab(UserState state) {
-    if (state.isLoadingComments) {
-      // Show shimmer while loading
-      return ListView.builder(
-        // Add bottom padding to account for the navigation bar
-        padding: EdgeInsets.only(bottom: 16.0.h), // Added bottom padding
-        itemCount: 5,
-        itemBuilder: (_, index) => const CommentShimmerTile(),
-      );
-    }
-
-    if (state.userComments.isEmpty) {
-      return Center(
-        child: Text(
-          "No comments yet",
-          style: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
-        ),
-      );
-    }
-
-    return ListView.builder(
-      // Add bottom padding to account for the navigation bar
-      padding: EdgeInsets.only(bottom: 16.0.h), // Added bottom padding
-      itemCount: state.userComments.length,
-      itemBuilder: (context, index) {
-        final comment = state.userComments[index];
-        final post = state.postofComments[index];
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Subreddit + time + upvotes
-              Text(
-                post.title,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                ),
-              ),
-
-              Text(
-                '/${comment.text}    • ${timeago.format(comment.uploadTime)}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.color?.withOpacity(0.6),
-                ),
-              ),
-
-              const SizedBox(height: 4),
-
-              // Post title
-              const SizedBox(height: 4),
-
-              // Actual comment text
-            ],
-          ),
-        );
-      },
     );
   }
 
@@ -480,7 +359,7 @@ class _ProfileViewState extends State<ProfileView>
                                               child: CircleAvatar(
                                                 radius: 8.0.h,
                                                 backgroundImage: AssetImage(
-                                                  'assets/Avatars/avatar${state.user.avatarId}.jpg',
+                                                  'assets/Avatars/avatar${state.user!.avatarId}.jpg',
                                                 ),
                                               ),
                                             ),
@@ -489,7 +368,7 @@ class _ProfileViewState extends State<ProfileView>
 
                                             // Username
                                             Text(
-                                              state.user.username,
+                                              state.user!.userName,
                                               style: TextStyle(
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.bold,
@@ -535,7 +414,14 @@ class _ProfileViewState extends State<ProfileView>
                                                   ),
                                                   SizedBox(width: 1.0.w),
                                                   Text(
-                                                    '${state.user.karma} Aura',
+                                                    state.user!.aura >= 1000
+                                                        ? (state.user!.aura /
+                                                                        1000) %
+                                                                    1 ==
+                                                                0
+                                                            ? '${(state.user!.aura / 1000).toInt().toString()}k Aura'
+                                                            : '${(state.user!.aura / 1000).toStringAsFixed(1)}k Aura'
+                                                        : '${state.user!.aura} Aura',
                                                     style: const TextStyle(
                                                       color: Colors.white,
                                                       fontWeight:
@@ -564,7 +450,7 @@ class _ProfileViewState extends State<ProfileView>
                                                 ),
                                                 SizedBox(width: 1.0.w),
                                                 Text(
-                                                  'Member since ${formatJoinedDate(state.user.joinedDate)}',
+                                                  'Member since ${formatJoinedDate(state.user!.joinDate)}',
                                                   style: TextStyle(
                                                     color: Theme.of(context)
                                                         .textTheme
@@ -582,9 +468,6 @@ class _ProfileViewState extends State<ProfileView>
                                             // Edit Profile Button
                                             ElevatedButton.icon(
                                               onPressed: () {
-                                                print(
-                                                  'hggjdfhdhfjh!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!',
-                                                );
                                                 showModalBottomSheet(
                                                   context: context,
                                                   isScrollControlled: true,
@@ -710,7 +593,7 @@ class _ProfileViewState extends State<ProfileView>
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  state.user.about ?? 'No bio added yet.',
+                  state.user!.about,
                   style: TextStyle(
                     fontSize: 15,
                     height: 1.5,
@@ -728,7 +611,7 @@ class _ProfileViewState extends State<ProfileView>
                 icon: Icons.date_range,
                 iconColor: Theme.of(context).colorScheme.primary,
                 label: 'Member since',
-                value: formatJoinedDate(state.user.joinedDate),
+                value: formatJoinedDate(state.user!.joinDate),
               ),
 
               SizedBox(height: 2.0.h),
@@ -738,42 +621,12 @@ class _ProfileViewState extends State<ProfileView>
                 icon: Icons.location_on,
                 iconColor: Theme.of(context).colorScheme.secondary,
                 label: 'Location',
-                value: state.user.country,
+                value: state.user!.country,
               ),
             ],
           ),
         );
       },
-    );
-  }
-
-  Widget _buildEmptyTabContent({
-    required IconData icon,
-    required String message,
-  }) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            size: 48,
-            color: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.color?.withOpacity(0.4),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            message,
-            style: TextStyle(
-              fontSize: 16,
-              color: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.color?.withOpacity(0.5),
-            ),
-          ),
-        ],
-      ),
     );
   }
 
@@ -897,4 +750,149 @@ class CommentShimmerTile extends StatelessWidget {
       ),
     );
   }
+}
+
+// posts view
+class BuildUserPostsTab extends StatefulWidget {
+  final UserState state;
+  const BuildUserPostsTab({super.key, required this.state});
+
+  @override
+  State<BuildUserPostsTab> createState() => _BuildUserPostsTab();
+}
+
+class _BuildUserPostsTab extends State<BuildUserPostsTab>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    // Loading state
+    if (widget.state.isLoadingPosts) {
+      return ListView.builder(
+        padding: EdgeInsets.only(top: 2.h, bottom: 16.0.h),
+        itemCount: 5,
+        itemBuilder: (_, __) => const PostShimmerTile(),
+      );
+    }
+
+    // Empty state
+    if (widget.state.userPosts.isEmpty) {
+      return ListView(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.6,
+            child: Center(
+              child: BuildEmptyTabContent(
+                icon: Icons.article_outlined,
+                message: 'No posts yet',
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    // Content
+    return ListView.builder(
+      key: const PageStorageKey('posts'),
+      padding: EdgeInsets.only(top: 2.h, left: 1.w, right: 1.w, bottom: 16.0.h),
+      itemCount: widget.state.userPosts.length,
+      itemBuilder: (context, index) {
+        final post = widget.state.userPosts[index];
+        return PostWidget(
+          post: post,
+          index: index,
+          onFullView: false,
+          category: 'user',
+        );
+      },
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+}
+
+// comments view
+class BuildUserCommentTab extends StatefulWidget {
+  final UserState state;
+  const BuildUserCommentTab({super.key, required this.state});
+
+  @override
+  State<BuildUserCommentTab> createState() => _BuildUserCommentsTab();
+}
+
+class _BuildUserCommentsTab extends State<BuildUserCommentTab>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+
+    // Loading state
+    if (widget.state.isLoadingComments) {
+      return ListView.builder(
+        padding: EdgeInsets.only(bottom: 16.0.h),
+        itemCount: 5,
+        itemBuilder: (_, __) => const CommentShimmerTile(),
+      );
+    }
+
+    // Empty state
+    if (widget.state.userComments.isEmpty) {
+      return ListView(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.6,
+            child: Center(
+              child: Text(
+                "No comments yet",
+                style: TextStyle(
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    // Content
+    return ListView.builder(
+      key: const PageStorageKey('comment'),
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+      itemCount: widget.state.userComments.length,
+      itemBuilder: (context, index) {
+        final comment = widget.state.userComments[index];
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                comment.titleOfThePost,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 15,
+                  color: Theme.of(context).textTheme.bodyLarge?.color,
+                ),
+              ),
+              Text(
+                '/${comment.text}    • ${timeago.format(comment.uploadTime)}',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                ),
+              ),
+              const SizedBox(height: 4),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 }

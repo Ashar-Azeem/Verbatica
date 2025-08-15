@@ -13,14 +13,19 @@ import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/comments_cluster/comment_cluster_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/BLOC/summary/summary_bloc.dart';
+import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/theme_provider.dart';
+import 'package:verbatica/Views/Authentication%20Screens/EmailVerification.dart';
+import 'package:verbatica/Views/Authentication%20Screens/login.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/mainBottomNavigationBar.dart';
+import 'package:verbatica/model/user.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
+  User? user = await TokenOperations().loadUserProfile();
   runApp(
     MultiProvider(
       providers: [
@@ -36,13 +41,14 @@ void main() async {
         BlocProvider(create: (context) => SearchBloc()),
         BlocProvider(create: (context) => HomeBloc()),
       ],
-      child: const MyApp(),
+      child: MyApp(user: user),
     ),
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final User? user;
+  const MyApp({super.key, this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +73,7 @@ class MyApp extends StatelessWidget {
               primary: const Color.fromARGB(255, 102, 161, 221),
               onPrimary: const Color.fromARGB(255, 255, 255, 255),
 
-              secondary: const Color.fromARGB(255, 106, 106, 106),
+              secondary: const Color.fromARGB(255, 103, 103, 103),
               onSecondary: Colors.orange,
               error: const Color.fromARGB(255, 252, 17, 0),
               onError: Colors.white,
@@ -125,7 +131,12 @@ class MyApp extends StatelessWidget {
             scaffoldBackgroundColor: const Color(0xFF0A0D0F),
             useMaterial3: true,
           ),
-          home: const BottomNavigationBarView(),
+          home:
+              user == null
+                  ? Login()
+                  : user!.isVerified
+                  ? BottomNavigationBarView(user: user)
+                  : EmailVerification(),
         );
       },
     );

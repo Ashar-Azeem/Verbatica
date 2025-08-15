@@ -1,40 +1,30 @@
 // ignore_for_file: file_names
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-
-//User:
-// bio,
-// anonymous user name,
-// follower[list of tokens of user], following[list of tokens of users],
-// gender,
-// interested_topics[],
-// tokens,
-// number of posts,
-// number of comments,
-// karma(upvotes, downVotes),
-// avatarId,
-// country,
-// isEmailVerified
+import 'package:verbatica/model/user.dart';
 
 class TokenOperations {
-  Future<void> saveUserProfile(Map<String, dynamic> user) async {
+  /// Save user profile by converting User object to JSON
+  Future<void> saveUserProfile(User user) async {
     final prefs = await SharedPreferences.getInstance();
-    String jsonString = jsonEncode(user);
+    String jsonString = jsonEncode(user.toJson());
     await prefs.setString('user', jsonString);
   }
 
-  Future<Map<String, dynamic>?> loadUserProfile() async {
+  /// Load user profile and return User object (null if not found)
+  Future<User?> loadUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
     String? jsonString = prefs.getString('user');
 
     if (jsonString == null) return null;
 
-    return jsonDecode(jsonString) as Map<String, dynamic>;
+    final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+    return User.fromJson(jsonMap);
   }
 
-  Future<bool> deleteTokens() async {
+  /// Delete the stored user profile
+  Future<bool> deleteUserProfile() async {
     final prefs = await SharedPreferences.getInstance();
-    bool status = await prefs.remove('user');
-    return status;
+    return await prefs.remove('user');
   }
 }

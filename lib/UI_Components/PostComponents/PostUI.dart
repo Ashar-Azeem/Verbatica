@@ -99,6 +99,7 @@ class PostWidget extends StatelessWidget {
     return Center(
       child: Card(
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
               height: 5.5.h,
@@ -330,10 +331,11 @@ class PostWidget extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 1.w),
+            SizedBox(height: 2.w),
             //Content, title, image or video
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+
               children: [
                 /// Title
                 Padding(
@@ -348,7 +350,7 @@ class PostWidget extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: 0.2.h),
+                SizedBox(height: 0.5.h),
 
                 Padding(
                   padding: EdgeInsets.only(left: 1.w),
@@ -368,7 +370,7 @@ class PostWidget extends StatelessWidget {
                   ),
                 ),
 
-                SizedBox(height: 0.5.h),
+                SizedBox(height: 0.8.h),
 
                 if (post.postImageLink != null)
                   CachedNetworkImage(
@@ -399,7 +401,7 @@ class PostWidget extends StatelessWidget {
 
                 /// Video placeholder (show only if video link is not null)
                 if (post.postVideoLink != null)
-                  VideoPlayer(videoUrl: post.postVideoLink!),
+                  BetterCacheVideoPlayer(videoUrl: post.postVideoLink!),
               ],
             ),
 
@@ -514,7 +516,6 @@ class PostWidget extends StatelessWidget {
                                           duration: 300.ms,
                                           curve: Curves.easeOutBack,
                                         ),
-
                                     Text(
                                       "${post.upvotes - post.downvotes}",
                                       style: TextStyle(

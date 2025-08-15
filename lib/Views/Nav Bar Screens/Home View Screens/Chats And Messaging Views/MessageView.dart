@@ -29,7 +29,7 @@ class _MessageViewState extends State<MessageView> {
   void initState() {
     super.initState();
     chat = widget.chat;
-    userId = context.read<UserBloc>().state.user.userId;
+    userId = context.read<UserBloc>().state.user!.id;
     messagesBloc = MessagesBloc(
       chat: chat,
       userId: userId,
@@ -49,7 +49,7 @@ class _MessageViewState extends State<MessageView> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     OtherUserInfo otherUser = chat.getOtherUserInfo(
-      context.read<UserBloc>().state.user.userId,
+      context.read<UserBloc>().state.user!.id.toString(),
     );
     return BlocProvider.value(
       value: messagesBloc,

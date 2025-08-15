@@ -3,6 +3,7 @@ import 'package:equatable/equatable.dart';
 class Comment extends Equatable {
   final String id;
   final String postId;
+  final String titleOfThePost;
   final String text;
   final String author;
   final String profile;
@@ -16,6 +17,7 @@ class Comment extends Equatable {
   const Comment({
     required this.id,
     required this.postId,
+    required this.titleOfThePost,
     required this.text,
     required this.author,
     required this.profile,
@@ -35,6 +37,7 @@ class Comment extends Equatable {
       'id': id,
       'postId': postId,
       'text': text,
+      'postTitle': titleOfThePost,
       'author': author,
       'profile': profile,
       'parentId': parentId,
@@ -51,6 +54,8 @@ class Comment extends Equatable {
       id: json['id'],
       postId: json['postId'],
       text: json['text'],
+      titleOfThePost: json['postTitle'],
+
       author: json['author'],
       profile: json['profile'],
       parentId: json['parentId'],
@@ -68,6 +73,7 @@ class Comment extends Equatable {
     String? postId,
     String? text,
     String? author,
+    String? titleOfThePost,
     String? profile,
     String? parentId,
     List<Comment>? allReplies,
@@ -80,6 +86,7 @@ class Comment extends Equatable {
       id: id ?? this.id,
       postId: postId ?? this.postId,
       text: text ?? this.text,
+      titleOfThePost: titleOfThePost ?? this.titleOfThePost,
       author: author ?? this.author,
       profile: profile ?? this.profile,
       parentId: parentId ?? this.parentId,
@@ -106,6 +113,7 @@ class Comment extends Equatable {
     postId,
     text,
     author,
+    titleOfThePost,
     profile,
     parentId,
     allReplies,

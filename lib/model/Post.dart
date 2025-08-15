@@ -2,24 +2,10 @@
 
 import 'package:equatable/equatable.dart';
 
-class Cluster {
-  final String id;
-  final String title;
-
-  Cluster({required this.id, required this.title});
-
-  factory Cluster.fromJson(Map<String, dynamic> json) {
-    return Cluster(id: json['id'], title: json['title']);
-  }
-
-  Map<String, dynamic> toJson() {
-    return {'id': id, 'title': title};
-  }
-}
-
 class Post extends Equatable {
   final String id;
   final String name;
+  final int userId; // 👈 Added userId field
   final int avatar;
   final String title;
   final String description;
@@ -32,31 +18,32 @@ class Post extends Equatable {
   final int downvotes;
   final int comments;
   final DateTime uploadTime;
-  final List<Cluster>? clusters; //// Only used when isdebate==true
+  final List<String>? clusters;
 
   const Post({
     required this.id,
-    this.clusters,
     required this.name,
+    required this.userId, // 👈 Added to constructor
     required this.avatar,
     required this.title,
     required this.description,
-    required this.isDownVote,
-    required this.isUpVote,
     this.postImageLink,
     this.postVideoLink,
     required this.isDebate,
     required this.upvotes,
     required this.downvotes,
+    required this.isUpVote,
+    required this.isDownVote,
     required this.comments,
     required this.uploadTime,
+    this.clusters,
   });
 
-  // Convert Post object to JSON
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
+      'userId': userId,
       'avatar': avatar,
       'title': title,
       'description': description,
@@ -66,37 +53,40 @@ class Post extends Equatable {
       'upVote': upvotes,
       'downVotes': downvotes,
       'isUpVote': isUpVote,
-      'isDownVotes': isDownVote,
+      'isDownVote': isDownVote,
       'comments': comments,
       'uploadTime': uploadTime.toIso8601String(),
     };
   }
 
-  // Create Post object from JSON
   factory Post.fromJson(Map<String, dynamic> json) {
     return Post(
       id: json['id'],
       name: json['name'],
+      userId: json['userId'],
       avatar: json['avatar'],
       title: json['title'],
       description: json['description'],
       postImageLink: json['postImageLink'],
       postVideoLink: json['postVideoLink'],
       isDebate: json['isDebate'] ?? false,
-      upvotes: json['upVote'] ?? 0,
+      upvotes: json['upvotes'] ?? 0,
+      downvotes: json['downvotes'] ?? 0,
       isUpVote: json['isUpVote'],
       isDownVote: json['isDownVote'],
-
-      downvotes: json['downVotes'] ?? 0,
       comments: json['comments'] ?? 0,
       uploadTime: DateTime.parse(json['uploadTime']),
+      clusters:
+          (json['clusters'] as List<dynamic>?)
+              ?.map((e) => e as String)
+              .toList(),
     );
   }
 
-  // Optionally, you can add a copyWith method for easy modifications
   Post copyWith({
     String? id,
     String? name,
+    int? userId,
     int? avatar,
     String? title,
     String? description,
@@ -113,6 +103,7 @@ class Post extends Equatable {
     return Post(
       id: id ?? this.id,
       name: name ?? this.name,
+      userId: userId ?? this.userId, // 👈 Added here
       avatar: avatar ?? this.avatar,
       title: title ?? this.title,
       description: description ?? this.description,
@@ -121,8 +112,8 @@ class Post extends Equatable {
       isDebate: isDebate ?? this.isDebate,
       upvotes: upvotes ?? this.upvotes,
       downvotes: downvotes ?? this.downvotes,
-      isDownVote: isDownVote ?? this.isDownVote,
       isUpVote: isUpVote ?? this.isUpVote,
+      isDownVote: isDownVote ?? this.isDownVote,
       comments: comments ?? this.comments,
       uploadTime: uploadTime ?? this.uploadTime,
     );
@@ -132,6 +123,7 @@ class Post extends Equatable {
   List<Object?> get props => [
     id,
     name,
+    userId,
     avatar,
     title,
     description,
@@ -144,5 +136,6 @@ class Post extends Equatable {
     uploadTime,
     isUpVote,
     isDownVote,
+    clusters,
   ];
 }

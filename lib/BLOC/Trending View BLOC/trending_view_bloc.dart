@@ -28,9 +28,7 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
     //Dummy Logic
     await Future.delayed(Duration(seconds: 2));
 
-    emit(
-      state.copyWith(trending: trendingPosts, trendingInitialLoading: false),
-    );
+    emit(state.copyWith(trending: forYouPosts, trendingInitialLoading: false));
   }
 
   fetchInitialNews(

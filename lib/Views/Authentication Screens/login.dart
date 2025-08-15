@@ -5,6 +5,7 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/LOGIN%20AND%20REGISTRATION/login_registeration_bloc.dart';
 import 'package:verbatica/Utilities/Captcha/captcha.dart';
+import 'package:verbatica/Utilities/DialogueBox.dart';
 import 'package:verbatica/Utilities/ErrorSnackBar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/Views/Authentication%20Screens/register.dart';
@@ -50,7 +51,6 @@ class _LoginState extends State<Login> {
 
     return BlocProvider(
       create: (context) => LoginRegisterationBloc(),
-
       child: Scaffold(
         backgroundColor: theme.scaffoldBackgroundColor,
         resizeToAvoidBottomInset: true,
@@ -60,8 +60,7 @@ class _LoginState extends State<Login> {
             child: Column(
               children: [
                 const Spacer(flex: 3),
-                AnimatedContainer(
-                  duration: Duration(milliseconds: 300),
+                SizedBox(
                   height: keyboardVisible ? 30.w : 40.w,
                   width: keyboardVisible ? 30.w : 40.w,
                   child: Image.asset('assets/Logo.png'),
@@ -70,7 +69,9 @@ class _LoginState extends State<Login> {
                 Form(
                   key: _email,
                   child: TextFormField(
-                    enableSuggestions: false,
+                    enableSuggestions: true,
+                    keyboardType: TextInputType.emailAddress,
+
                     style: TextStyle(color: theme.textTheme.bodyLarge?.color),
 
                     autocorrect: false,
@@ -211,15 +212,33 @@ class _LoginState extends State<Login> {
                   listenWhen: (previous, current) {
                     return previous.status != current.status;
                   },
-                  listener: (context, state) {
+                  listener: (context, state) async {
                     if (state.status == Loginandregisterationstatus.failure) {
                       CustomSnackbar.showError(context, state.error);
                     } else if (state.status ==
                         Loginandregisterationstatus.sucess) {
                       Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(builder: (context) => Register()),
+                        MaterialPageRoute(
+                          builder: (context) => BottomNavigationBarView(),
+                        ),
                         (Route<dynamic> route) => false,
                       );
+                    } else if (state.status ==
+                        Loginandregisterationstatus.googleDone) {
+                      final result = await showInfoCollector(context);
+
+                      if (result != null) {
+                        final selectedCountry = result['country'];
+                        final selectedGender = result['gender'];
+
+                        context.read<LoginRegisterationBloc>().add(
+                          SignInWithGoogleCompleteInfo(
+                            country: selectedCountry!,
+                            gender: selectedGender!,
+                            context: context,
+                          ),
+                        );
+                      }
                     }
                   },
                   child: BlocBuilder<
@@ -247,19 +266,9 @@ class _LoginState extends State<Login> {
                                 LoginEvent(
                                   email: email.text,
                                   password: password.text,
+                                  context: context,
                                 ),
                               );
-
-                              //Temprorary code for debugging the UI, remove after adding business logic
-                              if (mounted) {
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) => BottomNavigationBarView(),
-                                  ),
-                                  (Route<dynamic> route) => false,
-                                );
-                              }
                             }
                           }
                         },
@@ -292,36 +301,50 @@ class _LoginState extends State<Login> {
                 const Spacer(flex: 1),
                 //Sign in with google
                 if (!keyboardVisible)
-                  OutlinedButton(
-                    onPressed: () {
-                      //Sign in with google
-                    },
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: Size(95.w, 6.h),
-                      side: BorderSide(color: theme.dividerColor),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                      ),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset(
-                          'assets/googleIcon.png', // Make sure to add Google logo to your assets
-                          height: 24,
-                          width: 24,
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'Google',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: theme.textTheme.bodyLarge?.color,
-                            fontWeight: FontWeight.w500,
+                  BlocBuilder<LoginRegisterationBloc, LoginRegisterationState>(
+                    builder: (context, state) {
+                      return OutlinedButton(
+                        onPressed: () {
+                          // Sign in with google
+                          context.read<LoginRegisterationBloc>().add(
+                            SignInWithGoogle(context: context),
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: Size(95.w, 6.h),
+                          side: BorderSide(color: theme.dividerColor),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
-                      ],
-                    ),
+                        child:
+                            state.status ==
+                                    Loginandregisterationstatus.googleLoading
+                                ? LoadingAnimationWidget.staggeredDotsWave(
+                                  color: theme.colorScheme.onPrimary,
+                                  size: 10.w,
+                                )
+                                : Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Image.asset(
+                                      'assets/googleIcon.png', // Make sure to add Google logo to your assets
+                                      height: 24,
+                                      width: 24,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(
+                                      'Google',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: theme.textTheme.bodyLarge?.color,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                      );
+                    },
                   ),
                 if (!keyboardVisible) const Spacer(flex: 4),
 

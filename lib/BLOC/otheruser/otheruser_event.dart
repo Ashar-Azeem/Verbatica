@@ -10,8 +10,10 @@ sealed class OtheruserEvent extends Equatable {
 }
 
 class fetchUserinfo extends OtheruserEvent {
-  String Userid;
-  fetchUserinfo({required this.Userid});
+  final int myUserId;
+  final int otherUserId;
+
+  const fetchUserinfo({required this.myUserId, required this.otherUserId});
 }
 
 class updateCommentWithPost extends OtheruserEvent {}
@@ -29,3 +31,12 @@ class downvotePost extends OtheruserEvent {
   const downvotePost({required this.index});
   // New event for deleting a user post
 }
+
+class UpdateRelationship extends OtheruserEvent {
+  final int myUserId;
+  final int otherUserId;
+
+  const UpdateRelationship({required this.myUserId, required this.otherUserId});
+}
+
+class clearBloc extends OtheruserEvent {}

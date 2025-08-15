@@ -80,9 +80,14 @@ class UserReportsScreen extends StatelessWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return Shimmer.fromColors(
-      baseColor: isDarkMode ? const Color(0xFF262626) : const Color(0xFFE0E0E0),
+      baseColor:
+          isDarkMode
+              ? const Color.fromARGB(255, 31, 37, 49)
+              : const Color.fromARGB(255, 128, 157, 175),
       highlightColor:
-          isDarkMode ? const Color(0xFF333333) : const Color(0xFFF5F5F5),
+          isDarkMode
+              ? const Color.fromARGB(255, 65, 74, 92)
+              : const Color.fromARGB(255, 159, 194, 216), 
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: 5,

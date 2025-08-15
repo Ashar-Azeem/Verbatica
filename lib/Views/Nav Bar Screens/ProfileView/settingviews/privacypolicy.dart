@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
@@ -35,6 +36,20 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
 class PrivacyPolicyContent extends StatelessWidget {
   const PrivacyPolicyContent({super.key});
+
+  Future<void> launchEmail() async {
+    final Uri emailUri = Uri(scheme: 'mailto', path: 'verbatica2025@gmail.com');
+
+    try {
+      if (!await launchUrl(emailUri, mode: LaunchMode.externalApplication)) {
+        throw 'Could not launch email app';
+      }
+    } catch (e) {
+      debugPrint('Error launching email: $e');
+      // Optional: Show a snackbar
+      // ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("No email app found")));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -158,7 +173,7 @@ class PrivacyPolicyContent extends StatelessWidget {
             content: [
               _buildParagraph(
                 context,
-                'We may update this Privacy Policy from time to time. Any major changes will be notified in the app.',
+                'We may update this Privacy Policy from time to time. Any major changes will be notified through a mail.',
               ),
             ],
           ),
@@ -171,12 +186,17 @@ class PrivacyPolicyContent extends StatelessWidget {
                 'If you have any questions or concerns about this Privacy Policy, please contact us at:',
               ),
               const SizedBox(height: 10),
-              Text(
-                'Abdullahzh2003@email.com',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
+              GestureDetector(
+                onTap: () async {
+                  await launchEmail();
+                },
+                child: Text(
+                  'verbatica2025@gmail.com',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
                 ),
               ),
             ],

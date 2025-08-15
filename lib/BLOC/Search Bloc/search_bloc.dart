@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:verbatica/DummyData/SearchingPostsDummyData.dart';
-import 'package:verbatica/DummyData/SearchingUserDummyData.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/user.dart';
 import 'package:rxdart/rxdart.dart';
@@ -49,7 +48,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
         List<User> matchedInState = [];
         for (User user in currentUsers) {
-          final String username = user.username.toLowerCase().trim();
+          final String username = user.userName.toLowerCase().trim();
           if (username.startsWith(query)) {
             matchedInState.add(user);
           }
@@ -58,11 +57,8 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         if (matchedInState.isNotEmpty) {
           emit(state.copyWith(users: matchedInState, loadingUsers: false));
         } else {
-          List<User> matchedInDummy =
-              dummySearchedUsers.where((user) {
-                final username = user.username.toLowerCase().trim();
-                return username.startsWith(query);
-              }).toList();
+          List<User> matchedInDummy = [];
+
           emit(state.copyWith(users: matchedInDummy, loadingUsers: false));
         }
       }

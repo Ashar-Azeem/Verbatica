@@ -20,7 +20,7 @@ class CommentsBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String userId = context.read<UserBloc>().state.user.userId;
+    String userId = context.read<UserBloc>().state.user!.id.toString();
 
     return Stack(
       children: [

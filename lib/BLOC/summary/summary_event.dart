@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:verbatica/model/Post.dart';
 
 abstract class SummaryEvent extends Equatable {
   const SummaryEvent();
@@ -16,7 +15,7 @@ class FetchMainbulletSummary extends SummaryEvent {
 
 class FetchClustersSummary extends SummaryEvent {
   final String postId;
-  final List<Cluster> listcluster;
+  final List<String> listcluster;
   const FetchClustersSummary(this.postId, this.listcluster);
   @override
   List<Object> get props => [postId, listcluster];

@@ -1,45 +1,45 @@
 import 'package:equatable/equatable.dart';
-import 'package:verbatica/DummyData/UserDummyData.dart';
-import 'package:verbatica/DummyData/dummyPosts.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/comment.dart';
 import 'package:verbatica/model/user.dart';
 
 class OtheruserState extends Equatable {
-  final User user;
+  final User? user;
+  final bool? isFollowedByMe;
+  final int attemptsInOneGo;
   final List<Post> userPosts;
   final List<Comment> userComments;
   final bool isLoadingComments;
+  final bool isProfileLoading;
   final bool isLoadingPosts;
-  final List<Post> postofComments;
 
   OtheruserState({
-    User? user,
+    this.user,
+    this.attemptsInOneGo = 0,
+    this.isFollowedByMe,
+    this.isProfileLoading = true,
     List<Post>? userPosts,
     List<Comment>? userComments,
-    List<Post>? postofComments,
     this.isLoadingComments = false,
     this.isLoadingPosts = false,
-  }) : user = user ?? _defaultUser(),
-       userPosts = userPosts ?? forYouPosts,
-       postofComments = postofComments ?? [],
+  }) : userPosts = userPosts ?? [],
        userComments = userComments ?? [];
-
-  static User _defaultUser() {
-    return dummyUser;
-  }
 
   OtheruserState copyWith({
     User? user,
+    bool? isFollowedByMe,
+    int? attemptsInOneGo,
     List<Post>? userPosts,
-    List<Post>? postofComment,
     List<Comment>? userComments,
+    bool? isProfileLoading,
     bool? isLoadingComments,
     bool? isLoadingPosts,
   }) {
     return OtheruserState(
-      postofComments: postofComment ?? postofComments,
+      attemptsInOneGo: attemptsInOneGo ?? this.attemptsInOneGo,
+      isProfileLoading: isProfileLoading ?? this.isProfileLoading,
       user: user ?? this.user,
+      isFollowedByMe: isFollowedByMe ?? this.isFollowedByMe,
       userPosts: userPosts ?? this.userPosts,
       userComments: userComments ?? this.userComments,
       isLoadingComments: isLoadingComments ?? this.isLoadingComments,
@@ -50,10 +50,12 @@ class OtheruserState extends Equatable {
   @override
   List<Object?> get props => [
     user,
+    attemptsInOneGo,
+    isFollowedByMe,
+    isProfileLoading,
     userPosts,
     userComments,
     isLoadingComments,
     isLoadingPosts,
-    postofComments,
   ];
 }

@@ -3,11 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/summary/summary_bloc.dart';
 import 'package:verbatica/BLOC/summary/summary_event.dart';
 import 'package:verbatica/BLOC/summary/summary_state.dart';
-import 'package:verbatica/model/Post.dart';
 
 class SummaryScreen extends StatelessWidget {
   final bool showClusters;
-  final List<Cluster>? clusters;
+  final List<String>? clusters;
   final String postId;
 
   const SummaryScreen({
@@ -296,7 +295,7 @@ class SummaryScreen extends StatelessWidget {
   // New method to build the Tab View for clusters
   Widget _buildClusterTabView(
     BuildContext context,
-    List<Cluster> clusters,
+    List<String> clusters,
     List<String> summaries,
   ) {
     return DefaultTabController(
@@ -333,7 +332,7 @@ class SummaryScreen extends StatelessWidget {
                         (cluster) => Tab(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 12),
-                            child: Text(cluster.title),
+                            child: Text(cluster),
                           ),
                         ),
                       )
@@ -362,7 +361,7 @@ class SummaryScreen extends StatelessWidget {
   // Display individual cluster content within each tab
   Widget _buildClusterContentTab(
     BuildContext context,
-    Cluster cluster,
+    String cluster,
     String summary,
   ) {
     return Card(
@@ -398,7 +397,7 @@ class SummaryScreen extends StatelessWidget {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      cluster.title,
+                      cluster,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color:

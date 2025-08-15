@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/comments_cluster/comment_cluster_bloc.dart';
 import 'package:verbatica/UI_Components/singlecomment.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/chartanalytics.dart';
-import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/comment.dart';
 
 class Clusterscreen extends StatefulWidget {
@@ -13,7 +12,7 @@ class Clusterscreen extends StatefulWidget {
     super.key,
   });
   final String postid;
-  final List<Cluster> clusters;
+  final List<String> clusters;
   @override
   State<Clusterscreen> createState() => _ClusterscreenState();
 }
@@ -118,7 +117,7 @@ class _ClusterscreenState extends State<Clusterscreen>
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(cluster.title),
+                          Text(cluster),
                           const SizedBox(width: 6),
                           Container(
                             padding: const EdgeInsets.symmetric(

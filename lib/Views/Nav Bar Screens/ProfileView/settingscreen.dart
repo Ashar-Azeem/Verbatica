@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/report/report_bloc.dart';
 import 'package:verbatica/BLOC/report/report_event.dart';
@@ -10,6 +11,8 @@ import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/rep
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/savedpost.dart'; // Import your report bloc
 import 'package:provider/provider.dart';
+import 'package:verbatica/Views/Authentication Screens/ResetPassword.dart';
+import 'package:verbatica/model/user.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -168,9 +171,17 @@ class SettingsScreen extends StatelessWidget {
 
       case 'reset_password':
         // Navigate to reset password screen
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Navigate to Reset Password Screen')),
-        );
+        User user = context.read<UserBloc>().state.user!;
+        user.isSignedInWithGoogle
+            ? ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                duration: Duration(seconds: 5),
+                content: Text(
+                  "Your account is connected to the Google account: ${user.email}. To change your password, please do so through your Google account settings.",
+                ),
+              ),
+            )
+            : pushScreen(context, screen: ResetPassword());
         break;
 
       case 'about_us':

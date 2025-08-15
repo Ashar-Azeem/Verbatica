@@ -2,17 +2,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
-import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart' show UserBloc;
-import 'package:verbatica/BLOC/User%20bloc/user_event.dart' show UpdateUser;
-import 'package:verbatica/DummyData/UserDummyData.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/AddPostView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/HomeView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/NotificationView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/ProfileView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Trending%20View%20Screens/TrendingView.dart';
+import 'package:verbatica/model/user.dart';
 
 class BottomNavigationBarView extends StatefulWidget {
-  const BottomNavigationBarView({super.key});
+  final User? user;
+  const BottomNavigationBarView({super.key, this.user});
 
   @override
   State<BottomNavigationBarView> createState() =>
@@ -23,7 +24,9 @@ class _BottomNavigationBarViewState extends State<BottomNavigationBarView> {
   @override
   void initState() {
     super.initState();
-    context.read<UserBloc>().add(UpdateUser(dummyUser, context));
+    if (widget.user != null) {
+      context.read<UserBloc>().add(UpdateUser(widget.user!, context));
+    }
   }
 
   @override

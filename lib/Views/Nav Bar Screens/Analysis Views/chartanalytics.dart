@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/chartanalyticsDetail.dart';
-import 'package:verbatica/model/Post.dart';
 
 class ChartsAnalyticsScreen extends StatefulWidget {
-  final List<Cluster> clusters;
+  final List<String> clusters;
 
   const ChartsAnalyticsScreen({super.key, required this.clusters});
 
@@ -61,7 +60,7 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
   List<ClusterData> _getClusterData() {
     return List.generate(widget.clusters.length, (index) {
       return ClusterData(
-        title: widget.clusters[index].title,
+        title: widget.clusters[index],
         commentCount: _fixedRandomValues[index].round(),
       );
     });
@@ -306,7 +305,7 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
                                     MaterialPageRoute(
                                       builder:
                                           (context) => ClusterDetailScreen(
-                                            clusterTitle: cluster.title,
+                                            clusterTitle: cluster,
                                             numberOfComments:
                                                 percentage / 100 * total,
                                           ),
@@ -360,7 +359,7 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
                                         ),
                                       ),
                                       title: Text(
-                                        cluster.title,
+                                        cluster,
                                         style: TextStyle(
                                           color: textColor,
                                           fontSize: 16,

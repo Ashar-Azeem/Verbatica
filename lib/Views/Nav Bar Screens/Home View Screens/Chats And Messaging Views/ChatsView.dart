@@ -52,7 +52,7 @@ class _ChatsViewState extends State<ChatsView> {
                   itemBuilder: (context, index) {
                     Chat chat = state.chats[index];
                     final otherUserData = chat.getOtherUserInfo(
-                      context.read<UserBloc>().state.user.userId,
+                      context.read<UserBloc>().state.user!.id.toString(),
                     );
                     return Center(
                       child: Padding(
@@ -131,8 +131,9 @@ class _ChatsViewState extends State<ChatsView> {
                                                     !chat.lastMessageSeenBy[context
                                                             .read<UserBloc>()
                                                             .state
-                                                            .user
-                                                            .userId]!
+                                                            .user!
+                                                            .id
+                                                            .toString()]!
                                                         ? FontWeight.bold
                                                         : FontWeight.w300,
                                               ),
@@ -223,8 +224,9 @@ class _ChatsViewState extends State<ChatsView> {
                             if (!chat.lastMessageSeenBy[context
                                 .read<UserBloc>()
                                 .state
-                                .user
-                                .userId]!)
+                                .user!
+                                .id
+                                .toString()]!)
                               Positioned(
                                 top: 2.5.w,
                                 left: 2.5.w,

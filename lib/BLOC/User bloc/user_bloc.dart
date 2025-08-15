@@ -4,18 +4,20 @@ import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/DummyData/comments.dart';
 import 'package:verbatica/DummyData/dummyPosts.dart';
+import 'package:verbatica/LocalDB/TokenOperations.dart';
+import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/comment.dart';
+import 'package:verbatica/model/user.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
   UserBloc() : super(UserState()) {
     on<UpdateUser>(_onUpdateUser);
-    on<UpdateAvatar>(_onUpdateAvatar);
-    on<UpdateAbout>(_onUpdateAbout);
+    on<UpdateAvatarAndAbout>(_onUpdateAvatarAndAbout);
     on<updateCommentWithPost>(_onupdateComment);
     on<FetchUserPosts>(_onFetchUserPosts);
     on<DeleteUserPost>(_onDeleteUserPost);
-    // Register new event handlers
+    on<UpdateAura>(updateAura);
     on<SavePost1>(_onSavePost);
     on<UnsavePost1>(_onUnsavePost);
     on<FetchSavedPosts>(_onFetchSavedPosts);
@@ -23,18 +25,62 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<downvotePost1>(_downvotePost);
     on<upvotesavedPost1>(_UpvotesavedPost);
     on<downvotesavedPost>(_downvotesavedPost);
+    on<AddRecentPost>(addRecentPost);
     // Automatically fetch user posts when the bloc is created
     add(FetchUserPosts());
   }
 
-  void _onUpdateAvatar(UpdateAvatar event, Emitter<UserState> emit) {
-    final currentUser = state.user;
-    final updatedUser = currentUser.copyWith(avatarUrl: event.newAvatarId);
-    emit(state.copyWith(user: updatedUser));
+  void addRecentPost(AddRecentPost event, Emitter<UserState> emit) {
+    List<Post> userPosts = List.from(state.userPosts);
+    userPosts.insert(0, event.post);
+
+    emit(state.copyWith(userPosts: List.from(userPosts)));
+  }
+
+  void _onUpdateAvatarAndAbout(
+    UpdateAvatarAndAbout event,
+    Emitter<UserState> emit,
+  ) async {
+    try {
+      if (state.user!.avatarId != event.newAvatarId &&
+          state.user!.about != event.about) {
+        emit(state.copyWith(isLoadingUpdatingProfile: true));
+
+        await ApiService().updateAvatar(state.user!.id, event.newAvatarId);
+        User user = await ApiService().updateAboutSection(
+          state.user!.id,
+          event.about,
+        );
+        await TokenOperations().saveUserProfile(user);
+
+        emit(state.copyWith(user: user, isLoadingUpdatingProfile: false));
+      } else if (state.user!.avatarId != event.newAvatarId) {
+        emit(state.copyWith(isLoadingUpdatingProfile: true));
+
+        User user = await ApiService().updateAvatar(
+          state.user!.id,
+          event.newAvatarId,
+        );
+        await TokenOperations().saveUserProfile(user);
+
+        emit(state.copyWith(user: user, isLoadingUpdatingProfile: false));
+      } else if (state.user!.about != event.about) {
+        emit(state.copyWith(isLoadingUpdatingProfile: true));
+        User user = await ApiService().updateAboutSection(
+          state.user!.id,
+          event.about,
+        );
+        await TokenOperations().saveUserProfile(user);
+
+        emit(state.copyWith(user: user, isLoadingUpdatingProfile: false));
+      }
+    } catch (e) {
+      emit(state.copyWith(isLoadingUpdatingProfile: false));
+      print(e);
+    }
   }
 
   void _UpvotesavedPost(upvotesavedPost1 event, Emitter<UserState> emit) {
-    print('dhsfdsjhgdfjshgbfvsjbgfusgigfsiyfgwrifewrgfwiefevwukdvwfcrjtw');
     List<Post> posts = List.from(state.savedPosts);
     if (!posts[event.index].isUpVote) {
       if (posts[event.index].isDownVote) {
@@ -75,7 +121,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   }
 
   void _UpvotePost(upvotePost1 event, Emitter<UserState> emit) {
-    print('dhsfdsjhgdfjshgbfvsjbgfusgigfsiyfgwrifewrgfwiefevwukdvwfcrjtw');
     List<Post> posts = List.from(state.userPosts);
     if (!posts[event.index].isUpVote) {
       if (posts[event.index].isDownVote) {
@@ -120,18 +165,12 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     Emitter<UserState> emit,
   ) async {
     emit(state.copyWith(isLoadingComments: true));
-
     await Future.delayed(Duration(seconds: 3));
 
-    final List<Post> dummyPosts = dummypostuser;
-    final List<Comment> matchingComments = userdummyComments;
+    final List<Comment> matchingComments = dummyComments;
 
     emit(
-      state.copyWith(
-        postofComment: dummyPosts,
-        userComments: matchingComments,
-        isLoadingComments: false,
-      ),
+      state.copyWith(userComments: matchingComments, isLoadingComments: false),
     );
   }
 
@@ -139,11 +178,17 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   void _onFetchUserPosts(FetchUserPosts event, Emitter<UserState> emit) async {
     emit(state.copyWith(isLoadingPosts: true));
 
-    // Simulate network delay
-    await Future.delayed(Duration(seconds: 2));
-
+    List<Post> posts = await ApiService().fetchUserPosts(
+      state.user!.id,
+      state.user!.id,
+    );
+    posts.forEach((post) {
+      print(post.upvotes);
+    });
     // Get dummy user posts data
-    final List<Post> userPosts = forYouPosts;
+    final List<Post> userPosts = List.from(state.userPosts);
+
+    userPosts.addAll(posts);
 
     emit(state.copyWith(userPosts: userPosts, isLoadingPosts: false));
   }
@@ -160,19 +205,10 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     // await _postRepository.deletePost(event.postId);
   }
 
-  void _onUpdateAbout(UpdateAbout event, Emitter<UserState> emit) {
-    final currentUser = state.user;
-    final updatedUser = currentUser.copyWith(about: event.newAbout);
-    emit(state.copyWith(user: updatedUser));
-
-    // Here you would typically also persist to local storage/API
-    // await _userRepository.updateAbout(event.newAbout);
-  }
-
   void _onUpdateUser(UpdateUser event, Emitter<UserState> emit) {
     emit(state.copyWith(user: event.user));
     event.context.read<ChatBloc>().add(
-      FetchInitialChats(userId: event.user.userId),
+      FetchInitialChats(userId: event.user.id.toString()),
     );
   }
 
@@ -212,5 +248,13 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         state.copyWith(savedPosts: state.savedPosts),
       ); // Force emit current savedPosts
     }
+  }
+
+  void updateAura(UpdateAura event, Emitter<UserState> emit) async {
+    int aura = await ApiService().getAura(state.user!.id);
+    User user = state.user!.copyWith(aura: aura);
+    await TokenOperations().saveUserProfile(user);
+
+    emit(state.copyWith(user: user));
   }
 }

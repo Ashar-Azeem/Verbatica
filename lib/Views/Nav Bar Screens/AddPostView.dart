@@ -1,13 +1,21 @@
+// ignore_for_file: library_private_types_in_public_api, use_build_context_synchronously, deprecated_member_use
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_bloc.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_event.dart';
+import 'package:verbatica/BLOC/postsubmit/postsubmit_state.dart';
+import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
+import 'package:verbatica/Utilities/Color.dart';
+import 'package:verbatica/Utilities/ErrorSnackBar.dart';
 import 'package:verbatica/model/Post.dart';
+import 'package:video_compress/video_compress.dart';
 
 class CreatePostScreen extends StatefulWidget {
   const CreatePostScreen({super.key});
@@ -18,22 +26,24 @@ class CreatePostScreen extends StatefulWidget {
 
 class _CreatePostScreenState extends State<CreatePostScreen> {
   // Add this in your state class
-  List<String> clusterNames = ['', '']; // Start with 2 empty fields
-  final List<TextEditingController> _controllers = [];
+  List<String> clusterNames = ['', ''];
+  List<String> validCluster = [];
+  List<TextEditingController> controllers = [];
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
     // Initialize controllers for initial fields
     for (int i = 0; i < clusterNames.length; i++) {
-      _controllers.add(TextEditingController());
+      controllers.add(TextEditingController());
     }
   }
 
   @override
   void dispose() {
     // Clean up controllers
-    for (var controller in _controllers) {
+    for (var controller in controllers) {
       controller.dispose();
     }
     _titleController.dispose();
@@ -42,138 +52,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   }
 
   File? croppedImage;
+  File? videoFile;
   String polarity = '';
-  // File? _trimmedVideo;
-
-  // Future<void> _pickMedia(bool isVideo) async {
-  //   final pickedFile = await ImagePicker().pickImage(
-  //     source: ImageSource.gallery,
-  //     maxWidth: 1920,
-  //     maxHeight: 1080,
-  //     imageQuality: 85,
-  //   );
-
-  //   if (pickedFile != null) {}
-  // }
-
-  void _handlePostSubmission() {
-    // Get all non-empty clusters
-    final validClusters =
-        clusterNames.where((name) => name.trim().isNotEmpty).toList();
-
-    // Validate required fields
-    if (_titleController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Theme.of(context).colorScheme.error,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          content: Row(
-            children: [
-              Icon(
-                Icons.error_outline,
-                color: Theme.of(context).colorScheme.onError,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  "Title is required",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onError,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-      return;
-    }
-
-    if (polarity == 'polarize' && validClusters.length < 2) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Theme.of(context).colorScheme.error,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          content: Row(
-            children: [
-              Icon(
-                Icons.error_outline,
-                color: Theme.of(context).colorScheme.onError,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  "At least 2 clusters are required for polarize posts",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onError,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-      return;
-    } else if (polarity == '') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Theme.of(context).colorScheme.error,
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.all(16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          content: Row(
-            children: [
-              Icon(
-                Icons.error_outline,
-                color: Theme.of(context).colorScheme.onError,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  "Select tag of post",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onError,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-      return;
-    } else {
-      final user = context.read<UserBloc>().state.user;
-
-      Post post = Post(
-        name: user.username,
-        avatar: user.avatarId,
-        title: _titleController.text,
-        description: _descriptionController.text,
-        isDebate: polarity == 'polarize',
-        upvotes: 0,
-        downvotes: 0,
-        isUpVote: false,
-        isDownVote: false,
-        comments: 0,
-        uploadTime: DateTime.now(),
-        id: '999',
-      );
-      context.read<PostBloc>().add(SubmitPostEvent(post));
-    }
-  }
 
   Future<File?> pickAndCropImage(BuildContext context) async {
     try {
@@ -187,17 +67,17 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
       // 2. Crop the image with 16:9 aspect ratio
       final CroppedFile? croppedFile = await ImageCropper().cropImage(
         sourcePath: pickedFile.path,
-        aspectRatio: const CropAspectRatio(ratioX: 16, ratioY: 9),
+        aspectRatio: const CropAspectRatio(ratioX: 16, ratioY: 10),
         compressQuality: 85,
         uiSettings: [
           AndroidUiSettings(
             toolbarTitle: 'Crop Image',
-            toolbarColor: Theme.of(context).primaryColor,
+            toolbarColor: Theme.of(context).cardColor,
             toolbarWidgetColor:
                 Theme.of(context).brightness == Brightness.dark
                     ? Colors.white
                     : Colors.black,
-            initAspectRatio: CropAspectRatioPreset.ratio16x9,
+            initAspectRatio: CropAspectRatioPreset.square,
             lockAspectRatio: true,
             hideBottomControls: true,
             showCropGrid: false,
@@ -211,6 +91,36 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     } catch (e) {
       debugPrint('Image processing error: $e');
       return null;
+    }
+  }
+
+  Future<void> _pickVideo() async {
+    setState(() {
+      isLoading = true;
+    });
+    final XFile? pickedFile = await ImagePicker().pickVideo(
+      source: ImageSource.gallery,
+    );
+    setState(() {
+      isLoading = false;
+    });
+    if (pickedFile != null) {
+      final mediaInfo = await VideoCompress.getMediaInfo(pickedFile.path);
+      final durationSeconds = mediaInfo.duration ?? 0;
+      if (durationSeconds / 1000 > 120) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Video too long: ${(durationSeconds / 1000 / 60).toInt()} minutes, maximum of 2 mins video is allowed",
+            ),
+          ),
+        );
+      } else {
+        setState(() {
+          videoFile = File(pickedFile.path);
+          croppedImage = null;
+        });
+      }
     }
   }
 
@@ -241,7 +151,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                   subtitle: "There will be divided opinion on this post",
                   onTap: () {
                     setState(() {
-                      polarity = "polarize";
+                      polarity = "Polarize";
                     });
                     // isPolarized = true;
                     Navigator.pop(context, selectedOption);
@@ -255,12 +165,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                 _buildDialogOption(
                   icon: Icons.person,
                   iconColor: Colors.green,
-                  title: "Non-Polarize",
+                  title: "Non Polarize",
                   subtitle:
                       "This is normal feedback/fact checking/advice seeking post",
                   onTap: () {
                     setState(() {
-                      polarity = "non_polarize";
+                      polarity = "Non Polarize";
                     });
                     // isPolarized = false;
                     Navigator.pop(context, selectedOption);
@@ -359,421 +269,850 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Theme.of(context).cardColor,
-        title: Text(
-          'Create Post',
-          style: TextStyle(
-            color: Theme.of(context).textTheme.titleLarge?.color,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextButton(
-              onPressed: _handlePostSubmission,
-              style: TextButton.styleFrom(
-                foregroundColor: Theme.of(context).colorScheme.primary,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-              ),
-              child: const Text(
-                'Post',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Post Card Container
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Title Field
-                      TextField(
-                        controller: _titleController,
-                        style: TextStyle(
-                          color: Theme.of(context).textTheme.titleLarge?.color,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        decoration: InputDecoration(
-                          hintText: 'Title',
-                          hintStyle: TextStyle(
-                            color: Theme.of(
-                              context,
-                            ).textTheme.bodyMedium?.color?.withOpacity(0.6),
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.zero,
-                        ),
+    return BlocProvider(
+      create: (context) => PostBloc(),
+      child: Stack(
+        children: [
+          BlocBuilder<PostBloc, PostState>(
+            buildWhen:
+                (previous, current) => previous.loading != current.loading,
+            builder: (context, state) {
+              return BlocListener<PostBloc, PostState>(
+                listener: (context, state) {
+                  if (state.status == PostStatus.error) {
+                    CustomSnackbar.showError(context, state.error!);
+                  } else if (state.status == PostStatus.done) {
+                    setState(() {
+                      croppedImage = null;
+                      videoFile = null;
+                      _titleController.text = "";
+                      _descriptionController.text = "";
+                      validCluster = [];
+                      clusterNames = ['', ''];
+                      controllers = [];
+                      for (int i = 0; i < clusterNames.length; i++) {
+                        controllers.add(TextEditingController());
+                      }
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        duration: Duration(seconds: 5),
+                        content: Text("Post created successfully"),
                       ),
-                      Divider(
-                        color: Theme.of(context).dividerColor,
-                        height: 24,
+                    );
+                  }
+                },
+                child: Scaffold(
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                  resizeToAvoidBottomInset: true,
+                  appBar: AppBar(
+                    elevation: 0,
+                    backgroundColor: Theme.of(context).cardColor,
+                    title: Text(
+                      'Create Post',
+                      style: TextStyle(
+                        color: Theme.of(context).textTheme.titleLarge?.color,
+                        fontWeight: FontWeight.bold,
                       ),
-
-                      // Description Field
-                      TextField(
-                        controller: _descriptionController,
-                        style: TextStyle(
-                          color: Theme.of(context).textTheme.bodyLarge?.color,
-                        ),
-                        maxLines: 5,
-                        decoration: InputDecoration(
-                          hintText: 'Description ',
-                          hintStyle: TextStyle(
-                            color: Theme.of(
-                              context,
-                            ).textTheme.bodyMedium?.color?.withOpacity(0.6),
-                          ),
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                      ),
-
-                      // Image Preview
-                      if (croppedImage != null)
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16.0),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: AspectRatio(
-                              aspectRatio: 16 / 9,
-                              child: Image.file(
-                                croppedImage!,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Post Options Section
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Add Content',
-                        style: TextStyle(
-                          color: Theme.of(
-                            context,
-                          ).textTheme.bodyMedium?.color?.withOpacity(0.6),
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // Media Options
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildAttachmentOption(
-                              Icons.photo_library,
-                              'Gallery',
-                              1,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildAttachmentOption(
-                              Icons.video_library,
-                              'Video',
-                              2,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      const SizedBox(height: 24),
-                      Divider(color: Theme.of(context).dividerColor, height: 1),
-                      const SizedBox(height: 24),
-
-                      // Tag Selection
-                      Row(
-                        children: [
-                          Text(
-                            'Post Type:',
-                            style: TextStyle(
-                              color: Theme.of(
-                                context,
-                              ).textTheme.bodyMedium?.color?.withOpacity(0.6),
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: _showDialog,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor:
-                                    polarity == ''
-                                        ? Theme.of(context).colorScheme.primary
-                                        : (polarity == 'polarize'
-                                            ? Colors.blue.withOpacity(0.5)
-                                            : Colors.green.withOpacity(0.5)),
-                                foregroundColor:
-                                    Theme.of(context).colorScheme.onPrimary,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                ),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  if (polarity != '')
-                                    Icon(
-                                      polarity == 'polarize'
-                                          ? Icons.people
-                                          : Icons.person,
-                                      size: 18,
-                                    ),
-                                  if (polarity != '') const SizedBox(width: 8),
-                                  Text(
-                                    polarity == '' ? 'Select Tag' : polarity,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-
-              // Polarize Clusters Section
-              if (polarity == 'polarize')
-                Padding(
-                  padding: const EdgeInsets.only(top: 24.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).cardColor,
-                      borderRadius: BorderRadius.circular(16),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(
-                                Icons.people,
-                                color: Colors.blue,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Text(
-                                "Add Cluster Names",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.color
-                                      ?.withOpacity(0.6),
-                                ),
-                              ),
-                              const Spacer(),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.blue.withOpacity(0.1),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Text(
-                                  "Min. 2 required",
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
+                    actions: [
+                      BlocBuilder<PostBloc, PostState>(
+                        builder: (context, state) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: TextButton(
+                              onPressed: () {
+                                // Get all non-empty clusters
+                                validCluster =
+                                    clusterNames
+                                        .where((name) => name.trim().isNotEmpty)
+                                        .toList();
 
-                          // Cluster input fields
-                          ...List.generate(clusterNames.length, (index) {
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: Row(
-                                children: [
-                                  CircleAvatar(
-                                    radius: 12,
-                                    backgroundColor: Colors.blue.withOpacity(
-                                      0.2,
+                                // Validate required fields
+                                if (_titleController.text.trim().isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      backgroundColor:
+                                          Theme.of(context).colorScheme.error,
+                                      behavior: SnackBarBehavior.floating,
+                                      margin: const EdgeInsets.all(16),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      content: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.error_outline,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.onError,
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Text(
+                                              "Title is required",
+                                              style: TextStyle(
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).colorScheme.onError,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    child: Text(
-                                      "${index + 1}",
-                                      style: const TextStyle(
-                                        color: Colors.blue,
-                                        fontSize: 12,
+                                  );
+                                  return;
+                                }
+
+                                if (polarity == 'Polarize' &&
+                                    validCluster.length < 2) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      backgroundColor:
+                                          Theme.of(context).colorScheme.error,
+                                      behavior: SnackBarBehavior.floating,
+                                      margin: const EdgeInsets.all(16),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      content: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.error_outline,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.onError,
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Text(
+                                              "At least 2 clusters are required for Polarize posts",
+                                              style: TextStyle(
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).colorScheme.onError,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                  return;
+                                } else if (polarity == '') {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      backgroundColor:
+                                          Theme.of(context).colorScheme.error,
+                                      behavior: SnackBarBehavior.floating,
+                                      margin: const EdgeInsets.all(16),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      content: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.error_outline,
+                                            color:
+                                                Theme.of(
+                                                  context,
+                                                ).colorScheme.onError,
+                                          ),
+                                          const SizedBox(width: 12),
+                                          Expanded(
+                                            child: Text(
+                                              "Select tag of post",
+                                              style: TextStyle(
+                                                color:
+                                                    Theme.of(
+                                                      context,
+                                                    ).colorScheme.onError,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                  return;
+                                } else {
+                                  final user =
+                                      context.read<UserBloc>().state.user;
+
+                                  Post post = Post(
+                                    name: user!.userName,
+                                    avatar: user.avatarId,
+                                    title: _titleController.text,
+                                    userId: user.id,
+                                    description: _descriptionController.text,
+                                    isDebate: polarity == 'Polarize',
+                                    upvotes: 0,
+                                    downvotes: 0,
+                                    isUpVote: false,
+                                    isDownVote: false,
+                                    comments: 0,
+                                    uploadTime: DateTime.now(),
+                                    id: '999',
+                                    clusters: validCluster,
+                                  );
+                                  context.read<PostBloc>().add(
+                                    SubmitPostEvent(
+                                      post,
+                                      croppedImage,
+                                      videoFile,
+                                      context,
+                                    ),
+                                  );
+                                }
+                              },
+                              style: TextButton.styleFrom(
+                                foregroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                              ),
+                              child: const Text(
+                                'Post',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  body: GestureDetector(
+                    onTap: () => FocusScope.of(context).unfocus(),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8.0,
+                          vertical: 20,
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // Post Card Container
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).cardColor,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    // Image Preview
+                                    if (croppedImage != null)
+                                      ClipRRect(
+                                        borderRadius:
+                                            BorderRadiusGeometry.circular(10),
+                                        child: Padding(
+                                          padding: EdgeInsets.only(bottom: 2.w),
+                                          child: Dismissible(
+                                            key: ValueKey(croppedImage!.path),
+                                            direction:
+                                                DismissDirection
+                                                    .startToEnd, // Swipe from left to right
+                                            onDismissed: (direction) {
+                                              setState(() {
+                                                croppedImage =
+                                                    null; // Or remove from a list if multiple images
+                                              });
+                                            },
+                                            background: Container(
+                                              alignment: Alignment.centerLeft,
+                                              padding: EdgeInsets.only(
+                                                left: 20,
+                                              ),
+                                              color: Colors.redAccent,
+                                              child: Icon(
+                                                Icons.delete,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+
+                                            child: Image.file(
+                                              croppedImage!,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+
+                                    if (videoFile != null)
+                                      SizedBox(
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadiusGeometry.circular(10),
+                                          child: Padding(
+                                            padding: EdgeInsets.only(
+                                              bottom: 2.w,
+                                            ),
+                                            child: Dismissible(
+                                              key: ValueKey(videoFile!.path),
+                                              direction:
+                                                  DismissDirection
+                                                      .startToEnd, // Swipe from left to right
+                                              onDismissed: (direction) {
+                                                setState(() {
+                                                  videoFile =
+                                                      null; // Or remove from a list if multiple images
+                                                });
+                                              },
+                                              background: Container(
+                                                alignment: Alignment.centerLeft,
+                                                padding: EdgeInsets.only(
+                                                  left: 20,
+                                                ),
+                                                color: Colors.redAccent,
+                                                child: Icon(
+                                                  Icons.delete,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+
+                                              child: BetterCacheVideoPlayer(
+                                                videoFileLocation: videoFile,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    // Title Field
+                                    Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 4.w,
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          TextField(
+                                            controller: _titleController,
+                                            style: TextStyle(
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).textTheme.titleLarge?.color,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            decoration: InputDecoration(
+                                              hintText: 'Title',
+                                              hintStyle: TextStyle(
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.color
+                                                    ?.withOpacity(0.6),
+                                              ),
+                                              border: InputBorder.none,
+                                              contentPadding: EdgeInsets.zero,
+                                            ),
+                                          ),
+
+                                          Divider(
+                                            color:
+                                                Theme.of(context).dividerColor,
+                                            height: 24,
+                                          ),
+
+                                          // Description Field
+                                          TextField(
+                                            controller: _descriptionController,
+                                            style: TextStyle(
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).textTheme.bodyLarge?.color,
+                                            ),
+                                            maxLines: 5,
+                                            decoration: InputDecoration(
+                                              hintText: 'Description ',
+                                              hintStyle: TextStyle(
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.color
+                                                    ?.withOpacity(0.6),
+                                              ),
+                                              border: InputBorder.none,
+                                              contentPadding: EdgeInsets.zero,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 24),
+
+                            // Post Options Section
+                            Container(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).cardColor,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Add Content',
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.color
+                                            ?.withOpacity(0.6),
+                                        fontSize: 16,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: TextField(
-                                      style: TextStyle(
-                                        color:
-                                            Theme.of(
-                                              context,
-                                            ).textTheme.bodyLarge?.color,
-                                      ),
-                                      controller: _controllers[index],
-                                      decoration: InputDecoration(
-                                        hintText: "Enter cluster name",
-                                        hintStyle: TextStyle(
-                                          color: Theme.of(context)
-                                              .textTheme
-                                              .bodyMedium
-                                              ?.color
-                                              ?.withOpacity(0.6),
-                                        ),
-                                        contentPadding:
-                                            const EdgeInsets.symmetric(
-                                              horizontal: 16,
-                                              vertical: 12,
-                                            ),
-                                        filled: true,
-                                        fillColor:
-                                            Theme.of(context).brightness ==
-                                                    Brightness.dark
-                                                ? Theme.of(context)
-                                                    .colorScheme
-                                                    .surface
-                                                    .withOpacity(0.3)
-                                                : Theme.of(context)
-                                                    .colorScheme
-                                                    .surfaceContainerHighest
-                                                    .withOpacity(0.3),
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            10,
+                                    const SizedBox(height: 16),
+
+                                    // Media Options
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: _buildAttachmentOption(
+                                            Icons.photo_library,
+                                            'Gallery',
+                                            1,
                                           ),
-                                          borderSide: BorderSide.none,
                                         ),
-                                      ),
-                                      onChanged:
-                                          (value) =>
-                                              clusterNames[index] = value,
-                                    ),
-                                  ),
-                                  if (index >=
-                                      2) // Show remove button only for extra fields
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 8.0),
-                                      child: IconButton(
-                                        icon: const Icon(
-                                          Icons.remove_circle,
-                                          color: Colors.red,
-                                          size: 22,
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: _buildAttachmentOption(
+                                            Icons.video_library,
+                                            'Video',
+                                            2,
+                                          ),
                                         ),
-                                        onPressed: () {
-                                          setState(() {
-                                            clusterNames.removeAt(index);
-                                            _controllers
-                                                .removeAt(index)
-                                                .dispose();
-                                          });
-                                        },
-                                      ),
+                                      ],
                                     ),
-                                ],
-                              ),
-                            );
-                          }),
 
-                          const SizedBox(height: 16),
+                                    const SizedBox(height: 24),
+                                    Divider(
+                                      color: Theme.of(context).dividerColor,
+                                      height: 1,
+                                    ),
+                                    const SizedBox(height: 24),
 
-                          // Add more clusters button
-                          Center(
-                            child: TextButton.icon(
-                              onPressed: () {
-                                setState(() {
-                                  clusterNames.add('');
-                                  _controllers.add(TextEditingController());
-                                });
-                              },
-                              icon: const Icon(
-                                Icons.add_circle_outline,
-                                size: 18,
-                              ),
-                              label: const Text("Add Another Cluster"),
-                              style: TextButton.styleFrom(
-                                foregroundColor: Colors.blue,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
+                                    // Tag Selection
+                                    Row(
+                                      children: [
+                                        Text(
+                                          'Post Type:',
+                                          style: TextStyle(
+                                            color: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium
+                                                ?.color
+                                                ?.withOpacity(0.6),
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 16),
+                                        Expanded(
+                                          child: ElevatedButton(
+                                            onPressed: _showDialog,
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor:
+                                                  polarity == ''
+                                                      ? Theme.of(
+                                                        context,
+                                                      ).colorScheme.primary
+                                                      : (polarity == 'Polarize'
+                                                          ? Colors.blue
+                                                              .withOpacity(0.5)
+                                                          : Colors.green
+                                                              .withOpacity(
+                                                                0.5,
+                                                              )),
+                                              foregroundColor:
+                                                  Theme.of(
+                                                    context,
+                                                  ).colorScheme.onPrimary,
+                                              shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(20),
+                                              ),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 12,
+                                                  ),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                if (polarity != '')
+                                                  Icon(
+                                                    polarity == 'Polarize'
+                                                        ? Icons.people
+                                                        : Icons.person,
+                                                    size: 18,
+                                                  ),
+                                                if (polarity != '')
+                                                  const SizedBox(width: 8),
+                                                Text(
+                                                  polarity == ''
+                                                      ? 'Select Tag'
+                                                      : polarity,
+                                                  style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+
+                            // Polarize Clusters Section
+                            if (polarity == 'Polarize')
+                              Padding(
+                                padding: const EdgeInsets.only(top: 24.0),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).cardColor,
+                                    borderRadius: BorderRadius.circular(16),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(16.0),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            const Icon(
+                                              Icons.people,
+                                              color: Colors.blue,
+                                              size: 20,
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              "Add Cluster Names",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                                color: Theme.of(context)
+                                                    .textTheme
+                                                    .bodyMedium
+                                                    ?.color
+                                                    ?.withOpacity(0.6),
+                                              ),
+                                            ),
+                                            const Spacer(),
+                                            Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 8,
+                                                    vertical: 4,
+                                                  ),
+                                              decoration: BoxDecoration(
+                                                color: Colors.blue.withOpacity(
+                                                  0.1,
+                                                ),
+                                                borderRadius:
+                                                    BorderRadius.circular(12),
+                                              ),
+                                              child: const Text(
+                                                "Min. 2 required",
+                                                style: TextStyle(
+                                                  color: Colors.blue,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 16),
+
+                                        // Cluster input fields
+                                        ...List.generate(clusterNames.length, (
+                                          index,
+                                        ) {
+                                          return Padding(
+                                            padding: const EdgeInsets.only(
+                                              bottom: 12,
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                CircleAvatar(
+                                                  radius: 12,
+                                                  backgroundColor: Colors.blue
+                                                      .withOpacity(0.2),
+                                                  child: Text(
+                                                    "${index + 1}",
+                                                    style: const TextStyle(
+                                                      color: Colors.blue,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                    ),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Expanded(
+                                                  child: TextField(
+                                                    style: TextStyle(
+                                                      color:
+                                                          Theme.of(context)
+                                                              .textTheme
+                                                              .bodyLarge
+                                                              ?.color,
+                                                    ),
+                                                    controller:
+                                                        controllers[index],
+                                                    decoration: InputDecoration(
+                                                      hintText:
+                                                          "Enter cluster name",
+                                                      hintStyle: TextStyle(
+                                                        color: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium
+                                                            ?.color
+                                                            ?.withOpacity(0.6),
+                                                      ),
+                                                      contentPadding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 16,
+                                                            vertical: 12,
+                                                          ),
+                                                      filled: true,
+                                                      fillColor:
+                                                          Theme.of(
+                                                                    context,
+                                                                  ).brightness ==
+                                                                  Brightness
+                                                                      .dark
+                                                              ? Theme.of(
+                                                                    context,
+                                                                  )
+                                                                  .colorScheme
+                                                                  .surface
+                                                                  .withOpacity(
+                                                                    0.3,
+                                                                  )
+                                                              : Theme.of(
+                                                                    context,
+                                                                  )
+                                                                  .colorScheme
+                                                                  .surfaceContainerHighest
+                                                                  .withOpacity(
+                                                                    0.3,
+                                                                  ),
+                                                      border: OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              10,
+                                                            ),
+                                                        borderSide:
+                                                            BorderSide.none,
+                                                      ),
+                                                    ),
+                                                    onChanged:
+                                                        (value) =>
+                                                            clusterNames[index] =
+                                                                value,
+                                                  ),
+                                                ),
+                                                if (index >=
+                                                    2) // Show remove button only for extra fields
+                                                  Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                          left: 8.0,
+                                                        ),
+                                                    child: IconButton(
+                                                      icon: const Icon(
+                                                        Icons.remove_circle,
+                                                        color: Colors.red,
+                                                        size: 22,
+                                                      ),
+                                                      onPressed: () {
+                                                        setState(() {
+                                                          clusterNames.removeAt(
+                                                            index,
+                                                          );
+                                                          controllers
+                                                              .removeAt(index)
+                                                              .dispose();
+                                                        });
+                                                      },
+                                                    ),
+                                                  ),
+                                              ],
+                                            ),
+                                          );
+                                        }),
+
+                                        const SizedBox(height: 16),
+
+                                        // Add more clusters button
+                                        Center(
+                                          child: TextButton.icon(
+                                            onPressed: () {
+                                              setState(() {
+                                                clusterNames.add('');
+                                                controllers.add(
+                                                  TextEditingController(),
+                                                );
+                                              });
+                                            },
+                                            icon: const Icon(
+                                              Icons.add_circle_outline,
+                                              size: 18,
+                                            ),
+                                            label: const Text(
+                                              "Add Another Cluster",
+                                            ),
+                                            style: TextButton.styleFrom(
+                                              foregroundColor: Colors.blue,
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    horizontal: 16,
+                                                    vertical: 12,
+                                                  ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+
+                            SizedBox(height: 10.h),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-
-              SizedBox(height: 10.h),
-            ],
+              );
+            },
           ),
-        ),
+          BlocBuilder<PostBloc, PostState>(
+            builder: (context, state) {
+              return state.loading
+                  ? Positioned.fill(
+                    child: Container(
+                      color: Colors.black.withOpacity(0.8),
+                      child: Center(
+                        child: Column(
+                          children: [
+                            Spacer(),
+                            LoadingAnimationWidget.dotsTriangle(
+                              color: primaryColor,
+                              size: 12.w,
+                            ),
+                            SizedBox(height: 2.h),
+                            Text(
+                              postStatusText(state.status, state.progress),
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+
+                            Spacer(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  )
+                  : SizedBox.shrink();
+            },
+          ),
+
+          isLoading
+              ? Positioned.fill(
+                child: Container(
+                  color: Colors.black.withOpacity(0.8),
+                  child: Center(
+                    child: Column(
+                      children: [
+                        Spacer(),
+                        LoadingAnimationWidget.dotsTriangle(
+                          color: primaryColor,
+                          size: 12.w,
+                        ),
+                        SizedBox(height: 2.h),
+                        Text(
+                          'Importing your video…',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+
+                        Spacer(),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+              : SizedBox.shrink(),
+        ],
       ),
     );
+  }
+
+  String postStatusText(PostStatus status, String? progress) {
+    switch (status) {
+      case PostStatus.checkingDuplicates:
+        return "Checking for similar posts...";
+      case PostStatus.preparingVideo:
+        return progress == null
+            ? "Preparing your video... 0% complete"
+            : "Preparing your video... $progress% complete";
+      case PostStatus.preparingImage:
+        return "Preparing your image...";
+      case PostStatus.uploadingToTheServer:
+        return "Uploading to the server...";
+
+      case PostStatus.encrypting:
+        return "Encrypting your post...";
+      default:
+        return "";
+    }
   }
 
   void _pickAndCropImage() async {
     final image = await pickAndCropImage(context);
     setState(() {
       croppedImage = image;
+      videoFile = null;
     });
   }
 
@@ -783,7 +1122,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
         if (formatid == 1) {
           _pickAndCropImage();
         } else if (formatid == 2) {
-          // _pickVideo();
+          _pickVideo();
         }
       },
       borderRadius: BorderRadius.circular(12),
@@ -819,91 +1158,3 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     );
   }
 }
-// class VideoTrimmerBottomSheet extends StatefulWidget {
-//   final Trimmer trimmer;
-
-//   const VideoTrimmerBottomSheet({super.key, required this.trimmer});
-
-//   @override
-//   State<VideoTrimmerBottomSheet> createState() =>
-//       _VideoTrimmerBottomSheetState();
-// }
-
-// class _VideoTrimmerBottomSheetState extends State<VideoTrimmerBottomSheet> {
-//   double _startValue = 0.0;
-//   double _endValue = 1.0;
-//   bool _isPlaying = false;
-//   bool _isTrimming = false;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.all(20.0),
-//       child: Column(
-//         children: [
-//           SizedBox(height: 50),
-//           const Text(
-//             'Trim Video (Max 1 minute)',
-//             style: TextStyle(
-//               fontSize: 18,
-//               fontWeight: FontWeight.bold,
-//               color: Colors.white,
-//             ),
-//           ),
-//           const SizedBox(height: 16),
-//           VideoViewer(trimmer: widget.trimmer),
-//           const SizedBox(height: 16),
-//           TrimViewer(
-//             trimmer: widget.trimmer,
-//             viewerHeight: 50,
-//             maxVideoLength: const Duration(minutes: 1),
-//             onChangeStart: (value) => setState(() => _startValue = value),
-//             onChangeEnd: (value) => setState(() => _endValue = value),
-//             onChangePlaybackState: (playing) {
-//               setState(() => _isPlaying = playing);
-//             },
-//           ),
-//           const SizedBox(height: 16),
-//           Row(
-//             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//             children: [
-//               IconButton(
-//                 icon: Icon(_isPlaying ? Icons.pause : Icons.play_arrow),
-//                 onPressed: () async {
-//                   final playbackState = await widget.trimmer
-//                       .videoPlaybackControl(
-//                         startValue: _startValue,
-//                         endValue: _endValue,
-//                       );
-//                   setState(() => _isPlaying = playbackState);
-//                 },
-//               ),
-//               const Spacer(),
-//               Expanded(
-//                 child: ElevatedButton(
-//                   onPressed:
-//                       _isTrimming
-//                           ? null
-//                           : () async {
-//                             // setState(() => _isTrimming = true);
-//                             // final outputPath = await widget.trimmer.saveTrimmedVideo(
-//                             //   startValue: _startValue,
-//                             //   endValue: _endValue, onSave: (String? outputPath) {  },
-//                             // );
-//                             // if (!mounted) return;
-//                             // // // ignore: use_build_context_synchronously
-//                             // // Navigator.pop(context, File(outputPath!));
-//                           },
-//                   child:
-//                       _isTrimming
-//                           ? const CircularProgressIndicator()
-//                           : const Text('save video'),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }

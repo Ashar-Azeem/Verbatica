@@ -18,6 +18,7 @@ class CommentClusterBloc
           Comment(
             id: 'p$i',
             postId: 'post1',
+            titleOfThePost: 'heheheheheehhe',
             text:
                 'This is parent comment #$i about ${clusters[i % clusters.length]}',
             author: authors[i % authors.length],
@@ -37,6 +38,7 @@ class CommentClusterBloc
         comments.add(
           Comment(
             id: 'r$i',
+            titleOfThePost: 'hehehehehehe',
             postId: 'post1',
             text: 'This is reply #$i to parent comment #$parentIndex',
             author: authors[(i + 2) % authors.length],

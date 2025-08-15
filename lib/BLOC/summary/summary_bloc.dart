@@ -52,12 +52,12 @@ class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
           event.listcluster
               .map(
                 (cluster) =>
-                    "📌 Summary for \"${cluster.title}\"\n\n"
-                    "Dive into the key insights and noteworthy highlights of ${cluster.title}. "
+                    "📌 Summary for \"{cluster\"\n\n"
+                    "Dive into the key insights and noteworthy highlights of $cluster. "
                     "This section uncovers essential patterns, emerging trends, and contextual relevance. "
-                    "From subtle details to major breakthroughs, ${cluster.title} offers a comprehensive view "
+                    "From subtle details to major breakthroughs, $cluster offers a comprehensive view "
                     "that helps connect the dots and spark new ideas.\n\n"
-                    "Stay curious — there's more than meets the eye in ${cluster.title}.",
+                    "Stay curious — there's more than meets the eye in $cluster.",
               )
               .toList();
 

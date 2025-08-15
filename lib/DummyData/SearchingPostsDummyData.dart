@@ -5,6 +5,7 @@ List<Post> searchingPosts = [
   Post(
     id: '1',
     name: 'Tech News',
+    userId: 34,
     avatar: 4,
     title: 'New Smartphone Released',
     description:
@@ -20,6 +21,8 @@ List<Post> searchingPosts = [
   ),
   Post(
     id: '2',
+    userId: 35,
+
     name: 'Travel Enthusiast',
     avatar: 1,
     title: 'Hidden Beach in Thailand',
@@ -37,6 +40,8 @@ List<Post> searchingPosts = [
   Post(
     id: '3',
     name: 'Debate Master',
+    userId: 36,
+
     avatar: 2,
     title: 'Android vs iOS: Which is better?',
     description:
@@ -53,6 +58,8 @@ List<Post> searchingPosts = [
   ),
   Post(
     id: '4',
+    userId: 37,
+
     name: 'Food Blogger',
     avatar: 1,
     title: 'Easy 10-minute Pasta Recipe',
@@ -72,6 +79,8 @@ List<Post> searchingPosts = [
     id: '5',
     name: 'Fitness Coach',
     avatar: 7,
+    userId: 38,
+
     title: 'Morning Workout Routine',
     description: 'Start your day right with these 5 simple exercises...',
     postImageLink: 'https://picsum.photos/500/300?random=4',

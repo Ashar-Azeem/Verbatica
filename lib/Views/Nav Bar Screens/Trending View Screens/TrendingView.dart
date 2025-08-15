@@ -1,5 +1,6 @@
 // ignore_for_file: file_names
 import 'package:country_picker/country_picker.dart';
+import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -37,7 +38,8 @@ class _TrendingViewState extends State<TrendingView> {
         child: SafeArea(
           child: Padding(
             padding: EdgeInsets.only(left: 1.w, right: 1.w),
-            child: NestedScrollView(
+            child: ExtendedNestedScrollView(
+              onlyOneScrollInBody: true,
               physics: NeverScrollableScrollPhysics(),
               headerSliverBuilder:
                   (context, innerBoxIsScrolled) => [

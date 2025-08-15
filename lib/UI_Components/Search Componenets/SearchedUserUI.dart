@@ -31,7 +31,7 @@ class SearchedUser extends StatelessWidget {
                   SizedBox(width: 12),
 
                   Text(
-                    user.username,
+                    user.id.toString(),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,

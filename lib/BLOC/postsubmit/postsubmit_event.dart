@@ -1,15 +1,27 @@
+import 'dart:io';
+
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:verbatica/model/Post.dart'; // Your Post model
 
 // Events
-abstract class PostEvent extends Equatable {
+class PostEvent extends Equatable {
   const PostEvent();
+
+  @override
+  List<Object?> get props => [];
 }
 
 class SubmitPostEvent extends PostEvent {
-  final Post post; // Already contains clusters/media/etc.
-  const SubmitPostEvent(this.post);
+  final Post post;
+  final File? image;
+  final File? video;
+  final BuildContext context;
+  const SubmitPostEvent(this.post, this.image, this.video, this.context);
+}
 
-  @override
-  List<Object> get props => [post];
+class CompressedProgress extends PostEvent {
+  final String progress;
+
+  const CompressedProgress(this.progress);
 }

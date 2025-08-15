@@ -116,7 +116,8 @@ class _RegisterState extends State<Register> {
                       key: _email,
                       child: TextFormField(
                         keyboardType: TextInputType.emailAddress,
-                        enableSuggestions: false,
+                        enableSuggestions: true,
+
                         style: TextStyle(
                           color: Theme.of(context).textTheme.bodyLarge?.color,
                         ),
@@ -502,6 +503,7 @@ class _RegisterState extends State<Register> {
                                       password: password.text,
                                       gender: gender,
                                       country: selectedCountry!,
+                                      context: context,
                                     ),
                                   );
                                 }

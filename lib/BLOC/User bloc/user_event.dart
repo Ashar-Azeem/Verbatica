@@ -17,9 +17,10 @@ class UpdateUser extends UserEvent {
   UpdateUser(this.user, this.context);
 }
 
-class UpdateAvatar extends UserEvent {
+class UpdateAvatarAndAbout extends UserEvent {
   final int newAvatarId;
-  UpdateAvatar(this.newAvatarId);
+  final String about;
+  UpdateAvatarAndAbout(this.newAvatarId, this.about);
 }
 
 class UpdateAbout extends UserEvent {
@@ -71,4 +72,12 @@ class upvotesavedPost1 extends UserEvent {
 class downvotesavedPost extends UserEvent {
   final int index;
   downvotesavedPost({required this.index});
+}
+
+class UpdateAura extends UserEvent {}
+
+class AddRecentPost extends UserEvent {
+  final Post post;
+
+  AddRecentPost({required this.post});
 }
