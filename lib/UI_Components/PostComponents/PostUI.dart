@@ -12,6 +12,7 @@ import 'package:verbatica/BLOC/Search%20Bloc/search_bloc.dart' as searchBloc;
 import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
+import 'package:verbatica/BLOC/Votes%20Restriction/votes_restrictor_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/SummaryView.dart';
@@ -449,6 +450,9 @@ class PostWidget extends StatelessWidget {
                               GestureDetector(
                                 key: ValueKey(post.isUpVote),
                                 onTap: () {
+                                  context.read<VotesRestrictorBloc>().add(
+                                    RegisterVote(postId: post.id),
+                                  );
                                   if (category == 'ForYou' ||
                                       category == 'Following') {
                                     context.read<homeBloc.HomeBloc>().add(
@@ -477,11 +481,17 @@ class PostWidget extends StatelessWidget {
                                     }
                                   } else if (category == 'user') {
                                     context.read<UserBloc>().add(
-                                      upvotePost1(index: index),
+                                      upvotePost1(
+                                        index: index,
+                                        context: context,
+                                      ),
                                     );
                                   } else if (category == 'other') {
                                     context.read<OtheruserBloc>().add(
-                                      upvotePost(index: index),
+                                      upvotePost(
+                                        index: index,
+                                        context: context,
+                                      ),
                                     );
                                   } else if (category == 'saved') {
                                     context.read<UserBloc>().add(
@@ -540,6 +550,9 @@ class PostWidget extends StatelessWidget {
                                 highlightColor: Colors.transparent,
 
                                 onPressed: () {
+                                  context.read<VotesRestrictorBloc>().add(
+                                    RegisterVote(postId: post.id),
+                                  );
                                   if (category == 'ForYou' ||
                                       category == 'Following') {
                                     context.read<homeBloc.HomeBloc>().add(
@@ -568,11 +581,17 @@ class PostWidget extends StatelessWidget {
                                     }
                                   } else if (category == 'user') {
                                     context.read<UserBloc>().add(
-                                      downvotePost1(index: index),
+                                      downvotePost1(
+                                        index: index,
+                                        context: context,
+                                      ),
                                     );
                                   } else if (category == 'other') {
                                     context.read<OtheruserBloc>().add(
-                                      downvotePost(index: index),
+                                      downvotePost(
+                                        index: index,
+                                        context: context,
+                                      ),
                                     );
                                   } else if (category == 'saved') {
                                     context.read<UserBloc>().add(

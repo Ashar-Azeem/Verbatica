@@ -11,6 +11,7 @@ import 'package:verbatica/model/comment.dart';
 import 'package:verbatica/model/user.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
+  final int limit = 10;
   UserBloc() : super(UserState()) {
     on<UpdateUser>(_onUpdateUser);
     on<UpdateAvatarAndAbout>(_onUpdateAvatarAndAbout);
@@ -25,16 +26,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<downvotePost1>(_downvotePost);
     on<upvotesavedPost1>(_UpvotesavedPost);
     on<downvotesavedPost>(_downvotesavedPost);
-    on<AddRecentPost>(addRecentPost);
-    // Automatically fetch user posts when the bloc is created
-    add(FetchUserPosts());
-  }
-
-  void addRecentPost(AddRecentPost event, Emitter<UserState> emit) {
-    List<Post> userPosts = List.from(state.userPosts);
-    userPosts.insert(0, event.post);
-
-    emit(state.copyWith(userPosts: List.from(userPosts)));
+    on<ClearBloc>(clearBloc);
+    on<FetchMorePosts>(fetchMorePosts);
   }
 
   void _onUpdateAvatarAndAbout(
@@ -97,6 +90,14 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         );
         emit(state.copyWith(savedPosts: posts));
       }
+    } else {
+      //undo the vote
+      posts[event.index] = posts[event.index].copyWith(
+        isDownVote: false,
+        isUpVote: false,
+        upvotes: posts[event.index].upvotes - 1,
+      );
+      emit(state.copyWith(savedPosts: posts));
     }
   }
 
@@ -117,11 +118,26 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         );
         emit(state.copyWith(savedPosts: posts));
       }
+    } else {
+      //undo the vote
+      posts[event.index] = posts[event.index].copyWith(
+        isDownVote: false,
+        isUpVote: false,
+        downvotes: posts[event.index].downvotes - 1,
+      );
+      emit(state.copyWith(savedPosts: posts));
     }
   }
 
   void _UpvotePost(upvotePost1 event, Emitter<UserState> emit) {
     List<Post> posts = List.from(state.userPosts);
+
+    ApiService().updatingVotes(
+      int.parse(posts[event.index].id),
+      event.context.read<UserBloc>().state.user!.id,
+      true,
+      event.context,
+    );
     if (!posts[event.index].isUpVote) {
       if (posts[event.index].isDownVote) {
         posts[event.index] = posts[event.index].copyWith(
@@ -137,11 +153,26 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         );
         emit(state.copyWith(userPosts: posts));
       }
+    } else {
+      //undo the vote
+      posts[event.index] = posts[event.index].copyWith(
+        isDownVote: false,
+        isUpVote: false,
+        upvotes: posts[event.index].upvotes - 1,
+      );
+      emit(state.copyWith(userPosts: posts));
     }
   }
 
   void _downvotePost(downvotePost1 event, Emitter<UserState> emit) {
     List<Post> posts = List.from(state.userPosts);
+    ApiService().updatingVotes(
+      int.parse(posts[event.index].id),
+      event.context.read<UserBloc>().state.user!.id,
+      false,
+      event.context,
+    );
+
     if (!posts[event.index].isDownVote) {
       if (posts[event.index].isUpVote) {
         posts[event.index] = posts[event.index].copyWith(
@@ -157,6 +188,14 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         );
         emit(state.copyWith(userPosts: posts));
       }
+    } else {
+      //undo the vote
+      posts[event.index] = posts[event.index].copyWith(
+        isDownVote: false,
+        isUpVote: false,
+        downvotes: posts[event.index].downvotes - 1,
+      );
+      emit(state.copyWith(userPosts: posts));
     }
   }
 
@@ -177,32 +216,71 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   // New method to fetch user posts
   void _onFetchUserPosts(FetchUserPosts event, Emitter<UserState> emit) async {
     emit(state.copyWith(isLoadingPosts: true));
-
     List<Post> posts = await ApiService().fetchUserPosts(
       state.user!.id,
       state.user!.id,
+      null,
     );
-    posts.forEach((post) {
-      print(post.upvotes);
-    });
-    // Get dummy user posts data
     final List<Post> userPosts = List.from(state.userPosts);
-
     userPosts.addAll(posts);
 
-    emit(state.copyWith(userPosts: userPosts, isLoadingPosts: false));
+    if (posts.length < limit) {
+      emit(
+        state.copyWith(
+          userPosts: userPosts,
+          isLoadingPosts: false,
+          isMorePost: false,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          userPosts: userPosts,
+          isLoadingPosts: false,
+          isMorePost: true,
+          lastPostId: int.parse(posts[posts.length - 1].id),
+        ),
+      );
+    }
   }
 
-  // New method to handle post deletion
+  void fetchMorePosts(FetchMorePosts event, Emitter<UserState> emit) async {
+    try {
+      List<Post> posts = await ApiService().fetchUserPosts(
+        state.user!.id,
+        state.user!.id,
+        state.lastPostId,
+      );
+      final List<Post> userPosts = List.from(state.userPosts);
+      userPosts.addAll(posts);
+
+      if (posts.length < limit) {
+        emit(
+          state.copyWith(
+            userPosts: userPosts,
+            isLoadingPosts: false,
+            isMorePost: false,
+          ),
+        );
+      } else {
+        emit(
+          state.copyWith(
+            userPosts: userPosts,
+            isLoadingPosts: false,
+            isMorePost: true,
+            lastPostId: int.parse(posts[posts.length - 1].id),
+          ),
+        );
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   void _onDeleteUserPost(DeleteUserPost event, Emitter<UserState> emit) {
-    // Filter out the post with the matching ID
     final updatedPosts =
         state.userPosts.where((post) => post.id != event.postId).toList();
-
     emit(state.copyWith(userPosts: updatedPosts));
-
-    // In a real app, you would call an API here to delete the post
-    // await _postRepository.deletePost(event.postId);
   }
 
   void _onUpdateUser(UpdateUser event, Emitter<UserState> emit) {
@@ -216,14 +294,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   void _onSavePost(SavePost1 event, Emitter<UserState> emit) {
     final currentSavedPosts = state.savedPosts;
 
-    // Check if the post is already saved
-    // if (!currentSavedPosts.any((post) => post.id == event.post.id)) {
-
     final updatedSavedPosts = List<Post>.from(currentSavedPosts)
       ..add(event.post);
     emit(state.copyWith(savedPosts: updatedSavedPosts));
-
-    // }
   }
 
   // New handler for unsaving posts
@@ -256,5 +329,9 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     await TokenOperations().saveUserProfile(user);
 
     emit(state.copyWith(user: user));
+  }
+
+  void clearBloc(ClearBloc event, Emitter<UserState> emit) async {
+    emit(state.initState());
   }
 }

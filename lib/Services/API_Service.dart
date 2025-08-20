@@ -1,13 +1,17 @@
 import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:verbatica/BLOC/Votes%20Restriction/votes_restrictor_bloc.dart';
 import 'package:verbatica/model/Post.dart';
+import 'package:verbatica/model/news.dart';
 import 'package:verbatica/model/user.dart';
 
 class ApiService {
   final Dio _dio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.1.9:4000/api/',
+        baseUrl: 'http://192.168.1.6:4000/api/',
         connectTimeout: const Duration(seconds: 20),
         receiveTimeout: const Duration(seconds: 20),
         headers: {'Content-Type': 'application/json'},
@@ -247,6 +251,7 @@ class ApiService {
     Uint8List iv,
     String userName,
     int avatarId,
+    String? newsId,
   ) async {
     try {
       final response = await _dio.post(
@@ -262,6 +267,7 @@ class ApiService {
           "userName": userName,
           "avatarId": avatarId,
           "iv": iv,
+          "newsId": newsId,
         },
         options: Options(
           sendTimeout: const Duration(minutes: 10),
@@ -276,12 +282,78 @@ class ApiService {
     }
   }
 
-  Future<List<Post>> fetchUserPosts(int ownerUserId, int visitingUserId) async {
+  Future<List<Post>> fetchUserPosts(
+    int ownerUserId,
+    int visitingUserId,
+    int? lastPostId,
+  ) async {
     try {
       final response = await _dio.get(
         'post/getPosts',
-        data: {'ownerUserId': ownerUserId, "visitingUserId": visitingUserId},
+        data: {
+          'ownerUserId': ownerUserId,
+          "visitingUserId": visitingUserId,
+          "cursor": lastPostId,
+        },
       );
+
+      final List<dynamic> data = response.data['posts'] ?? [];
+      return data.map((d) => Post.fromJson(d)).toList();
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<void> updatingVotes(
+    int postId,
+    int userId,
+    bool value,
+    BuildContext context,
+  ) async {
+    bool isAllowedForServer =
+        context.read<VotesRestrictorBloc>().state.canVote[postId.toString()] ??
+        true;
+
+    if (!isAllowedForServer) {
+      return;
+    }
+
+    try {
+      await _dio.put(
+        'post/updateVotes',
+        data: {"postId": postId, "userId": userId, "value": value},
+      );
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<News>> fetchNews(String country, DateTime date) async {
+    try {
+      final response = await _dio.get(
+        'news/getNews',
+        data: {
+          "country": country,
+          "date": date.toIso8601String().split("T")[0],
+        },
+      );
+      final List<dynamic> data = response.data['news'] ?? [];
+      return data.map((d) => News.fromJson(d)).toList();
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Post>> fetchPostsWithInNews(String newsId, int ownerId) async {
+    try {
+      final response = await _dio.get(
+        'post/getPostsWithInNews',
+        data: {'newsId': newsId, "ownerId": ownerId},
+      );
+
       final List<dynamic> data = response.data['posts'] ?? [];
       return data.map((d) => Post.fromJson(d)).toList();
     } on DioException catch (e) {

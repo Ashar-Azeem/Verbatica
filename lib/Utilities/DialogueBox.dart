@@ -1,6 +1,9 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Views/Authentication%20Screens/login.dart';
 
@@ -24,7 +27,11 @@ void showLogoutDialog(BuildContext context) {
             ),
             TextButton(
               onPressed: () async {
+                //Disposing all the states of this user
                 await TokenOperations().deleteUserProfile();
+                context.read<UserBloc>().add(ClearBloc());
+
+                //Moving to the login screen
                 Navigator.of(context, rootNavigator: true).pushAndRemoveUntil(
                   MaterialPageRoute(
                     builder: (BuildContext context) {

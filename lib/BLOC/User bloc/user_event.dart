@@ -56,12 +56,15 @@ class FetchSavedPosts extends UserEvent {}
 
 class upvotePost1 extends UserEvent {
   final int index;
-  upvotePost1({required this.index});
+  final BuildContext context;
+  upvotePost1({required this.context, required this.index});
 }
 
 class downvotePost1 extends UserEvent {
   final int index;
-  downvotePost1({required this.index});
+  final BuildContext context;
+
+  downvotePost1({required this.context, required this.index});
 }
 
 class upvotesavedPost1 extends UserEvent {
@@ -81,3 +84,7 @@ class AddRecentPost extends UserEvent {
 
   AddRecentPost({required this.post});
 }
+
+class FetchMorePosts extends UserEvent {}
+
+class ClearBloc extends UserEvent {}

@@ -68,6 +68,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
           iv,
           event.post.name,
           event.post.avatar,
+          event.newsId,
         );
 
         event.context.read<UserBloc>().add(AddRecentPost(post: post));
@@ -108,6 +109,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
           iv,
           event.post.name,
           event.post.avatar,
+          event.newsId,
         );
 
         event.context.read<UserBloc>().add(AddRecentPost(post: post));
@@ -140,6 +142,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
           iv,
           event.post.name,
           event.post.avatar,
+          event.newsId,
         );
 
         event.context.read<UserBloc>().add(AddRecentPost(post: post));

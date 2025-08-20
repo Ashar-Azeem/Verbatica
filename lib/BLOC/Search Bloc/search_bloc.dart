@@ -118,6 +118,14 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         );
         emit(state.copyWith(posts: posts));
       }
+    } else {
+      //undo the vote
+      posts[event.index] = posts[event.index].copyWith(
+        isDownVote: false,
+        isUpVote: false,
+        upvotes: posts[event.index].upvotes - 1,
+      );
+      emit(state.copyWith(posts: posts));
     }
   }
 
@@ -138,6 +146,14 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         );
         emit(state.copyWith(posts: posts));
       }
+    } else {
+      //undo the vote
+      posts[event.index] = posts[event.index].copyWith(
+        isDownVote: false,
+        isUpVote: false,
+        downvotes: posts[event.index].downvotes - 1,
+      );
+      emit(state.copyWith(posts: posts));
     }
   }
 

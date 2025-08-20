@@ -14,7 +14,7 @@ List<String> clusters3 = ['Art', 'Music'];
 List<Post> forYouPosts = [
   Post(
     id: '1',
-    userId: 34,
+    userId: 35,
     name: 'Tech News',
     avatar: 4,
     title: 'New Smartphone Released',

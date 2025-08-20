@@ -19,16 +19,25 @@ class fetchUserinfo extends OtheruserEvent {
 class updateCommentWithPost extends OtheruserEvent {}
 
 // New event for fetching user posts
-class FetchUserPosts extends OtheruserEvent {}
+class FetchUserPosts extends OtheruserEvent {
+  final int userId;
+  final int ownerUserId;
+
+  const FetchUserPosts({required this.ownerUserId, required this.userId});
+}
 
 class upvotePost extends OtheruserEvent {
   final int index;
-  const upvotePost({required this.index});
+  final BuildContext context;
+
+  const upvotePost({required this.context, required this.index});
 }
 
 class downvotePost extends OtheruserEvent {
   final int index;
-  const downvotePost({required this.index});
+  final BuildContext context;
+
+  const downvotePost({required this.context, required this.index});
   // New event for deleting a user post
 }
 
@@ -40,3 +49,9 @@ class UpdateRelationship extends OtheruserEvent {
 }
 
 class clearBloc extends OtheruserEvent {}
+
+class FetchMorePosts extends OtheruserEvent {
+  final int ownerUserId;
+
+  const FetchMorePosts({required this.ownerUserId});
+}

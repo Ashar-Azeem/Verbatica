@@ -23,21 +23,17 @@ class News extends Equatable {
     required this.sourceUrl,
     required this.discussions,
   });
-
   factory News.fromJson(Map<String, dynamic> json) {
     return News(
-      newsId: json['newsId'] as String,
+      newsId: json['id'] as String,
       title: json['title'] as String,
       description: json['description'] as String,
       url: json['url'] as String,
       image: json['image'] as String,
-      publishedAt: DateTime.parse(json['publishedAt'] as String),
-      sourceName: json['source']['name'] as String,
-      sourceUrl: json['source']['url'] as String,
-      discussions:
-          (json['discussions'] as List<dynamic>)
-              .map((e) => Post.fromJson(e as Map<String, dynamic>))
-              .toList(),
+      publishedAt: DateTime.parse(json['created_at']),
+      sourceName: json['source_name'] as String,
+      sourceUrl: json['source_url'] as String,
+      discussions: [],
     );
   }
 

@@ -52,7 +52,7 @@ class _BottomNavigationBarViewState extends State<BottomNavigationBarView> {
           ),
         ),
         PersistentTabConfig(
-          screen: CreatePostScreen(),
+          screen: CreatePostScreen(newsId: null),
           item: ItemConfig(
             icon: Icon(Icons.add_circle_outlined),
             activeForegroundColor: colorScheme.primary,

@@ -6,14 +6,18 @@ import 'package:verbatica/model/user.dart';
 class UserState extends Equatable {
   final User? user;
   final List<Post> userPosts;
+  final int? lastPostId;
+  final bool isMorePost;
   final List<Comment> userComments;
   final bool isLoadingComments;
   final bool isLoadingPosts;
   final bool isLoadingUpdatingProfile;
-  final List<Post> savedPosts; // New field for saved posts
+  final List<Post> savedPosts;
 
   const UserState({
     this.user,
+    this.lastPostId,
+    this.isMorePost = true,
     this.isLoadingUpdatingProfile = false,
     this.userPosts = const [],
     this.userComments = const [],
@@ -24,6 +28,8 @@ class UserState extends Equatable {
 
   UserState copyWith({
     User? user,
+    int? lastPostId,
+    bool? isMorePost,
     List<Post>? userPosts,
     List<Comment>? userComments,
     bool? isLoadingUpdatingProfile,
@@ -35,11 +41,27 @@ class UserState extends Equatable {
       user: user ?? this.user,
       userPosts: userPosts ?? this.userPosts,
       userComments: userComments ?? this.userComments,
+      lastPostId: lastPostId ?? this.lastPostId,
+      isMorePost: isMorePost ?? this.isMorePost,
       isLoadingUpdatingProfile:
           isLoadingUpdatingProfile ?? this.isLoadingUpdatingProfile,
       savedPosts: savedPosts ?? this.savedPosts, // Add saved posts
       isLoadingComments: isLoadingComments ?? this.isLoadingComments,
       isLoadingPosts: isLoadingPosts ?? this.isLoadingPosts,
+    );
+  }
+
+  UserState initState() {
+    return UserState(
+      user: null,
+      userPosts: [],
+      userComments: [],
+      isLoadingUpdatingProfile: false,
+      savedPosts: [],
+      isLoadingComments: false,
+      isLoadingPosts: false,
+      isMorePost: true,
+      lastPostId: null,
     );
   }
 
@@ -51,6 +73,8 @@ class UserState extends Equatable {
     isLoadingUpdatingProfile,
     isLoadingComments,
     isLoadingPosts,
-    savedPosts, // Add to props
+    savedPosts,
+    isMorePost,
+    lastPostId,
   ];
 }

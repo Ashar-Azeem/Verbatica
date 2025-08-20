@@ -73,6 +73,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           );
           emit(state.copyWith(forYou: posts));
         }
+      } else {
+        //undo the vote
+        posts[event.index] = posts[event.index].copyWith(
+          isDownVote: false,
+          isUpVote: false,
+          upvotes: posts[event.index].upvotes - 1,
+        );
+        emit(state.copyWith(forYou: posts));
       }
     } else if (event.category == 'Following') {
       List<Post> posts = List.from(state.following);
@@ -91,6 +99,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           );
           emit(state.copyWith(following: posts));
         }
+      } else {
+        //undo the vote
+        posts[event.index] = posts[event.index].copyWith(
+          isDownVote: false,
+          isUpVote: false,
+          upvotes: posts[event.index].upvotes - 1,
+        );
+        emit(state.copyWith(following: posts));
       }
     }
   }
@@ -113,6 +129,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           );
           emit(state.copyWith(forYou: posts));
         }
+      } else {
+        //undo the vote
+        posts[event.index] = posts[event.index].copyWith(
+          isDownVote: false,
+          isUpVote: false,
+          downvotes: posts[event.index].downvotes - 1,
+        );
+        emit(state.copyWith(forYou: posts));
       }
     } else {
       List<Post> posts = List.from(state.following);
@@ -131,6 +155,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           );
           emit(state.copyWith(following: posts));
         }
+      } else {
+        //undo the vote
+        posts[event.index] = posts[event.index].copyWith(
+          isDownVote: false,
+          isUpVote: false,
+          downvotes: posts[event.index].downvotes - 1,
+        );
+        emit(state.copyWith(following: posts));
       }
     }
   }

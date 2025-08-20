@@ -16,8 +16,15 @@ class SubmitPostEvent extends PostEvent {
   final Post post;
   final File? image;
   final File? video;
+  final String? newsId;
   final BuildContext context;
-  const SubmitPostEvent(this.post, this.image, this.video, this.context);
+  const SubmitPostEvent(
+    this.post,
+    this.image,
+    this.video,
+    this.context,
+    this.newsId,
+  );
 }
 
 class CompressedProgress extends PostEvent {

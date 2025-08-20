@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:verbatica/DummyData/News.DART';
 import 'package:verbatica/DummyData/dummyPosts.dart';
+import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/news.dart';
 
@@ -19,6 +19,7 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
     on<SavePost>(savePost);
     on<UpVoteNewsPost>(upVoteNewsPost);
     on<DownVoteNewsPost>(downVoteNewsPost);
+    on<FetchPostsWithInNews>(fetchPostsWithInNews);
   }
 
   fetchInitialTrendingPosts(
@@ -35,8 +36,10 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
     FetchInitialNews event,
     Emitter<TrendingViewState> emit,
   ) async {
-    await Future.delayed(Duration(seconds: 2));
-    emit(state.copyWith(news: newsList, newsInitialLoading: false));
+    emit(state.copyWith(newsInitialLoading: true));
+
+    List<News> news = await ApiService().fetchNews(event.country, event.date);
+    emit(state.copyWith(news: news, newsInitialLoading: false));
   }
 
   fetchBottomTrendingPosts(
@@ -61,6 +64,14 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
         );
         emit(state.copyWith(trending: posts));
       }
+    } else {
+      //undo the vote
+      posts[event.index] = posts[event.index].copyWith(
+        isDownVote: false,
+        isUpVote: false,
+        upvotes: posts[event.index].upvotes - 1,
+      );
+      emit(state.copyWith(trending: posts));
     }
   }
 
@@ -81,6 +92,14 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
         );
         emit(state.copyWith(trending: posts));
       }
+    } else {
+      //undo the vote
+      posts[event.index] = posts[event.index].copyWith(
+        isDownVote: false,
+        isUpVote: false,
+        downvotes: posts[event.index].downvotes - 1,
+      );
+      emit(state.copyWith(trending: posts));
     }
   }
 
@@ -111,6 +130,17 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
         );
         emit(state.copyWith(news: news));
       }
+    } else {
+      //undo the vote
+      posts[event.index] = posts[event.index].copyWith(
+        isDownVote: false,
+        isUpVote: false,
+        upvotes: posts[event.index].upvotes - 1,
+      );
+      news[event.newsIndex] = news[event.newsIndex].copyWith(
+        discussions: posts,
+      );
+      emit(state.copyWith(news: news));
     }
   }
 
@@ -138,6 +168,37 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
         );
         emit(state.copyWith(news: news));
       }
+    } else {
+      //undo the vote
+      posts[event.index] = posts[event.index].copyWith(
+        isDownVote: false,
+        isUpVote: false,
+        downvotes: posts[event.index].downvotes - 1,
+      );
+      news[event.newsIndex] = news[event.newsIndex].copyWith(
+        discussions: posts,
+      );
+      emit(state.copyWith(news: news));
+    }
+  }
+
+  void fetchPostsWithInNews(
+    FetchPostsWithInNews event,
+    Emitter<TrendingViewState> emit,
+  ) async {
+    if (state.news[event.newsIndex].discussions.isEmpty) {
+      emit(state.copyWith(fetchingPostsWithInNews: true));
+      await Future.delayed(Duration(seconds: 2));
+      List<News> news = List.from(state.news);
+      List<Post> posts = await ApiService().fetchPostsWithInNews(
+        news[event.newsIndex].newsId,
+        event.userId,
+      );
+      news[event.newsIndex] = news[event.newsIndex].copyWith(
+        discussions: posts,
+      );
+
+      emit(state.copyWith(fetchingPostsWithInNews: false, news: news));
     }
   }
 }

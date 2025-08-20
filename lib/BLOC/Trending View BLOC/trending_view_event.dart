@@ -12,7 +12,9 @@ class FetchInitialTrendingPosts extends TrendingViewEvent {
 }
 
 class FetchInitialNews extends TrendingViewEvent {
-  const FetchInitialNews();
+  final String country;
+  final DateTime date;
+  const FetchInitialNews({required this.country, required this.date});
 }
 
 class FetchBottomTrendingPosts extends TrendingViewEvent {
@@ -79,4 +81,11 @@ class DownVoteNewsPost extends TrendingViewEvent {
     required this.category,
     required this.newsIndex,
   });
+}
+
+class FetchPostsWithInNews extends TrendingViewEvent {
+  final int newsIndex;
+  final int userId;
+
+  const FetchPostsWithInNews({required this.newsIndex, required this.userId});
 }

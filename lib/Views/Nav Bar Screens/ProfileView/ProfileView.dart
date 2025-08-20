@@ -2,6 +2,7 @@
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
@@ -11,6 +12,7 @@ import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/UI_Components/PostComponents/EmptyPosts.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/UI_Components/PostComponents/ShimmerLoader.dart';
+import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/editprofile.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingscreen.dart';
@@ -54,8 +56,6 @@ class _ProfileViewState extends State<ProfileView>
     _scrollController.dispose();
     super.dispose();
   }
-
-  // Add this method to the _ProfileViewState class
 
   bool _isAppBarCollapsed(double shrinkOffset) {
     // Simpler condition to determine when to show the collapsed state
@@ -199,11 +199,12 @@ class _ProfileViewState extends State<ProfileView>
                       ),
                       indicator: UnderlineTabIndicator(
                         borderSide: BorderSide(
-                          width: 3.0,
+                          width: 2.0,
                           color: Theme.of(context).colorScheme.primary,
                         ),
                         insets: EdgeInsets.symmetric(horizontal: 100.w / 4),
                       ),
+                      dividerColor: Colors.transparent,
                     ),
                   ),
                 ),
@@ -791,14 +792,24 @@ class _BuildUserPostsTab extends State<BuildUserPostsTab>
         ],
       );
     }
-
-    // Content
     return ListView.builder(
       key: const PageStorageKey('posts'),
       padding: EdgeInsets.only(top: 2.h, left: 1.w, right: 1.w, bottom: 16.0.h),
-      itemCount: widget.state.userPosts.length,
+      itemCount:
+          widget.state.userPosts.length + (widget.state.isMorePost ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index == widget.state.userPosts.length) {
+          context.read<UserBloc>().add(FetchMorePosts());
+          return Padding(
+            padding: EdgeInsetsGeometry.symmetric(vertical: 3.h),
+            child: LoadingAnimationWidget.dotsTriangle(
+              color: primaryColor,
+              size: 12.w,
+            ),
+          );
+        }
         final post = widget.state.userPosts[index];
+
         return PostWidget(
           post: post,
           index: index,

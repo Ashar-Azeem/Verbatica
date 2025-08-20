@@ -2,6 +2,7 @@
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:verbatica/BLOC/otheruser/otheruser_state.dart';
 import 'package:verbatica/UI_Components/PostComponents/EmptyPosts.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/UI_Components/PostComponents/ShimmerLoader.dart';
+import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/ErrorSnackBar.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
 import 'package:verbatica/Utilities/loadingAnimationOfCustomSize.dart';
@@ -31,16 +33,18 @@ class _ProfileViewState extends State<otherProfileView>
   final double expandedHeight = 62.0.h;
   late final OtheruserBloc otherUserBloc;
   late final ValueNotifier<double> _scrollNotifier;
-
+  late final User user;
   @override
   void initState() {
     super.initState();
-    User user = context.read<UserBloc>().state.user!;
+    user = context.read<UserBloc>().state.user!;
     otherUserBloc = context.read<OtheruserBloc>();
     context.read<OtheruserBloc>().add(
       fetchUserinfo(otherUserId: widget.post.userId, myUserId: user.id),
     );
-    context.read<OtheruserBloc>().add(FetchUserPosts());
+    context.read<OtheruserBloc>().add(
+      FetchUserPosts(userId: widget.post.userId, ownerUserId: user.id),
+    );
     context.read<OtheruserBloc>().add(updateCommentWithPost());
     _tabController = TabController(length: 3, vsync: this);
     _scrollNotifier = ValueNotifier(0.0);
@@ -59,108 +63,6 @@ class _ProfileViewState extends State<otherProfileView>
     _tabController.dispose();
     _scrollController.dispose();
     super.dispose();
-  }
-
-  // Implementation for user posts tab similar to ProfileView
-  Widget buildUserPostsTab(OtheruserState state) {
-    if (state.isLoadingPosts) {
-      // Show shimmer while loading
-      return Padding(
-        padding: EdgeInsets.only(top: 2.h),
-        child: ListView.builder(
-          // Add bottom padding to account for the navigation bar
-          padding: EdgeInsets.only(bottom: 16.0.h), // Added bottom padding
-          itemCount: 5,
-          itemBuilder: (_, index) => const PostShimmerTile(),
-        ),
-      );
-    }
-
-    if (state.userPosts.isEmpty) {
-      return _buildEmptyTabContent(
-        icon: Icons.article_outlined,
-        message: 'No posts yet',
-      );
-    }
-
-    return ListView.builder(
-      // Add bottom padding to account for the navigation bar
-      padding: EdgeInsets.only(
-        top: 1.h,
-        bottom: 16.0.h,
-      ), // Added bottom padding
-      itemCount: state.userPosts.length,
-      itemBuilder: (context, index) {
-        final post = state.userPosts[index];
-        return Padding(
-          padding: EdgeInsets.only(left: 1.w, right: 1.w),
-          child: PostWidget(
-            post: post,
-            index: index,
-            onFullView: false,
-            category: 'other',
-          ),
-        );
-      },
-    );
-  }
-
-  // Implementation for user comments tab similar to ProfileView
-  Widget buildUserCommentsTab(OtheruserState state) {
-    if (state.isLoadingComments) {
-      // Show shimmer while loading
-      return ListView.builder(
-        // Add bottom padding to account for the navigation bar
-        padding: EdgeInsets.only(bottom: 16.0.h), // Added bottom padding
-        itemCount: 5,
-        itemBuilder: (_, index) => const CommentShimmerTile(),
-      );
-    }
-
-    if (state.userComments.isEmpty) {
-      return _buildEmptyTabContent(
-        icon: Icons.chat_bubble_outline,
-        message: 'No comments yet',
-      );
-    }
-
-    return ListView.builder(
-      // Add bottom padding to account for the navigation bar
-      padding: EdgeInsets.only(bottom: 16.0.h), // Added bottom padding
-      itemCount: state.userComments.length,
-      itemBuilder: (context, index) {
-        final comment = state.userComments[index];
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Subreddit + time + upvotes
-              Text(
-                comment.titleOfThePost,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 15,
-                  color: Theme.of(context).textTheme.bodyLarge?.color,
-                ),
-              ),
-
-              Text(
-                '/${comment.text}    • ${timeago.format(comment.uploadTime)}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Theme.of(
-                    context,
-                  ).textTheme.bodyMedium?.color?.withOpacity(0.6),
-                ),
-              ),
-
-              const SizedBox(height: 4),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   bool _isAppBarCollapsed(double shrinkOffset) {
@@ -344,10 +246,10 @@ class _ProfileViewState extends State<otherProfileView>
                         ),
                         indicator: UnderlineTabIndicator(
                           borderSide: BorderSide(
-                            width: 3.0,
+                            width: 2.0,
                             color: Theme.of(context).colorScheme.primary,
                           ),
-                          insets: const EdgeInsets.symmetric(horizontal: 16.0),
+                          insets: EdgeInsets.symmetric(horizontal: 100.w / 4),
                         ),
                         dividerColor: Colors.transparent,
                       ),
@@ -362,7 +264,10 @@ class _ProfileViewState extends State<otherProfileView>
                 // Posts Tab
                 BlocBuilder<OtheruserBloc, OtheruserState>(
                   builder: (context, state) {
-                    return BuildUserPostsTab(state: state);
+                    return BuildUserPostsTab(
+                      state: state,
+                      ownerUserId: user.id,
+                    );
                   },
                 ),
 
@@ -943,36 +848,6 @@ class _ProfileViewState extends State<otherProfileView>
     );
   }
 
-  Widget _buildEmptyTabContent({
-    required IconData icon,
-    required String message,
-  }) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            size: 48,
-            color: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.color?.withOpacity(0.4),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            message,
-            style: TextStyle(
-              fontSize: 16,
-              color: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.color?.withOpacity(0.5),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildInfoItem({
     required IconData icon,
     required Color iconColor,
@@ -1082,7 +957,12 @@ class CommentShimmerTile extends StatelessWidget {
 // posts view
 class BuildUserPostsTab extends StatefulWidget {
   final OtheruserState state;
-  const BuildUserPostsTab({super.key, required this.state});
+  final int ownerUserId;
+  const BuildUserPostsTab({
+    super.key,
+    required this.state,
+    required this.ownerUserId,
+  });
 
   @override
   State<BuildUserPostsTab> createState() => _BuildUserPostsTab();
@@ -1123,14 +1003,28 @@ class _BuildUserPostsTab extends State<BuildUserPostsTab>
     return ListView.builder(
       key: const PageStorageKey('posts'),
       padding: EdgeInsets.only(top: 2.h, left: 1.w, right: 1.w, bottom: 16.0.h),
-      itemCount: widget.state.userPosts.length,
+      itemCount:
+          widget.state.userPosts.length + (widget.state.isMorePost ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index == widget.state.userPosts.length) {
+          context.read<OtheruserBloc>().add(
+            FetchMorePosts(ownerUserId: widget.ownerUserId),
+          );
+          return Padding(
+            padding: EdgeInsetsGeometry.symmetric(vertical: 3.h),
+            child: LoadingAnimationWidget.dotsTriangle(
+              color: primaryColor,
+              size: 10.w,
+            ),
+          );
+        }
         final post = widget.state.userPosts[index];
+
         return PostWidget(
           post: post,
           index: index,
           onFullView: false,
-          category: 'user',
+          category: 'other',
         );
       },
     );
