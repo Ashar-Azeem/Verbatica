@@ -21,6 +21,7 @@ import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/otherprofile.dar
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/clusterScreen.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:verbatica/model/user.dart';
 
 // ignore: must_be_immutable
 class PostWidget extends StatelessWidget {
@@ -97,6 +98,7 @@ class PostWidget extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
+    final User user = context.read<UserBloc>().state.user!;
     return Center(
       child: Card(
         child: Column(
@@ -459,6 +461,8 @@ class PostWidget extends StatelessWidget {
                                       homeBloc.UpVotePost(
                                         index: index,
                                         category: category,
+                                        context: context,
+                                        userId: user.id,
                                       ),
                                     );
                                   } else if (category == 'Trending' ||
@@ -503,40 +507,43 @@ class PostWidget extends StatelessWidget {
                                     );
                                   }
                                 },
-                                child: Row(
-                                  children: [
-                                    IconButton(
-                                          onPressed: null,
-                                          padding: EdgeInsets.zero,
-                                          icon: Icon(
-                                            Icons.arrow_circle_up_outlined,
-                                            size: 7.w,
-                                            color:
-                                                post.isUpVote
-                                                    ? colorScheme.primary
-                                                    : colorScheme.secondary,
+                                child: Container(
+                                  color: Colors.transparent,
+                                  child: Row(
+                                    children: [
+                                      IconButton(
+                                            onPressed: null,
+                                            padding: EdgeInsets.zero,
+                                            icon: Icon(
+                                              Icons.arrow_circle_up_outlined,
+                                              size: 7.w,
+                                              color:
+                                                  post.isUpVote
+                                                      ? colorScheme.primary
+                                                      : colorScheme.secondary,
+                                            ),
+                                          )
+                                          .animate(
+                                            onPlay: (controller) {
+                                              controller.forward(from: 0);
+                                            },
+                                          )
+                                          .scale(
+                                            duration: 300.ms,
+                                            curve: Curves.easeOutBack,
                                           ),
-                                        )
-                                        .animate(
-                                          onPlay: (controller) {
-                                            controller.forward(from: 0);
-                                          },
-                                        )
-                                        .scale(
-                                          duration: 300.ms,
-                                          curve: Curves.easeOutBack,
+                                      Text(
+                                        "${post.upvotes - post.downvotes}",
+                                        style: TextStyle(
+                                          color: theme.colorScheme.secondary,
+                                          fontSize: 3.w,
+                                          height: 1,
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                    Text(
-                                      "${post.upvotes - post.downvotes}",
-                                      style: TextStyle(
-                                        color: theme.colorScheme.secondary,
-                                        fontSize: 3.w,
-                                        height: 1,
-                                        fontWeight: FontWeight.bold,
                                       ),
-                                    ),
-                                    SizedBox(width: 4.w),
-                                  ],
+                                      SizedBox(width: 4.w),
+                                    ],
+                                  ),
                                 ),
                               ),
                               Container(
@@ -548,7 +555,7 @@ class PostWidget extends StatelessWidget {
                               IconButton(
                                 splashColor: Colors.transparent,
                                 highlightColor: Colors.transparent,
-
+                                splashRadius: null,
                                 onPressed: () {
                                   context.read<VotesRestrictorBloc>().add(
                                     RegisterVote(postId: post.id),
@@ -559,6 +566,8 @@ class PostWidget extends StatelessWidget {
                                       homeBloc.DownVotePost(
                                         index: index,
                                         category: category,
+                                        context: context,
+                                        userId: user.id,
                                       ),
                                     );
                                   } else if (category == 'Trending' ||
@@ -603,6 +612,10 @@ class PostWidget extends StatelessWidget {
                                     );
                                   }
                                 },
+                                constraints: BoxConstraints(
+                                  minWidth: 48,
+                                  minHeight: 48,
+                                ),
                                 padding: EdgeInsets.zero,
                                 icon: Icon(
                                   size: 7.w,

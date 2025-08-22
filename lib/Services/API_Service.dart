@@ -11,7 +11,7 @@ import 'package:verbatica/model/user.dart';
 class ApiService {
   final Dio _dio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.1.6:4000/api/',
+        baseUrl: 'http://192.168.1.8:4000/api/',
         connectTimeout: const Duration(seconds: 20),
         receiveTimeout: const Duration(seconds: 20),
         headers: {'Content-Type': 'application/json'},
@@ -352,6 +352,21 @@ class ApiService {
       final response = await _dio.get(
         'post/getPostsWithInNews',
         data: {'newsId': newsId, "ownerId": ownerId},
+      );
+
+      final List<dynamic> data = response.data['posts'] ?? [];
+      return data.map((d) => Post.fromJson(d)).toList();
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Post>> fetchFollowingPosts(int userId, int? lastPostId) async {
+    try {
+      final response = await _dio.get(
+        'post/followingPosts',
+        data: {'userId': userId, "cursor": lastPostId},
       );
 
       final List<dynamic> data = response.data['posts'] ?? [];

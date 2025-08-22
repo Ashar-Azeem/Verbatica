@@ -12,7 +12,8 @@ class FetchInitialForYouPosts extends HomeEvent {
 }
 
 class FetchInitialFollowingPosts extends HomeEvent {
-  const FetchInitialFollowingPosts();
+  final int userId;
+  const FetchInitialFollowingPosts({required this.userId});
 }
 
 class FetchBottomForYouPosts extends HomeEvent {
@@ -20,21 +21,37 @@ class FetchBottomForYouPosts extends HomeEvent {
 }
 
 class FetchBottomFollowingPosts extends HomeEvent {
-  const FetchBottomFollowingPosts();
+  final int userId;
+
+  const FetchBottomFollowingPosts(this.userId);
 }
 
 class UpVotePost extends HomeEvent {
   final int index;
   final String category;
+  final BuildContext context;
+  final int userId;
 
-  const UpVotePost({required this.index, required this.category});
+  const UpVotePost({
+    required this.index,
+    required this.category,
+    required this.context,
+    required this.userId,
+  });
 }
 
 class DownVotePost extends HomeEvent {
   final int index;
   final String category;
+  final BuildContext context;
+  final int userId;
 
-  const DownVotePost({required this.index, required this.category});
+  const DownVotePost({
+    required this.index,
+    required this.category,
+    required this.context,
+    required this.userId,
+  });
 }
 
 class ReportPost extends HomeEvent {
@@ -60,3 +77,4 @@ class SharePost extends HomeEvent {
 
   const SharePost({required this.post});
 }
+

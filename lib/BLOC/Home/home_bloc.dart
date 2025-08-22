@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/model/Post.dart';
 
 import '../../DummyData/dummyPosts.dart';
@@ -8,6 +10,7 @@ part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
+  final limit = 10;
   HomeBloc() : super(HomeState()) {
     on<FetchInitialForYouPosts>(fetchInitialForYouPosts);
     on<FetchInitialFollowingPosts>(fetchInitialFollowingPosts);
@@ -36,15 +39,29 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     FetchInitialFollowingPosts event,
     Emitter<HomeState> emit,
   ) async {
-    print("Following initial call");
-
-    await Future.delayed(Duration(seconds: 2));
-    emit(
-      state.copyWith(
-        following: List.from(followingPosts),
-        followingInitialLoading: false,
-      ),
+    List<Post> posts = await ApiService().fetchFollowingPosts(
+      event.userId,
+      null,
     );
+
+    if (posts.length < limit) {
+      emit(
+        state.copyWith(
+          following: posts,
+          followingInitialLoading: false,
+          hasMoreFollowingPosts: false,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          following: posts,
+          followingInitialLoading: false,
+          hasMoreFollowingPosts: true,
+          lastFollowingPostId: int.parse(posts[posts.length - 1].id),
+        ),
+      );
+    }
   }
 
   fetchBottomForYouPosts(
@@ -54,10 +71,44 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   fetchBottomFollowingPosts(
     FetchBottomFollowingPosts event,
     Emitter<HomeState> emit,
-  ) {}
+  ) async {
+    List<Post> posts = await ApiService().fetchFollowingPosts(
+      event.userId,
+      state.lastFollowingPostId,
+    );
+
+    final List<Post> followingPosts = List.from(state.following);
+    followingPosts.addAll(posts);
+
+    if (posts.length < limit) {
+      emit(
+        state.copyWith(
+          following: followingPosts,
+          hasMoreFollowingPosts: false,
+          lastFollowingPostId: null,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          following: followingPosts,
+          hasMoreFollowingPosts: true,
+          lastFollowingPostId: int.parse(posts[posts.length - 1].id),
+        ),
+      );
+    }
+  }
+
   upVotePost(UpVotePost event, Emitter<HomeState> emit) {
     if (event.category == "ForYou") {
       List<Post> posts = List.from(state.forYou);
+      ApiService().updatingVotes(
+        int.parse(posts[event.index].id),
+        event.userId,
+        true,
+        event.context,
+      );
+
       if (!posts[event.index].isUpVote) {
         if (posts[event.index].isDownVote) {
           posts[event.index] = posts[event.index].copyWith(
@@ -84,6 +135,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
     } else if (event.category == 'Following') {
       List<Post> posts = List.from(state.following);
+      ApiService().updatingVotes(
+        int.parse(posts[event.index].id),
+        event.userId,
+        true,
+        event.context,
+      );
       if (!posts[event.index].isUpVote) {
         if (posts[event.index].isDownVote) {
           posts[event.index] = posts[event.index].copyWith(
@@ -114,6 +171,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   downVotePost(DownVotePost event, Emitter<HomeState> emit) {
     if (event.category == "ForYou") {
       List<Post> posts = List.from(state.forYou);
+      ApiService().updatingVotes(
+        int.parse(posts[event.index].id),
+        event.userId,
+        false,
+        event.context,
+      );
       if (!posts[event.index].isDownVote) {
         if (posts[event.index].isUpVote) {
           posts[event.index] = posts[event.index].copyWith(
@@ -140,6 +203,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
     } else {
       List<Post> posts = List.from(state.following);
+      ApiService().updatingVotes(
+        int.parse(posts[event.index].id),
+        event.userId,
+        true,
+        event.context,
+      );
       if (!posts[event.index].isDownVote) {
         if (posts[event.index].isUpVote) {
           posts[event.index] = posts[event.index].copyWith(
