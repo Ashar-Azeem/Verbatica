@@ -11,7 +11,7 @@ import 'package:verbatica/model/user.dart';
 class ApiService {
   final Dio _dio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.1.8:4000/api/',
+        baseUrl: 'http://192.168.100.81:4000/api/',
         connectTimeout: const Duration(seconds: 20),
         receiveTimeout: const Duration(seconds: 20),
         headers: {'Content-Type': 'application/json'},

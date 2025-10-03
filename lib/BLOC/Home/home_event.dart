@@ -78,3 +78,17 @@ class SharePost extends HomeEvent {
   const SharePost({required this.post});
 }
 
+class SyncUpVotePost extends HomeEvent {
+  final String postId;
+
+  const SyncUpVotePost({required this.postId});
+
+  
+}
+
+class SyncDownVotePost extends HomeEvent {
+  final String postId;
+
+  const SyncDownVotePost({required this.postId});
+
+}

@@ -20,6 +20,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<DownVotePost>(downVotePost);
     on<ReportPost>(reportPost);
     on<SavePost>(savePost);
+    on<SyncDownVotePost>(syncDownVotePost);
+     on<SyncUpVotePost>(syncUpVotePost);
   }
   fetchInitialForYouPosts(
     FetchInitialForYouPosts event,
@@ -235,6 +237,127 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       }
     }
   }
+syncUpVotePost(SyncUpVotePost event, Emitter<HomeState> emit) {
+  // Update in ForYou list
+  List<Post> forYouPosts = List.from(state.forYou);
+  int forYouIndex = forYouPosts.indexWhere((post) => post.id == event.postId);
+
+  if (forYouIndex != -1) {
+    Post post = forYouPosts[forYouIndex];
+    if (!post.isUpVote) {
+      if (post.isDownVote) {
+        post = post.copyWith(
+          isDownVote: false,
+          isUpVote: true,
+          upvotes: post.upvotes + 2,
+        );
+      } else {
+        post = post.copyWith(
+          isUpVote: true,
+          upvotes: post.upvotes + 1,
+        );
+      }
+    } else {
+      post = post.copyWith(
+        isUpVote: false,
+        upvotes: post.upvotes - 1,
+      );
+    }
+    forYouPosts[forYouIndex] = post;
+    emit(state.copyWith(forYou: forYouPosts));
+  }
+
+  // Update in Following list
+  List<Post> followingPosts = List.from(state.following);
+  int followingIndex =
+      followingPosts.indexWhere((post) => post.id == event.postId);
+
+  if (followingIndex != -1) {
+    Post post = followingPosts[followingIndex];
+    if (!post.isUpVote) {
+      if (post.isDownVote) {
+        post = post.copyWith(
+          isDownVote: false,
+          isUpVote: true,
+          upvotes: post.upvotes + 2,
+        );
+      } else {
+        post = post.copyWith(
+          isUpVote: true,
+          upvotes: post.upvotes + 1,
+        );
+      }
+    } else {
+      post = post.copyWith(
+        isUpVote: false,
+        upvotes: post.upvotes - 1,
+      );
+    }
+    followingPosts[followingIndex] = post;
+    emit(state.copyWith(following: followingPosts));
+  }
+}
+
+syncDownVotePost(SyncDownVotePost event, Emitter<HomeState> emit) {
+  // Update in ForYou list
+  List<Post> forYouPosts = List.from(state.forYou);
+  int forYouIndex = forYouPosts.indexWhere((post) => post.id == event.postId);
+
+  if (forYouIndex != -1) {
+    Post post = forYouPosts[forYouIndex];
+    if (!post.isDownVote) {
+      if (post.isUpVote) {
+        post = post.copyWith(
+          isDownVote: true,
+          isUpVote: false,
+          downvotes: post.downvotes + 2,
+        );
+      } else {
+        post = post.copyWith(
+          isDownVote: true,
+          downvotes: post.downvotes + 1,
+        );
+      }
+    } else {
+      post = post.copyWith(
+        isDownVote: false,
+        downvotes: post.downvotes - 1,
+      );
+    }
+    forYouPosts[forYouIndex] = post;
+    emit(state.copyWith(forYou: forYouPosts));
+  }
+
+  // Update in Following list
+  List<Post> followingPosts = List.from(state.following);
+  int followingIndex =
+      followingPosts.indexWhere((post) => post.id == event.postId);
+
+  if (followingIndex != -1) {
+    Post post = followingPosts[followingIndex];
+    if (!post.isDownVote) {
+      if (post.isUpVote) {
+        post = post.copyWith(
+          isDownVote: true,
+          isUpVote: false,
+          downvotes: post.downvotes + 2,
+        );
+      } else {
+        post = post.copyWith(
+          isDownVote: true,
+          downvotes: post.downvotes + 1,
+        );
+      }
+    } else {
+      post = post.copyWith(
+        isDownVote: false,
+        downvotes: post.downvotes - 1,
+      );
+    }
+    followingPosts[followingIndex] = post;
+    emit(state.copyWith(following: followingPosts));
+  }
+}
 
   reportPost(ReportPost event, Emitter<HomeState> emit) {}
   savePost(SavePost event, Emitter<HomeState> emit) {}

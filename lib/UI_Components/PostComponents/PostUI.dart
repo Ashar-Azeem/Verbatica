@@ -465,6 +465,24 @@ class PostWidget extends StatelessWidget {
                                         userId: user.id,
                                       ),
                                     );
+                                 
+
+
+// TrendingViewBloc
+context.read<TrendingViewBloc>().add(
+  SyncUpVoteTrendingPost(postId: post.id),
+);
+
+// OtheruserBloc
+context.read<OtheruserBloc>().add(
+  SyncUpvoteotherPost(postId: post.id),
+);
+
+// UserBloc
+context.read<UserBloc>().add(
+  SyncUpvotePost(postId: post.id),
+);
+
                                   } else if (category == 'Trending' ||
                                       category == 'Top 10 news') {
                                     if (newsIndex != null) {
@@ -482,6 +500,21 @@ class PostWidget extends StatelessWidget {
                                           category: category,
                                         ),
                                       );
+                   // HomeBloc
+context.read<homeBloc.HomeBloc>().add(
+  homeBloc.SyncUpVotePost(postId: post.id),
+);
+
+// OtheruserBloc
+context.read<OtheruserBloc>().add(
+  SyncUpvoteotherPost(postId: post.id),
+);
+
+// UserBloc
+context.read<UserBloc>().add(
+  SyncUpvotePost(postId: post.id),
+);
+
                                     }
                                   } else if (category == 'user') {
                                     context.read<UserBloc>().add(
@@ -490,6 +523,23 @@ class PostWidget extends StatelessWidget {
                                         context: context,
                                       ),
                                     );
+                                // HomeBloc
+context.read<homeBloc.HomeBloc>().add(
+  homeBloc.SyncUpVotePost(postId: post.id),
+);
+
+// TrendingViewBloc
+context.read<TrendingViewBloc>().add(
+  SyncUpVoteTrendingPost(postId: post.id),
+);
+
+// OtheruserBloc
+context.read<OtheruserBloc>().add(
+  SyncUpvoteotherPost(postId: post.id),
+);
+
+
+
                                   } else if (category == 'other') {
                                     context.read<OtheruserBloc>().add(
                                       upvotePost(
@@ -497,6 +547,22 @@ class PostWidget extends StatelessWidget {
                                         context: context,
                                       ),
                                     );
+             // HomeBloc
+context.read<homeBloc.HomeBloc>().add(
+  homeBloc.SyncUpVotePost(postId: post.id),
+);
+
+// TrendingViewBloc
+context.read<TrendingViewBloc>().add(
+  SyncUpVoteTrendingPost(postId: post.id),
+);
+
+
+// UserBloc
+context.read<UserBloc>().add(
+  SyncUpvotePost(postId: post.id),
+);
+
                                   } else if (category == 'saved') {
                                     context.read<UserBloc>().add(
                                       upvotesavedPost1(index: index),
@@ -570,6 +636,24 @@ class PostWidget extends StatelessWidget {
                                         userId: user.id,
                                       ),
                                     );
+ 
+
+// TrendingViewBloc
+context.read<TrendingViewBloc>().add(
+  SyncDownVoteTrendingPost(postId: post.id),
+);
+
+// OtheruserBloc
+context.read<OtheruserBloc>().add(
+  SyncDownvoteotherPost(postId: post.id),
+);
+
+// UserBloc
+context.read<UserBloc>().add(
+  SyncDownvotePost(postId: post.id),
+);
+
+
                                   } else if (category == 'Trending' ||
                                       category == 'Top 10 news') {
                                     if (newsIndex != null) {
@@ -580,6 +664,7 @@ class PostWidget extends StatelessWidget {
                                           newsIndex: newsIndex!,
                                         ),
                                       );
+                                        //  context.read<TrendingViewBloc>().add(SyncDownVoteNewsPost(postId: post.id, newsId: newsIndex!));
                                     } else {
                                       context.read<TrendingViewBloc>().add(
                                         DownVotePost(
@@ -587,7 +672,21 @@ class PostWidget extends StatelessWidget {
                                           category: category,
                                         ),
                                       );
-                                    }
+                                     // HomeBloc
+context.read<homeBloc.HomeBloc>().add(
+  homeBloc.SyncUpVotePost(postId: post.id),
+);
+
+// OtheruserBloc
+context.read<OtheruserBloc>().add(
+  SyncUpvoteotherPost(postId: post.id),
+);
+
+// UserBloc
+context.read<UserBloc>().add(
+  SyncUpvotePost(postId: post.id),
+);
+ }
                                   } else if (category == 'user') {
                                     context.read<UserBloc>().add(
                                       downvotePost1(
@@ -595,6 +694,23 @@ class PostWidget extends StatelessWidget {
                                         context: context,
                                       ),
                                     );
+                                    // HomeBloc
+context.read<homeBloc.HomeBloc>().add(
+  homeBloc.SyncUpVotePost(postId: post.id),
+);
+
+// TrendingViewBloc
+context.read<TrendingViewBloc>().add(
+  SyncUpVoteTrendingPost(postId: post.id),
+);
+
+// OtheruserBloc
+context.read<OtheruserBloc>().add(
+  SyncUpvoteotherPost(postId: post.id),
+);
+
+
+
                                   } else if (category == 'other') {
                                     context.read<OtheruserBloc>().add(
                                       downvotePost(
@@ -602,6 +718,23 @@ class PostWidget extends StatelessWidget {
                                         context: context,
                                       ),
                                     );
+                                    // HomeBloc
+context.read<homeBloc.HomeBloc>().add(
+  homeBloc.SyncUpVotePost(postId: post.id),
+);
+
+// TrendingViewBloc
+context.read<TrendingViewBloc>().add(
+  SyncUpVoteTrendingPost(postId: post.id),
+);
+
+
+
+// UserBloc
+context.read<UserBloc>().add(
+  SyncUpvotePost(postId: post.id),
+);
+
                                   } else if (category == 'saved') {
                                     context.read<UserBloc>().add(
                                       downvotesavedPost(index: index),

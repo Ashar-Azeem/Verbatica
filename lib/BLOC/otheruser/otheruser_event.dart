@@ -55,3 +55,17 @@ class FetchMorePosts extends OtheruserEvent {
 
   const FetchMorePosts({required this.ownerUserId});
 }
+class SyncUpvoteotherPost extends OtheruserEvent {
+  final String postId;
+
+  const SyncUpvoteotherPost({required this.postId});
+
+}
+
+class SyncDownvoteotherPost extends OtheruserEvent {
+  final String postId;
+
+  const SyncDownvoteotherPost({required this.postId});
+
+
+}

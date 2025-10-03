@@ -88,3 +88,12 @@ class AddRecentPost extends UserEvent {
 class FetchMorePosts extends UserEvent {}
 
 class ClearBloc extends UserEvent {}
+class SyncUpvotePost extends UserEvent {
+  final String postId;
+  SyncUpvotePost({required this.postId});
+}
+
+class SyncDownvotePost extends UserEvent {
+  final String postId;
+  SyncDownvotePost({required this.postId});
+}

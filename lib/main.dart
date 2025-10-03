@@ -54,7 +54,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  final User? user;
+final User? user;
   const MyApp({super.key, this.user});
 
   @override
@@ -142,7 +142,8 @@ class MyApp extends StatelessWidget {
               user == null
                   ? Login()
                   : user!.isVerified
-                  ? BottomNavigationBarView(user: user)
+                  ? 
+                  BottomNavigationBarView(user: user)
                   : EmailVerification(),
         );
       },
