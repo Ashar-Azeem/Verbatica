@@ -26,6 +26,7 @@ class AuthService {
     await _ensureInit();
     try {
       final account = await _googleSignIn.authenticate(scopeHint: ['email']);
+      print("hehehehe");
       final auth = account.authentication;
       final idToken = auth.idToken;
 

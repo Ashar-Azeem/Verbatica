@@ -24,6 +24,10 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
     on<UpVoteNewsPost>(upVoteNewsPost);
     on<DownVoteNewsPost>(downVoteNewsPost);
     on<FetchPostsWithInNews>(fetchPostsWithInNews);
+    on<SyncDownVoteTrendingPost>(syncDownVoteTrendingPost);
+        on<SyncUpVoteTrendingPost>(syncUpVoteTrendingPost);
+          on<SyncDownVoteNewsPost>(syncDownVoteNewsPost);
+        on<SyncUpVoteNewsPost>(syncUpVoteNewsPost);
   }
 
   fetchInitialTrendingPosts(
@@ -253,6 +257,161 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
       emit(state.copyWith(news: news));
     }
   }
+  syncUpVoteTrendingPost(
+ SyncUpVoteTrendingPost event,
+  Emitter<TrendingViewState> emit,
+) {
+  // Update in Trending list
+  List<Post> trendingPosts = List.from(state.trending);
+  int trendingIndex =
+      trendingPosts.indexWhere((post) => post.id == event.postId);
+
+  if (trendingIndex != -1) {
+    Post post = trendingPosts[trendingIndex];
+    if (!post.isUpVote) {
+      if (post.isDownVote) {
+        post = post.copyWith(
+          isUpVote: true,
+          isDownVote: false,
+          upvotes: post.upvotes + 2,
+        );
+      } else {
+        post = post.copyWith(
+          isUpVote: true,
+          upvotes: post.upvotes + 1,
+        );
+      }
+    } else {
+      post = post.copyWith(
+        isUpVote: false,
+        upvotes: post.upvotes - 1,
+      );
+    }
+    trendingPosts[trendingIndex] = post;
+    emit(state.copyWith(trending: trendingPosts));
+  }
+}
+
+syncDownVoteTrendingPost(
+  SyncDownVoteTrendingPost event,
+  Emitter<TrendingViewState> emit,
+) {
+  // Update in Trending list
+  List<Post> trendingPosts = List.from(state.trending);
+  int trendingIndex =
+      trendingPosts.indexWhere((post) => post.id == event.postId);
+
+  if (trendingIndex != -1) {
+    Post post = trendingPosts[trendingIndex];
+    if (!post.isDownVote) {
+      if (post.isUpVote) {
+        post = post.copyWith(
+          isDownVote: true,
+          isUpVote: false,
+          downvotes: post.downvotes + 2,
+        );
+      } else {
+        post = post.copyWith(
+          isDownVote: true,
+          downvotes: post.downvotes + 1,
+        );
+      }
+    } else {
+      post = post.copyWith(
+        isDownVote: false,
+        downvotes: post.downvotes - 1,
+      );
+    }
+    trendingPosts[trendingIndex] = post;
+    emit(state.copyWith(trending: trendingPosts));
+  }
+}
+syncUpVoteNewsPost(
+  SyncUpVoteNewsPost event,
+  Emitter<TrendingViewState> emit,
+) {
+  List<News> newsList = List.from(state.news);
+  int newsIndex = newsList.indexWhere((n) => n.newsId == event.newsId);
+
+  if (newsIndex != -1) {
+    List<Post> posts = List.from(newsList[newsIndex].discussions);
+    int postIndex = posts.indexWhere((p) => p.id == event.postId);
+
+    if (postIndex != -1) {
+      Post post = posts[postIndex];
+
+      if (!post.isUpVote) {
+        if (post.isDownVote) {
+          post = post.copyWith(
+            isDownVote: false,
+            isUpVote: true,
+            upvotes: post.upvotes + 2,
+          );
+        } else {
+          post = post.copyWith(
+            isUpVote: true,
+            upvotes: post.upvotes + 1,
+          );
+        }
+      } else {
+        // undo upvote
+        post = post.copyWith(
+          isUpVote: false,
+          upvotes: post.upvotes - 1,
+        );
+      }
+
+      posts[postIndex] = post;
+      newsList[newsIndex] =
+          newsList[newsIndex].copyWith(discussions: posts);
+      emit(state.copyWith(news: newsList));
+    }
+  }
+}
+syncDownVoteNewsPost(
+  SyncDownVoteNewsPost event,
+  Emitter<TrendingViewState> emit,
+) {
+  List<News> newsList = List.from(state.news);
+  int newsIndex = newsList.indexWhere((n) => n.newsId == event.newsId);
+
+  if (newsIndex != -1) {
+    List<Post> posts = List.from(newsList[newsIndex].discussions);
+    int postIndex = posts.indexWhere((p) => p.id == event.postId);
+
+    if (postIndex != -1) {
+      Post post = posts[postIndex];
+
+      if (!post.isDownVote) {
+        if (post.isUpVote) {
+          post = post.copyWith(
+            isDownVote: true,
+            isUpVote: false,
+            downvotes: post.downvotes + 2,
+          );
+        } else {
+          post = post.copyWith(
+            isDownVote: true,
+            downvotes: post.downvotes + 1,
+          );
+        }
+      } else {
+        // undo downvote
+        post = post.copyWith(
+          isDownVote: false,
+          downvotes: post.downvotes - 1,
+        );
+      }
+
+      posts[postIndex] = post;
+      newsList[newsIndex] =
+          newsList[newsIndex].copyWith(discussions: posts);
+      emit(state.copyWith(news: newsList));
+    }
+  }
+}
+
+
 
   void fetchPostsWithInNews(
     FetchPostsWithInNews event,
@@ -273,4 +432,5 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
       emit(state.copyWith(fetchingPostsWithInNews: false, news: news));
     }
   }
+
 }

@@ -8,6 +8,7 @@ import 'package:verbatica/Utilities/Captcha/captcha.dart';
 import 'package:verbatica/Utilities/DialogueBox.dart';
 import 'package:verbatica/Utilities/ErrorSnackBar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:verbatica/Views/Authentication%20Screens/forgetpassword.dart';
 import 'package:verbatica/Views/Authentication%20Screens/register.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/mainBottomNavigationBar.dart';
 
@@ -189,7 +190,13 @@ class _LoginState extends State<Login> {
                     ),
                     TextButton(
                       onPressed: () {
-                        //Forgot password Logic
+                        Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) =>
+                         ForgotPassword()
+                        ),
+                      );
+                           //Forgot password Logic
                       },
                       style: TextButton.styleFrom(
                         padding: EdgeInsets.only(top: 6), // minimal top padding

@@ -1,4 +1,4 @@
-import 'package:bloc/bloc.dart';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,7 +21,8 @@ class OtheruserBloc extends Bloc<OtheruserEvent, OtheruserState> {
     on<clearBloc>(_clearBloc);
     on<UpdateRelationship>(updateRelationship);
     on<FetchMorePosts>(fetchMorePosts);
-
+on<SyncUpvoteotherPost>(_syncUpvotePost);
+  on<SyncDownvoteotherPost>(_syncDownvotePost);
     on<fetchUserinfo>((event, emit) async {
       try {
         Map<String, dynamic> profile = await ApiService().getProfile(
@@ -108,6 +109,67 @@ class OtheruserBloc extends Bloc<OtheruserEvent, OtheruserState> {
       emit(state.copyWith(userPosts: posts));
     }
   }
+void _syncUpvotePost(SyncUpvoteotherPost event, Emitter<OtheruserState> emit) {
+  List<Post> posts = List.from(state.userPosts);
+  int index = posts.indexWhere((post) => post.id == event.postId);
+
+  if (index != -1) {
+    Post post = posts[index];
+    if (!post.isUpVote) {
+      if (post.isDownVote) {
+        post = post.copyWith(
+          isDownVote: false,
+          isUpVote: true,
+          upvotes: post.upvotes + 2,
+        );
+      } else {
+        post = post.copyWith(
+          isUpVote: true,
+          upvotes: post.upvotes + 1,
+        );
+      }
+    } else {
+      // undo upvote
+      post = post.copyWith(
+        isUpVote: false,
+        upvotes: post.upvotes - 1,
+      );
+    }
+    posts[index] = post;
+    emit(state.copyWith(userPosts: posts));
+  }
+}
+
+void _syncDownvotePost(SyncDownvoteotherPost event, Emitter<OtheruserState> emit) {
+  List<Post> posts = List.from(state.userPosts);
+  int index = posts.indexWhere((post) => post.id == event.postId);
+
+  if (index != -1) {
+    Post post = posts[index];
+    if (!post.isDownVote) {
+      if (post.isUpVote) {
+        post = post.copyWith(
+          isDownVote: true,
+          isUpVote: false,
+          downvotes: post.downvotes + 2,
+        );
+      } else {
+        post = post.copyWith(
+          isDownVote: true,
+          downvotes: post.downvotes + 1,
+        );
+      }
+    } else {
+      // undo downvote
+      post = post.copyWith(
+        isDownVote: false,
+        downvotes: post.downvotes - 1,
+      );
+    }
+    posts[index] = post;
+    emit(state.copyWith(userPosts: posts));
+  }
+}
 
   void _onupdateComment(
     updateCommentWithPost event,
