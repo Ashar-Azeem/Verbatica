@@ -18,9 +18,11 @@ class PostState extends Equatable {
   final String? error;
   final String? progress;
   final List<Post> similarPosts;
+  final String currentScreen;
 
   const PostState({
     this.status = PostStatus.done,
+    this.currentScreen = 'simplePost',
     this.loading = false,
     this.error,
     this.progress,
@@ -32,6 +34,7 @@ class PostState extends Equatable {
     bool? loading,
     String? error,
     String? progress,
+    String? currentScreen,
     List<Post>? similarPosts,
   }) {
     return PostState(
@@ -39,10 +42,18 @@ class PostState extends Equatable {
       status: status ?? this.status,
       error: error ?? this.error,
       progress: progress ?? this.progress,
+      currentScreen: currentScreen ?? this.currentScreen,
       similarPosts: similarPosts ?? this.similarPosts,
     );
   }
 
   @override
-  List<Object?> get props => [status, progress, loading, error, similarPosts];
+  List<Object?> get props => [
+    status,
+    progress,
+    loading,
+    error,
+    similarPosts,
+    currentScreen,
+  ];
 }

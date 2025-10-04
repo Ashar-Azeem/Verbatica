@@ -9,7 +9,6 @@ import 'package:verbatica/UI_Components/PostComponents/EmptyPosts.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/UI_Components/PostComponents/ShimmerLoader.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/AddPostView.dart';
-import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/news.dart';
 
 class PostsWithInNews extends StatefulWidget {
@@ -78,7 +77,10 @@ class _PostsWithInNewsState extends State<PostsWithInNews> {
                 onPressed: () {
                   pushScreen(
                     context,
-                    screen: CreatePostScreen(newsId: widget.news.newsId),
+                    screen: CreatePostScreen(
+                      newsId: widget.news.newsId,
+                      screenType: 'newsPost',
+                    ),
                   );
                 },
                 icon: Icon(Icons.add_circle_outlined),
@@ -98,8 +100,7 @@ class _PostsWithInNewsState extends State<PostsWithInNews> {
                 );
               }
 
-              List<Post> discussions = state.news[widget.newsIndex].discussions;
-              return discussions.isEmpty
+              return state.news[widget.newsIndex].discussions.isEmpty
                   ? SliverToBoxAdapter(
                     child: SizedBox(
                       height: 80.h - _getAppBarHeight(widget.news.title),
@@ -114,16 +115,19 @@ class _PostsWithInNewsState extends State<PostsWithInNews> {
                   :
                   // Discussion List
                   SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      final discussion = discussions[index];
-                      return PostWidget(
-                        post: discussion,
-                        index: index,
-                        category: "Top 10 news",
-                        onFullView: false,
-                        newsIndex: widget.newsIndex,
-                      );
-                    }, childCount: discussions.length),
+                    delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                        return PostWidget(
+                          post: state.news[widget.newsIndex].discussions[index],
+                          index: index,
+                          category: "Top 10 news",
+                          onFullView: false,
+                          newsIndex: widget.newsIndex,
+                        );
+                      },
+                      childCount:
+                          state.news[widget.newsIndex].discussions.length,
+                    ),
                   );
             },
           ),

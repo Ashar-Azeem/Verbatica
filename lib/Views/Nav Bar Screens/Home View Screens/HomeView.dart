@@ -152,7 +152,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       previous.following != current.following;
                 },
                 builder: (context, state) {
-                  print(state.following.length);
                   return TabBarView(
                     physics: NeverScrollableScrollPhysics(),
                     children: [

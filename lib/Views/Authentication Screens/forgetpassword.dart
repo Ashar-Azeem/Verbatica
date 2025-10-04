@@ -24,9 +24,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     super.dispose();
   }
 
-  bool _validateEmail() {
-    return _emailFormKey.currentState!.validate();
-  }
+  // bool _validateEmail() {
+  //   return _emailFormKey.currentState!.validate();
+  // }
 
   @override
   Widget build(BuildContext context) {

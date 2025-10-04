@@ -18,12 +18,15 @@ class SubmitPostEvent extends PostEvent {
   final File? video;
   final String? newsId;
   final BuildContext context;
+  final String currentScreen;
+
   const SubmitPostEvent(
     this.post,
     this.image,
     this.video,
     this.context,
     this.newsId,
+    this.currentScreen,
   );
 }
 
@@ -37,11 +40,13 @@ class CheckSimilar extends PostEvent {
   final int userId;
   final String title;
   final String description;
+  final String currentScreen;
 
   const CheckSimilar({
     required this.userId,
     required this.title,
     required this.description,
+    required this.currentScreen,
   });
 }
 

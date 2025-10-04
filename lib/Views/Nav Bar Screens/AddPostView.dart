@@ -21,7 +21,12 @@ import 'package:video_compress/video_compress.dart';
 
 class CreatePostScreen extends StatefulWidget {
   final String? newsId;
-  const CreatePostScreen({super.key, required this.newsId});
+  final String screenType;
+  const CreatePostScreen({
+    super.key,
+    required this.newsId,
+    required this.screenType,
+  });
 
   @override
   _CreatePostScreenState createState() => _CreatePostScreenState();
@@ -288,7 +293,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           builder: (context, state) {
             return BlocListener<PostBloc, PostState>(
               listenWhen:
-                  (previous, current) => previous.loading != current.loading,
+                  (previous, current) =>
+                      previous.loading != current.loading &&
+                      state.currentScreen == widget.screenType,
               listener: (context, state) {
                 if (state.status == PostStatus.error) {
                   CustomSnackbar.showError(context, state.error!);
@@ -311,10 +318,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       content: Text("Post created successfully"),
                     ),
                   );
-                } else if (state.loading) {
-                  if (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  }
                 } else if (state.status == PostStatus.checkingDuplicates &&
                     state.loading != true) {
                   if (state.similarPosts.isEmpty) {
@@ -334,7 +337,6 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       comments: 0,
                       uploadTime: DateTime.now(),
                       id: '999',
-
                       clusters: validCluster,
                     );
 
@@ -345,6 +347,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                         videoFile,
                         context,
                         widget.newsId,
+                        widget.screenType,
                       ),
                     );
                   } else {
@@ -391,8 +394,12 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                     videoFile,
                                     rootContext,
                                     widget.newsId,
+                                    widget.screenType,
                                   ),
                                 );
+                                if (Navigator.of(context).canPop()) {
+                                  Navigator.of(context).pop();
+                                }
                               },
                               label: Text("Post anyway"),
                               icon: Icon(Icons.upload_outlined),
@@ -592,6 +599,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                     userId: user!.id,
                                     title: _titleController.text,
                                     description: _descriptionController.text,
+
+                                    currentScreen: widget.screenType,
                                   ),
                                 );
                               }
@@ -1140,9 +1149,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           builder: (context, state) {
             return state.loading
                 ? Positioned.fill(
-                  child: Container(
-                    color: Colors.black.withOpacity(0.8),
-                    child: Center(
+                  child: Scaffold(
+                    backgroundColor: Colors.black.withOpacity(0.8),
+                    body: Center(
                       child: Column(
                         children: [
                           Spacer(),

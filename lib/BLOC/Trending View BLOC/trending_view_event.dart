@@ -104,6 +104,7 @@ class FetchPostsWithInNews extends TrendingViewEvent {
 
   const FetchPostsWithInNews({required this.newsIndex, required this.userId});
 }
+
 class SyncUpVoteTrendingPost extends TrendingViewEvent {
   final String postId;
   // final int newsIndex;
@@ -112,7 +113,6 @@ class SyncUpVoteTrendingPost extends TrendingViewEvent {
     required this.postId,
     // required this.newsIndex,
   });
-
 }
 
 class SyncDownVoteTrendingPost extends TrendingViewEvent {
@@ -123,24 +123,25 @@ class SyncDownVoteTrendingPost extends TrendingViewEvent {
     required this.postId,
     // required this.newsIndex,
   });
-
 }
+
 class SyncUpVoteNewsPost extends TrendingViewEvent {
   final int newsId;
   final String postId;
 
-  const SyncUpVoteNewsPost({
-    required this.newsId,
-    required this.postId,
-  });
+  const SyncUpVoteNewsPost({required this.newsId, required this.postId});
 }
 
 class SyncDownVoteNewsPost extends TrendingViewEvent {
   final int newsId;
   final String postId;
 
-  const SyncDownVoteNewsPost({
-    required this.newsId,
-    required this.postId,
-  });
+  const SyncDownVoteNewsPost({required this.newsId, required this.postId});
+}
+
+class AddRecentPostInNews extends TrendingViewEvent {
+  final Post post;
+  final String newsId;
+
+  const AddRecentPostInNews(this.newsId, {required this.post});
 }

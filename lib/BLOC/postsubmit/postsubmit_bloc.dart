@@ -2,6 +2,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_event.dart';
@@ -35,6 +36,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
           status: PostStatus.checkingDuplicates,
           loading: true,
           similarPosts: [],
+          currentScreen: event.currentScreen,
         ),
       );
       //Checking for the duplicates
@@ -60,7 +62,13 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     Emitter<PostState> emit,
   ) async {
     try {
-      emit(state.copyWith(similarPosts: [], loading: true));
+      emit(
+        state.copyWith(
+          similarPosts: [],
+          loading: true,
+          currentScreen: event.currentScreen,
+        ),
+      );
 
       //uploading to the server with a picture
       if (event.image != null) {
@@ -98,6 +106,11 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         );
 
         event.context.read<UserBloc>().add(AddRecentPost(post: post));
+        if (event.newsId != null) {
+          event.context.read<TrendingViewBloc>().add(
+            AddRecentPostInNews(event.newsId!, post: post),
+          );
+        }
 
         //Done
         emit(state.copyWith(status: PostStatus.done, loading: false));
@@ -139,6 +152,11 @@ class PostBloc extends Bloc<PostEvent, PostState> {
         );
 
         event.context.read<UserBloc>().add(AddRecentPost(post: post));
+        if (event.newsId != null) {
+          event.context.read<TrendingViewBloc>().add(
+            AddRecentPostInNews(event.newsId!, post: post),
+          );
+        }
         //Done
         emit(state.copyWith(status: PostStatus.done, loading: false));
         return;
@@ -170,8 +188,13 @@ class PostBloc extends Bloc<PostEvent, PostState> {
           event.post.avatar,
           event.newsId,
         );
-        event.context.read<UserBloc>().add(AddRecentPost(post: post));
 
+        event.context.read<UserBloc>().add(AddRecentPost(post: post));
+        if (event.newsId != null) {
+          event.context.read<TrendingViewBloc>().add(
+            AddRecentPostInNews(event.newsId!, post: post),
+          );
+        }
         //Done
         emit(state.copyWith(status: PostStatus.done, loading: false));
       }
