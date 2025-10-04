@@ -11,10 +11,12 @@ import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_bloc.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_event.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_state.dart';
+import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/ErrorSnackBar.dart';
 import 'package:verbatica/model/Post.dart';
+import 'package:verbatica/model/user.dart';
 import 'package:video_compress/video_compress.dart';
 
 class CreatePostScreen extends StatefulWidget {
@@ -57,6 +59,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   String polarity = '';
 
   Future<File?> pickAndCropImage(BuildContext context) async {
+    closeKeyboard(context);
+
     try {
       // 1. Pick image from gallery
       final XFile? pickedFile = await ImagePicker().pickImage(
@@ -96,6 +100,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   }
 
   Future<void> _pickVideo() async {
+    closeKeyboard(context);
     setState(() {
       isLoading = true;
     });
@@ -128,7 +133,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
   Future<String?> showPolarizationDialog(BuildContext context) async {
     String? selectedOption;
     // bool isPolarized = false;
-
+    closeKeyboard(context);
     return await showDialog<String>(
       context: context,
       builder:
@@ -255,7 +260,13 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
     );
   }
 
+  void closeKeyboard(BuildContext context) {
+    FocusScope.of(context).unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
+
   void _showDialog() async {
+    closeKeyboard(context);
     final result = await showPolarizationDialog(context);
     if (result != null) {
       // Save the selection
@@ -276,6 +287,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
           buildWhen: (previous, current) => previous.loading != current.loading,
           builder: (context, state) {
             return BlocListener<PostBloc, PostState>(
+              listenWhen:
+                  (previous, current) => previous.loading != current.loading,
               listener: (context, state) {
                 if (state.status == PostStatus.error) {
                   CustomSnackbar.showError(context, state.error!);
@@ -298,6 +311,135 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       content: Text("Post created successfully"),
                     ),
                   );
+                } else if (state.loading) {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  }
+                } else if (state.status == PostStatus.checkingDuplicates &&
+                    state.loading != true) {
+                  if (state.similarPosts.isEmpty) {
+                    //Adding the logic of moving to the upload logic as there are no similar posts available
+                    User user = context.read<UserBloc>().state.user!;
+                    Post post = Post(
+                      name: user.userName,
+                      avatar: user.avatarId,
+                      title: _titleController.text,
+                      userId: user.id,
+                      description: _descriptionController.text,
+                      isDebate: polarity == 'Polarize',
+                      upvotes: 0,
+                      downvotes: 0,
+                      isUpVote: false,
+                      isDownVote: false,
+                      comments: 0,
+                      uploadTime: DateTime.now(),
+                      id: '999',
+
+                      clusters: validCluster,
+                    );
+
+                    context.read<PostBloc>().add(
+                      SubmitPostEvent(
+                        post,
+                        croppedImage,
+                        videoFile,
+                        context,
+                        widget.newsId,
+                      ),
+                    );
+                  } else {
+                    if (!mounted) return;
+                    final rootContext =
+                        Navigator.of(context, rootNavigator: true).context;
+                    closeKeyboard(context);
+
+                    showModalBottomSheet(
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (context) {
+                        return SizedBox(
+                          height: 90.h,
+                          child: Scaffold(
+                            floatingActionButton: FloatingActionButton.extended(
+                              onPressed: () {
+                                User user =
+                                    rootContext.read<UserBloc>().state.user!;
+                                Post post = Post(
+                                  name: user.userName,
+                                  avatar: user.avatarId,
+                                  title: _titleController.text,
+                                  userId: user.id,
+                                  description: _descriptionController.text,
+                                  isDebate: polarity == 'Polarize',
+                                  upvotes: 0,
+                                  downvotes: 0,
+                                  isUpVote: false,
+                                  isDownVote: false,
+                                  comments: 0,
+                                  uploadTime: DateTime.now(),
+                                  id: '999',
+
+                                  clusters: validCluster,
+                                );
+
+                                rootContext.read<PostBloc>().add(
+                                  SubmitPostEvent(
+                                    post,
+                                    croppedImage,
+                                    videoFile,
+                                    rootContext,
+                                    widget.newsId,
+                                  ),
+                                );
+                              },
+                              label: Text("Post anyway"),
+                              icon: Icon(Icons.upload_outlined),
+                            ),
+                            body: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                // 🔹 Title
+                                Padding(
+                                  padding: EdgeInsets.only(top: 16),
+                                  child: Text(
+                                    state.similarPosts.length > 1
+                                        ? "Similar posts found"
+                                        : "Similar post found",
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                Divider(color: Theme.of(context).dividerColor),
+
+                                // 🔹 ListView inside Expanded
+                                BlocBuilder<PostBloc, PostState>(
+                                  builder: (context, state) {
+                                    return Expanded(
+                                      child: ListView.builder(
+                                        itemCount: state.similarPosts.length,
+                                        itemBuilder: (context, index) {
+                                          return PostWidget(
+                                            post: state.similarPosts[index],
+                                            index: index,
+                                            category: 'similarPosts',
+                                            onFullView: false,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  }
                 }
               },
               child: Scaffold(
@@ -445,30 +587,11 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                 final user =
                                     context.read<UserBloc>().state.user;
 
-                                Post post = Post(
-                                  name: user!.userName,
-                                  avatar: user.avatarId,
-                                  title: _titleController.text,
-                                  userId: user.id,
-                                  description: _descriptionController.text,
-                                  isDebate: polarity == 'Polarize',
-                                  upvotes: 0,
-                                  downvotes: 0,
-                                  isUpVote: false,
-                                  isDownVote: false,
-                                  comments: 0,
-                                  uploadTime: DateTime.now(),
-                                  id: '999',
-
-                                  clusters: validCluster,
-                                );
                                 context.read<PostBloc>().add(
-                                  SubmitPostEvent(
-                                    post,
-                                    croppedImage,
-                                    videoFile,
-                                    context,
-                                    widget.newsId,
+                                  CheckSimilar(
+                                    userId: user!.id,
+                                    title: _titleController.text,
+                                    description: _descriptionController.text,
                                   ),
                                 );
                               }
@@ -596,6 +719,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                     child: Column(
                                       children: [
                                         TextField(
+                                          autofocus:
+                                              false, // 👈 remove this or set false
+
                                           controller: _titleController,
                                           style: TextStyle(
                                             color:
@@ -626,6 +752,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
 
                                         // Description Field
                                         TextField(
+                                          autofocus:
+                                              false, // 👈 remove this or set false
+
                                           controller: _descriptionController,
                                           style: TextStyle(
                                             color:
@@ -872,6 +1001,9 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                               const SizedBox(width: 12),
                                               Expanded(
                                                 child: TextField(
+                                                  autofocus:
+                                                      false, // 👈 remove this or set false
+
                                                   style: TextStyle(
                                                     color:
                                                         Theme.of(context)

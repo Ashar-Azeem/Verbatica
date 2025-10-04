@@ -32,3 +32,28 @@ class CompressedProgress extends PostEvent {
 
   const CompressedProgress(this.progress);
 }
+
+class CheckSimilar extends PostEvent {
+  final int userId;
+  final String title;
+  final String description;
+
+  const CheckSimilar({
+    required this.userId,
+    required this.title,
+    required this.description,
+  });
+}
+
+class UpVoteSimilarPosts extends PostEvent {
+  final int index;
+  final BuildContext context;
+  const UpVoteSimilarPosts({required this.index, required this.context});
+}
+
+class DownVoteSimilarPosts extends PostEvent {
+  final int index;
+  final BuildContext context;
+
+  const DownVoteSimilarPosts({required this.index, required this.context});
+}

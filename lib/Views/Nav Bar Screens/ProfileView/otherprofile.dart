@@ -209,7 +209,7 @@ class _ProfileViewState extends State<otherProfileView>
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.article, size: 18),
+                                Icon(Icons.article, size: 16),
                                 SizedBox(width: 8),
                                 Text('Posts'),
                               ],
@@ -219,7 +219,7 @@ class _ProfileViewState extends State<otherProfileView>
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.comment, size: 18),
+                                Icon(Icons.comment, size: 16),
                                 SizedBox(width: 8),
                                 Text('Comments'),
                               ],
@@ -229,7 +229,7 @@ class _ProfileViewState extends State<otherProfileView>
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Icon(Icons.person, size: 18),
+                                Icon(Icons.person, size: 16),
                                 SizedBox(width: 8),
                                 Text('About'),
                               ],

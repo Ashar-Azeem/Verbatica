@@ -17,14 +17,14 @@ class PostState extends Equatable {
   final bool loading;
   final String? error;
   final String? progress;
-  final List<Post>? similarPosts;
+  final List<Post> similarPosts;
 
   const PostState({
-    this.status = PostStatus.checkingDuplicates,
+    this.status = PostStatus.done,
     this.loading = false,
     this.error,
     this.progress,
-    this.similarPosts,
+    this.similarPosts = const [],
   });
 
   PostState copyWith({

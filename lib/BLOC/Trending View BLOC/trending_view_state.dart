@@ -4,6 +4,7 @@ class TrendingViewState extends Equatable {
   final List<News> news;
   final List<Post> trending;
   final bool trendingInitialLoading;
+  final bool trendingBottomLoading;
   final bool newsInitialLoading;
   final bool fetchingPostsWithInNews;
 
@@ -11,6 +12,7 @@ class TrendingViewState extends Equatable {
     this.news = const [],
     this.trending = const [],
     this.trendingInitialLoading = true,
+    this.trendingBottomLoading = false,
     this.fetchingPostsWithInNews = false,
     this.newsInitialLoading = true,
   });
@@ -18,6 +20,7 @@ class TrendingViewState extends Equatable {
   TrendingViewState copyWith({
     List<News>? news,
     List<Post>? trending,
+    bool? trendingBottomLoading,
     bool? fetchingPostsWithInNews,
     bool? trendingInitialLoading,
     bool? newsInitialLoading,
@@ -25,6 +28,8 @@ class TrendingViewState extends Equatable {
     return TrendingViewState(
       news: news ?? this.news,
       trending: trending ?? this.trending,
+      trendingBottomLoading:
+          trendingBottomLoading ?? this.trendingBottomLoading,
       fetchingPostsWithInNews:
           fetchingPostsWithInNews ?? this.fetchingPostsWithInNews,
       trendingInitialLoading:
@@ -38,6 +43,7 @@ class TrendingViewState extends Equatable {
     news,
     trending,
     fetchingPostsWithInNews,
+    trendingBottomLoading,
     trendingInitialLoading,
     newsInitialLoading,
   ];

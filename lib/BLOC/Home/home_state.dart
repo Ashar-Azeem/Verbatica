@@ -6,7 +6,6 @@ class HomeState extends Equatable {
   final bool hasMoreFollowingPosts;
   final int? lastFollowingPostId;
   final bool hasMoreForYouPosts;
-  final int? lastForYouPostId;
   final bool forYouInitialLoading;
   final bool followingInitialLoading;
 
@@ -15,7 +14,6 @@ class HomeState extends Equatable {
     this.forYou = const [],
     this.lastFollowingPostId,
     this.hasMoreFollowingPosts = false,
-    this.lastForYouPostId,
     this.hasMoreForYouPosts = false,
     this.forYouInitialLoading = true,
     this.followingInitialLoading = true,
@@ -27,7 +25,6 @@ class HomeState extends Equatable {
     bool? hasMoreFollowingPosts,
     int? lastFollowingPostId,
     bool? hasMoreForYouPosts,
-    int? lastForYouPostId,
     bool? forYouInitialLoading,
     bool? followingInitialLoading,
   }) {
@@ -38,7 +35,6 @@ class HomeState extends Equatable {
           hasMoreFollowingPosts ?? this.hasMoreFollowingPosts,
       lastFollowingPostId: lastFollowingPostId ?? lastFollowingPostId,
       hasMoreForYouPosts: hasMoreForYouPosts ?? this.hasMoreForYouPosts,
-      lastForYouPostId: lastForYouPostId ?? this.lastForYouPostId,
       forYouInitialLoading: forYouInitialLoading ?? this.forYouInitialLoading,
       followingInitialLoading:
           followingInitialLoading ?? this.followingInitialLoading,
@@ -51,7 +47,6 @@ class HomeState extends Equatable {
     forYou,
     hasMoreFollowingPosts,
     lastFollowingPostId,
-    lastForYouPostId,
     hasMoreForYouPosts,
     forYouInitialLoading,
     followingInitialLoading,

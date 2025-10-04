@@ -8,7 +8,8 @@ sealed class TrendingViewEvent extends Equatable {
 }
 
 class FetchInitialTrendingPosts extends TrendingViewEvent {
-  const FetchInitialTrendingPosts();
+  final int userId;
+  const FetchInitialTrendingPosts({required this.userId});
 }
 
 class FetchInitialNews extends TrendingViewEvent {
@@ -18,21 +19,33 @@ class FetchInitialNews extends TrendingViewEvent {
 }
 
 class FetchBottomTrendingPosts extends TrendingViewEvent {
-  const FetchBottomTrendingPosts();
+  final int userId;
+
+  const FetchBottomTrendingPosts({required this.userId});
 }
 
 class UpVotePost extends TrendingViewEvent {
   final int index;
-  final String category;
+  final int userId;
+  final BuildContext context;
 
-  const UpVotePost({required this.index, required this.category});
+  const UpVotePost({
+    required this.index,
+    required this.context,
+    required this.userId,
+  });
 }
 
 class DownVotePost extends TrendingViewEvent {
   final int index;
-  final String category;
+  final int userId;
+  final BuildContext context;
 
-  const DownVotePost({required this.index, required this.category});
+  const DownVotePost({
+    required this.index,
+    required this.context,
+    required this.userId,
+  });
 }
 
 class ReportPost extends TrendingViewEvent {
@@ -62,24 +75,26 @@ class SharePost extends TrendingViewEvent {
 class UpVoteNewsPost extends TrendingViewEvent {
   final int index;
   final int newsIndex;
-  final String category;
-
+  final int userId;
+  final BuildContext context;
   const UpVoteNewsPost({
     required this.index,
-    required this.category,
     required this.newsIndex,
+    required this.context,
+    required this.userId,
   });
 }
 
 class DownVoteNewsPost extends TrendingViewEvent {
   final int index;
   final int newsIndex;
-  final String category;
-
+  final int userId;
+  final BuildContext context;
   const DownVoteNewsPost({
     required this.index,
-    required this.category,
     required this.newsIndex,
+    required this.context,
+    required this.userId,
   });
 }
 

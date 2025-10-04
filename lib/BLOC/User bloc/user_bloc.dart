@@ -28,6 +28,19 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<downvotesavedPost>(_downvotesavedPost);
     on<ClearBloc>(clearBloc);
     on<FetchMorePosts>(fetchMorePosts);
+    on<AddRecentPost>(addRecentPost);
+  }
+
+  void addRecentPost(AddRecentPost event, Emitter<UserState> emit) {
+    try {
+      if (!state.isLoadingPosts) {
+        List<Post> userPosts = List.from(state.userPosts);
+        userPosts.insert(0, event.post);
+        emit(state.copyWith(userPosts: userPosts));
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   void _onUpdateAvatarAndAbout(

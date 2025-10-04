@@ -3,13 +3,15 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/model/Post.dart';
-
-import '../../DummyData/dummyPosts.dart';
-
 part 'home_event.dart';
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
+  Map<String, dynamic>? lastForYouPost;
+  int forYouPage = 1;
+  int followingPage = 1;
+  List<double>? forYouVector;
+  List<double>? followingVector;
   final limit = 10;
   HomeBloc() : super(HomeState()) {
     on<FetchInitialForYouPosts>(fetchInitialForYouPosts);
@@ -25,24 +27,49 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     FetchInitialForYouPosts event,
     Emitter<HomeState> emit,
   ) async {
-    //Dummy Logic
-    await Future.delayed(Duration(seconds: 2));
-    emit(
-      state.copyWith(
-        forYou: List.from(forYouPosts),
-        forYouInitialLoading: false,
-      ),
+    Map<String, dynamic> data = await ApiService().fetchForYouPosts(
+      event.userId,
+      lastForYouPost,
+      forYouVector,
+      forYouPage,
     );
+    List<Post> posts = data['posts'];
+    forYouPage++;
+    forYouVector = data['vector'];
+    lastForYouPost = data['lastPost'];
+
+    if (posts.length < limit) {
+      emit(
+        state.copyWith(
+          forYou: posts,
+          forYouInitialLoading: false,
+          hasMoreForYouPosts: false,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          forYou: posts,
+          forYouInitialLoading: false,
+          hasMoreForYouPosts: true,
+        ),
+      );
+    }
   }
 
   fetchInitialFollowingPosts(
     FetchInitialFollowingPosts event,
     Emitter<HomeState> emit,
   ) async {
-    List<Post> posts = await ApiService().fetchFollowingPosts(
+    Map<String, dynamic> data = await ApiService().fetchFollowingPosts(
       event.userId,
       null,
+      followingVector,
+      followingPage,
     );
+    List<Post> posts = data['posts'];
+    followingPage++;
+    followingVector = data['vector'];
 
     if (posts.length < limit) {
       emit(
@@ -67,16 +94,41 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   fetchBottomForYouPosts(
     FetchBottomForYouPosts event,
     Emitter<HomeState> emit,
-  ) {}
+  ) async {
+    Map<String, dynamic> data = await ApiService().fetchForYouPosts(
+      event.userId,
+      lastForYouPost,
+      forYouVector,
+      forYouPage,
+    );
+    List<Post> posts = data['posts'];
+    forYouPage++;
+    forYouVector = data['vector'];
+    lastForYouPost = data['lastPost'];
+
+    final List<Post> forYouPosts = List.from(state.forYou);
+    forYouPosts.addAll(posts);
+
+    if (posts.length < limit) {
+      emit(state.copyWith(forYou: forYouPosts, hasMoreForYouPosts: false));
+    } else {
+      emit(state.copyWith(forYou: forYouPosts, hasMoreForYouPosts: true));
+    }
+  }
+
   fetchBottomFollowingPosts(
     FetchBottomFollowingPosts event,
     Emitter<HomeState> emit,
   ) async {
-    List<Post> posts = await ApiService().fetchFollowingPosts(
+    Map<String, dynamic> data = await ApiService().fetchFollowingPosts(
       event.userId,
       state.lastFollowingPostId,
+      followingVector,
+      followingPage,
     );
-
+    List<Post> posts = data['posts'];
+    followingPage++;
+    followingVector = data['vector'];
     final List<Post> followingPosts = List.from(state.following);
     followingPosts.addAll(posts);
 

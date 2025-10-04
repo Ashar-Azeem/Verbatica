@@ -65,18 +65,7 @@ class NewsView extends StatelessWidget {
                       ),
                     ),
                   ),
-              errorWidget:
-                  (context, url, error) => AspectRatio(
-                    aspectRatio: 16 / 9,
-                    child: Container(
-                      color:
-                          Theme.of(context).colorScheme.surfaceContainerHighest,
-                      child: Icon(
-                        Icons.error,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
+              errorWidget: (context, url, error) => SizedBox.shrink(),
               fit: BoxFit.contain,
             ),
             Padding(

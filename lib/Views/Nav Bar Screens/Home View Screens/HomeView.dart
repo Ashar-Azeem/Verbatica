@@ -9,6 +9,7 @@ import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/Home/home_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/UI_Components/PostComponents/EmptyPosts.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/UI_Components/PostComponents/ShimmerLoader.dart';
 import 'package:verbatica/Utilities/Color.dart';
@@ -28,7 +29,9 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     //initial fetch for loading the for you because it is the first tab that opens
-    context.read<HomeBloc>().add(FetchInitialForYouPosts());
+    context.read<HomeBloc>().add(
+      FetchInitialForYouPosts(userId: context.read<UserBloc>().state.user!.id),
+    );
   }
 
   @override
@@ -149,6 +152,7 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                       previous.following != current.following;
                 },
                 builder: (context, state) {
+                  print(state.following.length);
                   return TabBarView(
                     physics: NeverScrollableScrollPhysics(),
                     children: [
@@ -210,6 +214,16 @@ class _BuiltPostListState extends State<BuiltPostList>
             return PostShimmerTile();
           },
         )
+        : widget.posts.isEmpty
+        ? SizedBox(
+          height: MediaQuery.of(context).size.height * 0.6,
+          child: Center(
+            child: BuildEmptyTabContent(
+              icon: Icons.article_outlined,
+              message: 'No posts',
+            ),
+          ),
+        )
         : ListView.builder(
           physics: BouncingScrollPhysics(),
           padding: EdgeInsets.only(top: 0),
@@ -223,7 +237,9 @@ class _BuiltPostListState extends State<BuiltPostList>
               context.read<HomeBloc>().add(
                 widget.category == "Following"
                     ? FetchBottomFollowingPosts(userId)
-                    : FetchBottomForYouPosts(),
+                    : FetchBottomForYouPosts(
+                      userId: context.read<UserBloc>().state.user!.id,
+                    ),
               );
               return Padding(
                 padding: EdgeInsetsGeometry.symmetric(vertical: 3.h),

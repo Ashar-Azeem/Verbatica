@@ -1,5 +1,7 @@
 // ignore_for_file: file_names, deprecated_member_use
 
+import 'dart:async';
+
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,6 +15,9 @@ import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_state.dart';
+import 'package:verbatica/BLOC/postsubmit/postsubmit_bloc.dart';
+import 'package:verbatica/BLOC/postsubmit/postsubmit_state.dart';
+import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/UI_Components/Comment%20Componenets/CommentBlock.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/model/Post.dart';
@@ -39,11 +44,20 @@ class _ViewDiscussionState extends State<ViewDiscussion>
   late TextEditingController comment;
   final FocusNode _focusNode = FocusNode();
   bool _keyboardVisible = false;
+  Timer? timer;
 
   @override
   void initState() {
     super.initState();
     comment = TextEditingController();
+    timer = Timer(Duration(seconds: 5), () {
+      if (mounted) {
+        ApiService().registerClick(
+          int.parse(widget.post.id),
+          context.read<UserBloc>().state.user!.id,
+        );
+      }
+    });
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -51,6 +65,7 @@ class _ViewDiscussionState extends State<ViewDiscussion>
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _focusNode.dispose();
+    timer?.cancel();
     comment.dispose();
     super.dispose();
   }
@@ -216,6 +231,22 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                           BlocBuilder<SearchBloc, SearchState>(
                             builder: (context, state) {
                               Post dynamicpost = state.posts[widget.index];
+                              return Padding(
+                                padding: EdgeInsets.symmetric(horizontal: 1.w),
+                                child: PostWidget(
+                                  post: dynamicpost,
+                                  index: widget.index,
+                                  category: widget.category,
+                                  onFullView: true,
+                                ),
+                              );
+                            },
+                          ),
+                        if (widget.category == 'similarPosts')
+                          BlocBuilder<PostBloc, PostState>(
+                            builder: (context, state) {
+                              Post dynamicpost =
+                                  state.similarPosts[widget.index];
                               return Padding(
                                 padding: EdgeInsets.symmetric(horizontal: 1.w),
                                 child: PostWidget(

@@ -4,6 +4,7 @@ import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/UI_Components/PostComponents/EmptyPosts.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/UI_Components/PostComponents/ShimmerLoader.dart';
+import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Trending%20View%20Screens/News.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Trending%20View%20Screens/SearchScreen.dart';
 import 'package:verbatica/model/Post.dart';
@@ -28,7 +30,11 @@ class _TrendingViewState extends State<TrendingView> {
   @override
   void initState() {
     super.initState();
-    context.read<TrendingViewBloc>().add(FetchInitialTrendingPosts());
+    context.read<TrendingViewBloc>().add(
+      FetchInitialTrendingPosts(
+        userId: context.read<UserBloc>().state.user!.id,
+      ),
+    );
   }
 
   @override
@@ -154,10 +160,6 @@ class _TrendingViewState extends State<TrendingView> {
                   ],
 
               body: BlocBuilder<TrendingViewBloc, TrendingViewState>(
-                buildWhen: (previous, current) {
-                  return previous.trending != current.trending ||
-                      previous.news != current.news;
-                },
                 builder: (context, state) {
                   return TabBarView(
                     physics: NeverScrollableScrollPhysics(),
@@ -167,12 +169,14 @@ class _TrendingViewState extends State<TrendingView> {
                         posts: state.trending,
                         loading: state.trendingInitialLoading,
                         category: "Trending",
+                        hasMore: state.trendingBottomLoading,
                       ),
 
                       // Following Tab
                       BuiltPostList(
                         news: state.news,
                         loading: state.newsInitialLoading,
+                        hasMore: false,
                         category: "Top 10 news",
                       ),
                     ],
@@ -192,6 +196,7 @@ class BuiltPostList extends StatefulWidget {
   final List<News>? news;
   final bool loading;
   final String category;
+  final bool hasMore;
 
   const BuiltPostList({
     super.key,
@@ -199,6 +204,7 @@ class BuiltPostList extends StatefulWidget {
     this.news,
     required this.loading,
     required this.category,
+    required this.hasMore,
   });
 
   @override
@@ -243,8 +249,21 @@ class _BuiltPostListState extends State<BuiltPostList>
           addAutomaticKeepAlives: true,
           addRepaintBoundaries: true,
           cacheExtent: 500,
-          itemCount: widget.posts!.length,
+          itemCount: widget.posts!.length + (widget.hasMore ? 1 : 0),
           itemBuilder: (context, index) {
+            if (index == widget.posts!.length) {
+              final userId = context.read<UserBloc>().state.user!.id;
+              context.read<TrendingViewBloc>().add(
+                FetchBottomTrendingPosts(userId: userId),
+              );
+              return Padding(
+                padding: EdgeInsetsGeometry.symmetric(vertical: 3.h),
+                child: LoadingAnimationWidget.dotsTriangle(
+                  color: primaryColor,
+                  size: 12.w,
+                ),
+              );
+            }
             return PostWidget(
               post: widget.posts![index],
               index: index,

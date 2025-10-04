@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/Votes%20Restriction/votes_restrictor_bloc.dart';
+import 'package:verbatica/model/Ad.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/news.dart';
 import 'package:verbatica/model/user.dart';
@@ -11,7 +12,7 @@ import 'package:verbatica/model/user.dart';
 class ApiService {
   final Dio _dio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.1.8:4000/api/',
+        baseUrl: 'http://192.168.100.81:4000/api/',
         connectTimeout: const Duration(seconds: 20),
         receiveTimeout: const Duration(seconds: 20),
         headers: {'Content-Type': 'application/json'},
@@ -362,15 +363,128 @@ class ApiService {
     }
   }
 
-  Future<List<Post>> fetchFollowingPosts(int userId, int? lastPostId) async {
+  Future<Map<String, dynamic>> fetchFollowingPosts(
+    int userId,
+    int? lastPostId,
+    List<double>? vector,
+    int page,
+  ) async {
     try {
       final response = await _dio.get(
         'post/followingPosts',
-        data: {'userId': userId, "cursor": lastPostId},
+        data: {
+          'userId': userId,
+          "cursor": lastPostId,
+          "vector": vector,
+          "page": page,
+        },
       );
 
       final List<dynamic> data = response.data['posts'] ?? [];
-      return data.map((d) => Post.fromJson(d)).toList();
+      List<Post> posts = data.map((d) => Post.fromJson(d)).toList();
+      List<double>? newVector =
+          (response.data['vector'] as List<dynamic>?)
+              ?.map((e) => (e as num).toDouble())
+              .toList();
+      Ad? ad =
+          response.data['ad'] == null ? null : Ad.fromJson(response.data['ad']);
+      return {"posts": posts, "vector": newVector, "ad": ad};
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchForYouPosts(
+    int userId,
+    Map<String, dynamic>? lastPost,
+    List<double>? vector,
+    int page,
+  ) async {
+    try {
+      final response = await _dio.get(
+        'post/forYou',
+        data: {
+          'userId': userId,
+          "lastPost": lastPost,
+          "vector": vector,
+          "page": page,
+        },
+      );
+
+      final List<dynamic> data = response.data['posts'] ?? [];
+      List<Post> posts = data.map((d) => Post.fromJson(d)).toList();
+      List<double>? newVector =
+          (response.data['vector'] as List<dynamic>?)
+              ?.map((e) => (e as num).toDouble())
+              .toList();
+      Ad? ad =
+          response.data['ad'] == null ? null : Ad.fromJson(response.data['ad']);
+      Map<String, dynamic>? lastForYou = response.data['lastPost'];
+      return {
+        "posts": posts,
+        "vector": newVector,
+        "ad": ad,
+        "lastPost": lastForYou,
+      };
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchTrendingPosts(
+    int userId,
+    List<double>? vector,
+    int page,
+  ) async {
+    try {
+      final response = await _dio.get(
+        'post/trendingPost',
+        data: {'userId': userId, "vector": vector, "page": page},
+      );
+
+      final List<dynamic> data = response.data['posts'] ?? [];
+      List<Post> posts = data.map((d) => Post.fromJson(d)).toList();
+      List<double>? newVector =
+          (response.data['vector'] as List<dynamic>?)
+              ?.map((e) => (e as num).toDouble())
+              .toList();
+      Ad? ad =
+          response.data['ad'] == null ? null : Ad.fromJson(response.data['ad']);
+      return {"posts": posts, "vector": newVector, "ad": ad};
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<void> registerClick(int postId, int userId) async {
+    try {
+      await _dio.post(
+        'post/registerClick',
+        data: {"postId": postId, "userId": userId},
+      );
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Post>> searchSimilarPosts(
+    int userId,
+    String title,
+    String description,
+  ) async {
+    try {
+      final response = await _dio.get(
+        'post/searchSimilarPosts',
+        data: {'userId': userId, "title": title, "description": description},
+      );
+
+      final List<dynamic> data = response.data['posts'] ?? [];
+      List<Post> posts = data.map((d) => Post.fromJson(d)).toList();
+      return posts;
     } on DioException catch (e) {
       final errorMessage = _extractErrorMessage(e);
       throw Exception(errorMessage);

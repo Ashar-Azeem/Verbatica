@@ -4,6 +4,7 @@ import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fullscreen_image_viewer/fullscreen_image_viewer.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
@@ -14,6 +15,8 @@ import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/Votes%20Restriction/votes_restrictor_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
+import 'package:verbatica/BLOC/postsubmit/postsubmit_bloc.dart';
+import 'package:verbatica/BLOC/postsubmit/postsubmit_event.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/SummaryView.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
@@ -376,30 +379,63 @@ class PostWidget extends StatelessWidget {
                 SizedBox(height: 0.8.h),
 
                 if (post.postImageLink != null)
-                  CachedNetworkImage(
-                    imageUrl: post.postImageLink!,
-                    placeholder:
-                        (context, url) => Shimmer.fromColors(
-                          baseColor: colorScheme.surfaceContainerHighest,
-                          highlightColor: colorScheme.surfaceContainerHighest
-                              .withOpacity(0.8),
-                          child: AspectRatio(
-                            aspectRatio: 16 / 9,
-                            child: Container(color: colorScheme.surface),
-                          ),
+                  GestureDetector(
+                    onTap: () async {
+                      await FullscreenImageViewer.open(
+                        context: context,
+                        child: CachedNetworkImage(
+                          imageUrl: post.postImageLink!,
+                          placeholder:
+                              (context, url) => Shimmer.fromColors(
+                                baseColor: colorScheme.surfaceContainerHighest,
+                                highlightColor: colorScheme
+                                    .surfaceContainerHighest
+                                    .withOpacity(0.8),
+                                child: AspectRatio(
+                                  aspectRatio: 16 / 9,
+                                  child: Container(color: colorScheme.surface),
+                                ),
+                              ),
+                          errorWidget:
+                              (context, url, error) => AspectRatio(
+                                aspectRatio: 16 / 9,
+                                child: Container(
+                                  color: colorScheme.errorContainer,
+                                  child: Icon(
+                                    Icons.error,
+                                    color: colorScheme.onErrorContainer,
+                                  ),
+                                ),
+                              ),
+                          fit: BoxFit.contain,
                         ),
-                    errorWidget:
-                        (context, url, error) => AspectRatio(
-                          aspectRatio: 16 / 9,
-                          child: Container(
-                            color: colorScheme.errorContainer,
-                            child: Icon(
-                              Icons.error,
-                              color: colorScheme.onErrorContainer,
+                      );
+                    },
+                    child: CachedNetworkImage(
+                      imageUrl: post.postImageLink!,
+                      placeholder:
+                          (context, url) => Shimmer.fromColors(
+                            baseColor: colorScheme.surfaceContainerHighest,
+                            highlightColor: colorScheme.surfaceContainerHighest
+                                .withOpacity(0.8),
+                            child: AspectRatio(
+                              aspectRatio: 16 / 9,
+                              child: Container(color: colorScheme.surface),
                             ),
                           ),
-                        ),
-                    fit: BoxFit.contain,
+                      errorWidget:
+                          (context, url, error) => AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: Container(
+                              color: colorScheme.errorContainer,
+                              child: Icon(
+                                Icons.error,
+                                color: colorScheme.onErrorContainer,
+                              ),
+                            ),
+                          ),
+                      fit: BoxFit.contain,
+                    ),
                   ),
 
                 /// Video placeholder (show only if video link is not null)
@@ -471,15 +507,17 @@ class PostWidget extends StatelessWidget {
                                       context.read<TrendingViewBloc>().add(
                                         UpVoteNewsPost(
                                           index: index,
-                                          category: category,
                                           newsIndex: newsIndex!,
+                                          context: context,
+                                          userId: user.id,
                                         ),
                                       );
                                     } else {
                                       context.read<TrendingViewBloc>().add(
                                         UpVotePost(
                                           index: index,
-                                          category: category,
+                                          context: context,
+                                          userId: user.id,
                                         ),
                                       );
                                     }
@@ -500,6 +538,13 @@ class PostWidget extends StatelessWidget {
                                   } else if (category == 'saved') {
                                     context.read<UserBloc>().add(
                                       upvotesavedPost1(index: index),
+                                    );
+                                  } else if (category == 'similarPosts') {
+                                    context.read<PostBloc>().add(
+                                      UpVoteSimilarPosts(
+                                        index: index,
+                                        context: context,
+                                      ),
                                     );
                                   } else {
                                     context.read<searchBloc.SearchBloc>().add(
@@ -576,15 +621,17 @@ class PostWidget extends StatelessWidget {
                                       context.read<TrendingViewBloc>().add(
                                         DownVoteNewsPost(
                                           index: index,
-                                          category: category,
                                           newsIndex: newsIndex!,
+                                          userId: user.id,
+                                          context: context,
                                         ),
                                       );
                                     } else {
                                       context.read<TrendingViewBloc>().add(
                                         DownVotePost(
                                           index: index,
-                                          category: category,
+                                          context: context,
+                                          userId: user.id,
                                         ),
                                       );
                                     }
@@ -605,6 +652,13 @@ class PostWidget extends StatelessWidget {
                                   } else if (category == 'saved') {
                                     context.read<UserBloc>().add(
                                       downvotesavedPost(index: index),
+                                    );
+                                  } else if (category == 'similarPosts') {
+                                    context.read<PostBloc>().add(
+                                      DownVoteSimilarPosts(
+                                        index: index,
+                                        context: context,
+                                      ),
                                     );
                                   } else {
                                     context.read<searchBloc.SearchBloc>().add(

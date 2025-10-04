@@ -68,6 +68,7 @@ dependencies:
   encrypt: ^5.0.3
   better_player_plus: ^1.0.8
   extended_nested_scroll_view: ^6.2.1
+  fullscreen_image_viewer: ^1.2.0
 
 dev_dependencies:
   flutter_test:

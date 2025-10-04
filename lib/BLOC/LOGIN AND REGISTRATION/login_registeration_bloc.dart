@@ -107,7 +107,6 @@ class LoginRegisterationBloc
       User user = map['user'];
       String message = map['status'];
 
-      print(message);
       //All the info is complete
       if (message == "Complete") {
         await TokenOperations().saveUserProfile(user);

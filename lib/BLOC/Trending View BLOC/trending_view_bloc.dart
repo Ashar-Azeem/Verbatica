@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:verbatica/DummyData/dummyPosts.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/news.dart';
@@ -9,6 +9,10 @@ part 'trending_view_event.dart';
 part 'trending_view_state.dart';
 
 class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
+  final int limit = 10;
+  int page = 1;
+  List<double>? vector;
+
   TrendingViewBloc() : super(TrendingViewState()) {
     on<FetchInitialTrendingPosts>(fetchInitialTrendingPosts);
     on<FetchInitialNews>(fetchInitialNews);
@@ -26,10 +30,32 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
     FetchInitialTrendingPosts event,
     Emitter<TrendingViewState> emit,
   ) async {
-    //Dummy Logic
-    await Future.delayed(Duration(seconds: 2));
+    Map<String, dynamic> data = await ApiService().fetchTrendingPosts(
+      event.userId,
+      vector,
+      page,
+    );
+    List<Post> posts = data['posts'];
+    page++;
+    vector = data['vector'];
 
-    emit(state.copyWith(trending: forYouPosts, trendingInitialLoading: false));
+    if (posts.length < limit) {
+      emit(
+        state.copyWith(
+          trending: posts,
+          trendingInitialLoading: false,
+          trendingBottomLoading: false,
+        ),
+      );
+    } else {
+      emit(
+        state.copyWith(
+          trending: posts,
+          trendingInitialLoading: false,
+          trendingBottomLoading: true,
+        ),
+      );
+    }
   }
 
   fetchInitialNews(
@@ -45,10 +71,38 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
   fetchBottomTrendingPosts(
     FetchBottomTrendingPosts event,
     Emitter<TrendingViewState> emit,
-  ) {}
+  ) async {
+    Map<String, dynamic> data = await ApiService().fetchTrendingPosts(
+      event.userId,
+      vector,
+      page,
+    );
+    List<Post> posts = data['posts'];
+    page++;
+    vector = data['vector'];
+
+    final List<Post> trendingPosts = List.from(state.trending);
+    trendingPosts.addAll(posts);
+
+    if (posts.length < limit) {
+      emit(
+        state.copyWith(trending: trendingPosts, trendingBottomLoading: false),
+      );
+    } else {
+      emit(
+        state.copyWith(trending: trendingPosts, trendingBottomLoading: true),
+      );
+    }
+  }
 
   upVotePost(UpVotePost event, Emitter<TrendingViewState> emit) {
     List<Post> posts = List.from(state.trending);
+    ApiService().updatingVotes(
+      int.parse(posts[event.index].id),
+      event.userId,
+      true,
+      event.context,
+    );
     if (!posts[event.index].isUpVote) {
       if (posts[event.index].isDownVote) {
         posts[event.index] = posts[event.index].copyWith(
@@ -77,6 +131,12 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
 
   downVotePost(DownVotePost event, Emitter<TrendingViewState> emit) {
     List<Post> posts = List.from(state.trending);
+    ApiService().updatingVotes(
+      int.parse(posts[event.index].id),
+      event.userId,
+      false,
+      event.context,
+    );
     if (!posts[event.index].isDownVote) {
       if (posts[event.index].isUpVote) {
         posts[event.index] = posts[event.index].copyWith(
@@ -109,6 +169,12 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
   upVoteNewsPost(UpVoteNewsPost event, Emitter<TrendingViewState> emit) {
     List<News> news = List.from(state.news);
     List<Post> posts = List.from(news[event.newsIndex].discussions);
+    ApiService().updatingVotes(
+      int.parse(posts[event.index].id),
+      event.userId,
+      true,
+      event.context,
+    );
     if (!posts[event.index].isUpVote) {
       if (posts[event.index].isDownVote) {
         posts[event.index] = posts[event.index].copyWith(
@@ -147,6 +213,12 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
   downVoteNewsPost(DownVoteNewsPost event, Emitter<TrendingViewState> emit) {
     List<News> news = List.from(state.news);
     List<Post> posts = List.from(news[event.newsIndex].discussions);
+    ApiService().updatingVotes(
+      int.parse(posts[event.index].id),
+      event.userId,
+      false,
+      event.context,
+    );
     if (!posts[event.index].isDownVote) {
       if (posts[event.index].isUpVote) {
         posts[event.index] = posts[event.index].copyWith(

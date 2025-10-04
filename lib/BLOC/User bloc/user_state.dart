@@ -23,7 +23,7 @@ class UserState extends Equatable {
     this.userComments = const [],
     this.savedPosts = const [],
     this.isLoadingComments = false,
-    this.isLoadingPosts = false,
+    this.isLoadingPosts = true,
   });
 
   UserState copyWith({

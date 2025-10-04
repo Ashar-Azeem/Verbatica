@@ -8,7 +8,9 @@ sealed class HomeEvent extends Equatable {
 }
 
 class FetchInitialForYouPosts extends HomeEvent {
-  const FetchInitialForYouPosts();
+  final int userId;
+
+  const FetchInitialForYouPosts({required this.userId});
 }
 
 class FetchInitialFollowingPosts extends HomeEvent {
@@ -17,7 +19,9 @@ class FetchInitialFollowingPosts extends HomeEvent {
 }
 
 class FetchBottomForYouPosts extends HomeEvent {
-  const FetchBottomForYouPosts();
+  final int userId;
+
+  const FetchBottomForYouPosts({required this.userId});
 }
 
 class FetchBottomFollowingPosts extends HomeEvent {
@@ -77,4 +81,3 @@ class SharePost extends HomeEvent {
 
   const SharePost({required this.post});
 }
-

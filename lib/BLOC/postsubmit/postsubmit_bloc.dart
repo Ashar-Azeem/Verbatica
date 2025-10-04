@@ -19,10 +19,40 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     });
     on<SubmitPostEvent>(_submitPost);
     on<CompressedProgress>(progress);
+    on<CheckSimilar>(checkSimilar);
+    on<UpVoteSimilarPosts>(upVoteSimilarPosts);
+    on<DownVoteSimilarPosts>(downVoteSimilarPosts);
   }
 
   void progress(CompressedProgress event, Emitter<PostState> emit) {
     emit(state.copyWith(progress: event.progress));
+  }
+
+  Future<void> checkSimilar(CheckSimilar event, Emitter<PostState> emit) async {
+    try {
+      emit(
+        state.copyWith(
+          status: PostStatus.checkingDuplicates,
+          loading: true,
+          similarPosts: [],
+        ),
+      );
+      //Checking for the duplicates
+      List<Post> similarPosts = await ApiService().searchSimilarPosts(
+        event.userId,
+        event.title,
+        event.description,
+      );
+      emit(state.copyWith(loading: false, similarPosts: similarPosts));
+    } catch (e) {
+      emit(
+        state.copyWith(
+          error: e.toString(),
+          status: PostStatus.error,
+          loading: false,
+        ),
+      );
+    }
   }
 
   Future<void> _submitPost(
@@ -30,11 +60,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     Emitter<PostState> emit,
   ) async {
     try {
-      emit(
-        state.copyWith(status: PostStatus.checkingDuplicates, loading: true),
-      );
-      //Checking for the duplicates
-      await Future.delayed(Duration(seconds: 2));
+      emit(state.copyWith(similarPosts: [], loading: true));
 
       //uploading to the server with a picture
       if (event.image != null) {
@@ -144,7 +170,6 @@ class PostBloc extends Bloc<PostEvent, PostState> {
           event.post.avatar,
           event.newsId,
         );
-
         event.context.read<UserBloc>().add(AddRecentPost(post: post));
 
         //Done
@@ -159,6 +184,77 @@ class PostBloc extends Bloc<PostEvent, PostState> {
           error: e.toString(),
         ),
       );
+    }
+  }
+
+  void upVoteSimilarPosts(UpVoteSimilarPosts event, Emitter<PostState> emit) {
+    List<Post> posts = List.from(state.similarPosts);
+    ApiService().updatingVotes(
+      int.parse(posts[event.index].id),
+      event.context.read<UserBloc>().state.user!.id,
+      true,
+      event.context,
+    );
+    if (!posts[event.index].isUpVote) {
+      if (posts[event.index].isDownVote) {
+        posts[event.index] = posts[event.index].copyWith(
+          isDownVote: false,
+          isUpVote: true,
+          upvotes: posts[event.index].upvotes + 2,
+        );
+        emit(state.copyWith(similarPosts: posts));
+      } else {
+        posts[event.index] = posts[event.index].copyWith(
+          isUpVote: true,
+          upvotes: posts[event.index].upvotes + 1,
+        );
+        emit(state.copyWith(similarPosts: posts));
+      }
+    } else {
+      //undo the vote
+      posts[event.index] = posts[event.index].copyWith(
+        isDownVote: false,
+        isUpVote: false,
+        upvotes: posts[event.index].upvotes - 1,
+      );
+      emit(state.copyWith(similarPosts: posts));
+    }
+  }
+
+  void downVoteSimilarPosts(
+    DownVoteSimilarPosts event,
+    Emitter<PostState> emit,
+  ) {
+    List<Post> posts = List.from(state.similarPosts);
+    ApiService().updatingVotes(
+      int.parse(posts[event.index].id),
+      event.context.read<UserBloc>().state.user!.id,
+      false,
+      event.context,
+    );
+    if (!posts[event.index].isDownVote) {
+      if (posts[event.index].isUpVote) {
+        posts[event.index] = posts[event.index].copyWith(
+          isDownVote: true,
+          isUpVote: false,
+          upvotes: posts[event.index].upvotes - 2,
+        );
+        emit(state.copyWith(similarPosts: posts));
+      } else {
+        posts[event.index] = posts[event.index].copyWith(
+          isDownVote: true,
+          upvotes: posts[event.index].upvotes - 1,
+        );
+        emit(state.copyWith(similarPosts: posts));
+      }
+    } else {
+      //undo the vote
+      posts[event.index] = posts[event.index].copyWith(
+        isDownVote: false,
+        isUpVote: false,
+        downvotes: posts[event.index].downvotes - 1,
+      );
+      emit(state.copyWith(similarPosts: posts));
     }
   }
 }
