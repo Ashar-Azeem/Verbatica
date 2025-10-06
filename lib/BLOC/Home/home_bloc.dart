@@ -24,6 +24,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<SavePost>(savePost);
     on<SyncDownVotePost>(syncDownVotePost);
     on<SyncUpVotePost>(syncUpVotePost);
+    on<SyncDownvotePostsOfOtherTab>(syncDownvotePostsOfOtherTab);
+    on<SyncUpvotePostsOfOtherTab>(syncUpvotePostsOfOtherTab);
   }
   fetchInitialForYouPosts(
     FetchInitialForYouPosts event,
@@ -286,6 +288,140 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           downvotes: posts[event.index].downvotes - 1,
         );
         emit(state.copyWith(following: posts));
+      }
+    }
+  }
+
+  syncDownvotePostsOfOtherTab(
+    SyncDownvotePostsOfOtherTab event,
+    Emitter<HomeState> emit,
+  ) {
+    if (event.category == 'ForYou') {
+      List<Post> forYouPosts = List.from(state.forYou);
+      int forYouIndex = forYouPosts.indexWhere(
+        (post) => post.id == event.postId,
+      );
+
+      if (forYouIndex != -1) {
+        if (!forYouPosts[forYouIndex].isDownVote) {
+          if (forYouPosts[forYouIndex].isUpVote) {
+            forYouPosts[forYouIndex] = forYouPosts[forYouIndex].copyWith(
+              isDownVote: true,
+              isUpVote: false,
+              downvotes: forYouPosts[forYouIndex].downvotes + 2,
+            );
+          } else {
+            forYouPosts[forYouIndex] = forYouPosts[forYouIndex].copyWith(
+              isDownVote: true,
+              downvotes: forYouPosts[forYouIndex].downvotes + 1,
+            );
+          }
+        } else {
+          forYouPosts[forYouIndex] = forYouPosts[forYouIndex].copyWith(
+            isDownVote: false,
+            downvotes: forYouPosts[forYouIndex].downvotes - 1,
+          );
+        }
+        emit(state.copyWith(forYou: forYouPosts));
+      }
+    } else {
+      // Update in Following list
+      List<Post> followingPosts = List.from(state.following);
+      int followingIndex = followingPosts.indexWhere(
+        (post) => post.id == event.postId,
+      );
+
+      if (followingIndex != -1) {
+        if (!followingPosts[followingIndex].isDownVote) {
+          if (followingPosts[followingIndex].isUpVote) {
+            followingPosts[followingIndex] = followingPosts[followingIndex]
+                .copyWith(
+                  isDownVote: true,
+                  isUpVote: false,
+                  downvotes: followingPosts[followingIndex].downvotes + 2,
+                );
+          } else {
+            followingPosts[followingIndex] = followingPosts[followingIndex]
+                .copyWith(
+                  isDownVote: true,
+                  downvotes: followingPosts[followingIndex].downvotes + 1,
+                );
+          }
+        } else {
+          followingPosts[followingIndex] = followingPosts[followingIndex]
+              .copyWith(
+                isDownVote: false,
+                downvotes: followingPosts[followingIndex].downvotes - 1,
+              );
+        }
+        emit(state.copyWith(following: followingPosts));
+      }
+    }
+  }
+
+  syncUpvotePostsOfOtherTab(
+    SyncUpvotePostsOfOtherTab event,
+    Emitter<HomeState> emit,
+  ) {
+    if (event.category == 'ForYou') {
+      print("here");
+      List<Post> forYouPosts = List.from(state.forYou);
+      int forYouIndex = forYouPosts.indexWhere(
+        (post) => post.id == event.postId,
+      );
+      if (forYouIndex != -1) {
+        if (!forYouPosts[forYouIndex].isUpVote) {
+          if (forYouPosts[forYouIndex].isDownVote) {
+            forYouPosts[forYouIndex] = forYouPosts[forYouIndex].copyWith(
+              isDownVote: false,
+              isUpVote: true,
+              upvotes: forYouPosts[forYouIndex].upvotes + 2,
+            );
+          } else {
+            forYouPosts[forYouIndex] = forYouPosts[forYouIndex].copyWith(
+              isUpVote: true,
+              upvotes: forYouPosts[forYouIndex].upvotes + 1,
+            );
+          }
+        } else {
+          forYouPosts[forYouIndex] = forYouPosts[forYouIndex].copyWith(
+            isUpVote: false,
+            upvotes: forYouPosts[forYouIndex].upvotes - 1,
+          );
+        }
+        emit(state.copyWith(forYou: forYouPosts));
+      }
+    } else {
+      print("following");
+      List<Post> followingPosts = List.from(state.following);
+      int followingIndex = followingPosts.indexWhere(
+        (post) => post.id == event.postId,
+      );
+
+      if (followingIndex != -1) {
+        if (!followingPosts[followingIndex].isUpVote) {
+          if (followingPosts[followingIndex].isDownVote) {
+            followingPosts[followingIndex] = followingPosts[followingIndex]
+                .copyWith(
+                  isDownVote: false,
+                  isUpVote: true,
+                  upvotes: followingPosts[followingIndex].upvotes + 2,
+                );
+          } else {
+            followingPosts[followingIndex] = followingPosts[followingIndex]
+                .copyWith(
+                  isUpVote: true,
+                  upvotes: followingPosts[followingIndex].upvotes + 1,
+                );
+          }
+        } else {
+          followingPosts[followingIndex] = followingPosts[followingIndex]
+              .copyWith(
+                isUpVote: false,
+                upvotes: followingPosts[followingIndex].upvotes - 1,
+              );
+        }
+        emit(state.copyWith(following: followingPosts));
       }
     }
   }

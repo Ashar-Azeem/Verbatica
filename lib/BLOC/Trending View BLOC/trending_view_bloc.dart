@@ -42,7 +42,7 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
           ..insert(0, event.post);
 
         trendingNews[i] = trendingNews[i].copyWith(discussions: updatedPosts);
-        break; // ✅ Stop after finding the match
+        break; 
       }
     }
 

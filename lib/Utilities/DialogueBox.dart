@@ -14,11 +14,11 @@ void showLogoutDialog(BuildContext context) {
         (context) => AlertDialog(
           title: Text(
             'Logout',
-            style: const TextStyle(color: Color.fromARGB(255, 255, 255, 255)),
+            style: TextStyle(color: Theme.of(context).colorScheme.secondary),
           ),
           content: Text(
             'Are you sure you want to logout?',
-            style: const TextStyle(color: Colors.grey),
+            style: TextStyle(color: Theme.of(context).colorScheme.secondary),
           ),
           actions: [
             TextButton(

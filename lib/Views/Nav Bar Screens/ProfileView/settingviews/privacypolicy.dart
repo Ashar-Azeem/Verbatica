@@ -201,9 +201,6 @@ class PrivacyPolicyContent extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 40),
-          _buildAcceptButton(context),
-          const SizedBox(height: 30),
         ],
       ),
     );
@@ -362,38 +359,6 @@ class PrivacyPolicyContent extends StatelessWidget {
           ).textTheme.bodyMedium?.color?.withOpacity(0.8),
           height: 1.5,
           fontSize: 13 * MediaQuery.of(context).textScaleFactor,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAcceptButton(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () async {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: const Text('Privacy Policy Accepted'),
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-          ),
-        );
-
-        // Wait 2 seconds before popping the screen
-        await Future.delayed(const Duration(seconds: 2));
-        Navigator.pop(context);
-      },
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        foregroundColor: Theme.of(context).colorScheme.onPrimary,
-        padding: const EdgeInsets.symmetric(vertical: 15),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        elevation: 5,
-      ),
-      child: Text(
-        'I Accept',
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.onPrimary,
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
         ),
       ),
     );

@@ -1,36 +1,36 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'dart:async';
 import 'package:sizer/sizer.dart';
+import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/Utilities/ErrorSnackBar.dart';
-import 'package:verbatica/Views/Authentication%20Screens/login.dart';
 import 'package:verbatica/Views/Authentication%20Screens/newpassword.dart';
 
 class ForgotPasswordOTPVerification extends StatefulWidget {
+  final int token;
   final String email;
-  
+
   const ForgotPasswordOTPVerification({
     super.key,
     required this.email,
+    required this.token,
   });
 
   @override
-  State<ForgotPasswordOTPVerification> createState() => _ForgotPasswordOTPVerificationState();
+  State<ForgotPasswordOTPVerification> createState() =>
+      _ForgotPasswordOTPVerificationState();
 }
 
-class _ForgotPasswordOTPVerificationState extends State<ForgotPasswordOTPVerification> {
+class _ForgotPasswordOTPVerificationState
+    extends State<ForgotPasswordOTPVerification> {
   final int _otpLength = 5;
   String _enteredOtp = '';
   int _timerSeconds = 30;
   late Timer _timer;
   bool _canResend = false;
   bool _isLoading = false;
-
-  // Dummy OTP for testing
-  final String _dummyOtp = '12345';
 
   @override
   void initState() {
@@ -64,53 +64,50 @@ class _ForgotPasswordOTPVerificationState extends State<ForgotPasswordOTPVerific
   }
 
   Future<void> _verifyOtp() async {
-    if (_enteredOtp.length != _otpLength) {
-      CustomSnackbar.showError(
-        context,
-        "Please enter a valid 5-digit OTP",
-      );
-      return;
-    }
+    if (!_isLoading) {
+      if (_enteredOtp.length != _otpLength) {
+        CustomSnackbar.showError(context, "Please enter a valid 5-digit OTP");
+        return;
+      }
 
-    setState(() {
-      _isLoading = true;
-    });
+      setState(() {
+        _isLoading = true;
+      });
 
-    // Simulate API delay
-    await Future.delayed(const Duration(seconds: 1));
+      try {
+        int token = await ApiService().resetPasswordStep2(
+          widget.email,
+          widget.token,
+          _enteredOtp,
+        );
+        setState(() {
+          _isLoading = false;
+        });
 
-    setState(() {
-      _isLoading = false;
-    });
-
-    // Verify OTP against dummy OTP
-    if (_enteredOtp == _dummyOtp) {
-      // OTP is correct - navigate to Reset Password screen
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => ResetPassword(
-            email: widget.email,
-            otp: _enteredOtp,
+        // OTP is correct - navigate to Reset Password screen
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder:
+                (context) => ResetPassword(email: widget.email, userId: token),
           ),
-        ),
-      );
-    } else {
-      // OTP is incorrect - show error
-      CustomSnackbar.showError(
-        context,
-        "Invalid OTP. Please try again.",
-      );
+        );
+      } catch (e) {
+        CustomSnackbar.showError(context, e.toString());
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
   Future<void> _resendOtp() async {
     if (!_canResend) return;
-
+    ApiService().resendOTP(widget.email);
     // Show success message
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          'OTP has been resent to ${widget.email}',
+          'OTP has been resended to ${widget.email}',
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
@@ -120,7 +117,7 @@ class _ForgotPasswordOTPVerificationState extends State<ForgotPasswordOTPVerific
 
     // Reset timer
     _startTimer();
-    
+
     // Clear entered OTP
     setState(() {
       _enteredOtp = '';
@@ -133,7 +130,6 @@ class _ForgotPasswordOTPVerificationState extends State<ForgotPasswordOTPVerific
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
@@ -147,10 +143,7 @@ class _ForgotPasswordOTPVerificationState extends State<ForgotPasswordOTPVerific
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: theme.iconTheme.color,
-                ),
+                icon: Icon(Icons.arrow_back, color: theme.iconTheme.color),
                 padding: EdgeInsets.zero,
                 alignment: Alignment.centerLeft,
               ),
@@ -191,9 +184,9 @@ class _ForgotPasswordOTPVerificationState extends State<ForgotPasswordOTPVerific
                   ),
                 ),
               ),
-              
+
               SizedBox(height: 0.5.h),
-              
+
               Center(
                 child: Text(
                   widget.email,
@@ -207,22 +200,23 @@ class _ForgotPasswordOTPVerificationState extends State<ForgotPasswordOTPVerific
 
               SizedBox(height: 4.h),
 
-              // OTP Field
               OtpTextField(
                 numberOfFields: _otpLength,
-                borderColor: theme.dividerColor,
+                borderWidth: 2,
+                enabledBorderColor: theme.colorScheme.secondary,
+                disabledBorderColor: theme.colorScheme.secondary,
                 focusedBorderColor: theme.colorScheme.primary,
-                styles: [
-                  for (int i = 0; i < _otpLength; i++)
-                    theme.textTheme.headlineMedium?.copyWith(
-                      color: theme.textTheme.headlineMedium?.color,
-                      fontWeight: FontWeight.bold,
-                    ),
-                ],
                 showFieldAsBox: true,
                 borderRadius: BorderRadius.circular(10),
                 fieldWidth: 50,
                 margin: const EdgeInsets.symmetric(horizontal: 8),
+                styles: [
+                  for (int i = 0; i < _otpLength; i++)
+                    theme.textTheme.headlineMedium?.copyWith(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                ],
                 onSubmit: (code) async {
                   _enteredOtp = code;
                   await _verifyOtp();
@@ -239,9 +233,7 @@ class _ForgotPasswordOTPVerificationState extends State<ForgotPasswordOTPVerific
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    _canResend
-                        ? 'Didn\'t receive code? '
-                        : 'Resend code in ',
+                    _canResend ? 'Didn\'t receive code? ' : 'Resend code in ',
                     style: TextStyle(
                       fontSize: 14,
                       color: theme.textTheme.bodyMedium?.color,
@@ -277,29 +269,28 @@ class _ForgotPasswordOTPVerificationState extends State<ForgotPasswordOTPVerific
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: _isLoading ? null : _verifyOtp,
+                  onPressed: _verifyOtp,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: theme.colorScheme.primary,
                     foregroundColor: theme.colorScheme.onPrimary,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: _isLoading
-                      ? LoadingAnimationWidget.staggeredDotsWave(
-                          color: theme.colorScheme.onPrimary,
-                          size: 10.w,
-                        )
-                      : Text(
-                          'Verify',
-                          style: TextStyle(
-                            fontSize: 16,
+                  child:
+                      _isLoading
+                          ? LoadingAnimationWidget.staggeredDotsWave(
                             color: theme.colorScheme.onPrimary,
+                            size: 6.w,
+                          )
+                          : Text(
+                            'Verify',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: theme.colorScheme.onPrimary,
+                            ),
                           ),
-                        ),
                 ),
               ),
 
@@ -313,37 +304,6 @@ class _ForgotPasswordOTPVerificationState extends State<ForgotPasswordOTPVerific
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.textTheme.bodySmall?.color?.withOpacity(0.6),
                     fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ),
-
-              SizedBox(height: 15.h),
-
-              // Back to Login
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pushAndRemoveUntil(
-                      MaterialPageRoute(builder: (context) => Login()),
-                      (Route<dynamic> route) => false,
-                    );
-                  },
-                  child: Text.rich(
-                    TextSpan(
-                      text: "Try something different? ",
-                      style: TextStyle(
-                        color: theme.textTheme.bodyMedium?.color,
-                      ),
-                      children: [
-                        TextSpan(
-                          text: "Login here",
-                          style: TextStyle(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
                 ),
               ),

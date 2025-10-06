@@ -109,27 +109,28 @@ class _EmailVerificationState extends State<EmailVerification> {
                       builder: (context, state) {
                         return OtpTextField(
                           numberOfFields: _otpLength,
-                          borderColor: theme.dividerColor,
+                          borderWidth: 2,
+                          enabledBorderColor: theme.colorScheme.secondary,
+                          disabledBorderColor: theme.colorScheme.secondary,
                           focusedBorderColor: theme.colorScheme.primary,
-                          styles: [
-                            for (int i = 0; i < _otpLength; i++)
-                              theme.textTheme.headlineMedium?.copyWith(
-                                color: theme.textTheme.headlineMedium?.color,
-                                fontWeight: FontWeight.bold,
-                              ),
-                          ],
                           showFieldAsBox: true,
                           borderRadius: BorderRadius.circular(10),
                           fieldWidth: 50,
                           margin: const EdgeInsets.symmetric(horizontal: 8),
+                          styles: [
+                            for (int i = 0; i < _otpLength; i++)
+                              theme.textTheme.headlineMedium?.copyWith(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                          ],
+
                           onSubmit: (code) async {
                             _enteredOtp = code;
                             if (_enteredOtp.length == _otpLength) {
-                              // Add your OTP verification logic here
                               User user =
                                   await TokenOperations().loadUserProfile()
                                       as User;
-                              //API OPERATION
                               context.read<LoginRegisterationBloc>().add(
                                 VerifyOtp(
                                   email: user.email,

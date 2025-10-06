@@ -332,6 +332,40 @@ class _RegisterState extends State<Register> {
                         useSafeArea: true,
 
                         countryListTheme: CountryListThemeData(
+                          inputDecoration: InputDecoration(
+                            prefixIcon: Icon(
+                              Icons.search,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).colorScheme.secondary,
+                                width: 1.5,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                              borderSide: BorderSide(
+                                color: Theme.of(context).colorScheme.primary,
+                                width: 1,
+                              ),
+                            ),
+                            border: const OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                            ),
+                            hintText: 'Search...',
+                            hintStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
+
                           searchTextStyle: TextStyle(
                             color: Theme.of(context).textTheme.bodyLarge?.color,
                           ),

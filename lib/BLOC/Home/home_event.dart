@@ -93,3 +93,23 @@ class SyncDownVotePost extends HomeEvent {
 
   const SyncDownVotePost({required this.postId});
 }
+
+class SyncUpvotePostsOfOtherTab extends HomeEvent {
+  final String postId;
+  final String category;
+
+  const SyncUpvotePostsOfOtherTab({
+    required this.postId,
+    required this.category,
+  });
+}
+
+class SyncDownvotePostsOfOtherTab extends HomeEvent {
+  final String postId;
+  final String category;
+
+  const SyncDownvotePostsOfOtherTab({
+    required this.postId,
+    required this.category,
+  });
+}

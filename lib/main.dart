@@ -54,7 +54,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-final User? user;
+  final User? user;
   const MyApp({super.key, this.user});
 
   @override
@@ -79,7 +79,6 @@ final User? user;
             colorScheme: ColorScheme(
               primary: const Color.fromARGB(255, 102, 161, 221),
               onPrimary: const Color.fromARGB(255, 255, 255, 255),
-
               secondary: const Color.fromARGB(255, 103, 103, 103),
               onSecondary: Colors.orange,
               error: const Color.fromARGB(255, 252, 17, 0),
@@ -142,8 +141,7 @@ final User? user;
               user == null
                   ? Login()
                   : user!.isVerified
-                  ? 
-                  BottomNavigationBarView(user: user)
+                  ? BottomNavigationBarView(user: user)
                   : EmailVerification(),
         );
       },

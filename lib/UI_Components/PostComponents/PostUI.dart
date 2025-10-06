@@ -511,6 +511,16 @@ class PostWidget extends StatelessWidget {
                                         userId: user.id,
                                       ),
                                     );
+                                    //Sync for the other tab
+                                    context.read<homeBloc.HomeBloc>().add(
+                                      homeBloc.SyncUpvotePostsOfOtherTab(
+                                        postId: post.id,
+                                        category:
+                                            category == 'ForYou'
+                                                ? "Following"
+                                                : "ForYou",
+                                      ),
+                                    );
 
                                     // TrendingViewBloc
                                     context.read<TrendingViewBloc>().add(
@@ -675,7 +685,16 @@ class PostWidget extends StatelessWidget {
                                         userId: user.id,
                                       ),
                                     );
-
+                                    //SYNC THE OTHER TAB
+                                    context.read<homeBloc.HomeBloc>().add(
+                                      homeBloc.SyncDownvotePostsOfOtherTab(
+                                        postId: post.id,
+                                        category:
+                                            category == 'ForYou'
+                                                ? "Following"
+                                                : "ForYou",
+                                      ),
+                                    );
                                     // TrendingViewBloc
                                     context.read<TrendingViewBloc>().add(
                                       SyncDownVoteTrendingPost(postId: post.id),
@@ -719,11 +738,6 @@ class PostWidget extends StatelessWidget {
                                       // OtheruserBloc
                                       context.read<OtheruserBloc>().add(
                                         SyncDownvoteotherPost(postId: post.id),
-                                      );
-
-                                      // UserBloc
-                                      context.read<UserBloc>().add(
-                                        SyncDownvotePost(postId: post.id),
                                       );
                                     }
                                   } else if (category == 'user') {

@@ -3,6 +3,7 @@ import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/report/report_bloc.dart';
 import 'package:verbatica/BLOC/report/report_event.dart';
+import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/Utilities/DialogueBox.dart';
 import 'package:verbatica/Utilities/theme_provider.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/aboutus.dart';
@@ -237,7 +238,9 @@ class SettingsScreen extends StatelessWidget {
               ),
               TextButton(
                 onPressed: () {
-                  // Implement reset preferences logic here
+                  ApiService().resetprefrences(
+                    context.read<UserBloc>().state.user!.id,
+                  );
                   Navigator.of(context).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(

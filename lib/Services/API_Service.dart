@@ -229,18 +229,6 @@ class ApiService {
     }
   }
 
-  Future<void> resetPasswordStep3(String email, int userId, password) async {
-    try {
-      await _dio.put(
-        'auth/resetPassword/verifyOTP/newPassword',
-        data: {'userId': userId, "email": email, "password": password},
-      );
-    } on DioException catch (e) {
-      final errorMessage = _extractErrorMessage(e);
-      throw Exception(errorMessage);
-    }
-  }
-
   Future<Post> uploadPost(
     String title,
     String description,
@@ -485,6 +473,54 @@ class ApiService {
       final List<dynamic> data = response.data['posts'] ?? [];
       List<Post> posts = data.map((d) => Post.fromJson(d)).toList();
       return posts;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<int> resetPasswordStep1(String email) async {
+    try {
+      final response = await _dio.post(
+        'auth/resetPassword',
+        data: {'email': email},
+      );
+      return response.data['token'];
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<int> resetPasswordStep2(String email, int token, String otp) async {
+    try {
+      final response = await _dio.post(
+        'auth/resetPassword/verifyOTP',
+        data: {'email': email, "token": token, "otp": otp},
+      );
+
+      return response.data['token'];
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<void> resetPasswordStep3(String email, int userId, password) async {
+    try {
+      await _dio.put(
+        'auth/resetPassword/verifyOTP/newPassword',
+        data: {'userId': userId, "email": email, "password": password},
+      );
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<void> resetprefrences(int userId) async {
+    try {
+      await _dio.delete('user/deleteHistory', data: {'userId': userId});
     } on DioException catch (e) {
       final errorMessage = _extractErrorMessage(e);
       throw Exception(errorMessage);
