@@ -9,12 +9,15 @@ import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/UI_Components/Comment%20Componenets/Ad_component/adComponent.dart';
 import 'package:verbatica/UI_Components/PostComponents/EmptyPosts.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/UI_Components/PostComponents/ShimmerLoader.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Trending%20View%20Screens/News.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Trending%20View%20Screens/SearchScreen.dart';
+import 'package:verbatica/model/Ad.dart';
+import 'package:verbatica/model/FeedItem.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/news.dart';
 
@@ -169,12 +172,14 @@ class _TrendingViewState extends State<TrendingView> {
                         posts: state.trending,
                         loading: state.trendingInitialLoading,
                         category: "Trending",
+                        ads: state.ads,
                         hasMore: state.trendingBottomLoading,
                       ),
 
                       // Following Tab
                       BuiltPostList(
                         news: state.news,
+                        ads: [],
                         loading: state.newsInitialLoading,
                         hasMore: false,
                         category: "Top 10 news",
@@ -194,6 +199,7 @@ class _TrendingViewState extends State<TrendingView> {
 class BuiltPostList extends StatefulWidget {
   final List<Post>? posts;
   final List<News>? news;
+  final List<Ad> ads;
   final bool loading;
   final String category;
   final bool hasMore;
@@ -205,6 +211,7 @@ class BuiltPostList extends StatefulWidget {
     required this.loading,
     required this.category,
     required this.hasMore,
+    required this.ads,
   });
 
   @override
@@ -233,114 +240,187 @@ class _BuiltPostListState extends State<BuiltPostList>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return widget.loading
-        ? ListView.builder(
-          itemCount: 10,
-          itemBuilder: (context, index) {
-            return widget.category == 'Trending'
-                ? PostShimmerTile()
-                : NewsShimmerTile();
-          },
-        )
-        : widget.category == 'Trending'
-        ? ListView.builder(
-          physics: BouncingScrollPhysics(),
-          padding: EdgeInsets.only(top: 8),
-          addAutomaticKeepAlives: true,
-          addRepaintBoundaries: true,
-          cacheExtent: 500,
-          itemCount: widget.posts!.length + (widget.hasMore ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (index == widget.posts!.length) {
-              final userId = context.read<UserBloc>().state.user!.id;
-              context.read<TrendingViewBloc>().add(
-                FetchBottomTrendingPosts(userId: userId),
-              );
-              return Padding(
-                padding: EdgeInsetsGeometry.symmetric(vertical: 3.h),
-                child: LoadingAnimationWidget.dotsTriangle(
-                  color: primaryColor,
-                  size: 12.w,
-                ),
-              );
-            }
+
+    if (widget.loading) {
+      return ListView.builder(
+        itemCount: 10,
+        itemBuilder: (context, index) {
+          return widget.category == 'Trending'
+              ? PostShimmerTile()
+              : NewsShimmerTile();
+        },
+      );
+    } else if (widget.category == 'Trending') {
+      // 🔹 Step 3: Combine posts & ads into one feed
+      final combinedFeed = <FeedItem>[];
+      for (int i = 0; i < widget.posts!.length; i++) {
+        combinedFeed.add(widget.posts![i]);
+
+        // Only add ad after every 10 posts *if ads remain*
+        if ((i + 1) % 10 == 0 && i ~/ 10 < widget.ads.length) {
+          combinedFeed.add(widget.ads[i ~/ 10]);
+        }
+      }
+      return ListView.builder(
+        physics: BouncingScrollPhysics(),
+        padding: EdgeInsets.only(top: 8),
+        addAutomaticKeepAlives: true,
+        addRepaintBoundaries: true,
+        cacheExtent: 500,
+        itemCount: widget.posts!.length + (widget.hasMore ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index == widget.posts!.length) {
+            final userId = context.read<UserBloc>().state.user!.id;
+            context.read<TrendingViewBloc>().add(
+              FetchBottomTrendingPosts(userId: userId),
+            );
+            return Padding(
+              padding: EdgeInsetsGeometry.symmetric(vertical: 3.h),
+              child: LoadingAnimationWidget.dotsTriangle(
+                color: primaryColor,
+                size: 12.w,
+              ),
+            );
+          }
+          final item = combinedFeed[index];
+          if (item is Post) {
             return PostWidget(
-              post: widget.posts![index],
-              index: index,
+              post: item,
+              index: widget.posts!.indexWhere((p) => p.id == item.id),
               category: widget.category,
               onFullView: false,
             );
-          },
-        )
-        : ListView.builder(
-          physics: BouncingScrollPhysics(),
-          padding: EdgeInsets.only(top: 8),
-          addAutomaticKeepAlives: true,
-          addRepaintBoundaries: true,
-          cacheExtent: 500,
-          itemCount: widget.news!.length + 1,
-          itemBuilder: (context, index) {
-            return index == 0
-                ? Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-                      child: SizedBox(
-                        width: 90.w,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            // 🌍 Country Picker Button
-                            ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: const Size(
-                                  120,
-                                  48,
-                                ), // width, height
-                                backgroundColor:
-                                    Theme.of(context).colorScheme.primary,
-                                foregroundColor:
-                                    Theme.of(context).colorScheme.onPrimary,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
+          } else if (item is Ad) {
+            return AdCard(ad: item);
+          }
+          return const SizedBox.shrink();
+        },
+      );
+    } else {
+      return ListView.builder(
+        physics: BouncingScrollPhysics(),
+        padding: EdgeInsets.only(top: 8),
+        addAutomaticKeepAlives: true,
+        addRepaintBoundaries: true,
+        cacheExtent: 500,
+        itemCount: widget.news!.length + 1,
+        itemBuilder: (context, index) {
+          return index == 0
+              ? Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 10,
+                    ),
+                    child: SizedBox(
+                      width: 90.w,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          // 🌍 Country Picker Button
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: const Size(120, 48), // width, height
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
+                              foregroundColor:
+                                  Theme.of(context).colorScheme.onPrimary,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
                               ),
-                              onPressed: () {
-                                showCountryPicker(
-                                  countryFilter: [
-                                    'US',
-                                    'GB',
-                                    'IN',
-                                    'PK',
-                                    'RU',
-                                    'CN',
-                                  ],
-                                  showSearch: false,
-                                  useSafeArea: true,
-                                  countryListTheme: CountryListThemeData(
-                                    padding: EdgeInsets.only(top: 2.h),
-                                    bottomSheetHeight: 60.h,
-                                    flagSize: 10.w,
-                                    backgroundColor:
-                                        Theme.of(context).dialogBackgroundColor,
-                                    textStyle: TextStyle(
-                                      color:
-                                          Theme.of(
-                                            context,
-                                          ).textTheme.bodyLarge?.color,
-                                    ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: () {
+                              showCountryPicker(
+                                countryFilter: [
+                                  'US',
+                                  'GB',
+                                  'IN',
+                                  'PK',
+                                  'RU',
+                                  'CN',
+                                ],
+                                showSearch: false,
+                                useSafeArea: true,
+                                countryListTheme: CountryListThemeData(
+                                  padding: EdgeInsets.only(top: 2.h),
+                                  bottomSheetHeight: 60.h,
+                                  flagSize: 10.w,
+                                  backgroundColor:
+                                      Theme.of(context).dialogBackgroundColor,
+                                  textStyle: TextStyle(
+                                    color:
+                                        Theme.of(
+                                          context,
+                                        ).textTheme.bodyLarge?.color,
                                   ),
-                                  context: context,
-                                  showPhoneCode: false,
-                                  onSelect: (Country country) {
+                                ),
+                                context: context,
+                                showPhoneCode: false,
+                                onSelect: (Country country) {
+                                  setState(() {
+                                    selectedCountry = country;
+                                    context.read<TrendingViewBloc>().add(
+                                      FetchInitialNews(
+                                        country: selectedCountry.name,
+                                        date: selectedDay,
+                                      ),
+                                    );
+                                  });
+                                },
+                              );
+                            },
+                            icon: const Icon(Icons.flag),
+                            label: Text(
+                              selectedCountry.name,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                              ),
+                            ),
+                          ),
+
+                          // 📅 Day Selector
+                          DecoratedBox(
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.outline,
+                                width: 0.5,
+                              ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 3.w),
+                              child: DropdownButtonHideUnderline(
+                                child: DropdownButton<DateTime>(
+                                  borderRadius: BorderRadius.circular(10),
+                                  value: selectedDay,
+                                  dropdownColor:
+                                      Theme.of(
+                                        context,
+                                      ).colorScheme.surfaceContainer,
+                                  items:
+                                      last7Days.map((day) {
+                                        return DropdownMenuItem(
+                                          value: day,
+                                          child: Text(
+                                            DateFormat(
+                                              'EEE, MMM d',
+                                            ).format(day),
+                                            style: TextStyle(
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).textTheme.bodyLarge?.color,
+                                            ),
+                                          ),
+                                        );
+                                      }).toList(),
+                                  onChanged: (value) {
                                     setState(() {
-                                      selectedCountry = country;
+                                      selectedDay = value!;
                                       context.read<TrendingViewBloc>().add(
                                         FetchInitialNews(
                                           country: selectedCountry.name,
@@ -349,99 +429,39 @@ class _BuiltPostListState extends State<BuiltPostList>
                                       );
                                     });
                                   },
-                                );
-                              },
-                              icon: const Icon(Icons.flag),
-                              label: Text(
-                                selectedCountry.name,
-                                style: TextStyle(
-                                  color:
-                                      Theme.of(context).colorScheme.onPrimary,
                                 ),
                               ),
                             ),
-
-                            // 📅 Day Selector
-                            DecoratedBox(
-                              decoration: BoxDecoration(
-                                border: Border.all(
-                                  color: Theme.of(context).colorScheme.outline,
-                                  width: 0.5,
-                                ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.only(left: 3.w),
-                                child: DropdownButtonHideUnderline(
-                                  child: DropdownButton<DateTime>(
-                                    borderRadius: BorderRadius.circular(10),
-                                    value: selectedDay,
-                                    dropdownColor:
-                                        Theme.of(
-                                          context,
-                                        ).colorScheme.surfaceContainer,
-                                    items:
-                                        last7Days.map((day) {
-                                          return DropdownMenuItem(
-                                            value: day,
-                                            child: Text(
-                                              DateFormat(
-                                                'EEE, MMM d',
-                                              ).format(day),
-                                              style: TextStyle(
-                                                color:
-                                                    Theme.of(context)
-                                                        .textTheme
-                                                        .bodyLarge
-                                                        ?.color,
-                                              ),
-                                            ),
-                                          );
-                                        }).toList(),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        selectedDay = value!;
-                                        context.read<TrendingViewBloc>().add(
-                                          FetchInitialNews(
-                                            country: selectedCountry.name,
-                                            date: selectedDay,
-                                          ),
-                                        );
-                                      });
-                                    },
-                                  ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  widget.news!.isEmpty
+                      ? Padding(
+                        padding: EdgeInsets.only(top: 6.h),
+                        child: ListView(
+                          shrinkWrap: true,
+                          children: [
+                            SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.6,
+                              child: Center(
+                                child: BuildEmptyTabContent(
+                                  icon: Icons.article_outlined,
+                                  message: 'No news',
                                 ),
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                    widget.news!.isEmpty
-                        ? Padding(
-                          padding: EdgeInsets.only(top: 6.h),
-                          child: ListView(
-                            shrinkWrap: true,
-                            children: [
-                              SizedBox(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.6,
-                                child: Center(
-                                  child: BuildEmptyTabContent(
-                                    icon: Icons.article_outlined,
-                                    message: 'No news',
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
-                        : SizedBox.shrink(),
-                  ],
-                )
-                : NewsView(index: index - 1, news: widget.news![index - 1]);
-          },
-        );
+                      )
+                      : SizedBox.shrink(),
+                ],
+              )
+              : NewsView(index: index - 1, news: widget.news![index - 1]);
+        },
+      );
+    }
   }
 
   @override

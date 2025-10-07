@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:verbatica/Services/API_Service.dart';
+import 'package:verbatica/model/Ad.dart';
 import 'package:verbatica/model/Post.dart';
 part 'home_event.dart';
 part 'home_state.dart';
@@ -37,15 +38,26 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       forYouVector,
       forYouPage,
     );
+
+    List<Ad> ads = List.from(state.ads);
     List<Post> posts = data['posts'];
     forYouPage++;
     forYouVector = data['vector'];
     lastForYouPost = data['lastPost'];
+    Ad? ad = data['ad'];
+
+    if (ad != null) {
+      bool exists = ads.any((a) => a.adId == ad.adId);
+      if (!exists) {
+        ads.add(ad);
+      }
+    }
 
     if (posts.length < limit) {
       emit(
         state.copyWith(
           forYou: posts,
+          ads: ads,
           forYouInitialLoading: false,
           hasMoreForYouPosts: false,
         ),
@@ -54,6 +66,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(
         state.copyWith(
           forYou: posts,
+          ads: ads,
           forYouInitialLoading: false,
           hasMoreForYouPosts: true,
         ),
@@ -71,14 +84,24 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       followingVector,
       followingPage,
     );
+    List<Ad> ads = List.from(state.ads);
     List<Post> posts = data['posts'];
     followingPage++;
     followingVector = data['vector'];
+    Ad? ad = data['ad'];
+
+    if (ad != null) {
+      bool exists = ads.any((a) => a.adId == ad.adId);
+      if (!exists) {
+        ads.add(ad);
+      }
+    }
 
     if (posts.length < limit) {
       emit(
         state.copyWith(
           following: posts,
+          ads: ads,
           followingInitialLoading: false,
           hasMoreFollowingPosts: false,
         ),
@@ -87,6 +110,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(
         state.copyWith(
           following: posts,
+          ads: ads,
           followingInitialLoading: false,
           hasMoreFollowingPosts: true,
           lastFollowingPostId: int.parse(posts[posts.length - 1].id),
@@ -105,18 +129,40 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       forYouVector,
       forYouPage,
     );
+    List<Ad> ads = List.from(state.ads);
     List<Post> posts = data['posts'];
     forYouPage++;
     forYouVector = data['vector'];
     lastForYouPost = data['lastPost'];
-
+    Ad? ad = data['ad'];
     final List<Post> forYouPosts = List.from(state.forYou);
-    forYouPosts.addAll(posts);
+
+    for (Post post in posts) {
+      bool exists = forYouPosts.any((p) => p.id == post.id);
+      if (!exists) {
+        forYouPosts.add(post);
+      }
+    }
+
+    if (ad != null) {
+      bool exists = ads.any((a) => a.adId == ad.adId);
+      if (!exists) {
+        ads.add(ad);
+      }
+    }
 
     if (posts.length < limit) {
-      emit(state.copyWith(forYou: forYouPosts, hasMoreForYouPosts: false));
+      emit(
+        state.copyWith(
+          forYou: forYouPosts,
+          hasMoreForYouPosts: false,
+          ads: ads,
+        ),
+      );
     } else {
-      emit(state.copyWith(forYou: forYouPosts, hasMoreForYouPosts: true));
+      emit(
+        state.copyWith(forYou: forYouPosts, hasMoreForYouPosts: true, ads: ads),
+      );
     }
   }
 
@@ -130,16 +176,26 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       followingVector,
       followingPage,
     );
+    List<Ad> ads = List.from(state.ads);
     List<Post> posts = data['posts'];
     followingPage++;
     followingVector = data['vector'];
+    Ad? ad = data['ad'];
     final List<Post> followingPosts = List.from(state.following);
     followingPosts.addAll(posts);
+
+    if (ad != null) {
+      bool exists = ads.any((a) => a.adId == ad.adId);
+      if (!exists) {
+        ads.add(ad);
+      }
+    }
 
     if (posts.length < limit) {
       emit(
         state.copyWith(
           following: followingPosts,
+          ads: ads,
           hasMoreFollowingPosts: false,
           lastFollowingPostId: null,
         ),
@@ -149,6 +205,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         state.copyWith(
           following: followingPosts,
           hasMoreFollowingPosts: true,
+          ads: ads,
           lastFollowingPostId: int.parse(posts[posts.length - 1].id),
         ),
       );
@@ -364,7 +421,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     Emitter<HomeState> emit,
   ) {
     if (event.category == 'ForYou') {
-      print("here");
       List<Post> forYouPosts = List.from(state.forYou);
       int forYouIndex = forYouPosts.indexWhere(
         (post) => post.id == event.postId,
@@ -392,7 +448,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(state.copyWith(forYou: forYouPosts));
       }
     } else {
-      print("following");
       List<Post> followingPosts = List.from(state.following);
       int followingIndex = followingPosts.indexWhere(
         (post) => post.id == event.postId,

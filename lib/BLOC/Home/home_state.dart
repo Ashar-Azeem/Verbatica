@@ -8,10 +8,12 @@ class HomeState extends Equatable {
   final bool hasMoreForYouPosts;
   final bool forYouInitialLoading;
   final bool followingInitialLoading;
+  final List<Ad> ads;
 
   const HomeState({
     this.following = const [],
     this.forYou = const [],
+    this.ads = const [],
     this.lastFollowingPostId,
     this.hasMoreFollowingPosts = false,
     this.hasMoreForYouPosts = false,
@@ -22,6 +24,7 @@ class HomeState extends Equatable {
   HomeState copyWith({
     List<Post>? following,
     List<Post>? forYou,
+    List<Ad>? ads,
     bool? hasMoreFollowingPosts,
     int? lastFollowingPostId,
     bool? hasMoreForYouPosts,
@@ -31,6 +34,7 @@ class HomeState extends Equatable {
     return HomeState(
       following: following ?? this.following,
       forYou: forYou ?? this.forYou,
+      ads: ads ?? this.ads,
       hasMoreFollowingPosts:
           hasMoreFollowingPosts ?? this.hasMoreFollowingPosts,
       lastFollowingPostId: lastFollowingPostId ?? lastFollowingPostId,
@@ -44,6 +48,7 @@ class HomeState extends Equatable {
   @override
   List<Object?> get props => [
     following,
+    ads,
     forYou,
     hasMoreFollowingPosts,
     lastFollowingPostId,

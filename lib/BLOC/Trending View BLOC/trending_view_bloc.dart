@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:verbatica/Services/API_Service.dart';
+import 'package:verbatica/model/Ad.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/news.dart';
 
@@ -42,7 +43,7 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
           ..insert(0, event.post);
 
         trendingNews[i] = trendingNews[i].copyWith(discussions: updatedPosts);
-        break; 
+        break;
       }
     }
 
@@ -58,14 +59,24 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
       vector,
       page,
     );
+    List<Ad> ads = List.from(state.ads);
     List<Post> posts = data['posts'];
     page++;
     vector = data['vector'];
+    Ad? ad = data['ad'];
+
+    if (ad != null) {
+      bool exists = ads.any((a) => a.adId == ad.adId);
+      if (!exists) {
+        ads.add(ad);
+      }
+    }
 
     if (posts.length < limit) {
       emit(
         state.copyWith(
           trending: posts,
+          ads: ads,
           trendingInitialLoading: false,
           trendingBottomLoading: false,
         ),
@@ -74,6 +85,7 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
       emit(
         state.copyWith(
           trending: posts,
+          ads: ads,
           trendingInitialLoading: false,
           trendingBottomLoading: true,
         ),
@@ -100,20 +112,38 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
       vector,
       page,
     );
+    List<Ad> ads = List.from(state.ads);
+
     List<Post> posts = data['posts'];
     page++;
     vector = data['vector'];
+    Ad? ad = data['ad'];
+
+    if (ad != null) {
+      bool exists = ads.any((a) => a.adId == ad.adId);
+      if (!exists) {
+        ads.add(ad);
+      }
+    }
 
     final List<Post> trendingPosts = List.from(state.trending);
     trendingPosts.addAll(posts);
 
     if (posts.length < limit) {
       emit(
-        state.copyWith(trending: trendingPosts, trendingBottomLoading: false),
+        state.copyWith(
+          trending: trendingPosts,
+          trendingBottomLoading: false,
+          ads: ads,
+        ),
       );
     } else {
       emit(
-        state.copyWith(trending: trendingPosts, trendingBottomLoading: true),
+        state.copyWith(
+          trending: trendingPosts,
+          trendingBottomLoading: true,
+          ads: ads,
+        ),
       );
     }
   }

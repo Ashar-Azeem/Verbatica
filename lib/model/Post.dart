@@ -1,11 +1,12 @@
 // ignore_for_file: file_names
 
 import 'package:equatable/equatable.dart';
+import 'package:verbatica/model/FeedItem.dart';
 
-class Post extends Equatable {
+class Post extends Equatable implements FeedItem {
   final String id;
   final String name;
-  final int userId; // 👈 Added userId field
+  final int userId;
   final int avatar;
   final String title;
   final String description;
@@ -23,7 +24,7 @@ class Post extends Equatable {
   const Post({
     required this.id,
     required this.name,
-    required this.userId, // 👈 Added to constructor
+    required this.userId,
     required this.avatar,
     required this.title,
     required this.description,

@@ -1,14 +1,17 @@
 // ignore_for_file: file_names
 
 import 'package:equatable/equatable.dart';
+import 'package:verbatica/model/FeedItem.dart';
 
-class Ad extends Equatable {
+class Ad extends Equatable implements FeedItem {
   final int adId;
   final String title;
   final String description;
   final String? imageUrl;
   final String? videoUrl;
   final String redirectLink;
+  final String brandName;
+  final String brandAvatarLocation;
 
   const Ad({
     required this.adId,
@@ -17,6 +20,8 @@ class Ad extends Equatable {
     this.imageUrl,
     this.videoUrl,
     required this.redirectLink,
+    required this.brandName,
+    required this.brandAvatarLocation,
   });
 
   Map<String, dynamic> toJson() {
@@ -27,6 +32,8 @@ class Ad extends Equatable {
       'image_url': imageUrl,
       'video_url': videoUrl,
       'redirect_link': redirectLink,
+      'brand_name': brandName,
+      'brand_avatar_location': brandAvatarLocation,
     };
   }
 
@@ -38,6 +45,8 @@ class Ad extends Equatable {
       imageUrl: json['image_url'],
       videoUrl: json['video_url'],
       redirectLink: json['redirect_link'],
+      brandName: json['brand_name'],
+      brandAvatarLocation: json['brand_avatar_location'],
     );
   }
 
@@ -48,6 +57,8 @@ class Ad extends Equatable {
     String? imageUrl,
     String? videoUrl,
     String? redirectLink,
+    String? brandName,
+    String? brandAvatarLocation,
   }) {
     return Ad(
       adId: adId ?? this.adId,
@@ -56,6 +67,8 @@ class Ad extends Equatable {
       imageUrl: imageUrl ?? this.imageUrl,
       videoUrl: videoUrl ?? this.videoUrl,
       redirectLink: redirectLink ?? this.redirectLink,
+      brandName: brandName ?? this.brandName,
+      brandAvatarLocation: brandAvatarLocation ?? this.brandAvatarLocation,
     );
   }
 
@@ -67,5 +80,7 @@ class Ad extends Equatable {
     imageUrl,
     videoUrl,
     redirectLink,
+    brandName,
+    brandAvatarLocation,
   ];
 }
