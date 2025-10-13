@@ -30,7 +30,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<FetchMorePosts>(fetchMorePosts);
     on<SyncUpvotePost>(_syncUpvotePost);
     on<SyncDownvotePost>(_syncDownvotePost);
-
     on<AddRecentPost>(addRecentPost);
   }
 

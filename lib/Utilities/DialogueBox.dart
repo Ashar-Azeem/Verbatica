@@ -2,6 +2,8 @@ import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
+import 'package:verbatica/BLOC/Home/home_bloc.dart';
+import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
@@ -29,6 +31,8 @@ void showLogoutDialog(BuildContext context) {
               onPressed: () async {
                 //Disposing all the states of this user
                 await TokenOperations().deleteUserProfile();
+                context.read<HomeBloc>().add(ClearHomeBloc());
+                context.read<TrendingViewBloc>().add(ClearTrendingBloc());
                 context.read<UserBloc>().add(ClearBloc());
 
                 //Moving to the login screen

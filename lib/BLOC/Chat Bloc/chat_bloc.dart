@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:verbatica/DummyData/chats.dart';
 import 'package:verbatica/model/Chat.dart';
 
 part 'chat_event.dart';
@@ -18,25 +17,25 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
 
     //Logic for checking the any unseen chat so we could display the dot on the message icon in the home screen
 
-    if (state.chats.isEmpty) {
-      List<Chat> fetchedChats = dummyChats;
-      bool isAnyUnReaad = false;
-      for (Chat chat in fetchedChats) {
-        bool seenStatus = chat.lastMessageSeenBy[event.userId]!;
-        if (seenStatus) {
-          isAnyUnReaad = true;
-          break;
-        }
-      }
+    // if (state.chats.isEmpty) {
+    //   List<Chat> fetchedChats = dummyChats;
+    //   bool isAnyUnReaad = false;
+    //   for (Chat chat in fetchedChats) {
+    //     bool seenStatus = chat.lastMessageSeenBy[event.userId]!;
+    //     if (seenStatus) {
+    //       isAnyUnReaad = true;
+    //       break;
+    //     }
+    //   }
 
-      emit(
-        state.copyWith(
-          chats: List.from(fetchedChats),
-          initialLoading: false,
-          isAnyUnread: isAnyUnReaad,
-        ),
-      );
-    }
+    //   emit(
+    //     state.copyWith(
+    //       chats: List.from(fetchedChats),
+    //       initialLoading: false,
+    //       isAnyUnread: isAnyUnReaad,
+    //     ),
+    //   );
+    // }
   }
 
   deleteChat(DeleteChat event, Emitter<ChatState> emit) {
@@ -49,7 +48,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     List<Chat> chats = List.from(state.chats);
     for (Chat chat in chats) {
       if (chat.chatId == event.chatId) {
-        Map<String, bool> seenBy = Map.from(chat.lastMessageSeenBy);
+        Map<int, bool> seenBy = Map.from(chat.lastMessageSeenBy);
         seenBy[event.userId] = true;
         chats[chats.indexOf(chat)] = chat.copyWith(lastMessageSeenBy: seenBy);
         break;

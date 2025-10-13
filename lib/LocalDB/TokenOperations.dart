@@ -22,9 +22,23 @@ class TokenOperations {
     return User.fromJson(jsonMap);
   }
 
-  /// Delete the stored user profile
-  Future<bool> deleteUserProfile() async {
+  Future<void> savePrivateKey(String privateKey) async {
     final prefs = await SharedPreferences.getInstance();
-    return await prefs.remove('user');
+    await prefs.setString('privateKey', privateKey);
+  }
+
+  /// Load user profile and return User object (null if not found)
+  Future<String?> loadPrivateKey() async {
+    final prefs = await SharedPreferences.getInstance();
+    String? privateKey = prefs.getString('privateKey');
+
+    return privateKey ?? "";
+  }
+
+  /// Delete the stored user profile
+  Future<void> deleteUserProfile() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('privateKey');
+    await prefs.remove('user');
   }
 }

@@ -9,7 +9,7 @@ sealed class MessagesEvent extends Equatable {
 
 class FetchInitialMessages extends MessagesEvent {
   final Chat chat;
-  final String userId;
+  final int userId;
   final ScrollController scrollController;
 
   const FetchInitialMessages({
@@ -20,7 +20,7 @@ class FetchInitialMessages extends MessagesEvent {
 }
 
 class FetchMoreMessages extends MessagesEvent {
-  final String userId;
+  final int userId;
   final String chatId;
   const FetchMoreMessages({required this.userId, required this.chatId});
 }
@@ -41,7 +41,7 @@ class SendMessage extends MessagesEvent {
 class AddReaction extends MessagesEvent {
   final Message message;
   final String emoji;
-  final String userId;
+  final int userId;
   const AddReaction({
     required this.message,
     required this.emoji,

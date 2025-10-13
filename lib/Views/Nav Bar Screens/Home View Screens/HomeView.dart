@@ -1,5 +1,7 @@
 // ignore_for_file: file_names
 
+import 'dart:async';
+
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -32,9 +34,17 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     //initial fetch for loading the for you because it is the first tab that opens
-    context.read<HomeBloc>().add(
-      FetchInitialForYouPosts(userId: context.read<UserBloc>().state.user!.id),
-    );
+
+    //Timer is used so that this event is called in the next event loop after blocs has been completely initialized
+    Timer(const Duration(seconds: 0), () {
+      final user = context.read<UserBloc>().state.user;
+
+      if (user != null) {
+        context.read<HomeBloc>().add(FetchInitialForYouPosts(userId: user.id));
+      } else {
+        debugPrint("User not ready yet, skipping fetch.");
+      }
+    });
   }
 
   @override

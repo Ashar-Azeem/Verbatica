@@ -9,7 +9,7 @@ import 'package:verbatica/BLOC/postsubmit/postsubmit_event.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_state.dart';
 import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/Utilities/compressors.dart';
-import 'package:verbatica/Utilities/encryption.dart';
+import 'package:verbatica/Services/encryption.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:video_compress/video_compress.dart';
 

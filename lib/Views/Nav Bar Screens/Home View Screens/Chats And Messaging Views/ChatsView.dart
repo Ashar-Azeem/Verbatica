@@ -52,7 +52,7 @@ class _ChatsViewState extends State<ChatsView> {
                   itemBuilder: (context, index) {
                     Chat chat = state.chats[index];
                     final otherUserData = chat.getOtherUserInfo(
-                      context.read<UserBloc>().state.user!.id.toString(),
+                      context.read<UserBloc>().state.user!.id,
                     );
                     return Center(
                       child: Padding(

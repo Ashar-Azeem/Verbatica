@@ -5,79 +5,75 @@ import 'package:equatable/equatable.dart';
 class Chat extends Equatable {
   final String chatId;
   final String lastMessage;
-  final List<String> participantIds;
+  final List<int> participantIds;
   final DateTime lastUpdated;
-  final Map<String, bool> lastMessageSeenBy; // userId -> true/false
-  final Map<String, bool> isTyping; // userId -> true/false
-  final Map<String, String> userProfiles; // userId -> profileUrl
-  final Map<String, String> userNames; // userId -> userName
+  final Map<int, bool> lastMessageSeenBy;
+  final Map<int, int> userProfiles;
+  final Map<int, String> userNames;
+  final Map<int, String> publicKeys;
+  final Map<int, String> secretKeys;
 
   const Chat({
     required this.chatId,
     required this.participantIds,
     required this.lastUpdated,
     required this.lastMessageSeenBy,
-    required this.isTyping,
     required this.userProfiles,
     required this.userNames,
+    required this.publicKeys,
+    required this.secretKeys,
     required this.lastMessage,
   });
 
   factory Chat.fromJson(Map<String, dynamic> json) {
+    Map<int, T> parseMap<T>(Map<String, dynamic> map) {
+      return map.map((key, value) => MapEntry(int.parse(key), value as T));
+    }
+
     return Chat(
       chatId: json['chatId'],
       lastMessage: json['lastMessage'],
-      participantIds: List<String>.from(json['participantIds']),
+      participantIds: List<int>.from(json['participantIds']),
       lastUpdated: DateTime.parse(json['lastUpdated']),
-      lastMessageSeenBy: Map<String, bool>.from(json['lastMessageSeenBy']),
-      isTyping: Map<String, bool>.from(json['isTyping']),
-      userProfiles: Map<String, String>.from(json['userProfiles']),
-      userNames: Map<String, String>.from(json['userNames']),
+      lastMessageSeenBy: parseMap<bool>(json['lastMessageSeenBy']),
+      publicKeys: parseMap<String>(json['publicKeys']),
+      secretKeys: parseMap<String>(json['secretKeys']),
+      userProfiles: parseMap<int>(json['userProfiles']),
+      userNames: parseMap<String>(json['userNames']),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'chatId': chatId,
-      'lastMessage': lastMessage,
-      'participantIds': participantIds,
-      'lastUpdated': lastUpdated.toIso8601String(),
-      'lastMessageSeenBy': lastMessageSeenBy,
-      'isTyping': isTyping,
-      'userProfiles': userProfiles,
-      'userNames': userNames,
-    };
   }
 
   Chat copyWith({
     String? chatId,
     String? lastMessage,
-    List<String>? participantIds,
+    List<int>? participantIds,
     DateTime? lastUpdated,
-    Map<String, bool>? lastMessageSeenBy,
-    Map<String, bool>? isTyping,
-    Map<String, String>? userProfiles,
-    Map<String, String>? userNames,
+    Map<int, bool>? lastMessageSeenBy,
+    Map<int, bool>? isTyping,
+    Map<int, int>? userProfiles,
+    Map<int, String>? publicKeys,
+    Map<int, String>? secretKeys,
+    Map<int, String>? userNames,
   }) {
     return Chat(
       chatId: chatId ?? this.chatId,
       participantIds: participantIds ?? this.participantIds,
+      publicKeys: publicKeys ?? this.publicKeys,
+      secretKeys: secretKeys ?? this.secretKeys,
       lastUpdated: lastUpdated ?? this.lastUpdated,
       lastMessageSeenBy: lastMessageSeenBy ?? this.lastMessageSeenBy,
-      isTyping: isTyping ?? this.isTyping,
       userProfiles: userProfiles ?? this.userProfiles,
       userNames: userNames ?? this.userNames,
       lastMessage: lastMessage ?? this.lastMessage,
     );
   }
 
-  OtherUserInfo getOtherUserInfo(String currentUserId) {
+  OtherUserInfo getOtherUserInfo(int currentUserId) {
     final otherUserId = participantIds.firstWhere((id) => id != currentUserId);
     return OtherUserInfo(
       userId: otherUserId,
-      userName: userNames[otherUserId] ?? '',
-      userProfile: userProfiles[otherUserId] ?? '',
-      isTyping: isTyping[otherUserId] ?? false,
+      userName: userNames[otherUserId]!,
+      userProfile: userProfiles[otherUserId]!,
       lastMessageSeenBy: lastMessageSeenBy[otherUserId] ?? false,
     );
   }
@@ -88,25 +84,24 @@ class Chat extends Equatable {
     participantIds,
     lastMessageSeenBy,
     lastUpdated,
-    isTyping,
     userNames,
+    secretKeys,
+    publicKeys,
     userProfiles,
     lastMessage,
   ];
 }
 
 class OtherUserInfo {
-  final String userId;
+  final int userId;
   final String userName;
-  final String userProfile;
-  final bool isTyping;
+  final int userProfile;
   final bool lastMessageSeenBy;
 
   OtherUserInfo({
     required this.userId,
     required this.userName,
     required this.userProfile,
-    required this.isTyping,
     required this.lastMessageSeenBy,
   });
 }

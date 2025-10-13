@@ -27,6 +27,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<SyncUpVotePost>(syncUpVotePost);
     on<SyncDownvotePostsOfOtherTab>(syncDownvotePostsOfOtherTab);
     on<SyncUpvotePostsOfOtherTab>(syncUpvotePostsOfOtherTab);
+    on<ClearHomeBloc>((event, emit) => emit(HomeState.initial()));
   }
   fetchInitialForYouPosts(
     FetchInitialForYouPosts event,
@@ -76,6 +77,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   fetchInitialFollowingPosts(
     FetchInitialFollowingPosts event,
+
     Emitter<HomeState> emit,
   ) async {
     Map<String, dynamic> data = await ApiService().fetchFollowingPosts(

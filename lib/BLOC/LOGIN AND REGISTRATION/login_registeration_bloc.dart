@@ -6,6 +6,7 @@ import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/Services/GoogleAuth.dart';
+import 'package:verbatica/Services/endToEndEncryption.dart';
 import 'package:verbatica/Utilities/ErrorSnackBar.dart';
 import 'package:verbatica/model/user.dart';
 
@@ -68,12 +69,17 @@ class LoginRegisterationBloc
   void verifyOtp(VerifyOtp event, Emitter<LoginRegisterationState> emit) async {
     try {
       emit(state.copyWith(status: Loginandregisterationstatus.loading));
+      final keys = await E2EEChat().generateKeyPair();
+
       User user = await ApiService().verifyOTP(
         event.email,
         event.userId,
         event.otp,
+        keys['privateKey']!,
+        keys['publicKey']!,
       );
       await TokenOperations().saveUserProfile(user);
+      await TokenOperations().savePrivateKey(keys['privateKey']!);
       event.context.read<UserBloc>().add(UpdateUser(user, event.context));
       emit(state.copyWith(status: Loginandregisterationstatus.sucess));
     } catch (e) {
@@ -142,9 +148,16 @@ class LoginRegisterationBloc
         country: event.country,
         gender: event.gender,
       );
+      final keys = await E2EEChat().generateKeyPair();
+      print(keys);
+
       User user = await ApiService().completeFirstTimerGoogleSignUp(
         userPayLoad,
+        keys['privateKey']!,
+        keys['publicKey']!,
       );
+      await TokenOperations().savePrivateKey(keys['privateKey']!);
+
       await TokenOperations().saveUserProfile(user);
       event.context.read<UserBloc>().add(UpdateUser(user, event.context));
       emit(state.copyWith(status: Loginandregisterationstatus.sucess));

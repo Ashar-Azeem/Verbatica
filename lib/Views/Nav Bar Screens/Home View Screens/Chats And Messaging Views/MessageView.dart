@@ -49,7 +49,7 @@ class _MessageViewState extends State<MessageView> {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     OtherUserInfo otherUser = chat.getOtherUserInfo(
-      context.read<UserBloc>().state.user!.id.toString(),
+      context.read<UserBloc>().state.user!.id,
     );
     return BlocProvider.value(
       value: messagesBloc,
@@ -92,6 +92,7 @@ class _MessageViewState extends State<MessageView> {
                         Message newMessages = Message(
                           message: message.trim(),
                           createdAt: DateTime.now(),
+                          id: userId,
                           sentBy: userId,
                           replyMessage: replyMessage,
                           messageType: messageType,

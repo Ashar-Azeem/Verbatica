@@ -18,6 +18,8 @@ class TrendingViewState extends Equatable {
     this.newsInitialLoading = true,
   });
 
+  factory TrendingViewState.initial() => const TrendingViewState();
+
   TrendingViewState copyWith({
     List<News>? news,
     List<Ad>? ads,

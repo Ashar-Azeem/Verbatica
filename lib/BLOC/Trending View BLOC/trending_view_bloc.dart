@@ -30,6 +30,7 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
     on<SyncDownVoteNewsPost>(syncDownVoteNewsPost);
     on<SyncUpVoteNewsPost>(syncUpVoteNewsPost);
     on<AddRecentPostInNews>(addRecentPost);
+    on<ClearTrendingBloc>((event, emit) => emit(TrendingViewState.initial()));
   }
   void addRecentPost(
     AddRecentPostInNews event,

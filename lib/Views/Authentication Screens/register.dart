@@ -541,14 +541,6 @@ class _RegisterState extends State<Register> {
                                     ),
                                   );
                                 }
-
-                                //Temproray code for UI debugging, remove after adding the business logic
-                                Navigator.of(context).pushAndRemoveUntil(
-                                  MaterialPageRoute(
-                                    builder: (context) => EmailVerification(),
-                                  ),
-                                  (Route<dynamic> route) => false,
-                                );
                               }
                             }
                           },

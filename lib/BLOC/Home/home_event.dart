@@ -113,3 +113,5 @@ class SyncDownvotePostsOfOtherTab extends HomeEvent {
     required this.category,
   });
 }
+
+class ClearHomeBloc extends HomeEvent {}

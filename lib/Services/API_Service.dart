@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/Votes%20Restriction/votes_restrictor_bloc.dart';
+import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/model/Ad.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/news.dart';
@@ -12,7 +13,7 @@ import 'package:verbatica/model/user.dart';
 class ApiService {
   final Dio _dio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.100.81:4000/api/',
+        baseUrl: 'http://192.168.1.8:4000/api/',
         connectTimeout: const Duration(seconds: 20),
         receiveTimeout: const Duration(seconds: 20),
         headers: {'Content-Type': 'application/json'},
@@ -48,6 +49,7 @@ class ApiService {
         'auth/login',
         data: {'email': email, 'password': password},
       );
+      await TokenOperations().savePrivateKey(response.data['privateKey']);
       return User.fromJson(response.data['user']);
     } on DioException catch (e) {
       final errorMessage = _extractErrorMessage(e);
@@ -80,11 +82,23 @@ class ApiService {
   }
 
   // ✅ Verify OTP
-  Future<User> verifyOTP(String email, int userId, int otp) async {
+  Future<User> verifyOTP(
+    String email,
+    int userId,
+    int otp,
+    String privateKey,
+    String publicKey,
+  ) async {
     try {
       final response = await _dio.post(
         'auth/verifyOTP',
-        data: {'email': email, 'userId': userId, 'otp': otp},
+        data: {
+          'email': email,
+          'userId': userId,
+          'otp': otp,
+          "publicKey": publicKey,
+          "privateKey": privateKey,
+        },
       );
       return User.fromJson(response.data['user']);
     } on DioException catch (e) {
@@ -122,7 +136,11 @@ class ApiService {
   }
 
   // 🧩 Complete Signup for first-time Google users
-  Future<User> completeFirstTimerGoogleSignUp(User user) async {
+  Future<User> completeFirstTimerGoogleSignUp(
+    User user,
+    String privateKey,
+    String publicKey,
+  ) async {
     try {
       Map<String, dynamic> userPayload = {
         "email": user.email,
@@ -136,7 +154,11 @@ class ApiService {
       };
       final response = await _dio.post(
         'auth/continueWithGoogle/CompletedInfo',
-        data: {'user': userPayload},
+        data: {
+          'user': userPayload,
+          "publicKey": publicKey,
+          "privateKey": privateKey,
+        },
       );
       return User.fromJson(response.data['user']);
     } on DioException catch (e) {

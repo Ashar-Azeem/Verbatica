@@ -145,3 +145,5 @@ class AddRecentPostInNews extends TrendingViewEvent {
 
   const AddRecentPostInNews(this.newsId, {required this.post});
 }
+
+class ClearTrendingBloc extends TrendingViewEvent {}

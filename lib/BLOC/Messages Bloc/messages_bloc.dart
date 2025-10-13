@@ -11,7 +11,7 @@ part 'messages_state.dart';
 class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
   MessagesBloc({
     required Chat chat,
-    required String userId,
+    required int userId,
     required ScrollController scrollController,
   }) : super(MessagesState()) {
     on<FetchInitialMessages>(fetchInitialMessages);
@@ -48,13 +48,13 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
             : List.from(allMessages);
 
     //initializing chat controller
-    String userId = event.userId;
+    int userId = event.userId;
     OtherUserInfo otherUser = event.chat.getOtherUserInfo(userId);
     ChatController chatController = ChatController(
       scrollController: event.scrollController,
       initialMessageList: subMessages,
       currentUser: ChatUser(
-        id: userId,
+        id: userId.toString(),
         imageType: ImageType.asset,
         name: event.chat.userNames[userId]!,
         profilePhoto:
@@ -63,7 +63,10 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
       otherUsers: [
         ChatUser(
           imageType: ImageType.asset,
-          id: event.chat.participantIds.firstWhere((id) => id != userId),
+          id:
+              event.chat.participantIds
+                  .firstWhere((id) => id != userId)
+                  .toString(),
           name: otherUser.userName,
           profilePhoto: 'assets/Avatars/avatar${otherUser.userProfile}.jpg',
         ),
@@ -73,7 +76,7 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     // Logic to update the seen status when last message of the other user appears
     Message? lastMessage;
     for (int i = subMessages.length - 1; i >= 0; i--) {
-      if (subMessages[i].id != event.userId) {
+      if (subMessages[i].id != event.userId.toString()) {
         lastMessage = subMessages[i];
         //Also add the logic for updating the seen status for the other user using an api
         break;
@@ -111,7 +114,7 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     // Logic to update the seen status when last message of the other user appears
     Message? lastMessage;
     for (int i = subMessages.length - 1; i >= 0; i--) {
-      if (subMessages[i].id != event.userId) {
+      if (subMessages[i].id != event.userId.toString()) {
         lastMessage = subMessages[i];
         break;
       }
@@ -137,7 +140,7 @@ class MessagesBloc extends Bloc<MessagesEvent, MessagesState> {
     Message newMessage = event.message;
     newMessage.reaction.copyWith(
       reactions: [event.emoji],
-      reactedUserIds: [event.userId],
+      reactedUserIds: [event.userId.toString()],
     );
   }
 }

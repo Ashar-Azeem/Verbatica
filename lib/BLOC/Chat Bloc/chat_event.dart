@@ -20,7 +20,7 @@ class DeleteChat extends ChatEvent {
 }
 
 class SeenStatus extends ChatEvent {
-  final String userId;
+  final int userId;
   final String chatId;
 
   const SeenStatus({required this.userId, required this.chatId});

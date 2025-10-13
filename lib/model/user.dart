@@ -11,6 +11,7 @@ class User extends Equatable {
   final String about;
   final bool isSignedInWithGoogle;
   final DateTime joinDate;
+  final String publicKey;
   final int aura;
 
   const User({
@@ -21,6 +22,7 @@ class User extends Equatable {
     required this.country,
     required this.gender,
     required this.isVerified,
+    required this.publicKey,
     required this.avatarId,
     required this.about,
     required this.joinDate,
@@ -41,6 +43,7 @@ class User extends Equatable {
       'about': about,
       'joinDate': joinDate.toIso8601String(),
       'aura': aura,
+      'public_key': publicKey,
     };
   }
 
@@ -55,6 +58,7 @@ class User extends Equatable {
       isVerified: json['isVerified'] as bool,
       avatarId: json['avatarId'] as int,
       about: json['about'] as String,
+      publicKey: json['public_key'] as String,
       isSignedInWithGoogle: json['isGoogleSignIn'] as bool,
       joinDate: DateTime.parse(json['joinDate'] as String),
       aura: json['aura'] as int,
@@ -69,6 +73,7 @@ class User extends Equatable {
     String? country,
     String? gender,
     bool? isVerified,
+    String? publicKey,
     int? avatarId,
     bool? isSignedInWithGoogle,
     String? about,
@@ -77,6 +82,7 @@ class User extends Equatable {
   }) {
     return User(
       id: id ?? this.id,
+      publicKey: publicKey ?? this.publicKey,
       email: email ?? this.email,
       userName: userName ?? this.userName,
       country: country ?? this.country,
@@ -95,6 +101,7 @@ class User extends Equatable {
     id,
     email,
     userName,
+    publicKey,
     country,
     gender,
     isSignedInWithGoogle,

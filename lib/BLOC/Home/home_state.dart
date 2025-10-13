@@ -21,6 +21,8 @@ class HomeState extends Equatable {
     this.followingInitialLoading = true,
   });
 
+  factory HomeState.initial() => const HomeState();
+
   HomeState copyWith({
     List<Post>? following,
     List<Post>? forYou,
