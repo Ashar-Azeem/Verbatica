@@ -28,7 +28,7 @@ class TokenOperations {
   }
 
   /// Load user profile and return User object (null if not found)
-  Future<String?> loadPrivateKey() async {
+  Future<String> loadPrivateKey() async {
     final prefs = await SharedPreferences.getInstance();
     String? privateKey = prefs.getString('privateKey');
 

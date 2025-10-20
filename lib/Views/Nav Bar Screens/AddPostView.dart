@@ -337,6 +337,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       comments: 0,
                       uploadTime: DateTime.now(),
                       id: '999',
+                      publicKey: "dummy",
                       clusters: validCluster,
                     );
 
@@ -379,6 +380,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                   upvotes: 0,
                                   downvotes: 0,
                                   isUpVote: false,
+                                  publicKey: 'dummy',
                                   isDownVote: false,
                                   comments: 0,
                                   uploadTime: DateTime.now(),

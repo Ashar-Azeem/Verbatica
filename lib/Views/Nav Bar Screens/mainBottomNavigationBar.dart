@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
+import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/AddPostView.dart';
@@ -34,57 +35,74 @@ class _BottomNavigationBarViewState extends State<BottomNavigationBarView> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return PersistentTabView(
-      screenTransitionAnimation: ScreenTransitionAnimation.none(),
-      tabs: [
-        PersistentTabConfig(
-          screen: HomeView(),
-          item: ItemConfig(
-            icon: Icon(Icons.home),
-            activeForegroundColor: colorScheme.primary,
-          ),
-        ),
-        PersistentTabConfig(
-          screen: TrendingView(),
-          item: ItemConfig(
-            icon: Icon(Icons.trending_up),
-            activeForegroundColor: colorScheme.primary,
-          ),
-        ),
-        PersistentTabConfig(
-          screen: CreatePostScreen(newsId: null, screenType: 'simplePost'),
-          item: ItemConfig(
-            icon: Icon(Icons.add_circle_outlined),
-            activeForegroundColor: colorScheme.primary,
-          ),
-        ),
-        PersistentTabConfig(
-          screen: NotificationScreen(),
-          item: ItemConfig(
-            icon: Icon(Icons.notifications_none_sharp),
-            activeForegroundColor: colorScheme.primary,
-          ),
-        ),
-        PersistentTabConfig(
-          screen: ProfileView(),
-          item: ItemConfig(
-            icon: Icon(Icons.person),
-            activeForegroundColor: colorScheme.primary,
-          ),
-        ),
-      ],
-      navBarBuilder: (p0) {
-        return Style6BottomNavBar(
-          navBarConfig: p0,
-          navBarDecoration: NavBarDecoration(
-            border: Border(
-              top: BorderSide(
-                color: colorScheme.outline.withOpacity(0.3),
-                width: 0.2,
+    return BlocBuilder<ChatBloc, ChatState>(
+      buildWhen:
+          (previous, current) => previous.isAnyUnread != current.isAnyUnread,
+      builder: (context, state) {
+        return PersistentTabView(
+          screenTransitionAnimation: ScreenTransitionAnimation.none(),
+          tabs: [
+            PersistentTabConfig(
+              screen: HomeView(),
+              item: ItemConfig(
+                inactiveIcon: Material(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.circular(50),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Badge(
+                      isLabelVisible: state.isAnyUnread,
+                      child: Icon(Icons.home),
+                    ),
+                  ),
+                ),
+                icon: Icon(Icons.home),
+                activeForegroundColor: colorScheme.primary,
               ),
             ),
-            color: theme.scaffoldBackgroundColor,
-          ),
+            PersistentTabConfig(
+              screen: TrendingView(),
+              item: ItemConfig(
+                icon: Icon(Icons.trending_up),
+                activeForegroundColor: colorScheme.primary,
+              ),
+            ),
+            PersistentTabConfig(
+              screen: CreatePostScreen(newsId: null, screenType: 'simplePost'),
+              item: ItemConfig(
+                icon: Icon(Icons.add_circle_outlined),
+                activeForegroundColor: colorScheme.primary,
+              ),
+            ),
+            PersistentTabConfig(
+              screen: NotificationScreen(),
+              item: ItemConfig(
+                icon: Icon(Icons.notifications_none_sharp),
+                activeForegroundColor: colorScheme.primary,
+              ),
+            ),
+            PersistentTabConfig(
+              screen: ProfileView(),
+              item: ItemConfig(
+                icon: Icon(Icons.person),
+                activeForegroundColor: colorScheme.primary,
+              ),
+            ),
+          ],
+          navBarBuilder: (p0) {
+            return Style6BottomNavBar(
+              navBarConfig: p0,
+              navBarDecoration: NavBarDecoration(
+                border: Border(
+                  top: BorderSide(
+                    color: colorScheme.outline.withOpacity(0.3),
+                    width: 0.2,
+                  ),
+                ),
+                color: theme.scaffoldBackgroundColor,
+              ),
+            );
+          },
         );
       },
     );

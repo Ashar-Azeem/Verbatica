@@ -7,6 +7,7 @@ import 'package:sizer/sizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/UI_Components/PostComponents/EmptyPosts.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/Chats%20And%20Messaging%20Views/MessageView.dart';
 import 'package:verbatica/model/Chat.dart';
 
@@ -18,6 +19,36 @@ class ChatsView extends StatefulWidget {
 }
 
 class _ChatsViewState extends State<ChatsView> {
+  void showDeleteDialog(BuildContext context, int index) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: Text(
+              'Delete',
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+            ),
+            content: Text(
+              'This chat will be deleted for both users',
+              style: TextStyle(color: Theme.of(context).colorScheme.secondary),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  context.read<ChatBloc>().add(DeleteChat(index: index));
+                  Navigator.pop(context);
+                },
+                child: Text('delete', style: TextStyle(color: Colors.red)),
+              ),
+            ],
+          ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,6 +73,16 @@ class _ChatsViewState extends State<ChatsView> {
                     child: LoadingAnimationWidget.dotsTriangle(
                       color: Theme.of(context).colorScheme.primary,
                       size: 13.w,
+                    ),
+                  ),
+                )
+                : state.chats.isEmpty
+                ? SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.8,
+                  child: Center(
+                    child: BuildEmptyTabContent(
+                      icon: Icons.article_outlined,
+                      message: 'No chats available',
                     ),
                   ),
                 )
@@ -132,8 +173,7 @@ class _ChatsViewState extends State<ChatsView> {
                                                             .read<UserBloc>()
                                                             .state
                                                             .user!
-                                                            .id
-                                                            .toString()]!
+                                                            .id]!
                                                         ? FontWeight.bold
                                                         : FontWeight.w300,
                                               ),
@@ -175,8 +215,9 @@ class _ChatsViewState extends State<ChatsView> {
                                                 ).popupMenuTheme.color,
                                             onSelected: (String value) {
                                               if (value == "delete") {
-                                                context.read<ChatBloc>().add(
-                                                  DeleteChat(index: index),
+                                                showDeleteDialog(
+                                                  context,
+                                                  index,
                                                 );
                                               }
                                             },
@@ -225,8 +266,7 @@ class _ChatsViewState extends State<ChatsView> {
                                 .read<UserBloc>()
                                 .state
                                 .user!
-                                .id
-                                .toString()]!)
+                                .id]!)
                               Positioned(
                                 top: 2.5.w,
                                 left: 2.5.w,

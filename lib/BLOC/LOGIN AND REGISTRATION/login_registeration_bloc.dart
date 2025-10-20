@@ -149,7 +149,6 @@ class LoginRegisterationBloc
         gender: event.gender,
       );
       final keys = await E2EEChat().generateKeyPair();
-      print(keys);
 
       User user = await ApiService().completeFirstTimerGoogleSignUp(
         userPayLoad,

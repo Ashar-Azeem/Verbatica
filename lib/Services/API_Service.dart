@@ -1,11 +1,13 @@
 import 'dart:typed_data';
 
+import 'package:chatview/chatview.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/Votes%20Restriction/votes_restrictor_bloc.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/model/Ad.dart';
+import 'package:verbatica/model/Chat.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/news.dart';
 import 'package:verbatica/model/user.dart';
@@ -13,7 +15,7 @@ import 'package:verbatica/model/user.dart';
 class ApiService {
   final Dio _dio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.1.8:4000/api/',
+        baseUrl: 'http://192.168.100.81:4000/api/',
         connectTimeout: const Duration(seconds: 20),
         receiveTimeout: const Duration(seconds: 20),
         headers: {'Content-Type': 'application/json'},
@@ -125,6 +127,9 @@ class ApiService {
         'auth/continueWithGoogle',
         data: {'token': token},
       );
+      if (response.data['privateKey'] != null) {
+        await TokenOperations().savePrivateKey(response.data['privateKey']);
+      }
       return {
         "user": User.fromJson(response.data['user']),
         "status": response.data['message'],
@@ -160,6 +165,8 @@ class ApiService {
           "privateKey": privateKey,
         },
       );
+      await TokenOperations().savePrivateKey(response.data['privateKey']);
+
       return User.fromJson(response.data['user']);
     } on DioException catch (e) {
       final errorMessage = _extractErrorMessage(e);
@@ -263,6 +270,7 @@ class ApiService {
     String userName,
     int avatarId,
     String? newsId,
+    String publicKey,
   ) async {
     try {
       final response = await _dio.post(
@@ -279,6 +287,7 @@ class ApiService {
           "avatarId": avatarId,
           "iv": iv,
           "newsId": newsId,
+          "publicKey": publicKey,
         },
         options: Options(
           sendTimeout: const Duration(minutes: 10),
@@ -543,6 +552,174 @@ class ApiService {
   Future<void> resetprefrences(int userId) async {
     try {
       await _dio.delete('user/deleteHistory', data: {'userId': userId});
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Chat>> fetchUserChats(int userId) async {
+    try {
+      final response = await _dio.get(
+        'chat/getUserChats',
+        data: {'userId': userId},
+      );
+
+      final List<dynamic> data = response.data['chats'] ?? [];
+      List<Chat> chats = data.map((d) => Chat.fromJson(d)).toList();
+      return chats;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<Chat?> checkAndFetchChat(int user1Id, int user2Id) async {
+    try {
+      final response = await _dio.get(
+        'chat/getChatWithAUser',
+        data: {'user1Id': user1Id, 'user2Id': user2Id},
+      );
+
+      return response.data['chat'] == null
+          ? null
+          : Chat.fromJson(response.data['chat']);
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<Chat> createChat(Chat chat) async {
+    try {
+      final data = {
+        // keep list of ints as-is
+        'participantIds': chat.participantIds,
+
+        // convert map keys only (int → string)
+        'publicKeys': chat.publicKeys.map(
+          (key, value) => MapEntry(key.toString(), value),
+        ),
+        'userProfiles': chat.userProfiles.map(
+          (key, value) => MapEntry(key.toString(), value),
+        ),
+        'userNames': chat.userNames.map(
+          (key, value) => MapEntry(key.toString(), value),
+        ),
+        'lastMessageSeenBy': chat.lastMessageSeenBy.map(
+          (key, value) => MapEntry(key.toString(), value),
+        ),
+      };
+      final response = await _dio.post('chat/insertChat', data: data);
+
+      return Chat.fromJson(response.data['chat']);
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<void> sendingMessage(
+    Message message,
+    String chatId,
+    String receiverId,
+    String messageId,
+    DateTime createdAt,
+  ) async {
+    try {
+      await _dio.post(
+        'message/sendMessage',
+        data: {
+          'chatId': chatId,
+          'message': message.message,
+          'sentBy': message.sentBy,
+          'replyingMessageId': message.replyMessage.messageId,
+          'reaction': null,
+          "receiverId": receiverId,
+          'messageId': messageId,
+          'createdAt': createdAt.toUtc().toIso8601String(),
+        },
+      );
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<void> seenAck(String chatId, String userId, String receiverId) async {
+    try {
+      await _dio.put(
+        'message/updateSeenStatus',
+        data: {'chatId': chatId, 'userId': userId, "receiverId": receiverId},
+      );
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Message>> fetchMessages(String chatId, DateTime before) async {
+    try {
+      final response = await _dio.get(
+        'message/getMessages',
+        data: {'chatId': chatId, "before": before.toUtc().toIso8601String()},
+      );
+
+      final List<dynamic> data = response.data['messages'] ?? [];
+      List<Message> messages = data.map((d) => Message.fromJson(d)).toList();
+      messages =
+          messages.map((m) {
+            return m.copyWith(createdAt: m.createdAt.toLocal());
+          }).toList();
+      return messages;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Message>> updateMessage(
+    String messageId,
+    Map<String, String> reaction,
+    String notifyingUserId,
+  ) async {
+    try {
+      final response = await _dio.put(
+        'message/updateMessage',
+        data: {
+          'messageId': messageId,
+          "reaction": reaction,
+          "notifyUserId": notifyingUserId,
+        },
+      );
+
+      final List<dynamic> data = response.data['messages'] ?? [];
+      List<Message> messages = data.map((d) => Message.fromJson(d)).toList();
+      messages =
+          messages.map((m) {
+            return m.copyWith(createdAt: m.createdAt.toLocal());
+          }).toList();
+      return messages;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<void> deleteChat(String chatId) async {
+    try {
+      await _dio.delete('chat/deleteChat', data: {'chatId': chatId});
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<Chat> fetchChat(String chatId) async {
+    try {
+      final response = await _dio.get('chat/getChat', data: {'chatId': chatId});
+
+      return Chat.fromJson(response.data['chat']);
     } on DioException catch (e) {
       final errorMessage = _extractErrorMessage(e);
       throw Exception(errorMessage);

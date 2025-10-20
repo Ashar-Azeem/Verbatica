@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:verbatica/DummyData/SearchingPostsDummyData.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/user.dart';
 import 'package:rxdart/rxdart.dart';
@@ -68,35 +67,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   }
 
   searchPosts(SearchPosts event, Emitter<SearchState> emit) async {
-    try {
-      if (event.postTitle.trim().isEmpty) {
-        emit(state.copyWith(posts: [], loadingPosts: false));
-      } else {
-        emit(state.copyWith(posts: [], loadingPosts: true));
-
-        final query = event.postTitle.toLowerCase();
-        final List<Post> currentPosts = List.from(state.posts);
-
-        await Future.delayed(const Duration(milliseconds: 150));
-        List<Post> matchedInState =
-            currentPosts.where((post) {
-              final title = post.title.toLowerCase().trim();
-              return title.startsWith(query);
-            }).toList();
-
-        if (matchedInState.isNotEmpty) {
-          emit(state.copyWith(posts: matchedInState, loadingPosts: false));
-        } else {
-          List<Post> matchedInDummy =
-              searchingPosts.where((post) {
-                final title = post.title.toLowerCase().trim();
-                return title.startsWith(query);
-              }).toList();
-
-          emit(state.copyWith(posts: matchedInDummy, loadingPosts: false));
-        }
-      }
-    } catch (e) {
+    try {} catch (e) {
       print(e);
     }
   }

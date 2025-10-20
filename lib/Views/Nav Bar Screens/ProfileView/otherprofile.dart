@@ -3,10 +3,12 @@ import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_state.dart';
+import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/UI_Components/PostComponents/EmptyPosts.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/UI_Components/PostComponents/ShimmerLoader.dart';
@@ -14,6 +16,8 @@ import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/ErrorSnackBar.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
 import 'package:verbatica/Utilities/loadingAnimationOfCustomSize.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/Chats%20And%20Messaging%20Views/MessageView.dart';
+import 'package:verbatica/model/Chat.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:timeago/timeago.dart' as timeago;
@@ -796,7 +800,93 @@ class _ProfileViewState extends State<otherProfileView>
                                                     )
                                                     : Expanded(
                                                       child: ElevatedButton(
-                                                        onPressed: () {},
+                                                        onPressed: () async {
+                                                          Chat? chat;
+                                                          try {
+                                                            chat = await ApiService()
+                                                                .checkAndFetchChat(
+                                                                  user.id,
+                                                                  widget
+                                                                      .post
+                                                                      .userId,
+                                                                );
+                                                            if (chat != null) {
+                                                              pushScreen(
+                                                                context,
+                                                                screen:
+                                                                    MessageView(
+                                                                      chat:
+                                                                          chat,
+                                                                    ),
+                                                              );
+                                                              return;
+                                                            } else {
+                                                              //creating dummy chat to emulate the actual behaviour
+                                                              chat = Chat(
+                                                                chatId: "",
+                                                                participantIds: [
+                                                                  user.id,
+                                                                  widget
+                                                                      .post
+                                                                      .userId,
+                                                                ],
+                                                                lastUpdated:
+                                                                    DateTime.now(),
+                                                                lastMessageSeenBy: {
+                                                                  user.id: true,
+                                                                  widget
+                                                                          .post
+                                                                          .userId:
+                                                                      false,
+                                                                },
+                                                                userProfiles: {
+                                                                  user.id:
+                                                                      user.avatarId,
+                                                                  widget
+                                                                          .post
+                                                                          .userId:
+                                                                      widget
+                                                                          .post
+                                                                          .avatar,
+                                                                },
+                                                                userNames: {
+                                                                  user.id:
+                                                                      user.userName,
+                                                                  widget
+                                                                          .post
+                                                                          .userId:
+                                                                      widget
+                                                                          .post
+                                                                          .name,
+                                                                },
+                                                                publicKeys: {
+                                                                  user.id:
+                                                                      user.publicKey,
+                                                                  widget
+                                                                          .post
+                                                                          .userId:
+                                                                      widget
+                                                                          .post
+                                                                          .publicKey,
+                                                                },
+                                                                lastMessage: "",
+                                                              );
+                                                              pushScreen(
+                                                                context,
+                                                                screen:
+                                                                    MessageView(
+                                                                      chat:
+                                                                          chat,
+                                                                    ),
+                                                              );
+                                                            }
+                                                          } catch (e) {
+                                                            CustomSnackbar.showError(
+                                                              context,
+                                                              e.toString(),
+                                                            );
+                                                          }
+                                                        },
                                                         style: ElevatedButton.styleFrom(
                                                           backgroundColor:
                                                               isDarkMode

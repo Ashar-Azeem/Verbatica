@@ -2,6 +2,7 @@ import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
+import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/Home/home_bloc.dart';
 import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
@@ -31,6 +32,10 @@ void showLogoutDialog(BuildContext context) {
               onPressed: () async {
                 //Disposing all the states of this user
                 await TokenOperations().deleteUserProfile();
+                //Turn the socket off
+                context.read<ChatBloc>().onAppClosed(
+                  context.read<UserBloc>().state.user!.id.toString(),
+                );
                 context.read<HomeBloc>().add(ClearHomeBloc());
                 context.read<TrendingViewBloc>().add(ClearTrendingBloc());
                 context.read<UserBloc>().add(ClearBloc());
@@ -79,25 +84,62 @@ Future<Map<String, String>?> showInfoCollector(BuildContext context) async {
                     GestureDetector(
                       onTap: () {
                         showCountryPicker(
-                          context: dialogContext,
                           exclude: ["IL"],
                           useSafeArea: true,
-                          showPhoneCode: false,
+
                           countryListTheme: CountryListThemeData(
+                            inputDecoration: InputDecoration(
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                                borderSide: BorderSide(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                  width: 1.5,
+                                ),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: const BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.primary,
+                                  width: 1,
+                                ),
+                              ),
+                              border: const OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10),
+                                ),
+                              ),
+                              hintText: 'Search...',
+                              hintStyle: TextStyle(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                            ),
+
+                            searchTextStyle: TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.bodyLarge?.color,
+                            ),
+                            flagSize: 10.w,
                             backgroundColor:
-                                Theme.of(dialogContext).scaffoldBackgroundColor,
+                                Theme.of(context).scaffoldBackgroundColor,
                             textStyle: TextStyle(
                               color:
-                                  Theme.of(
-                                    dialogContext,
-                                  ).textTheme.bodyLarge?.color,
+                                  Theme.of(context).textTheme.bodyLarge?.color,
                             ),
-                            flagSize: 24,
                           ),
+                          context: context,
+                          showPhoneCode: false,
                           onSelect: (Country country) {
                             setState(() {
                               selectedCountry = country.name;
-                              isCountryValid = true;
                             });
                           },
                         );

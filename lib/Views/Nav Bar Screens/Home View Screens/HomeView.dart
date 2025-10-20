@@ -33,7 +33,6 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    //initial fetch for loading the for you because it is the first tab that opens
 
     //Timer is used so that this event is called in the next event loop after blocs has been completely initialized
     Timer(const Duration(seconds: 0), () {

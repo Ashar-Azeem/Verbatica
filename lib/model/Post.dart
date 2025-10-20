@@ -20,9 +20,10 @@ class Post extends Equatable implements FeedItem {
   final int comments;
   final DateTime uploadTime;
   final List<String>? clusters;
-
+  final String publicKey;
   const Post({
     required this.id,
+    required this.publicKey,
     required this.name,
     required this.userId,
     required this.avatar,
@@ -55,6 +56,7 @@ class Post extends Equatable implements FeedItem {
       'downVotes': downvotes,
       'isUpVote': isUpVote,
       'isDownVote': isDownVote,
+      'public_key': publicKey,
       'comments': comments,
       'uploadTime': uploadTime.toIso8601String(),
     };
@@ -76,6 +78,7 @@ class Post extends Equatable implements FeedItem {
       isUpVote: json['isUpVote'],
       isDownVote: json['isDownVote'],
       comments: json['comments'] ?? 0,
+      publicKey: json['public_key'],
       uploadTime: DateTime.parse(json['uploadTime']),
       clusters:
           (json['clusters'] as List<dynamic>?)
@@ -97,14 +100,16 @@ class Post extends Equatable implements FeedItem {
     int? upvotes,
     int? downvotes,
     bool? isUpVote,
+    String? publicKey,
     bool? isDownVote,
     int? comments,
     DateTime? uploadTime,
   }) {
     return Post(
       id: id ?? this.id,
+      publicKey: publicKey ?? this.publicKey,
       name: name ?? this.name,
-      userId: userId ?? this.userId, // 👈 Added here
+      userId: userId ?? this.userId,
       avatar: avatar ?? this.avatar,
       title: title ?? this.title,
       description: description ?? this.description,
@@ -130,6 +135,7 @@ class Post extends Equatable implements FeedItem {
     description,
     postImageLink,
     postVideoLink,
+    publicKey,
     isDebate,
     upvotes,
     downvotes,

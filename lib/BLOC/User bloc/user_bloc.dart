@@ -3,7 +3,6 @@ import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/DummyData/comments.dart';
-import 'package:verbatica/DummyData/dummyPosts.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/model/Post.dart';
@@ -360,9 +359,12 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
   void _onUpdateUser(UpdateUser event, Emitter<UserState> emit) {
     emit(state.copyWith(user: event.user));
-    event.context.read<ChatBloc>().add(
-      FetchInitialChats(userId: event.user.id.toString()),
-    );
+    if (event.user.isVerified) {
+      event.context.read<ChatBloc>().add(
+        FetchInitialChats(userId: event.user.id),
+      );
+      event.context.read<ChatBloc>().onAppOpened(event.user.id.toString());
+    }
   }
 
   // New handler for saving posts
@@ -387,16 +389,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   void _onFetchSavedPosts(
     FetchSavedPosts event,
     Emitter<UserState> emit,
-  ) async {
-    if (state.savedPosts.isEmpty) {
-      final sampleSavedPosts = forYouPosts.take(3).toList();
-      emit(state.copyWith(savedPosts: sampleSavedPosts));
-    } else {
-      emit(
-        state.copyWith(savedPosts: state.savedPosts),
-      ); // Force emit current savedPosts
-    }
-  }
+  ) async {}
 
   void updateAura(UpdateAura event, Emitter<UserState> emit) async {
     int aura = await ApiService().getAura(state.user!.id);

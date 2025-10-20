@@ -35,7 +35,13 @@ class RemoveReplyBar extends MessagesEvent {
 
 class SendMessage extends MessagesEvent {
   final Message message;
-  const SendMessage({required this.message});
+  final Chat chat;
+  final int otherUserId;
+  const SendMessage({
+    required this.otherUserId,
+    required this.chat,
+    required this.message,
+  });
 }
 
 class AddReaction extends MessagesEvent {
@@ -47,4 +53,18 @@ class AddReaction extends MessagesEvent {
     required this.emoji,
     required this.userId,
   });
+}
+
+class AddMessage extends MessagesEvent {
+  final Message message;
+
+  const AddMessage({required this.message});
+}
+
+class UpdateSeenStatus extends MessagesEvent {}
+
+class UpdateMessage extends MessagesEvent {
+  final Message message;
+
+  const UpdateMessage({required this.message});
 }

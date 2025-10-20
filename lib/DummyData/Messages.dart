@@ -38,6 +38,7 @@ final List<Message> messagesBetween1And2 = [
   ),
   Message(
     id: 'msg_5',
+
     message: 'Maybe a quick trip to the mountains.',
     createdAt: DateTime.now().subtract(Duration(minutes: 6)),
     sentBy: '1',
@@ -92,6 +93,7 @@ final List<Message> messagesBetween1And2 = [
     messageType: MessageType.text,
     status: MessageStatus.delivered,
   ),
+
   Message(
     id: 'msg_12',
     replyMessage: ReplyMessage(

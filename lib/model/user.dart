@@ -16,13 +16,13 @@ class User extends Equatable {
 
   const User({
     required this.id,
+    required this.publicKey,
     required this.email,
     required this.isSignedInWithGoogle,
     required this.userName,
     required this.country,
     required this.gender,
     required this.isVerified,
-    required this.publicKey,
     required this.avatarId,
     required this.about,
     required this.joinDate,

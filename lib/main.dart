@@ -43,7 +43,7 @@ void main() async {
         BlocProvider<CommentClusterBloc>(
           create: (context) => CommentClusterBloc(),
         ),
-        BlocProvider(create: (context) => ChatBloc()),
+        BlocProvider(create: (context) => ChatBloc(context: context)),
         BlocProvider(create: (context) => TrendingViewBloc()),
         BlocProvider(create: (context) => SearchBloc()),
         BlocProvider(create: (context) => HomeBloc()),
