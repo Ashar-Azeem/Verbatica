@@ -33,23 +33,13 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
 
   upVoteComment(UpVoteComment event, Emitter<CommentsState> emit) {
     List<Comment> comments = List.from(state.comments);
-    comments = _updateVotes(
-      comments,
-      event.comment.id,
-      event.userId,
-      isUpvote: true,
-    );
+    comments = _updateVotes(comments, event.comment.id, isUpvote: true);
     emit(state.copyWith(comments: List.from(comments)));
   }
 
   downVoteComment(DownVoteComment event, Emitter<CommentsState> emit) {
     List<Comment> comments = List.from(state.comments);
-    comments = _updateVotes(
-      comments,
-      event.comment.id,
-      event.userId,
-      isUpvote: false,
-    );
+    comments = _updateVotes(comments, event.comment.id, isUpvote: false);
     emit(state.copyWith(comments: List.from(comments)));
   }
 
@@ -78,8 +68,8 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       profile: event.user.avatarId.toString(),
       uploadTime: DateTime.now(),
       titleOfThePost: 'HEHEHEHEHEHE',
-      upVoteUserIds: [],
-      downVoteUserIds: [],
+      isUpvote: false,
+      isDownvote: false,
       allReplies: [],
       parentId: state.replyToComment?.id, // optional
     );
@@ -146,45 +136,70 @@ Comment? _addReplyToComment(
 
 List<Comment> _updateVotes(
   List<Comment> comments,
-  String commentId,
-  String userId, {
+  String commentId, {
   required bool isUpvote,
 }) {
   return comments.map((comment) {
     if (comment.id == commentId) {
-      final updatedUpvotes = List<String>.from(comment.upVoteUserIds);
-      final updatedDownvotes = List<String>.from(comment.downVoteUserIds);
+      bool updatedIsUpVote = comment.isUpvote;
+      bool updatedIsDownVote = comment.isDownvote;
+      int updatedTotalUpvotes = comment.totalUpvotes;
+      int updatedTotalDownvotes = comment.totalDownvotes;
 
       if (isUpvote) {
-        if (!updatedUpvotes.contains(userId)) {
-          if (updatedDownvotes.contains(userId)) {
-            updatedDownvotes.remove(userId);
-            updatedUpvotes.add(userId);
-          } else {
-            updatedUpvotes.add(userId);
+        // When user taps upvote
+        if (!comment.isUpvote) {
+          // User is newly upvoting
+          updatedIsUpVote = true;
+
+          // Increase upvotes only if not already upvoted
+          updatedTotalUpvotes += 1;
+
+          // If previously downvoted, remove that downvote
+          if (comment.isDownvote) {
+            updatedIsDownVote = false;
+            updatedTotalDownvotes -= 1;
           }
+        } else {
+          // User removes upvote
+          updatedIsUpVote = false;
+          updatedTotalUpvotes -= 1;
         }
       } else {
-        if (!updatedDownvotes.contains(userId)) {
-          if (updatedUpvotes.contains(userId)) {
-            updatedUpvotes.remove(userId);
-            updatedDownvotes.add(userId);
-          } else {
-            updatedDownvotes.add(userId);
+        // When user taps downvote
+        if (!comment.isDownvote) {
+          // User is newly downvoting
+          updatedIsDownVote = true;
+          updatedTotalDownvotes += 1;
+
+          // If previously upvoted, remove that upvote
+          if (comment.isUpvote) {
+            updatedIsUpVote = false;
+            updatedTotalUpvotes -= 1;
           }
+        } else {
+          // User removes downvote
+          updatedIsDownVote = false;
+          updatedTotalDownvotes -= 1;
         }
       }
 
+      // Clamp totals so they don’t go below zero
+      if (updatedTotalUpvotes < 0) updatedTotalUpvotes = 0;
+      if (updatedTotalDownvotes < 0) updatedTotalDownvotes = 0;
+
       return comment.copyWith(
-        upVoteUserIds: updatedUpvotes,
-        downVoteUserIds: updatedDownvotes,
+        isUpvote: updatedIsUpVote,
+        isDownvote: updatedIsDownVote,
+        totalUpvotes: updatedTotalUpvotes,
+        totalDownvotes: updatedTotalDownvotes,
       );
     } else {
+      // Recursive check for replies
       return comment.copyWith(
         allReplies: _updateVotes(
           comment.allReplies,
           commentId,
-          userId,
           isUpvote: isUpvote,
         ),
       );

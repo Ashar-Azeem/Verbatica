@@ -1,21 +1,12 @@
 part of 'comment_cluster_bloc.dart';
 
-// sealed class CommentClusterState extends Equatable {
-//   const CommentClusterState();
-
-//   @override
-//   List<Object> get props => [];
-// }
-
-final class CommentClusterInitial extends CommentClusterState {}
-
 class CommentClusterState extends Equatable {
-  final List<Comment> comments;
+  final List<CommentSectionOfEachTab> comments;
 
   const CommentClusterState({this.comments = const []});
 
   CommentClusterState copyWith({
-    List<Comment>? comments,
+    List<CommentSectionOfEachTab>? comments,
     bool? initialLoader,
     bool? hasMore,
     bool? commentLoading,
@@ -26,4 +17,44 @@ class CommentClusterState extends Equatable {
 
   @override
   List<Object?> get props => [comments];
+}
+
+class CommentSectionOfEachTab extends Equatable {
+  final List<ExpandableComments> comments;
+  final bool isLoading;
+
+  const CommentSectionOfEachTab({
+    required this.comments,
+    required this.isLoading,
+  });
+
+  CommentSectionOfEachTab copyWith({
+    bool? isLoading,
+    List<ExpandableComments>? comments,
+  }) {
+    return CommentSectionOfEachTab(
+      comments: comments ?? this.comments,
+      isLoading: isLoading ?? this.isLoading,
+    );
+  }
+
+  @override
+  List<Object?> get props => [comments, isLoading];
+}
+
+class ExpandableComments extends Equatable {
+  final Comment comment;
+  final bool isExpand;
+
+  const ExpandableComments({required this.comment, required this.isExpand});
+
+  ExpandableComments copyWith({bool? isExpand, Comment? comment}) {
+    return ExpandableComments(
+      comment: comment ?? this.comment,
+      isExpand: isExpand ?? this.isExpand,
+    );
+  }
+
+  @override
+  List<Object?> get props => [comment, isExpand];
 }

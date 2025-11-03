@@ -11,7 +11,6 @@ import 'package:verbatica/BLOC/Home/home_bloc.dart';
 import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/Votes%20Restriction/votes_restrictor_bloc.dart';
-import 'package:verbatica/BLOC/comments_cluster/comment_cluster_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_bloc.dart';
 import 'package:verbatica/BLOC/summary/summary_bloc.dart';
@@ -40,9 +39,7 @@ void main() async {
         BlocProvider<VotesRestrictorBloc>(
           create: (context) => VotesRestrictorBloc(),
         ),
-        BlocProvider<CommentClusterBloc>(
-          create: (context) => CommentClusterBloc(),
-        ),
+
         BlocProvider(create: (context) => ChatBloc(context: context)),
         BlocProvider(create: (context) => TrendingViewBloc()),
         BlocProvider(create: (context) => SearchBloc()),

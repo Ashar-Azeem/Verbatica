@@ -5,6 +5,7 @@ class AppNotification {
   final String senderUsername;
   final String receiverUsername;
   final bool isPostNotification;
+
   final bool isCommentNotification;
   final bool isUpvoteNotification;
   final bool isReplyNotification;
@@ -53,20 +54,27 @@ class AppNotification {
 
   factory AppNotification.fromJson(Map<String, dynamic> json) {
     return AppNotification(
-      notificationId: json['notificationId'] as String,
-      postId: json['postId'] as String,
-      commentId: json['commentId'] as String,
-      senderUsername: json['senderUsername'] as String,
-      receiverUsername: json['receiverUsername'] as String,
-      isPostNotification: json['isPostNotification'] as bool,
-      isCommentNotification: json['isCommentNotification'] as bool,
-      isUpvoteNotification: json['isUpvoteNotification'] as bool,
-      isReplyNotification: json['isReplyNotification'] as bool,
-      title: json['title'] as String,
-      description: json['description'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      isRead: json['isRead'] as bool,
-      avatarId: json['avatarId'] as int,
+      notificationId: json['notification_id']?.toString() ?? '',
+      postId: json['post_id']?.toString(),
+      commentId: json['comment_id']?.toString(),
+      senderUsername: json['sender_username'] ?? json['senderUserName'] ?? '',
+      receiverUsername:
+          json['receiver_username'] ?? json['receiverUserName'] ?? '',
+      isPostNotification: json['is_post_notification'] ?? false,
+      isCommentNotification: json['is_comment_notification'] ?? false,
+      isUpvoteNotification: json['is_upvote_notification'] ?? false,
+      isReplyNotification: json['is_reply_notification'] ?? false,
+      title: json['title'] ?? '',
+      description: json['description'] ?? '',
+      createdAt:
+          json['created_at'] != null
+              ? DateTime.parse(json['created_at'])
+              : DateTime.now(),
+      isRead: json['is_read'] ?? false,
+      avatarId:
+          json['avatarId'] ??
+          json['avatar_id'] ??
+          1, // fallback to default avatar
     );
   }
 

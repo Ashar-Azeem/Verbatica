@@ -8,7 +8,45 @@ sealed class CommentClusterEvent extends Equatable {
 }
 
 class LoadInitialComments extends CommentClusterEvent {
-  final String clusterId;
+  const LoadInitialComments();
+}
 
-  const LoadInitialComments({required this.clusterId});
+class ToggleExpandOrCollapse extends CommentClusterEvent {
+  final int tabIndex;
+  final int listIndex;
+
+  const ToggleExpandOrCollapse({
+    required this.tabIndex,
+    required this.listIndex,
+  });
+}
+
+class LoadOtherTabs extends CommentClusterEvent {
+  final int tabIndex;
+
+  const LoadOtherTabs({required this.tabIndex});
+}
+
+class UpVoteComment extends CommentClusterEvent {
+  final int tabIndex;
+  final int commentClusterIndex;
+  final String commentId;
+
+  const UpVoteComment({
+    required this.tabIndex,
+    required this.commentClusterIndex,
+    required this.commentId,
+  });
+}
+
+class DownVoteComment extends CommentClusterEvent {
+  final int tabIndex;
+  final int commentClusterIndex;
+  final String commentId;
+
+  const DownVoteComment({
+    required this.tabIndex,
+    required this.commentClusterIndex,
+    required this.commentId,
+  });
 }

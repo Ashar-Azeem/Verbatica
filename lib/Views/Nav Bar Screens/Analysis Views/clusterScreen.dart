@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/comments_cluster/comment_cluster_bloc.dart';
-import 'package:verbatica/UI_Components/singlecomment.dart';
+import 'package:verbatica/UI_Components/Comment%20Componenets/clusterComments.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/chartanalytics.dart';
-import 'package:verbatica/model/comment.dart';
 
 class Clusterscreen extends StatefulWidget {
   const Clusterscreen({
@@ -20,13 +21,11 @@ class Clusterscreen extends StatefulWidget {
 class _ClusterscreenState extends State<Clusterscreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  int previousIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    context.read<CommentClusterBloc>().add(
-      LoadInitialComments(clusterId: 'ssds'),
-    );
     _tabController = TabController(length: widget.clusters.length, vsync: this);
   }
 
@@ -38,127 +37,189 @@ class _ClusterscreenState extends State<Clusterscreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
-        title: Text(
-          'Discussion Detail',
-          style: TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 18,
-            letterSpacing: 0.3,
-            color: Theme.of(context).textTheme.titleLarge?.color,
+    return BlocProvider(
+      create:
+          (context) => CommentClusterBloc(
+            totalCluster: widget.clusters.length,
+            clusterNames: widget.clusters,
           ),
-        ),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back_ios_new,
-            size: 20,
-            color: Theme.of(context).iconTheme.color,
-          ),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) =>
-                          ChartsAnalyticsScreen(clusters: widget.clusters),
+      child: BlocBuilder<CommentClusterBloc, CommentClusterState>(
+        builder: (context, state) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _tabController.addListener(() {
+              if (!_tabController.indexIsChanging &&
+                  previousIndex != _tabController.index) {
+                previousIndex = _tabController.index;
+                print(_tabController.index);
+                context.read<CommentClusterBloc>().add(
+                  LoadOtherTabs(tabIndex: _tabController.index),
+                );
+              }
+            });
+          });
+          return Scaffold(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            appBar: AppBar(
+              elevation: 0,
+              backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
+              title: Text(
+                'Discussion Detail',
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 18,
+                  letterSpacing: 0.3,
+                  color: Theme.of(context).textTheme.titleLarge?.color,
                 ),
-              );
-            },
-            icon: Icon(
-              Icons.bar_chart,
-              size: 22,
-              color: Theme.of(context).iconTheme.color,
+              ),
+              leading: IconButton(
+                icon: Icon(
+                  Icons.arrow_back_ios_new,
+                  size: 20,
+                  color: Theme.of(context).iconTheme.color,
+                ),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => ChartsAnalyticsScreen(
+                              clusters: widget.clusters,
+                            ),
+                      ),
+                    );
+                  },
+                  icon: Icon(
+                    Icons.bar_chart,
+                    size: 22,
+                    color: Theme.of(context).iconTheme.color,
+                  ),
+                  tooltip: 'View Analytics',
+                ),
+              ],
+              centerTitle: true,
             ),
-            tooltip: 'View Analytics',
-          ),
-        ],
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [_buildTabBar(), Expanded(child: _buildCommentsList())],
+            body: Column(
+              children: [_buildTabBar(), Expanded(child: _buildCommentsList())],
+            ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildTabBar() {
-    return Container(
-      color: Theme.of(context).cardColor,
-      child: TabBar(
-        controller: _tabController,
-        isScrollable: true,
-        dividerColor: Theme.of(context).dividerColor,
-        indicatorColor: Theme.of(context).colorScheme.primary,
-        indicatorWeight: 3,
-        labelColor: Theme.of(context).colorScheme.primary,
-        unselectedLabelColor: Theme.of(context).colorScheme.secondary,
-        labelStyle: const TextStyle(
-          fontWeight: FontWeight.w600,
-          fontSize: 14,
-          letterSpacing: 0.5,
-        ),
-        unselectedLabelStyle: const TextStyle(
-          fontWeight: FontWeight.w400,
-          fontSize: 14,
-        ),
-        tabs:
-            widget.clusters
-                .map(
-                  (cluster) => Tab(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(cluster),
-                          const SizedBox(width: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.primary.withOpacity(0.2),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              '13', //we will write logic of number of comments for each cluster later , for dummy here 13 is written
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context).colorScheme.primary,
+    return BlocBuilder<CommentClusterBloc, CommentClusterState>(
+      builder: (context, state) {
+        return Container(
+          color: Theme.of(context).cardColor,
+          child: TabBar(
+            tabAlignment: TabAlignment.center,
+            controller: _tabController,
+            isScrollable: true,
+            dividerColor: Theme.of(context).dividerColor,
+            indicatorColor: Theme.of(context).colorScheme.primary,
+            indicatorWeight: 3,
+            labelColor: Theme.of(context).colorScheme.primary,
+            unselectedLabelColor: Theme.of(context).colorScheme.secondary,
+            labelStyle: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+              letterSpacing: 0.5,
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontWeight: FontWeight.w400,
+              fontSize: 14,
+            ),
+            onTap: (value) {
+              previousIndex = value;
+              context.read<CommentClusterBloc>().add(
+                LoadOtherTabs(tabIndex: value),
+              );
+            },
+            tabs:
+                widget.clusters
+                    .map(
+                      (cluster) => Tab(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(cluster),
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.primary.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  '13', //we will write logic of number of comments for each cluster later , for dummy here 13 is written
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                )
-                .toList(),
-      ),
+                    )
+                    .toList(),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildCommentsList() {
     return BlocBuilder<CommentClusterBloc, CommentClusterState>(
       builder: (context, state) {
+        if (state.comments.isEmpty) {
+          return Padding(
+            padding: EdgeInsets.only(top: 40.h),
+            child: Center(
+              child: LoadingAnimationWidget.dotsTriangle(
+                color: Theme.of(context).colorScheme.primary,
+                size: 13.w,
+              ),
+            ),
+          );
+        }
+
         return TabBarView(
           controller: _tabController,
-          children:
-              widget.clusters.map((cluster) {
-                final clusterComments = state.comments;
 
-                if (clusterComments.isEmpty) {
+          children:
+              widget.clusters.asMap().entries.map((entry) {
+                final newIndex = entry.key;
+                if (newIndex >= state.comments.length) {
+                  // safety guard
+                  return const SizedBox.shrink();
+                }
+
+                final CommentSectionOfEachTab clusterComments =
+                    state.comments[newIndex];
+                if (clusterComments.isLoading) {
+                  return Center(
+                    child: LoadingAnimationWidget.dotsTriangle(
+                      color: Theme.of(context).colorScheme.primary,
+                      size: 13.w,
+                    ),
+                  );
+                } else if (clusterComments.comments.isEmpty) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -206,35 +267,53 @@ class _ClusterscreenState extends State<Clusterscreen>
                     ),
                   );
                 }
-
                 return Scrollbar(
                   child: ListView.builder(
-                    padding: const EdgeInsets.only(
-                      left: 12,
-                      right: 12,
+                    key: PageStorageKey('cluster-$newIndex'),
+                    padding: EdgeInsets.only(
+                      left: 1.w,
+                      right: 1.w,
                       top: 16,
-                      bottom: 80,
+                      bottom: 2.h,
                     ),
-                    itemCount: clusterComments.length,
+                    addAutomaticKeepAlives: true,
+                    itemCount: state.comments[newIndex].comments.length,
                     itemBuilder: (context, index) {
-                      final comment = clusterComments[index];
-                      Comment? parentComment;
-
-                      if (comment.parentId != null) {
-                        try {
-                          parentComment = clusterComments.firstWhere(
-                            (c) => c.id == comment.parentId,
-                          );
-                        } catch (e) {
-                          parentComment = null;
-                        }
-                      }
-
+                      ExpandableComments comment =
+                          state.comments[newIndex].comments[index];
                       return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: SingleCommentUI(
-                          comment: comment,
-                          parentComment: parentComment,
+                        padding: EdgeInsets.only(top: 0.5.h),
+                        child: GestureDetector(
+                          onDoubleTap: () {
+                            //Event to expand or contract the commment block
+                            context.read<CommentClusterBloc>().add(
+                              ToggleExpandOrCollapse(
+                                tabIndex: newIndex,
+                                listIndex: index,
+                              ),
+                            );
+                          },
+                          child: Card(
+                            child: ClusterComments(
+                              comment: comment.comment,
+                              level: 1,
+                              tabBarIndex: newIndex,
+                              clusterIndex: index,
+                              isExpand:
+                                  state
+                                      .comments[newIndex]
+                                      .comments[index]
+                                      .isExpand,
+                              toggleFold: () {
+                                context.read<CommentClusterBloc>().add(
+                                  ToggleExpandOrCollapse(
+                                    tabIndex: newIndex,
+                                    listIndex: index,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                         ),
                       );
                     },
