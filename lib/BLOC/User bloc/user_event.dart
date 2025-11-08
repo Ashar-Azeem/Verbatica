@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:verbatica/model/comment.dart';
 import 'package:verbatica/model/user.dart';
 import 'package:verbatica/model/Post.dart';
 
@@ -88,6 +89,7 @@ class AddRecentPost extends UserEvent {
 class FetchMorePosts extends UserEvent {}
 
 class ClearBloc extends UserEvent {}
+
 class SyncUpvotePost extends UserEvent {
   final String postId;
   SyncUpvotePost({required this.postId});
@@ -96,4 +98,17 @@ class SyncUpvotePost extends UserEvent {
 class SyncDownvotePost extends UserEvent {
   final String postId;
   SyncDownvotePost({required this.postId});
+}
+
+class AddNewComment extends UserEvent {
+  final Comment comment;
+  final int postIndex;
+
+  AddNewComment({required this.comment, required this.postIndex});
+}
+
+class UpdateCommentCountOfAPost extends UserEvent {
+  final int postIndex;
+
+  UpdateCommentCountOfAPost({required this.postIndex});
 }

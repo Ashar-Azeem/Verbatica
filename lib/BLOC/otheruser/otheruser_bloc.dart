@@ -1,10 +1,8 @@
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart' as userBloc;
 import 'package:verbatica/BLOC/otheruser/otheruser_state.dart';
-import 'package:verbatica/DummyData/comments.dart';
 import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/comment.dart';
@@ -21,8 +19,8 @@ class OtheruserBloc extends Bloc<OtheruserEvent, OtheruserState> {
     on<clearBloc>(_clearBloc);
     on<UpdateRelationship>(updateRelationship);
     on<FetchMorePosts>(fetchMorePosts);
-on<SyncUpvoteotherPost>(_syncUpvotePost);
-  on<SyncDownvoteotherPost>(_syncDownvotePost);
+    on<SyncUpvoteotherPost>(_syncUpvotePost);
+    on<SyncDownvoteotherPost>(_syncDownvotePost);
     on<fetchUserinfo>((event, emit) async {
       try {
         Map<String, dynamic> profile = await ApiService().getProfile(
@@ -39,6 +37,13 @@ on<SyncUpvoteotherPost>(_syncUpvotePost);
       } catch (e) {
         print("something went wrong: $e");
       }
+    });
+    on<UpdateCommentCountOfAPost>((event, emit) {
+      List<Post> posts = List.from(state.userPosts);
+      posts[event.postIndex] = posts[event.postIndex].copyWith(
+        comments: posts[event.postIndex].comments + 1,
+      );
+      emit(state.copyWith(userPosts: posts));
     });
   }
   void _UpvotePost(upvotePost event, Emitter<OtheruserState> emit) {
@@ -109,67 +114,62 @@ on<SyncUpvoteotherPost>(_syncUpvotePost);
       emit(state.copyWith(userPosts: posts));
     }
   }
-void _syncUpvotePost(SyncUpvoteotherPost event, Emitter<OtheruserState> emit) {
-  List<Post> posts = List.from(state.userPosts);
-  int index = posts.indexWhere((post) => post.id == event.postId);
 
-  if (index != -1) {
-    Post post = posts[index];
-    if (!post.isUpVote) {
-      if (post.isDownVote) {
-        post = post.copyWith(
-          isDownVote: false,
-          isUpVote: true,
-          upvotes: post.upvotes + 2,
-        );
+  void _syncUpvotePost(
+    SyncUpvoteotherPost event,
+    Emitter<OtheruserState> emit,
+  ) {
+    List<Post> posts = List.from(state.userPosts);
+    int index = posts.indexWhere((post) => post.id == event.postId);
+
+    if (index != -1) {
+      Post post = posts[index];
+      if (!post.isUpVote) {
+        if (post.isDownVote) {
+          post = post.copyWith(
+            isDownVote: false,
+            isUpVote: true,
+            upvotes: post.upvotes + 2,
+          );
+        } else {
+          post = post.copyWith(isUpVote: true, upvotes: post.upvotes + 1);
+        }
       } else {
-        post = post.copyWith(
-          isUpVote: true,
-          upvotes: post.upvotes + 1,
-        );
+        // undo upvote
+        post = post.copyWith(isUpVote: false, upvotes: post.upvotes - 1);
       }
-    } else {
-      // undo upvote
-      post = post.copyWith(
-        isUpVote: false,
-        upvotes: post.upvotes - 1,
-      );
+      posts[index] = post;
+      emit(state.copyWith(userPosts: posts));
     }
-    posts[index] = post;
-    emit(state.copyWith(userPosts: posts));
   }
-}
 
-void _syncDownvotePost(SyncDownvoteotherPost event, Emitter<OtheruserState> emit) {
-  List<Post> posts = List.from(state.userPosts);
-  int index = posts.indexWhere((post) => post.id == event.postId);
+  void _syncDownvotePost(
+    SyncDownvoteotherPost event,
+    Emitter<OtheruserState> emit,
+  ) {
+    List<Post> posts = List.from(state.userPosts);
+    int index = posts.indexWhere((post) => post.id == event.postId);
 
-  if (index != -1) {
-    Post post = posts[index];
-    if (!post.isDownVote) {
-      if (post.isUpVote) {
-        post = post.copyWith(
-          isDownVote: true,
-          isUpVote: false,
-          downvotes: post.downvotes + 2,
-        );
+    if (index != -1) {
+      Post post = posts[index];
+      if (!post.isDownVote) {
+        if (post.isUpVote) {
+          post = post.copyWith(
+            isDownVote: true,
+            isUpVote: false,
+            downvotes: post.downvotes + 2,
+          );
+        } else {
+          post = post.copyWith(isDownVote: true, downvotes: post.downvotes + 1);
+        }
       } else {
-        post = post.copyWith(
-          isDownVote: true,
-          downvotes: post.downvotes + 1,
-        );
+        // undo downvote
+        post = post.copyWith(isDownVote: false, downvotes: post.downvotes - 1);
       }
-    } else {
-      // undo downvote
-      post = post.copyWith(
-        isDownVote: false,
-        downvotes: post.downvotes - 1,
-      );
+      posts[index] = post;
+      emit(state.copyWith(userPosts: posts));
     }
-    posts[index] = post;
-    emit(state.copyWith(userPosts: posts));
   }
-}
 
   void _onupdateComment(
     updateCommentWithPost event,
@@ -177,13 +177,12 @@ void _syncDownvotePost(SyncDownvoteotherPost event, Emitter<OtheruserState> emit
   ) async {
     emit(state.copyWith(isLoadingComments: true));
 
-    await Future.delayed(Duration(seconds: 3));
-
-    final List<Comment> matchingComments = dummyComments;
-
-    emit(
-      state.copyWith(userComments: matchingComments, isLoadingComments: false),
+    final List<Comment> comments = await ApiService().fetchUserComments(
+      event.visitingUserId,
+      event.ownerUser,
     );
+
+    emit(state.copyWith(userComments: comments, isLoadingComments: false));
   }
 
   // New method to fetch user posts

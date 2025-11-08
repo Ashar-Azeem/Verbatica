@@ -62,3 +62,9 @@ class DownVoteSimilarPosts extends PostEvent {
 
   const DownVoteSimilarPosts({required this.index, required this.context});
 }
+
+class UpdateCommentCountOfAPostInSimilarPosts extends PostEvent {
+  final int postIndex;
+
+  const UpdateCommentCountOfAPostInSimilarPosts({required this.postIndex});
+}

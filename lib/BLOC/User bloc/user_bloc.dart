@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
-import 'package:verbatica/DummyData/comments.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/model/Post.dart';
@@ -30,6 +29,14 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<SyncUpvotePost>(_syncUpvotePost);
     on<SyncDownvotePost>(_syncDownvotePost);
     on<AddRecentPost>(addRecentPost);
+    on<AddNewComment>(addNewComment);
+    on<UpdateCommentCountOfAPost>((event, emit) {
+      List<Post> posts = List.from(state.savedPosts);
+      posts[event.postIndex] = posts[event.postIndex].copyWith(
+        comments: posts[event.postIndex].comments + 1,
+      );
+      emit(state.copyWith(savedPosts: posts));
+    });
   }
 
   void addRecentPost(AddRecentPost event, Emitter<UserState> emit) {
@@ -38,6 +45,22 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         List<Post> userPosts = List.from(state.userPosts);
         userPosts.insert(0, event.post);
         emit(state.copyWith(userPosts: userPosts));
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  void addNewComment(AddNewComment event, Emitter<UserState> emit) {
+    try {
+      if (!state.isLoadingComments) {
+        List<Comment> userComments = List.from(state.userComments);
+        userComments.insert(0, event.comment);
+        List<Post> userPosts = List.from(state.userPosts);
+        userPosts[event.postIndex] = userPosts[event.postIndex].copyWith(
+          comments: userPosts[event.postIndex].comments + 1,
+        );
+        emit(state.copyWith(userComments: userComments, userPosts: userPosts));
       }
     } catch (e) {
       print(e);
@@ -278,13 +301,13 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     Emitter<UserState> emit,
   ) async {
     emit(state.copyWith(isLoadingComments: true));
-    await Future.delayed(Duration(seconds: 3));
 
-    final List<Comment> matchingComments = dummyComments;
-
-    emit(
-      state.copyWith(userComments: matchingComments, isLoadingComments: false),
+    final List<Comment> comments = await ApiService().fetchUserComments(
+      state.user!.id,
+      state.user!.id,
     );
+
+    emit(state.copyWith(userComments: comments, isLoadingComments: false));
   }
 
   // New method to fetch user posts

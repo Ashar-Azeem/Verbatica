@@ -618,7 +618,11 @@ class PostWidget extends StatelessWidget {
                                     );
                                   } else {
                                     context.read<searchBloc.SearchBloc>().add(
-                                      searchBloc.UpVotePost(index: index),
+                                      searchBloc.UpVotePost(
+                                        index: index,
+                                        userId: user.id,
+                                        context: context,
+                                      ),
                                     );
                                   }
                                 },
@@ -838,7 +842,11 @@ class PostWidget extends StatelessWidget {
                                     );
                                   } else {
                                     context.read<searchBloc.SearchBloc>().add(
-                                      searchBloc.DownVotePost(index: index),
+                                      searchBloc.DownVotePost(
+                                        index: index,
+                                        userId: user.id,
+                                        context: context,
+                                      ),
                                     );
                                     // HomeBloc
                                     context.read<homeBloc.HomeBloc>().add(

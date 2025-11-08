@@ -49,7 +49,9 @@ class _ProfileViewState extends State<otherProfileView>
     context.read<OtheruserBloc>().add(
       FetchUserPosts(userId: widget.post.userId, ownerUserId: user.id),
     );
-    context.read<OtheruserBloc>().add(updateCommentWithPost());
+    context.read<OtheruserBloc>().add(
+      updateCommentWithPost(widget.post.userId, visitingUserId: user.id),
+    );
     _tabController = TabController(length: 3, vsync: this);
     _scrollNotifier = ValueNotifier(0.0);
     _scrollController.addListener(_updateScrollNotifier);
@@ -992,8 +994,14 @@ class CommentShimmerTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       child: Shimmer.fromColors(
-        baseColor: Theme.of(context).colorScheme.surface.withOpacity(0.3),
-        highlightColor: Theme.of(context).colorScheme.surface.withOpacity(0.1),
+        baseColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey.shade800
+                : Colors.grey.shade300,
+        highlightColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey.shade700
+                : Colors.grey.shade100,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1188,7 +1196,7 @@ class _BuildUserCommentsTab extends State<BuildUserCommentTab>
                 ),
               ),
               Text(
-                '/${comment.text}    • ${timeago.format(comment.uploadTime)}',
+                '${comment.text}    \n• ${timeago.format(comment.uploadTime)}',
                 style: TextStyle(
                   fontSize: 12,
                   color: Theme.of(

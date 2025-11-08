@@ -114,4 +114,14 @@ class SyncDownvotePostsOfOtherTab extends HomeEvent {
   });
 }
 
+class UpdateCommentCountOfAPost extends HomeEvent {
+  final int postIndex;
+  final String category;
+
+  const UpdateCommentCountOfAPost({
+    required this.postIndex,
+    required this.category,
+  });
+}
+
 class ClearHomeBloc extends HomeEvent {}

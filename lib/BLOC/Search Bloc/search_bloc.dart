@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/user.dart';
 import 'package:rxdart/rxdart.dart';
@@ -22,6 +24,13 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     on<ReportPost>(reportPost);
     on<SavePost>(savePost);
     on<Reset>(reset);
+    on<UpdateCommentCountOfAPost>((event, emit) {
+      List<Post> posts = List.from(state.posts);
+      posts[event.postIndex] = posts[event.postIndex].copyWith(
+        comments: posts[event.postIndex].comments + 1,
+      );
+      emit(state.copyWith(posts: posts));
+    });
   }
 
   EventTransformer<E> debounceRestartable<E>(Duration duration) {
@@ -74,6 +83,13 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
   upVotePost(UpVotePost event, Emitter<SearchState> emit) {
     List<Post> posts = List.from(state.posts);
+    ApiService().updatingVotes(
+      int.parse(posts[event.index].id),
+      event.userId,
+      true,
+      event.context,
+    );
+
     if (!posts[event.index].isUpVote) {
       if (posts[event.index].isDownVote) {
         posts[event.index] = posts[event.index].copyWith(
@@ -102,6 +118,12 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
 
   downVotePost(DownVotePost event, Emitter<SearchState> emit) {
     List<Post> posts = List.from(state.posts);
+    ApiService().updatingVotes(
+      int.parse(posts[event.index].id),
+      event.userId,
+      false,
+      event.context,
+    );
     if (!posts[event.index].isDownVote) {
       if (posts[event.index].isUpVote) {
         posts[event.index] = posts[event.index].copyWith(

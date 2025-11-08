@@ -12,3 +12,9 @@ class RegisterVote extends VotesRestrictorEvent {
 
   const RegisterVote({required this.postId});
 }
+
+class RegisterVoteOnComment extends VotesRestrictorEvent {
+  final String commentId;
+
+  const RegisterVoteOnComment({required this.commentId});
+}

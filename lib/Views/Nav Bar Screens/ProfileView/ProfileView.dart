@@ -888,7 +888,7 @@ class _BuildUserCommentsTab extends State<BuildUserCommentTab>
                 ),
               ),
               Text(
-                '/${comment.text}    • ${timeago.format(comment.uploadTime)}',
+                '${comment.text}    \n• ${timeago.format(comment.uploadTime)}',
                 style: TextStyle(
                   fontSize: 12,
                   color: Theme.of(

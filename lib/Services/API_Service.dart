@@ -9,6 +9,7 @@ import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/model/Ad.dart';
 import 'package:verbatica/model/Chat.dart';
 import 'package:verbatica/model/Post.dart';
+import 'package:verbatica/model/comment.dart';
 import 'package:verbatica/model/news.dart';
 import 'package:verbatica/model/user.dart';
 
@@ -720,6 +721,135 @@ class ApiService {
       final response = await _dio.get('chat/getChat', data: {'chatId': chatId});
 
       return Chat.fromJson(response.data['chat']);
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Comment>> fetchUserComments(
+    int visitingUserId,
+    int ownerUserId,
+  ) async {
+    try {
+      final response = await _dio.get(
+        'comment/getComments',
+        data: {'visitingUserId': visitingUserId, "ownerUserId": ownerUserId},
+      );
+
+      final List<dynamic> data = response.data['comments'] ?? [];
+      List<Comment> comments = data.map((d) => Comment.fromJson(d)).toList();
+      return comments;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Comment>> fetchPostComments(
+    int userId,
+    String postId,
+    DateTime? before,
+  ) async {
+    try {
+      final response = await _dio.get(
+        'comment/getCommentsOfPost',
+        data: {
+          'userId': userId,
+          "postId": postId,
+          "before": before?.toUtc().toIso8601String(),
+        },
+      );
+
+      final List<dynamic> data = response.data['comments'] ?? [];
+      List<Comment> comments = data.map((d) => Comment.fromJson(d)).toList();
+      return comments;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<Comment> uploadComment(
+    String postId,
+    String titleOfThePost,
+    String text,
+    String author,
+    int profile,
+    String commenterGender,
+    String commenterCountry,
+    String? parentId,
+    List<String>? clusters,
+    DateTime uploadTime,
+    int userId,
+    Uint8List iv,
+    String? parentComment,
+  ) async {
+    try {
+      final response = await _dio.post(
+        'comment/addComment',
+        data: {
+          'postId': postId,
+          "titleOfThePost": titleOfThePost,
+          "text": text,
+          'author': author,
+          "profile": profile,
+          "userId": userId,
+          "clusters": clusters,
+          "commenterGender": commenterGender,
+          "commenterCountry": commenterCountry,
+          "iv": iv,
+          "parentId": parentId,
+          "uploadTime": uploadTime.toUtc().toIso8601String(),
+          "parentComment": parentComment,
+        },
+      );
+
+      return Comment.fromJson(response.data['comment']);
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Comment>> fetchClusterComments(
+    int userId,
+    String postId,
+    String clusterName,
+  ) async {
+    try {
+      final response = await _dio.get(
+        'comment/getClusterComments',
+        data: {'userId': userId, "postId": postId, "clusterName": clusterName},
+      );
+
+      final List<dynamic> data = response.data['comments'] ?? [];
+      List<Comment> comments = data.map((d) => Comment.fromJson(d)).toList();
+      return comments;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<void> updatingCommmentsVote(
+    String commentId,
+    int userId,
+    String type,
+    BuildContext context,
+  ) async {
+    bool isAllowedForServer =
+        context.read<VotesRestrictorBloc>().state.canVote[commentId] ?? true;
+
+    if (!isAllowedForServer) {
+      return;
+    }
+
+    try {
+      await _dio.put(
+        'comment/updateVote',
+        data: {"commentId": commentId, "userId": userId, "type": type},
+      );
     } on DioException catch (e) {
       final errorMessage = _extractErrorMessage(e);
       throw Exception(errorMessage);

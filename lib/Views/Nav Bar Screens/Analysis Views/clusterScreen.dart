@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/comments_cluster/comment_cluster_bloc.dart';
 import 'package:verbatica/UI_Components/Comment%20Componenets/clusterComments.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/chartanalytics.dart';
@@ -42,6 +43,8 @@ class _ClusterscreenState extends State<Clusterscreen>
           (context) => CommentClusterBloc(
             totalCluster: widget.clusters.length,
             clusterNames: widget.clusters,
+            postId: widget.postid,
+            userId: context.read<UserBloc>().state.user!.id,
           ),
       child: BlocBuilder<CommentClusterBloc, CommentClusterState>(
         builder: (context, state) {
@@ -50,7 +53,6 @@ class _ClusterscreenState extends State<Clusterscreen>
               if (!_tabController.indexIsChanging &&
                   previousIndex != _tabController.index) {
                 previousIndex = _tabController.index;
-                print(_tabController.index);
                 context.read<CommentClusterBloc>().add(
                   LoadOtherTabs(tabIndex: _tabController.index),
                 );
@@ -148,31 +150,7 @@ class _ClusterscreenState extends State<Clusterscreen>
                           padding: const EdgeInsets.symmetric(horizontal: 8.0),
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Text(cluster),
-                              const SizedBox(width: 6),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.primary.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Text(
-                                  '13', //we will write logic of number of comments for each cluster later , for dummy here 13 is written
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                                ),
-                              ),
-                            ],
+                            children: [Text(cluster)],
                           ),
                         ),
                       ),
@@ -239,28 +217,6 @@ class _ClusterscreenState extends State<Clusterscreen>
                               context,
                             ).textTheme.bodyMedium?.color?.withOpacity(0.7),
                             fontSize: 16,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        ElevatedButton.icon(
-                          onPressed: () {},
-                          icon: Icon(
-                            Icons.add_comment,
-                            color: Theme.of(context).colorScheme.onPrimary,
-                          ),
-                          label: Text(
-                            'Add First Comment',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.onPrimary,
-                            ),
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 10,
-                            ),
                           ),
                         ),
                       ],

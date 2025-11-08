@@ -1,6 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:verbatica/DummyData/comments.dart';
+import 'package:flutter/material.dart';
+import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/model/comment.dart';
 part 'comment_cluster_event.dart';
 part 'comment_cluster_state.dart';
@@ -9,8 +10,14 @@ class CommentClusterBloc
     extends Bloc<CommentClusterEvent, CommentClusterState> {
   final int totalCluster;
   final List<String> clusterNames;
-  CommentClusterBloc({required this.totalCluster, required this.clusterNames})
-    : super(CommentClusterState()) {
+  final int userId;
+  final String postId;
+  CommentClusterBloc({
+    required this.totalCluster,
+    required this.clusterNames,
+    required this.userId,
+    required this.postId,
+  }) : super(CommentClusterState()) {
     on<LoadInitialComments>(loadInitialComments);
     on<ToggleExpandOrCollapse>(toggleExpandOrCollapse);
     on<LoadOtherTabs>(loadOtherTabs);
@@ -28,13 +35,16 @@ class CommentClusterBloc
     );
 
     emit(state.copyWith(comments: initialTabs));
-    await Future.delayed(const Duration(seconds: 2));
-
+    final List<Comment> comments = await ApiService().fetchClusterComments(
+      userId,
+      postId,
+      clusterNames[0],
+    );
     final updatedTabs = List<CommentSectionOfEachTab>.from(state.comments);
 
     updatedTabs[0] = CommentSectionOfEachTab(
       comments:
-          dummyComments
+          comments
               .map(
                 (comment) =>
                     ExpandableComments(comment: comment, isExpand: false),
@@ -52,10 +62,14 @@ class CommentClusterBloc
   ) async {
     final tabs = List<CommentSectionOfEachTab>.from(state.comments);
     if (tabs[event.tabIndex].comments.isEmpty) {
-      //api call
+      final List<Comment> comments = await ApiService().fetchClusterComments(
+        userId,
+        postId,
+        clusterNames[event.tabIndex],
+      );
       tabs[event.tabIndex] = CommentSectionOfEachTab(
         comments:
-            dummyComments
+            comments
                 .map(
                   (comment) =>
                       ExpandableComments(comment: comment, isExpand: false),
@@ -72,6 +86,12 @@ class CommentClusterBloc
     UpVoteComment event,
     Emitter<CommentClusterState> emit,
   ) async {
+    ApiService().updatingCommmentsVote(
+      event.commentId,
+      event.userId,
+      "upvote",
+      event.context,
+    );
     List<CommentSectionOfEachTab> tabs = List.from(state.comments);
     List<ExpandableComments> tabComments = List.from(
       tabs[event.tabIndex].comments,
@@ -89,6 +109,12 @@ class CommentClusterBloc
     DownVoteComment event,
     Emitter<CommentClusterState> emit,
   ) async {
+    ApiService().updatingCommmentsVote(
+      event.commentId,
+      event.userId,
+      "downvote",
+      event.context,
+    );
     List<CommentSectionOfEachTab> tabs = List.from(state.comments);
     List<ExpandableComments> tabComments = List.from(
       tabs[event.tabIndex].comments,

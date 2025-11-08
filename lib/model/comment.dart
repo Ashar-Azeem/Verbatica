@@ -7,6 +7,8 @@ class Comment extends Equatable {
   final String text;
   final String author;
   final String profile;
+  final String commenterGender;
+  final String commenterCountry;
   final String? parentId;
   final List<Comment> allReplies;
   final DateTime uploadTime;
@@ -14,10 +16,14 @@ class Comment extends Equatable {
   final bool isDownvote;
   final int totalUpvotes;
   final int totalDownvotes;
+  final String? emotionalTone;
   final String? cluster;
 
   const Comment({
+    required this.commenterGender,
+    required this.commenterCountry,
     required this.id,
+    required this.emotionalTone,
     required this.postId,
     required this.titleOfThePost,
     required this.text,
@@ -52,20 +58,33 @@ class Comment extends Equatable {
     };
   }
 
+  Map<String, dynamic> toTextHierarchy() {
+    return {
+      'text': text,
+      'allReplies': allReplies.map((reply) => reply.toTextHierarchy()).toList(),
+    };
+  }
+
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
       id: json['id'],
-      postId: json['postId'],
+      emotionalTone: json['emotionalTone'],
+      postId: json['postId'].toString(),
+      titleOfThePost: json['titleOfThePost'],
       text: json['text'],
-      titleOfThePost: json['postTitle'],
       author: json['author'],
       profile: json['profile'],
+      commenterGender: json['commenterGender'],
+      commenterCountry: json['commenterCountry'],
       parentId: json['parentId'],
       allReplies:
-          (json['allReplies'] as List).map((e) => Comment.fromJson(e)).toList(),
-      uploadTime: DateTime.parse(json['uploadTime']),
-      isUpvote: json['isUpVote'],
-      isDownvote: json['isDownVote'],
+          (json['allReplies'] as List<dynamic>?)
+              ?.map((e) => Comment.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      uploadTime: DateTime.parse(json['uploadTime']).toLocal(),
+      isUpvote: json['isUpVote'] ?? false,
+      isDownvote: json['isDownVote'] ?? false,
       totalUpvotes: json['totalUpvotes'] ?? 0,
       totalDownvotes: json['totalDownvotes'] ?? 0,
       cluster: json['cluster'],
@@ -86,12 +105,18 @@ class Comment extends Equatable {
     bool? isDownvote,
     int? totalUpvotes,
     int? totalDownvotes,
+    String? emotionalTone,
+    String? gender,
+    String? country,
     String? cluster,
   }) {
     return Comment(
       id: id ?? this.id,
+      commenterCountry: country ?? commenterCountry,
+      commenterGender: gender ?? commenterGender,
       postId: postId ?? this.postId,
       text: text ?? this.text,
+      emotionalTone: emotionalTone ?? this.emotionalTone,
       titleOfThePost: titleOfThePost ?? this.titleOfThePost,
       author: author ?? this.author,
       profile: profile ?? this.profile,
@@ -118,9 +143,12 @@ class Comment extends Equatable {
     allReplies,
     uploadTime,
     isUpvote,
+    emotionalTone,
     isDownvote,
     totalUpvotes,
     totalDownvotes,
+    commenterCountry,
+    commenterGender,
     cluster,
   ];
 }

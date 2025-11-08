@@ -21,14 +21,25 @@ class SearchPosts extends SearchEvent {
 
 class UpVotePost extends SearchEvent {
   final int index;
-
-  const UpVotePost({required this.index});
+  final BuildContext context;
+  final int userId;
+  const UpVotePost({
+    required this.index,
+    required this.context,
+    required this.userId,
+  });
 }
 
 class DownVotePost extends SearchEvent {
   final int index;
+  final BuildContext context;
+  final int userId;
 
-  const DownVotePost({required this.index});
+  const DownVotePost({
+    required this.index,
+    required this.context,
+    required this.userId,
+  });
 }
 
 class ReportPost extends SearchEvent {
@@ -52,4 +63,10 @@ class SharePost extends SearchEvent {
 
 class Reset extends SearchEvent {
   const Reset();
+}
+
+class UpdateCommentCountOfAPost extends SearchEvent {
+  final int postIndex;
+
+  const UpdateCommentCountOfAPost({required this.postIndex});
 }

@@ -16,7 +16,12 @@ class fetchUserinfo extends OtheruserEvent {
   const fetchUserinfo({required this.myUserId, required this.otherUserId});
 }
 
-class updateCommentWithPost extends OtheruserEvent {}
+class updateCommentWithPost extends OtheruserEvent {
+  final int visitingUserId;
+  final int ownerUser;
+
+  const updateCommentWithPost(this.ownerUser, {required this.visitingUserId});
+}
 
 // New event for fetching user posts
 class FetchUserPosts extends OtheruserEvent {
@@ -55,17 +60,21 @@ class FetchMorePosts extends OtheruserEvent {
 
   const FetchMorePosts({required this.ownerUserId});
 }
+
 class SyncUpvoteotherPost extends OtheruserEvent {
   final String postId;
 
   const SyncUpvoteotherPost({required this.postId});
-
 }
 
 class SyncDownvoteotherPost extends OtheruserEvent {
   final String postId;
 
   const SyncDownvoteotherPost({required this.postId});
+}
 
+class UpdateCommentCountOfAPost extends OtheruserEvent {
+  final int postIndex;
 
+  const UpdateCommentCountOfAPost({required this.postIndex});
 }

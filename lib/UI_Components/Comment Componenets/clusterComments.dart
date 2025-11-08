@@ -6,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/BLOC/Votes%20Restriction/votes_restrictor_bloc.dart';
 import 'package:verbatica/BLOC/comments_cluster/comment_cluster_bloc.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/model/comment.dart';
@@ -202,7 +203,7 @@ class ClusterComments extends StatelessWidget {
               expandText: 'show more',
               collapseText: 'show less',
               linkEllipsis: false,
-              maxLines: 2,
+              maxLines: 4,
               style: TextStyle(
                 fontSize: 3.8.w,
                 color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -216,11 +217,16 @@ class ClusterComments extends StatelessWidget {
                 IconButton(
                   key: ValueKey(comment.isUpvote),
                   onPressed: () {
+                    context.read<VotesRestrictorBloc>().add(
+                      RegisterVoteOnComment(commentId: comment.id),
+                    );
                     context.read<CommentClusterBloc>().add(
                       UpVoteComment(
+                        userId: int.parse(userId),
                         tabIndex: tabBarIndex,
                         commentClusterIndex: clusterIndex,
                         commentId: comment.id,
+                        context: context,
                       ),
                     );
                   },
@@ -252,11 +258,16 @@ class ClusterComments extends StatelessWidget {
                 SizedBox(width: 1.w),
                 IconButton(
                   onPressed: () {
+                    context.read<VotesRestrictorBloc>().add(
+                      RegisterVoteOnComment(commentId: comment.id),
+                    );
                     context.read<CommentClusterBloc>().add(
                       DownVoteComment(
+                        userId: int.parse(userId),
                         tabIndex: tabBarIndex,
                         commentClusterIndex: clusterIndex,
                         commentId: comment.id,
+                        context: context,
                       ),
                     );
                   },
@@ -391,7 +402,7 @@ class ClusterComments extends StatelessWidget {
               expandText: 'show more',
               collapseText: 'show less',
               linkEllipsis: false,
-              maxLines: 2,
+              maxLines: 4,
               style: TextStyle(
                 fontSize: 3.8.w,
                 color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -406,11 +417,16 @@ class ClusterComments extends StatelessWidget {
                 IconButton(
                   key: ValueKey(comment.isUpvote),
                   onPressed: () {
+                    context.read<VotesRestrictorBloc>().add(
+                      RegisterVoteOnComment(commentId: comment.id),
+                    );
                     context.read<CommentClusterBloc>().add(
                       UpVoteComment(
+                        userId: int.parse(userId),
                         tabIndex: tabBarIndex,
                         commentClusterIndex: clusterIndex,
                         commentId: clusterComment.id,
+                        context: context,
                       ),
                     );
                   },
@@ -442,11 +458,16 @@ class ClusterComments extends StatelessWidget {
                 SizedBox(width: 1.w),
                 IconButton(
                   onPressed: () {
+                    context.read<VotesRestrictorBloc>().add(
+                      RegisterVoteOnComment(commentId: comment.id),
+                    );
                     context.read<CommentClusterBloc>().add(
                       DownVoteComment(
+                        userId: int.parse(userId),
                         tabIndex: tabBarIndex,
                         commentClusterIndex: clusterIndex,
                         commentId: clusterComment.id,
+                        context: context,
                       ),
                     );
                   },

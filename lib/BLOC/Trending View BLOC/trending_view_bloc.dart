@@ -31,6 +31,27 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
     on<SyncUpVoteNewsPost>(syncUpVoteNewsPost);
     on<AddRecentPostInNews>(addRecentPost);
     on<ClearTrendingBloc>((event, emit) => emit(TrendingViewState.initial()));
+    on<UpdateCommentCountOfAPost>((event, emit) {
+      if (event.category == 'Trending') {
+        List<Post> posts = List.from(state.trending);
+        posts[event.postIndex] = posts[event.postIndex].copyWith(
+          comments: posts[event.postIndex].comments + 1,
+        );
+        emit(state.copyWith(trending: posts));
+      } else {
+        List<News> news = List.from(state.news);
+        List<Post> posts = List.from(news[event.newIndex!].discussions);
+
+        posts[event.postIndex] = posts[event.postIndex].copyWith(
+          comments: posts[event.postIndex].comments + 1,
+        );
+        news[event.newIndex!] = news[event.newIndex!].copyWith(
+          discussions: posts,
+        );
+
+        emit(state.copyWith(news: news));
+      }
+    });
   }
   void addRecentPost(
     AddRecentPostInNews event,
