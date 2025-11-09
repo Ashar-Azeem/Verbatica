@@ -31,11 +31,19 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<AddRecentPost>(addRecentPost);
     on<AddNewComment>(addNewComment);
     on<UpdateCommentCountOfAPost>((event, emit) {
-      List<Post> posts = List.from(state.savedPosts);
-      posts[event.postIndex] = posts[event.postIndex].copyWith(
-        comments: posts[event.postIndex].comments + 1,
-      );
-      emit(state.copyWith(savedPosts: posts));
+      if (event.category == "saved") {
+        List<Post> posts = List.from(state.savedPosts);
+        posts[event.postIndex] = posts[event.postIndex].copyWith(
+          comments: posts[event.postIndex].comments + 1,
+        );
+        emit(state.copyWith(savedPosts: posts));
+      } else {
+        List<Post> posts = List.from(state.userPosts);
+        posts[event.postIndex] = posts[event.postIndex].copyWith(
+          comments: posts[event.postIndex].comments + 1,
+        );
+        emit(state.copyWith(userPosts: posts));
+      }
     });
   }
 
@@ -56,11 +64,8 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       if (!state.isLoadingComments) {
         List<Comment> userComments = List.from(state.userComments);
         userComments.insert(0, event.comment);
-        List<Post> userPosts = List.from(state.userPosts);
-        userPosts[event.postIndex] = userPosts[event.postIndex].copyWith(
-          comments: userPosts[event.postIndex].comments + 1,
-        );
-        emit(state.copyWith(userComments: userComments, userPosts: userPosts));
+
+        emit(state.copyWith(userComments: userComments));
       }
     } catch (e) {
       print(e);

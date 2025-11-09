@@ -19,7 +19,7 @@ import 'package:verbatica/BLOC/postsubmit/postsubmit_bloc.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_event.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/SummaryView.dart';
-import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/otherprofile.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/clusterScreen.dart';
 import 'package:verbatica/model/Post.dart';

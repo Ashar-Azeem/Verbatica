@@ -153,16 +153,19 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
 
     event.commentController.text = '';
     event.context.read<userBloc.UserBloc>().add(
-      userEvent.AddNewComment(comment: comment, postIndex: event.index),
+      userEvent.AddNewComment(comment: comment),
     );
 
     if (event.category == 'other') {
       event.context.read<OtherUserBloc.OtheruserBloc>().add(
         OtherUserBloc.UpdateCommentCountOfAPost(postIndex: event.index),
       );
-    } else if (event.category == 'saved') {
+    } else if (event.category == 'saved' || event.category == 'user') {
       event.context.read<userBloc.UserBloc>().add(
-        userEvent.UpdateCommentCountOfAPost(postIndex: event.index),
+        userEvent.UpdateCommentCountOfAPost(
+          postIndex: event.index,
+          category: event.category,
+        ),
       );
     } else if (event.category == 'Trending' ||
         event.category == 'Top 10 news') {

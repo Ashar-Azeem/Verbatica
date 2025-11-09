@@ -5,11 +5,13 @@ class Countrychart extends StatefulWidget {
   const Countrychart({
     required this.countryData,
     required this.numberOfComments,
+    required this.countries,
     super.key,
   });
 
-  final double numberOfComments;
+  final int numberOfComments;
   final List<BarChartGroupData> countryData;
+  final List<String> countries;
 
   @override
   State<Countrychart> createState() => _CountrychartState();
@@ -17,15 +19,6 @@ class Countrychart extends StatefulWidget {
 
 class _CountrychartState extends State<Countrychart>
     with TickerProviderStateMixin {
-  final List<String> countries = [
-    'USA',
-    'India',
-    'UK',
-    'Canada',
-    'Australia',
-    'Germany',
-  ];
-
   int? _touchedIndex;
   late AnimationController _chartController;
   late Animation<double> _chartScaleAnimation;
@@ -168,7 +161,7 @@ class _CountrychartState extends State<Countrychart>
                   Expanded(
                     child: BarChart(
                       BarChartData(
-                        maxY: widget.numberOfComments / 2,
+                        maxY: widget.numberOfComments.toDouble(),
                         barGroups: _getBarGroups(),
                         alignment: BarChartAlignment.spaceAround,
                         groupsSpace: 12,
@@ -177,7 +170,7 @@ class _CountrychartState extends State<Countrychart>
                           show: true,
                           drawVerticalLine: false,
                           horizontalInterval: _calculateInterval(
-                            widget.numberOfComments,
+                            widget.numberOfComments.toDouble(),
                           ),
                           getDrawingHorizontalLine:
                               (value) => FlLine(
@@ -191,7 +184,7 @@ class _CountrychartState extends State<Countrychart>
                             sideTitles: SideTitles(
                               showTitles: true,
                               interval: _calculateInterval(
-                                widget.numberOfComments,
+                                widget.numberOfComments.toDouble(),
                               ),
                               getTitlesWidget:
                                   (value, _) => Text(
@@ -210,8 +203,8 @@ class _CountrychartState extends State<Countrychart>
                                 return Padding(
                                   padding: const EdgeInsets.only(top: 8),
                                   child: Text(
-                                    value.toInt() < countries.length
-                                        ? countries[value.toInt()]
+                                    value.toInt() < widget.countries.length
+                                        ? widget.countries[value.toInt()]
                                         : '',
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: theme.textTheme.bodySmall?.color
@@ -255,7 +248,7 @@ class _CountrychartState extends State<Countrychart>
                             // tooltipBgColor: theme.colorScheme.surface,
                             getTooltipItem: (group, groupIndex, rod, rodIndex) {
                               return BarTooltipItem(
-                                '${countries[group.x]}\n',
+                                '${widget.countries[group.x]}\n',
                                 TextStyle(
                                   color: theme.textTheme.bodyLarge?.color,
                                   fontWeight: FontWeight.bold,

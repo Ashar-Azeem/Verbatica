@@ -6,6 +6,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/Votes%20Restriction/votes_restrictor_bloc.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/chartanalytics.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/chartanalyticsDetail.dart';
 import 'package:verbatica/model/Ad.dart';
 import 'package:verbatica/model/Chat.dart';
 import 'package:verbatica/model/Post.dart';
@@ -850,6 +852,37 @@ class ApiService {
         'comment/updateVote',
         data: {"commentId": commentId, "userId": userId, "type": type},
       );
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<CommentStats> fetchPostStats(int postId, List<String> clusters) async {
+    try {
+      final response = await _dio.get(
+        'comment/getTotalClusterInfo',
+        data: {"postId": postId, "clusters": clusters},
+      );
+
+      return CommentStats.fromJson(response.data);
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<AnalyticsData> fetchClusterAnalytics(
+    int postId,
+    String cluster,
+  ) async {
+    try {
+      final response = await _dio.get(
+        'comment/getAnalytics',
+        data: {"postId": postId, "cluster": cluster},
+      );
+
+      return AnalyticsData.fromJson(response.data);
     } on DioException catch (e) {
       final errorMessage = _extractErrorMessage(e);
       throw Exception(errorMessage);

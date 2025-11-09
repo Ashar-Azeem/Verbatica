@@ -102,13 +102,13 @@ class SyncDownvotePost extends UserEvent {
 
 class AddNewComment extends UserEvent {
   final Comment comment;
-  final int postIndex;
 
-  AddNewComment({required this.comment, required this.postIndex});
+  AddNewComment({required this.comment});
 }
 
 class UpdateCommentCountOfAPost extends UserEvent {
   final int postIndex;
+  final String category;
 
-  UpdateCommentCountOfAPost({required this.postIndex});
+  UpdateCommentCountOfAPost({required this.category, required this.postIndex});
 }

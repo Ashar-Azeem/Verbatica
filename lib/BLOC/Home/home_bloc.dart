@@ -27,13 +27,21 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<SyncUpVotePost>(syncUpVotePost);
     on<SyncDownvotePostsOfOtherTab>(syncDownvotePostsOfOtherTab);
     on<SyncUpvotePostsOfOtherTab>(syncUpvotePostsOfOtherTab);
-    on<ClearHomeBloc>((event, emit) => emit(HomeState.initial()));
+    on<ClearHomeBloc>((event, emit) {
+      forYouPage = 1;
+      followingPage = 1;
+      forYouVector = null;
+      followingVector = null;
+
+      emit(HomeState.initial());
+    });
     on<UpdateCommentCountOfAPost>((event, emit) {
       if (event.category == 'ForYou') {
         List<Post> posts = List.from(state.forYou);
         posts[event.postIndex] = posts[event.postIndex].copyWith(
           comments: posts[event.postIndex].comments + 1,
         );
+
         emit(state.copyWith(forYou: posts));
       } else {
         List<Post> posts = List.from(state.following);

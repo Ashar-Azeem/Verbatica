@@ -89,6 +89,7 @@ class _ClusterscreenState extends State<Clusterscreen>
                       MaterialPageRoute(
                         builder:
                             (context) => ChartsAnalyticsScreen(
+                              postId: int.parse(widget.postid),
                               clusters: widget.clusters,
                             ),
                       ),

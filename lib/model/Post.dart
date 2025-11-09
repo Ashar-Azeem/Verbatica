@@ -103,6 +103,7 @@ class Post extends Equatable implements FeedItem {
     String? publicKey,
     bool? isDownVote,
     int? comments,
+    List<String>? clusters,
     DateTime? uploadTime,
   }) {
     return Post(
@@ -121,6 +122,7 @@ class Post extends Equatable implements FeedItem {
       isUpVote: isUpVote ?? this.isUpVote,
       isDownVote: isDownVote ?? this.isDownVote,
       comments: comments ?? this.comments,
+      clusters: clusters ?? this.clusters,
       uploadTime: uploadTime ?? this.uploadTime,
     );
   }
