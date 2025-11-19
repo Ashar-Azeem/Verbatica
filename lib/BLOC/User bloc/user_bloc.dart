@@ -7,6 +7,7 @@ import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/comment.dart';
+import 'package:verbatica/model/report.dart';
 import 'package:verbatica/model/user.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
@@ -30,6 +31,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<SyncUpvotePost>(_syncUpvotePost);
     on<SyncDownvotePost>(_syncDownvotePost);
     on<AddRecentPost>(addRecentPost);
+        on<SubmitReport>(_onSubmitReport);
   }
 
   void addRecentPost(AddRecentPost event, Emitter<UserState> emit) {
@@ -43,7 +45,72 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       print(e);
     }
   }
+   // NEW METHOD: Handle report submission
+  void _onSubmitReport(SubmitReport event, Emitter<UserState> emit) async {
+    try {
+      // Emit loading state
+      emit(state.copyWith(
+        isSubmittingReport: true,
+        reportSubmitted: false,
+        reportError: null,
+      ));
 
+      // Simulate API delay (remove this when implementing real API)
+      await Future.delayed(Duration(seconds: 1));
+
+      // TODO: Implement actual API call here
+      // Example: await ApiService().submitReport(event.report);
+      
+      // For now, just validate the report object
+      _validateReport(event.report);
+
+      // Emit success state
+      emit(state.copyWith(
+        isSubmittingReport: false,
+        reportSubmitted: true,
+        reportError: null,
+      ));
+
+      // Reset the report submission state after 3 seconds
+      await Future.delayed(Duration(seconds: 3));
+      emit(state.copyWith(
+        reportSubmitted: false,
+      ));
+    } catch (e) {
+      // Emit error state
+      emit(state.copyWith(
+        isSubmittingReport: false,
+        reportSubmitted: false,
+        reportError: e.toString(),
+      ));
+    }
+  }
+ void _validateReport(Report report) {
+    if (report.reportContent.isEmpty) {
+      throw Exception('Report content cannot be empty');
+    }
+
+    if (!report.isPostReport && !report.isCommentReport && !report.isUserReport) {
+      throw Exception('Invalid report type');
+    }
+
+    if (report.isPostReport && report.postId == null) {
+      throw Exception('Post ID is required for post reports');
+    }
+
+    if (report.isCommentReport && report.commentId == null) {
+      throw Exception('Comment ID is required for comment reports');
+    }
+
+    if (report.isUserReport && report.reportedUserId == null) {
+      throw Exception('User ID is required for user reports');
+    }
+
+    // TODO: Add more validation as needed
+    print('Report validated successfully: ${report.reportType}');
+  }
+
+ 
   void _onUpdateAvatarAndAbout(
     UpdateAvatarAndAbout event,
     Emitter<UserState> emit,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:verbatica/model/report.dart';
 import 'package:verbatica/model/user.dart';
 import 'package:verbatica/model/Post.dart';
 
@@ -96,4 +97,11 @@ class SyncUpvotePost extends UserEvent {
 class SyncDownvotePost extends UserEvent {
   final String postId;
   SyncDownvotePost({required this.postId});
+}
+// Add this to user_event.dart
+
+class SubmitReport extends UserEvent {
+  final Report report;
+
+  SubmitReport({required this.report});
 }
