@@ -17,7 +17,7 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
     );
     on<SearchPosts>(
       searchPosts,
-      transformer: debounceRestartable(const Duration(milliseconds: 500)),
+      transformer: debounceRestartable(const Duration(milliseconds: 1000)),
     );
     on<UpVotePost>(upVotePost);
     on<DownVotePost>(downVotePost);
@@ -49,11 +49,6 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         final query = event.userName.toLowerCase();
         final currentUsers = List.from(state.users);
 
-        if (query.trim().isEmpty) {
-          emit(state.copyWith(loadingUsers: false, users: []));
-        }
-        await Future.delayed(const Duration(milliseconds: 150));
-
         List<User> matchedInState = [];
         for (User user in currentUsers) {
           final String username = user.userName.toLowerCase().trim();
@@ -65,9 +60,9 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
         if (matchedInState.isNotEmpty) {
           emit(state.copyWith(users: matchedInState, loadingUsers: false));
         } else {
-          List<User> matchedInDummy = [];
+          List<User> fetchedUsers = await ApiService().searchUsers(query);
 
-          emit(state.copyWith(users: matchedInDummy, loadingUsers: false));
+          emit(state.copyWith(users: fetchedUsers, loadingUsers: false));
         }
       }
     } catch (e) {
@@ -76,7 +71,22 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
   }
 
   searchPosts(SearchPosts event, Emitter<SearchState> emit) async {
-    try {} catch (e) {
+    try {
+      if (event.postTitle.trim().isEmpty) {
+        emit(state.copyWith(posts: [], loadingPosts: false));
+      } else {
+        emit(state.copyWith(posts: [], loadingPosts: true));
+
+        final query = event.postTitle.toLowerCase();
+
+        List<Post> fetchedPosts = await ApiService().searchedPosts(
+          query,
+          event.userId,
+        );
+
+        emit(state.copyWith(posts: fetchedPosts, loadingPosts: false));
+      }
+    } catch (e) {
       print(e);
     }
   }

@@ -13,12 +13,13 @@ import 'package:verbatica/model/Chat.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/comment.dart';
 import 'package:verbatica/model/news.dart';
+import 'package:verbatica/model/summary.dart';
 import 'package:verbatica/model/user.dart';
 
 class ApiService {
   final Dio _dio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.100.82:4000/api/',
+        baseUrl: 'http://10.175.113.137:4000/api/',
         connectTimeout: const Duration(seconds: 20),
         receiveTimeout: const Duration(seconds: 20),
         headers: {'Content-Type': 'application/json'},
@@ -883,6 +884,96 @@ class ApiService {
       );
 
       return AnalyticsData.fromJson(response.data);
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<Summary?> fetchSummary(String postId) async {
+    try {
+      final response = await _dio.get(
+        'summary/summary',
+        data: {"postId": postId},
+      );
+      return response.data['summary'] == null
+          ? null
+          : Summary.fromJson(response.data['summary']);
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<User>> searchUsers(String userName) async {
+    try {
+      final response = await _dio.get(
+        'user/users',
+        data: {"userName": userName},
+      );
+      final List<dynamic> data = response.data['users'] ?? [];
+      List<User> users = data.map((d) => User.fromJson(d)).toList();
+      return users;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Post>> searchedPosts(String query, int userId) async {
+    try {
+      final response = await _dio.get(
+        'post/searchedPosts',
+        data: {"query": query, "userId": userId},
+      );
+      final List<dynamic> data = response.data['posts'] ?? [];
+      List<Post> posts = data.map((d) => Post.fromJson(d)).toList();
+      return posts;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Post>> getSavedPosts(int userId) async {
+    try {
+      final response = await _dio.get(
+        'post/savePost',
+        data: {"userId": userId},
+      );
+      final List<dynamic> data = response.data['posts'] ?? [];
+      List<Post> posts = data.map((d) => Post.fromJson(d)).toList();
+      return posts;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<String> savePost(int userId, int postId) async {
+    try {
+      final response = await _dio.post(
+        'post/savePost',
+        data: {
+          "userId": userId,
+          "postId": postId,
+          "savedAt": DateTime.now().toUtc().toIso8601String(),
+        },
+      );
+
+      return response.data['status'];
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<void> unsave(int userId, int postId) async {
+    try {
+      await _dio.delete(
+        'post/savePost',
+        data: {"userId": userId, "postId": postId},
+      );
     } on DioException catch (e) {
       final errorMessage = _extractErrorMessage(e);
       throw Exception(errorMessage);

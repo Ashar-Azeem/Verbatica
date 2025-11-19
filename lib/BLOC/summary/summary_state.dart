@@ -1,44 +1,27 @@
 import 'package:equatable/equatable.dart';
 
-sealed class SummaryState extends Equatable {
-  final List<String> summaryOfCluster;
-  final List<String> bulletPoints;
+class SummaryState extends Equatable {
+  final List<String>? summaryOfCluster;
+  final List<String>? bulletPoints;
+  final bool isLoading;
 
-  const SummaryState(this.summaryOfCluster, [this.bulletPoints = const []]);
-
-  @override
-  List<Object> get props => [summaryOfCluster, bulletPoints];
-}
-
-class SummaryInitial extends SummaryState {
-  SummaryInitial() : super([], []);
-}
-
-class SummaryLoading extends SummaryState {
-  SummaryLoading() : super([], []);
-}
-
-class SummaryLoaded extends SummaryState {
-  SummaryLoaded(List<String> bulletPoints) : super([], bulletPoints);
-}
-
-class SummaryError extends SummaryState {
-  final String message;
-  SummaryError(this.message) : super([]);
+  const SummaryState({
+    this.summaryOfCluster,
+    this.isLoading = true,
+    this.bulletPoints,
+  });
+  SummaryState copyWith({
+    List<String>? bulletPoints,
+    List<String>? summaryOfCluster,
+    bool? isLoading,
+  }) {
+    return SummaryState(
+      summaryOfCluster: summaryOfCluster ?? this.summaryOfCluster,
+      bulletPoints: bulletPoints ?? this.bulletPoints,
+      isLoading: isLoading ?? this.isLoading,
+    );
+  }
 
   @override
-  List<Object> get props => [message, ...super.props];
-}
-
-class ClusterDetailsLoading extends SummaryState {
-  ClusterDetailsLoading() : super([]);
-}
-
-class ClusterDetailsLoaded extends SummaryState {
-  final List<String> details;
-
-  const ClusterDetailsLoaded(this.details) : super(details);
-
-  @override
-  List<Object> get props => [details, ...super.props];
+  List<Object?> get props => [summaryOfCluster, bulletPoints, isLoading];
 }

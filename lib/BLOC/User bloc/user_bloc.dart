@@ -1,3 +1,6 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
@@ -396,28 +399,64 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   }
 
   // New handler for saving posts
-  void _onSavePost(SavePost1 event, Emitter<UserState> emit) {
+  void _onSavePost(SavePost1 event, Emitter<UserState> emit) async {
     final currentSavedPosts = state.savedPosts;
+    String status = await ApiService().savePost(
+      event.userId,
+      int.parse(event.post.id),
+    );
+    if (status == "already_saved") {
+      ScaffoldMessenger.of(event.context).showSnackBar(
+        SnackBar(
+          duration: Duration(seconds: 2),
+          content: Text(
+            'Post is already saved',
+            style: TextStyle(
+              color: Theme.of(event.context).colorScheme.onPrimary,
+            ),
+          ),
+          backgroundColor: Theme.of(event.context).colorScheme.primary,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(event.context).showSnackBar(
+        SnackBar(
+          duration: Duration(seconds: 2),
+          content: Text(
+            'Post saved successfully',
+            style: TextStyle(
+              color: Theme.of(event.context).colorScheme.onPrimary,
+            ),
+          ),
+          backgroundColor: Theme.of(event.context).colorScheme.primary,
+        ),
+      );
+    }
 
-    final updatedSavedPosts = List<Post>.from(currentSavedPosts)
-      ..add(event.post);
-    emit(state.copyWith(savedPosts: updatedSavedPosts));
+    if (!state.isLoadingSavedPosts) {
+      final updatedSavedPosts = List<Post>.from(currentSavedPosts)
+        ..add(event.post);
+      emit(state.copyWith(savedPosts: updatedSavedPosts));
+    }
   }
 
   // New handler for unsaving posts
   void _onUnsavePost(UnsavePost1 event, Emitter<UserState> emit) {
+    ApiService().unsave(event.userId, int.parse(event.post.id));
+
     final currentSavedPosts = state.savedPosts;
     final updatedSavedPosts =
         currentSavedPosts.where((post) => post.id != event.post.id).toList();
-
     emit(state.copyWith(savedPosts: updatedSavedPosts));
   }
 
-  // New handler for fetching saved posts
   void _onFetchSavedPosts(
     FetchSavedPosts event,
     Emitter<UserState> emit,
-  ) async {}
+  ) async {
+    List<Post> savedPosts = await ApiService().getSavedPosts(event.userId);
+    emit(state.copyWith(savedPosts: savedPosts, isLoadingSavedPosts: false));
+  }
 
   void updateAura(UpdateAura event, Emitter<UserState> emit) async {
     int aura = await ApiService().getAura(state.user!.id);

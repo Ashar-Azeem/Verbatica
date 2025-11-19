@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable_text/expandable_text.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -172,7 +173,7 @@ class PostWidget extends StatelessWidget {
                               screen: SummaryScreen(
                                 showClusters: true,
                                 clusters: post.clusters,
-                                postId: '',
+                                postId: post.id,
                               ),
                               withNavBar: false,
                             );
@@ -183,7 +184,7 @@ class PostWidget extends StatelessWidget {
                                   PageTransitionAnimation.scale,
                               screen: SummaryScreen(
                                 showClusters: false,
-                                postId: '',
+                                postId: post.id,
                               ),
                               withNavBar: false,
                             );
@@ -231,13 +232,19 @@ class PostWidget extends StatelessWidget {
                             } else if (category == 'other') {
                             } else if (category == 'searched') {}
                           } else if (value == "save") {
-                            context.read<UserBloc>().add(SavePost1(post: post));
+                            context.read<UserBloc>().add(
+                              SavePost1(
+                                post: post,
+                                context: context,
+                                userId: user.id,
+                              ),
+                            );
                           } else if (value == "share") {
                           } else if (value == 'delete') {
                             _showDeleteConfirmation(context, post);
                           } else if (value == 'unSave') {
                             context.read<UserBloc>().add(
-                              UnsavePost1(post: post),
+                              UnsavePost1(post: post, userId: user.id),
                             );
                           }
                         },
@@ -313,7 +320,7 @@ class PostWidget extends StatelessWidget {
                                           color: textTheme.bodyLarge?.color,
                                         ),
                                         Text(
-                                          'UnSave',
+                                          'unsave',
                                           style: TextStyle(
                                             color: textTheme.bodyLarge?.color,
                                           ),

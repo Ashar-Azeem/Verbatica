@@ -15,8 +15,9 @@ class SearchUsers extends SearchEvent {
 
 class SearchPosts extends SearchEvent {
   final String postTitle;
+  final int userId;
 
-  const SearchPosts({required this.postTitle});
+  const SearchPosts({required this.userId, required this.postTitle});
 }
 
 class UpVotePost extends SearchEvent {

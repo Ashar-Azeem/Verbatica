@@ -79,7 +79,7 @@ class Post extends Equatable implements FeedItem {
       isDownVote: json['isDownVote'],
       comments: json['comments'] ?? 0,
       publicKey: json['public_key'],
-      uploadTime: DateTime.parse(json['uploadTime']),
+      uploadTime: DateTime.parse(json['uploadTime']).toLocal(),
       clusters:
           (json['clusters'] as List<dynamic>?)
               ?.map((e) => e as String)

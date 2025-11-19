@@ -43,17 +43,24 @@ class DeleteUserPost extends UserEvent {
 // New event for saving a post
 class SavePost1 extends UserEvent {
   final Post post;
-  SavePost1({required this.post});
+  final BuildContext context;
+  final int userId;
+  SavePost1({required this.context, required this.post, required this.userId});
 }
 
 // New event for unsaving a post
 class UnsavePost1 extends UserEvent {
   final Post post;
-  UnsavePost1({required this.post});
+  final int userId;
+  UnsavePost1({required this.post, required this.userId});
 }
 
 // New event for fetching saved posts
-class FetchSavedPosts extends UserEvent {}
+class FetchSavedPosts extends UserEvent {
+  final int userId;
+
+  FetchSavedPosts({required this.userId});
+}
 
 class upvotePost1 extends UserEvent {
   final int index;

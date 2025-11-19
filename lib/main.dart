@@ -13,7 +13,6 @@ import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/Votes%20Restriction/votes_restrictor_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_bloc.dart';
-import 'package:verbatica/BLOC/summary/summary_bloc.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/theme_provider.dart';
@@ -35,7 +34,6 @@ void main() async {
         BlocProvider<OtheruserBloc>(create: (context) => OtheruserBloc()),
         BlocProvider<PostBloc>(create: (context) => PostBloc()),
 
-        BlocProvider<SummaryBloc>(create: (context) => SummaryBloc()),
         BlocProvider<VotesRestrictorBloc>(
           create: (context) => VotesRestrictorBloc(),
         ),

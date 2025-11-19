@@ -10,10 +10,13 @@ class SocketService {
 
   void connect(String userId) {
     socket = IO.io(
-      'http://192.168.100.82:4000',
+      'http://10.175.113.137:4000',
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .enableAutoConnect()
+          .setReconnectionAttempts(9999)
+          .setReconnectionDelay(1000)
+          .setReconnectionDelayMax(3000)
           .build(),
     );
 
@@ -22,6 +25,10 @@ class SocketService {
     });
 
     socket!.onDisconnect((_) {});
+
+    socket!.onReconnectAttempt((attempt) {
+      print('🟠 Reconnect attempt #$attempt');
+    });
   }
 
   void disconnect(String userId) {

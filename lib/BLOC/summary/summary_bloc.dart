@@ -1,69 +1,62 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/summary/summary_event.dart';
 import 'package:verbatica/BLOC/summary/summary_state.dart';
+import 'package:verbatica/Services/API_Service.dart';
+import 'package:verbatica/model/summary.dart';
 
 class SummaryBloc extends Bloc<SummaryEvent, SummaryState> {
-  SummaryBloc() : super(SummaryInitial()) {
-    on<FetchMainbulletSummary>(_onFetchSummary);
-    on<FetchClustersSummary>(_onFetchClusterDetails);
+  final String postId;
+  final List<String>? clusters;
+  SummaryBloc({required this.postId, required this.clusters})
+    : super(SummaryState()) {
+    on<FetchSummary>(_onFetchSummary);
+    add(FetchSummary());
+  }
+
+  List<String> parseSummary(String text) {
+    return text
+        .split('*') // split by the bullet marker
+        .map((line) => line.trim()) // remove extra spaces
+        .where((line) => line.isNotEmpty) // ignore empty lines
+        .toList();
   }
 
   Future<void> _onFetchSummary(
-    FetchMainbulletSummary event,
+    FetchSummary event,
     Emitter<SummaryState> emit,
   ) async {
-    emit(SummaryLoading());
     try {
-      await Future.delayed(const Duration(seconds: 1));
+      Summary? summary = await ApiService().fetchSummary(postId);
+      if (summary == null) {
+        emit(state.copyWith(isLoading: false));
+      } else {
+        if (summary.type == 'polarized') {
+          List<String> summaries = [];
 
-      final bulletPoints = List<String>.generate(20, (index) {
-        final phrases = [
-          "Fresh perspective on a recurring theme.",
-          "Noteworthy trend with long-term impact.",
-          "Small detail, big implications.",
-          "Challenging the status quo, gently.",
-          "Insight hiding in plain sight.",
-          "A subtle nudge toward innovation.",
-          "Reframing the narrative, one step at a time.",
-          "Signals worth paying attention to.",
-          "Disruption, but make it elegant.",
-          "Patterns emerging from the noise.",
-        ];
-        final phrase = phrases[index % phrases.length];
-        return phrase;
-      });
+          if (clusters != null && clusters!.isNotEmpty) {
+            for (final cluster in clusters!) {
+              final matchingSummary = summary.summaries.firstWhere(
+                (s) => s.narrative == cluster,
+                orElse: () => SummaryItem(narrative: cluster, summary: ""),
+              );
+              summaries.add(matchingSummary.summary ?? "");
+            }
+          }
 
-      emit(SummaryLoaded(bulletPoints));
+          emit(state.copyWith(isLoading: false, summaryOfCluster: summaries));
+        } else {
+          String summaryText = summary.summaries.first.summary ?? "";
+          List<String> summaryInBulletPoints = parseSummary(summaryText);
+          emit(
+            state.copyWith(
+              isLoading: false,
+              bulletPoints: summaryInBulletPoints,
+            ),
+          );
+        }
+      }
     } catch (e) {
-      emit(SummaryError(e.toString()));
-    }
-  }
-
-  Future<void> _onFetchClusterDetails(
-    FetchClustersSummary event,
-    Emitter<SummaryState> emit,
-  ) async {
-    emit(ClusterDetailsLoading());
-    try {
-      await Future.delayed(const Duration(seconds: 1));
-
-      // Generate one long paragraph for each cluster
-      final clusterSummaries =
-          event.listcluster
-              .map(
-                (cluster) =>
-                    "📌 Summary for \"{cluster\"\n\n"
-                    "Dive into the key insights and noteworthy highlights of $cluster. "
-                    "This section uncovers essential patterns, emerging trends, and contextual relevance. "
-                    "From subtle details to major breakthroughs, $cluster offers a comprehensive view "
-                    "that helps connect the dots and spark new ideas.\n\n"
-                    "Stay curious — there's more than meets the eye in $cluster.",
-              )
-              .toList();
-
-      emit(ClusterDetailsLoaded(clusterSummaries));
-    } catch (e) {
-      emit(SummaryError(e.toString()));
+      print(e);
     }
   }
 }
