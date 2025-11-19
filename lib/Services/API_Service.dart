@@ -6,16 +6,20 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/Votes%20Restriction/votes_restrictor_bloc.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/chartanalytics.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/chartanalyticsDetail.dart';
 import 'package:verbatica/model/Ad.dart';
 import 'package:verbatica/model/Chat.dart';
 import 'package:verbatica/model/Post.dart';
+import 'package:verbatica/model/comment.dart';
 import 'package:verbatica/model/news.dart';
+import 'package:verbatica/model/summary.dart';
 import 'package:verbatica/model/user.dart';
 
 class ApiService {
   final Dio _dio = Dio(
       BaseOptions(
-        baseUrl: "http://192.168.100.108:4000",
+        baseUrl: 'http://10.175.113.137:4000/api/',
         connectTimeout: const Duration(seconds: 20),
         receiveTimeout: const Duration(seconds: 20),
         headers: {'Content-Type': 'application/json'},
@@ -720,6 +724,256 @@ class ApiService {
       final response = await _dio.get('chat/getChat', data: {'chatId': chatId});
 
       return Chat.fromJson(response.data['chat']);
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Comment>> fetchUserComments(
+    int visitingUserId,
+    int ownerUserId,
+  ) async {
+    try {
+      final response = await _dio.get(
+        'comment/getComments',
+        data: {'visitingUserId': visitingUserId, "ownerUserId": ownerUserId},
+      );
+
+      final List<dynamic> data = response.data['comments'] ?? [];
+      List<Comment> comments = data.map((d) => Comment.fromJson(d)).toList();
+      return comments;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Comment>> fetchPostComments(
+    int userId,
+    String postId,
+    DateTime? before,
+  ) async {
+    try {
+      final response = await _dio.get(
+        'comment/getCommentsOfPost',
+        data: {
+          'userId': userId,
+          "postId": postId,
+          "before": before?.toUtc().toIso8601String(),
+        },
+      );
+
+      final List<dynamic> data = response.data['comments'] ?? [];
+      List<Comment> comments = data.map((d) => Comment.fromJson(d)).toList();
+      return comments;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<Comment> uploadComment(
+    String postId,
+    String titleOfThePost,
+    String text,
+    String author,
+    int profile,
+    String commenterGender,
+    String commenterCountry,
+    String? parentId,
+    List<String>? clusters,
+    DateTime uploadTime,
+    int userId,
+    Uint8List iv,
+    String? parentComment,
+  ) async {
+    try {
+      final response = await _dio.post(
+        'comment/addComment',
+        data: {
+          'postId': postId,
+          "titleOfThePost": titleOfThePost,
+          "text": text,
+          'author': author,
+          "profile": profile,
+          "userId": userId,
+          "clusters": clusters,
+          "commenterGender": commenterGender,
+          "commenterCountry": commenterCountry,
+          "iv": iv,
+          "parentId": parentId,
+          "uploadTime": uploadTime.toUtc().toIso8601String(),
+          "parentComment": parentComment,
+        },
+      );
+
+      return Comment.fromJson(response.data['comment']);
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Comment>> fetchClusterComments(
+    int userId,
+    String postId,
+    String clusterName,
+  ) async {
+    try {
+      final response = await _dio.get(
+        'comment/getClusterComments',
+        data: {'userId': userId, "postId": postId, "clusterName": clusterName},
+      );
+
+      final List<dynamic> data = response.data['comments'] ?? [];
+      List<Comment> comments = data.map((d) => Comment.fromJson(d)).toList();
+      return comments;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<void> updatingCommmentsVote(
+    String commentId,
+    int userId,
+    String type,
+    BuildContext context,
+  ) async {
+    bool isAllowedForServer =
+        context.read<VotesRestrictorBloc>().state.canVote[commentId] ?? true;
+
+    if (!isAllowedForServer) {
+      return;
+    }
+
+    try {
+      await _dio.put(
+        'comment/updateVote',
+        data: {"commentId": commentId, "userId": userId, "type": type},
+      );
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<CommentStats> fetchPostStats(int postId, List<String> clusters) async {
+    try {
+      final response = await _dio.get(
+        'comment/getTotalClusterInfo',
+        data: {"postId": postId, "clusters": clusters},
+      );
+
+      return CommentStats.fromJson(response.data);
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<AnalyticsData> fetchClusterAnalytics(
+    int postId,
+    String cluster,
+  ) async {
+    try {
+      final response = await _dio.get(
+        'comment/getAnalytics',
+        data: {"postId": postId, "cluster": cluster},
+      );
+
+      return AnalyticsData.fromJson(response.data);
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<Summary?> fetchSummary(String postId) async {
+    try {
+      final response = await _dio.get(
+        'summary/summary',
+        data: {"postId": postId},
+      );
+      return response.data['summary'] == null
+          ? null
+          : Summary.fromJson(response.data['summary']);
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<User>> searchUsers(String userName) async {
+    try {
+      final response = await _dio.get(
+        'user/users',
+        data: {"userName": userName},
+      );
+      final List<dynamic> data = response.data['users'] ?? [];
+      List<User> users = data.map((d) => User.fromJson(d)).toList();
+      return users;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Post>> searchedPosts(String query, int userId) async {
+    try {
+      final response = await _dio.get(
+        'post/searchedPosts',
+        data: {"query": query, "userId": userId},
+      );
+      final List<dynamic> data = response.data['posts'] ?? [];
+      List<Post> posts = data.map((d) => Post.fromJson(d)).toList();
+      return posts;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Post>> getSavedPosts(int userId) async {
+    try {
+      final response = await _dio.get(
+        'post/savePost',
+        data: {"userId": userId},
+      );
+      final List<dynamic> data = response.data['posts'] ?? [];
+      List<Post> posts = data.map((d) => Post.fromJson(d)).toList();
+      return posts;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<String> savePost(int userId, int postId) async {
+    try {
+      final response = await _dio.post(
+        'post/savePost',
+        data: {
+          "userId": userId,
+          "postId": postId,
+          "savedAt": DateTime.now().toUtc().toIso8601String(),
+        },
+      );
+
+      return response.data['status'];
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<void> unsave(int userId, int postId) async {
+    try {
+      await _dio.delete(
+        'post/savePost',
+        data: {"userId": userId, "postId": postId},
+      );
     } on DioException catch (e) {
       final errorMessage = _extractErrorMessage(e);
       throw Exception(errorMessage);

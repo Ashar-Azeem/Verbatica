@@ -25,8 +25,9 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:verbatica/model/user.dart';
 
 class otherProfileView extends StatefulWidget {
-  const otherProfileView({required this.post, super.key});
-  final Post post;
+  const otherProfileView({required this.post, super.key, this.user});
+  final Post? post;
+  final User? user;
   @override
   State<otherProfileView> createState() => _ProfileViewState();
 }
@@ -39,6 +40,11 @@ class _ProfileViewState extends State<otherProfileView>
   late final OtheruserBloc otherUserBloc;
   late final ValueNotifier<double> _scrollNotifier;
   late final User user;
+  late final int otherUserId;
+  late final String otherUserName;
+  late final int otherAvatarId;
+  late final String otherUserPublicKey;
+
  void _showUserOptionsBottomSheet(BuildContext context) {
   showModalBottomSheet(
     context: context,
@@ -92,13 +98,27 @@ class _ProfileViewState extends State<otherProfileView>
     super.initState();
     user = context.read<UserBloc>().state.user!;
     otherUserBloc = context.read<OtheruserBloc>();
+    if (widget.user == null) {
+      otherUserId = widget.post!.userId;
+      otherUserName = widget.post!.name;
+      otherAvatarId = widget.post!.avatar;
+      otherUserPublicKey = widget.post!.publicKey;
+    } else {
+      otherUserId = widget.user!.id;
+      otherUserName = widget.user!.userName;
+      otherAvatarId = widget.user!.avatarId;
+      otherUserPublicKey = widget.user!.publicKey;
+    }
+
     context.read<OtheruserBloc>().add(
-      fetchUserinfo(otherUserId: widget.post.userId, myUserId: user.id),
+      fetchUserinfo(otherUserId: otherUserId, myUserId: user.id),
     );
     context.read<OtheruserBloc>().add(
-      FetchUserPosts(userId: widget.post.userId, ownerUserId: user.id),
+      FetchUserPosts(userId: otherUserId, ownerUserId: user.id),
     );
-    context.read<OtheruserBloc>().add(updateCommentWithPost());
+    context.read<OtheruserBloc>().add(
+      updateCommentWithPost(otherUserId, visitingUserId: user.id),
+    );
     _tabController = TabController(length: 3, vsync: this);
     _scrollNotifier = ValueNotifier(0.0);
     _scrollController.addListener(_updateScrollNotifier);
@@ -209,7 +229,7 @@ class _ProfileViewState extends State<otherProfileView>
                                             CircleAvatar(
                                               radius: 6.w,
                                               backgroundImage: AssetImage(
-                                                'assets/Avatars/avatar${widget.post.avatar}.jpg',
+                                                'assets/Avatars/avatar$otherAvatarId.jpg',
                                               ),
                                             ),
                                             // Username in collapsed state
@@ -217,7 +237,7 @@ class _ProfileViewState extends State<otherProfileView>
                                             SizedBox(
                                               width: 40.w,
                                               child: Text(
-                                                widget.post.name,
+                                                otherUserName,
                                                 style: TextStyle(
                                                   color:
                                                       Theme.of(
@@ -576,7 +596,7 @@ Row(
                                               child: CircleAvatar(
                                                 radius: 8.0.h,
                                                 backgroundImage: AssetImage(
-                                                  'assets/Avatars/avatar${widget.post.avatar}.jpg',
+                                                  'assets/Avatars/avatar$otherAvatarId.jpg',
                                                 ),
                                               ),
                                             ),
@@ -585,7 +605,7 @@ Row(
 
                                             // Username
                                             Text(
-                                              widget.post.name,
+                                              otherUserName,
                                               style: TextStyle(
                                                 fontSize: 20,
                                                 fontWeight: FontWeight.bold,
@@ -780,9 +800,7 @@ Row(
                                                                   myUserId:
                                                                       myUserId,
                                                                   otherUserId:
-                                                                      widget
-                                                                          .post
-                                                                          .userId,
+                                                                      otherUserId,
                                                                 ),
                                                               );
                                                         },
@@ -872,9 +890,7 @@ Row(
                                                             chat = await ApiService()
                                                                 .checkAndFetchChat(
                                                                   user.id,
-                                                                  widget
-                                                                      .post
-                                                                      .userId,
+                                                                  otherUserId,
                                                                 );
                                                             if (chat != null) {
                                                               pushScreen(
@@ -892,48 +908,32 @@ Row(
                                                                 chatId: "",
                                                                 participantIds: [
                                                                   user.id,
-                                                                  widget
-                                                                      .post
-                                                                      .userId,
+                                                                  otherUserId,
                                                                 ],
                                                                 lastUpdated:
                                                                     DateTime.now(),
                                                                 lastMessageSeenBy: {
                                                                   user.id: true,
-                                                                  widget
-                                                                          .post
-                                                                          .userId:
+                                                                  otherUserId:
                                                                       false,
                                                                 },
                                                                 userProfiles: {
                                                                   user.id:
                                                                       user.avatarId,
-                                                                  widget
-                                                                          .post
-                                                                          .userId:
-                                                                      widget
-                                                                          .post
-                                                                          .avatar,
+                                                                  otherUserId:
+                                                                      otherAvatarId,
                                                                 },
                                                                 userNames: {
                                                                   user.id:
                                                                       user.userName,
-                                                                  widget
-                                                                          .post
-                                                                          .userId:
-                                                                      widget
-                                                                          .post
-                                                                          .name,
+                                                                  otherUserId:
+                                                                      otherUserName,
                                                                 },
                                                                 publicKeys: {
                                                                   user.id:
                                                                       user.publicKey,
-                                                                  widget
-                                                                          .post
-                                                                          .userId:
-                                                                      widget
-                                                                          .post
-                                                                          .publicKey,
+                                                                  otherUserId:
+                                                                      otherUserPublicKey,
                                                                 },
                                                                 lastMessage: "",
                                                               );
@@ -1058,8 +1058,14 @@ class CommentShimmerTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
       child: Shimmer.fromColors(
-        baseColor: Theme.of(context).colorScheme.surface.withOpacity(0.3),
-        highlightColor: Theme.of(context).colorScheme.surface.withOpacity(0.1),
+        baseColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey.shade800
+                : Colors.grey.shade300,
+        highlightColor:
+            Theme.of(context).brightness == Brightness.dark
+                ? Colors.grey.shade700
+                : Colors.grey.shade100,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1254,7 +1260,7 @@ class _BuildUserCommentsTab extends State<BuildUserCommentTab>
                 ),
               ),
               Text(
-                '/${comment.text}    • ${timeago.format(comment.uploadTime)}',
+                '${comment.text}    \n• ${timeago.format(comment.uploadTime)}',
                 style: TextStyle(
                   fontSize: 12,
                   color: Theme.of(

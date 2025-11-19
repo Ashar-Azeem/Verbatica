@@ -23,6 +23,13 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     on<CheckSimilar>(checkSimilar);
     on<UpVoteSimilarPosts>(upVoteSimilarPosts);
     on<DownVoteSimilarPosts>(downVoteSimilarPosts);
+    on<UpdateCommentCountOfAPostInSimilarPosts>((event, emit) {
+      List<Post> posts = List.from(state.similarPosts);
+      posts[event.postIndex] = posts[event.postIndex].copyWith(
+        comments: posts[event.postIndex].comments + 1,
+      );
+      emit(state.copyWith(similarPosts: posts));
+    });
   }
 
   void progress(CompressedProgress event, Emitter<PostState> emit) {

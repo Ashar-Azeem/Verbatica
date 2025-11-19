@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Search%20Bloc/search_bloc.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/UI_Components/Search%20Componenets/SearchedUserUI.dart';
 
@@ -64,7 +65,11 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                               );
                             } else {
                               context.read<SearchBloc>().add(
-                                SearchPosts(postTitle: value),
+                                SearchPosts(
+                                  postTitle: value,
+                                  userId:
+                                      context.read<UserBloc>().state.user!.id,
+                                ),
                               );
                             }
                           } else {
@@ -104,7 +109,10 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                             );
                           } else {
                             context.read<SearchBloc>().add(
-                              SearchPosts(postTitle: value),
+                              SearchPosts(
+                                postTitle: value,
+                                userId: context.read<UserBloc>().state.user!.id,
+                              ),
                             );
                           }
                         },
@@ -128,7 +136,10 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                         );
                       } else {
                         context.read<SearchBloc>().add(
-                          SearchPosts(postTitle: searchController.text),
+                          SearchPosts(
+                            postTitle: searchController.text,
+                            userId: context.read<UserBloc>().state.user!.id,
+                          ),
                         );
                       }
                     }
@@ -163,12 +174,29 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                               )
                               : state.users.isEmpty
                               ? Center(
-                                child: Text(
-                                  "No Users Found",
-                                  style: TextStyle(
-                                    color: textTheme.bodyLarge?.color,
-                                    fontSize: textTheme.bodyLarge?.fontSize,
-                                  ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.people_alt_outlined,
+                                      size: 64,
+                                      color: Theme.of(
+                                        context,
+                                      ).iconTheme.color?.withOpacity(0.5),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'No users found',
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.color
+                                            ?.withOpacity(0.7),
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               )
                               : ListView.builder(
@@ -192,12 +220,29 @@ class _SearchViewState extends State<SearchView> with TickerProviderStateMixin {
                               )
                               : state.posts.isEmpty
                               ? Center(
-                                child: Text(
-                                  "No Posts Found",
-                                  style: TextStyle(
-                                    color: textTheme.bodyLarge?.color,
-                                    fontSize: textTheme.bodyLarge?.fontSize,
-                                  ),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.note_sharp,
+                                      size: 64,
+                                      color: Theme.of(
+                                        context,
+                                      ).iconTheme.color?.withOpacity(0.5),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'No discussions found',
+                                      style: TextStyle(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.color
+                                            ?.withOpacity(0.7),
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               )
                               : ListView.builder(

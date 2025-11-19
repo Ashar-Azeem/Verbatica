@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:verbatica/model/report.dart';
+import 'package:verbatica/model/comment.dart';
 import 'package:verbatica/model/user.dart';
 import 'package:verbatica/model/Post.dart';
 
@@ -43,17 +43,24 @@ class DeleteUserPost extends UserEvent {
 // New event for saving a post
 class SavePost1 extends UserEvent {
   final Post post;
-  SavePost1({required this.post});
+  final BuildContext context;
+  final int userId;
+  SavePost1({required this.context, required this.post, required this.userId});
 }
 
 // New event for unsaving a post
 class UnsavePost1 extends UserEvent {
   final Post post;
-  UnsavePost1({required this.post});
+  final int userId;
+  UnsavePost1({required this.post, required this.userId});
 }
 
 // New event for fetching saved posts
-class FetchSavedPosts extends UserEvent {}
+class FetchSavedPosts extends UserEvent {
+  final int userId;
+
+  FetchSavedPosts({required this.userId});
+}
 
 class upvotePost1 extends UserEvent {
   final int index;
@@ -89,6 +96,7 @@ class AddRecentPost extends UserEvent {
 class FetchMorePosts extends UserEvent {}
 
 class ClearBloc extends UserEvent {}
+
 class SyncUpvotePost extends UserEvent {
   final String postId;
   SyncUpvotePost({required this.postId});
@@ -98,10 +106,19 @@ class SyncDownvotePost extends UserEvent {
   final String postId;
   SyncDownvotePost({required this.postId});
 }
-// Add this to user_event.dart
 
-class SubmitReport extends UserEvent {
-  final Report report;
+class AddNewComment extends UserEvent {
+  final Comment comment;
+
+  AddNewComment({required this.comment});
+}
+
+class UpdateCommentCountOfAPost extends UserEvent {
+  final int postIndex;
+  final String category;
+
+  UpdateCommentCountOfAPost({required this.category, required this.postIndex});
+}
 
   SubmitReport({required this.report});
 }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/model/Post.dart';
@@ -13,7 +14,9 @@ class SavedPostsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
+    context.read<UserBloc>().add(
+      FetchSavedPosts(userId: context.read<UserBloc>().state.user!.id),
+    );
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
@@ -36,7 +39,7 @@ class SavedPostsScreen extends StatelessWidget {
       ),
       body: BlocBuilder<UserBloc, UserState>(
         builder: (context, state) {
-          if (state.isLoadingPosts) {
+          if (state.isLoadingSavedPosts) {
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,

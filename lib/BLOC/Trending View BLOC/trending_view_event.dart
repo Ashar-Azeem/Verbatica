@@ -146,4 +146,16 @@ class AddRecentPostInNews extends TrendingViewEvent {
   const AddRecentPostInNews(this.newsId, {required this.post});
 }
 
+class UpdateCommentCountOfAPost extends TrendingViewEvent {
+  final int postIndex;
+  final String category;
+  final int? newIndex;
+
+  const UpdateCommentCountOfAPost({
+    required this.postIndex,
+    required this.category,
+    this.newIndex,
+  });
+}
+
 class ClearTrendingBloc extends TrendingViewEvent {}

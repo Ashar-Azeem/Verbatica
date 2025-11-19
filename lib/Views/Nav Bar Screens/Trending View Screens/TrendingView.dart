@@ -9,7 +9,7 @@ import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
-import 'package:verbatica/UI_Components/Comment%20Componenets/Ad_component/adComponent.dart';
+import 'package:verbatica/UI_Components/Ad_component/adComponent.dart';
 import 'package:verbatica/UI_Components/PostComponents/EmptyPosts.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/UI_Components/PostComponents/ShimmerLoader.dart';

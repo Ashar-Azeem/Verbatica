@@ -19,6 +19,7 @@ import 'package:verbatica/BLOC/postsubmit/postsubmit_bloc.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_state.dart';
 import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/UI_Components/Comment%20Componenets/CommentBlock.dart';
+import 'package:verbatica/UI_Components/PostComponents/EmptyPosts.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/model/Post.dart';
 
@@ -42,6 +43,7 @@ class ViewDiscussion extends StatefulWidget {
 class _ViewDiscussionState extends State<ViewDiscussion>
     with WidgetsBindingObserver {
   late TextEditingController comment;
+
   final FocusNode _focusNode = FocusNode();
   bool _keyboardVisible = false;
   Timer? timer;
@@ -97,7 +99,11 @@ class _ViewDiscussionState extends State<ViewDiscussion>
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     return BlocProvider(
-      create: (context) => CommentsBloc(postId: widget.post.id),
+      create:
+          (context) => CommentsBloc(
+            postId: widget.post.id,
+            userID: context.read<UserBloc>().state.user!.id,
+          ),
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: 6.h,
@@ -121,221 +127,308 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                   physics: BouncingScrollPhysics(),
                   child: Padding(
                     padding: EdgeInsets.only(top: 1.5.h),
-                    child: Column(
-                      children: [
-                        if (widget.category == 'user')
-                          BlocBuilder<UserBloc, UserState>(
-                            buildWhen:
-                                (previous, current) =>
-                                    previous.userPosts[widget.index] !=
-                                    current.userPosts[widget.index],
-                            builder: (context, state) {
-                              return Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 1.w),
-                                child: PostWidget(
-                                  post: state.userPosts[widget.index],
-                                  index: widget.index,
-                                  onFullView: true,
-                                  category: widget.category,
-                                ),
-                              );
-                            },
-                          ),
-                        if (widget.category == 'other')
-                          BlocBuilder<OtheruserBloc, OtheruserState>(
-                            buildWhen:
-                                (previous, current) =>
-                                    previous.userPosts[widget.index] !=
-                                    current.userPosts[widget.index],
-
-                            builder: (context, state) {
-                              return Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 1.w),
-                                child: PostWidget(
-                                  post: state.userPosts[widget.index],
-                                  category: widget.category,
-                                  index: widget.index,
-                                  onFullView: true,
-                                ),
-                              );
-                            },
-                          ),
-                        if (widget.category == 'saved')
-                          BlocBuilder<UserBloc, UserState>(
-                            buildWhen:
-                                (previous, current) =>
-                                    previous.savedPosts[widget.index] !=
-                                    current.savedPosts[widget.index],
-
-                            builder: (context, state) {
-                              return Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 1.w),
-                                child: PostWidget(
-                                  post: state.savedPosts[widget.index],
-                                  index: widget.index,
-                                  onFullView: true,
-                                  category: widget.category,
-                                ),
-                              );
-                            },
-                          ),
-                        if (widget.category == 'Trending' ||
-                            widget.category == 'Top 10 news')
-                          BlocBuilder<TrendingViewBloc, TrendingViewState>(
-                            builder: (context, state) {
-                              Post dynamicpost;
-                              if (widget.category == 'Trending') {
-                                dynamicpost = state.trending[widget.index];
-                              } else {
-                                dynamicpost =
-                                    state
-                                        .news[widget.newIndex!]
-                                        .discussions[widget.index];
-                              }
-                              return Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 1.w),
-                                child: PostWidget(
-                                  post: dynamicpost,
-                                  index: widget.index,
-                                  newsIndex: widget.newIndex,
-                                  category: widget.category,
-                                  onFullView: true,
-                                ),
-                              );
-                            },
-                          ),
-
-                        if (widget.category == 'ForYou' ||
-                            widget.category == 'Following')
-                          BlocBuilder<HomeBloc, HomeState>(
-                            builder: (context, state) {
-                              Post dynamicpost;
-                              if (widget.category == 'ForYou') {
-                                dynamicpost = state.forYou[widget.index];
-                              } else {
-                                dynamicpost = state.following[widget.index];
-                              }
-                              return Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 1.w),
-                                child: PostWidget(
-                                  post: dynamicpost,
-                                  index: widget.index,
-                                  category: widget.category,
-                                  onFullView: true,
-                                ),
-                              );
-                            },
-                          ),
-
-                        if (widget.category == 'searched')
-                          BlocBuilder<SearchBloc, SearchState>(
-                            builder: (context, state) {
-                              Post dynamicpost = state.posts[widget.index];
-                              return Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 1.w),
-                                child: PostWidget(
-                                  post: dynamicpost,
-                                  index: widget.index,
-                                  category: widget.category,
-                                  onFullView: true,
-                                ),
-                              );
-                            },
-                          ),
-                        if (widget.category == 'similarPosts')
-                          BlocBuilder<PostBloc, PostState>(
-                            builder: (context, state) {
-                              Post dynamicpost =
-                                  state.similarPosts[widget.index];
-                              return Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 1.w),
-                                child: PostWidget(
-                                  post: dynamicpost,
-                                  index: widget.index,
-                                  category: widget.category,
-                                  onFullView: true,
-                                ),
-                              );
-                            },
-                          ),
-                        SizedBox(height: 1.h),
-                        Row(
+                    child: BlocBuilder<CommentsBloc, CommentsState>(
+                      builder: (context, state) {
+                        return Column(
                           children: [
-                            Expanded(
-                              child: Divider(
-                                thickness: 1.5,
-                                color: Theme.of(context).dividerColor,
+                            if (widget.category == 'user')
+                              BlocBuilder<UserBloc, UserState>(
+                                buildWhen:
+                                    (previous, current) =>
+                                        previous.userPosts[widget.index] !=
+                                        current.userPosts[widget.index],
+                                builder: (context, state) {
+                                  context.read<CommentsBloc>().add(
+                                    UpdateCommentCount(
+                                      commentCount:
+                                          state
+                                              .userPosts[widget.index]
+                                              .comments,
+                                    ),
+                                  );
+                                  return Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 1.w,
+                                    ),
+                                    child: PostWidget(
+                                      post: state.userPosts[widget.index],
+                                      index: widget.index,
+                                      onFullView: true,
+                                      category: widget.category,
+                                    ),
+                                  );
+                                },
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8.0,
+                            if (widget.category == 'other')
+                              BlocBuilder<OtheruserBloc, OtheruserState>(
+                                buildWhen:
+                                    (previous, current) =>
+                                        previous.userPosts[widget.index] !=
+                                        current.userPosts[widget.index],
+
+                                builder: (context, state) {
+                                  context.read<CommentsBloc>().add(
+                                    UpdateCommentCount(
+                                      commentCount:
+                                          state
+                                              .userPosts[widget.index]
+                                              .comments,
+                                    ),
+                                  );
+                                  return Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 1.w,
+                                    ),
+                                    child: PostWidget(
+                                      post: state.userPosts[widget.index],
+                                      category: widget.category,
+                                      index: widget.index,
+                                      onFullView: true,
+                                    ),
+                                  );
+                                },
                               ),
-                              child: Text(
-                                '223 Comments',
-                                style: TextStyle(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                  fontWeight: FontWeight.bold,
+                            if (widget.category == 'saved')
+                              BlocBuilder<UserBloc, UserState>(
+                                buildWhen:
+                                    (previous, current) =>
+                                        previous.savedPosts[widget.index] !=
+                                        current.savedPosts[widget.index],
+
+                                builder: (context, state) {
+                                  context.read<CommentsBloc>().add(
+                                    UpdateCommentCount(
+                                      commentCount:
+                                          state
+                                              .savedPosts[widget.index]
+                                              .comments,
+                                    ),
+                                  );
+                                  return Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 1.w,
+                                    ),
+                                    child: PostWidget(
+                                      post: state.savedPosts[widget.index],
+                                      index: widget.index,
+                                      onFullView: true,
+                                      category: widget.category,
+                                    ),
+                                  );
+                                },
+                              ),
+                            if (widget.category == 'Trending' ||
+                                widget.category == 'Top 10 news')
+                              BlocBuilder<TrendingViewBloc, TrendingViewState>(
+                                builder: (context, state) {
+                                  Post dynamicpost;
+                                  if (widget.category == 'Trending') {
+                                    dynamicpost = state.trending[widget.index];
+                                  } else {
+                                    dynamicpost =
+                                        state
+                                            .news[widget.newIndex!]
+                                            .discussions[widget.index];
+                                  }
+
+                                  context.read<CommentsBloc>().add(
+                                    UpdateCommentCount(
+                                      commentCount: dynamicpost.comments,
+                                    ),
+                                  );
+
+                                  return Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 1.w,
+                                    ),
+                                    child: PostWidget(
+                                      post: dynamicpost,
+                                      index: widget.index,
+                                      newsIndex: widget.newIndex,
+                                      category: widget.category,
+                                      onFullView: true,
+                                    ),
+                                  );
+                                },
+                              ),
+
+                            if (widget.category == 'ForYou' ||
+                                widget.category == 'Following')
+                              BlocBuilder<HomeBloc, HomeState>(
+                                builder: (context, state) {
+                                  Post dynamicpost;
+                                  if (widget.category == 'ForYou') {
+                                    dynamicpost = state.forYou[widget.index];
+                                  } else {
+                                    dynamicpost = state.following[widget.index];
+                                  }
+
+                                  context.read<CommentsBloc>().add(
+                                    UpdateCommentCount(
+                                      commentCount: dynamicpost.comments,
+                                    ),
+                                  );
+
+                                  return Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 1.w,
+                                    ),
+                                    child: PostWidget(
+                                      post: dynamicpost,
+                                      index: widget.index,
+                                      category: widget.category,
+                                      onFullView: true,
+                                    ),
+                                  );
+                                },
+                              ),
+
+                            if (widget.category == 'searched')
+                              BlocBuilder<SearchBloc, SearchState>(
+                                builder: (context, state) {
+                                  Post dynamicpost = state.posts[widget.index];
+
+                                  context.read<CommentsBloc>().add(
+                                    UpdateCommentCount(
+                                      commentCount: dynamicpost.comments,
+                                    ),
+                                  );
+                                  return Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 1.w,
+                                    ),
+                                    child: PostWidget(
+                                      post: dynamicpost,
+                                      index: widget.index,
+                                      category: widget.category,
+                                      onFullView: true,
+                                    ),
+                                  );
+                                },
+                              ),
+                            if (widget.category == 'similarPosts')
+                              BlocBuilder<PostBloc, PostState>(
+                                builder: (context, state) {
+                                  Post dynamicpost =
+                                      state.similarPosts[widget.index];
+
+                                  context.read<CommentsBloc>().add(
+                                    UpdateCommentCount(
+                                      commentCount: dynamicpost.comments,
+                                    ),
+                                  );
+
+                                  return Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 1.w,
+                                    ),
+                                    child: PostWidget(
+                                      post: dynamicpost,
+                                      index: widget.index,
+                                      category: widget.category,
+                                      onFullView: true,
+                                    ),
+                                  );
+                                },
+                              ),
+                            SizedBox(height: 1.h),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Divider(
+                                    thickness: 1.5,
+                                    color: Theme.of(context).dividerColor,
+                                  ),
                                 ),
-                              ),
-                            ),
-                            Expanded(
-                              child: Divider(
-                                thickness: 1.5,
-                                color: Theme.of(context).dividerColor,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: 1.h),
-                        BlocBuilder<CommentsBloc, CommentsState>(
-                          buildWhen:
-                              (previous, current) =>
-                                  previous.comments != current.comments,
-                          builder: (context, state) {
-                            return state.initialLoader
-                                ? Padding(
-                                  padding: EdgeInsets.only(top: 10.h),
-                                  child: Center(
-                                    child: LoadingAnimationWidget.dotsTriangle(
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8.0,
+                                  ),
+                                  child: Text(
+                                    '${state.totalCommentCount} Comments',
+                                    style: TextStyle(
                                       color:
-                                          Theme.of(context).colorScheme.primary,
-                                      size: 10.w,
+                                          Theme.of(
+                                            context,
+                                          ).colorScheme.secondary,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                )
-                                : Padding(
-                                  padding: EdgeInsets.only(bottom: 8.h),
-                                  child: ListView.builder(
-                                    physics: NeverScrollableScrollPhysics(),
-                                    shrinkWrap: true,
-                                    itemCount: state.comments.length,
-                                    itemBuilder: (context, index) {
-                                      return Padding(
-                                        padding: EdgeInsets.only(
-                                          bottom: 0.6.h,
-                                          left: 1.w,
-                                          right: 1.w,
+                                ),
+                                Expanded(
+                                  child: Divider(
+                                    thickness: 1.5,
+                                    color: Theme.of(context).dividerColor,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 1.h),
+                            BlocBuilder<CommentsBloc, CommentsState>(
+                              buildWhen:
+                                  (previous, current) =>
+                                      previous.comments != current.comments,
+                              builder: (context, state) {
+                                return state.initialLoader
+                                    ? Padding(
+                                      padding: EdgeInsets.only(top: 10.h),
+                                      child: Center(
+                                        child:
+                                            LoadingAnimationWidget.dotsTriangle(
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).colorScheme.primary,
+                                              size: 10.w,
+                                            ),
+                                      ),
+                                    )
+                                    : state.comments.isEmpty
+                                    ? SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                          0.6,
+                                      child: Center(
+                                        child: BuildEmptyTabContent(
+                                          icon: Icons.article_outlined,
+                                          message: 'No comments yet',
                                         ),
-                                        child: Card(
-                                          child: Center(
-                                            child: SizedBox(
-                                              width: 100.w,
-                                              child: CommentsBlock(
-                                                level: 1,
-                                                comment: state.comments[index],
+                                      ),
+                                    )
+                                    : Padding(
+                                      padding: EdgeInsets.only(bottom: 8.h),
+                                      child: ListView.builder(
+                                        physics: NeverScrollableScrollPhysics(),
+                                        shrinkWrap: true,
+                                        itemCount: state.comments.length,
+                                        itemBuilder: (context, index) {
+                                          return Padding(
+                                            padding: EdgeInsets.only(
+                                              bottom: 0.6.h,
+                                              left: 1.w,
+                                              right: 1.w,
+                                            ),
+                                            child: Card(
+                                              child: Center(
+                                                child: SizedBox(
+                                                  width: 100.w,
+                                                  child: CommentsBlock(
+                                                    level: 1,
+                                                    comment:
+                                                        state.comments[index],
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                );
-                          },
-                        ),
-                      ],
+                                          );
+                                        },
+                                      ),
+                                    );
+                              },
+                            ),
+                          ],
+                        );
+                      },
                     ),
                   ),
                 ),
@@ -523,7 +616,10 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                     if (comment.text.trim().isNotEmpty) {
                                       context.read<CommentsBloc>().add(
                                         UploadComment(
+                                          context: context,
                                           commentController: comment,
+                                          titleOfThePost: widget.post.title,
+                                          clusters: widget.post.clusters,
                                           comment: comment.text.trim(),
                                           user:
                                               context
@@ -531,6 +627,9 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                                   .state
                                                   .user!,
                                           postId: widget.post.id,
+                                          index: widget.index,
+                                          category: widget.category,
+                                          newsIndex: widget.newIndex,
                                         ),
                                       );
                                     }

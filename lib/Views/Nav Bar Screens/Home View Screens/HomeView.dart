@@ -11,7 +11,7 @@ import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/Home/home_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
-import 'package:verbatica/UI_Components/Comment%20Componenets/Ad_component/adComponent.dart';
+import 'package:verbatica/UI_Components/Ad_component/adComponent.dart';
 import 'package:verbatica/UI_Components/PostComponents/EmptyPosts.dart';
 import 'package:verbatica/UI_Components/PostComponents/PostUI.dart';
 import 'package:verbatica/UI_Components/PostComponents/ShimmerLoader.dart';

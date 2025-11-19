@@ -30,22 +30,24 @@ class Report {
     this.adminFeedback,
   });
 
-  // Factory constructor from JSON
   factory Report.fromJson(Map<String, dynamic> json) {
     return Report(
-      reportId: json['reportId'],
-      reporterUserId: json['reporterUserId'],
-      isPostReport: json['isPostReport'],
-      isCommentReport: json['isCommentReport'],
-      isUserReport: json['isUserReport'],
-      postId: json['postId'],
-      commentId: json['commentId'],
-      reportedUserId: json['reportedUserId'],
-      reportContent: json['reportContent'],
-      reportTime: DateTime.parse(json['reportTime']),
-      isSeenByModerator: json['isSeenByModerator'],
-      reportStatus: json['reportStatus'],
-      adminFeedback: json['adminFeedback'],
+      reportId: json['report_id']?.toString() ?? '',
+      reporterUserId: json['reporter_user_id']?.toString() ?? '',
+      isPostReport: json['is_post_report'] ?? false,
+      isCommentReport: json['is_comment_report'] ?? false,
+      isUserReport: json['is_user_report'] ?? false,
+      postId: json['post_id']?.toString(),
+      commentId: json['comment_id']?.toString(),
+      reportedUserId: json['user_id']?.toString(),
+      reportContent: json['report_content'] ?? '',
+      reportTime:
+          json['report_time'] != null
+              ? DateTime.parse(json['report_time'])
+              : DateTime.now(),
+      isSeenByModerator: json['is_seen_by_admin'] ?? false,
+      reportStatus: json['report_status'] ?? 'Pending',
+      adminFeedback: json['admin_feedback'],
     );
   }
 

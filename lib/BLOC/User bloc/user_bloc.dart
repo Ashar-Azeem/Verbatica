@@ -1,8 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_state.dart';
-import 'package:verbatica/DummyData/comments.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/model/Post.dart';
@@ -31,7 +33,22 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<SyncUpvotePost>(_syncUpvotePost);
     on<SyncDownvotePost>(_syncDownvotePost);
     on<AddRecentPost>(addRecentPost);
-        on<SubmitReport>(_onSubmitReport);
+    on<AddNewComment>(addNewComment);
+    on<UpdateCommentCountOfAPost>((event, emit) {
+      if (event.category == "saved") {
+        List<Post> posts = List.from(state.savedPosts);
+        posts[event.postIndex] = posts[event.postIndex].copyWith(
+          comments: posts[event.postIndex].comments + 1,
+        );
+        emit(state.copyWith(savedPosts: posts));
+      } else {
+        List<Post> posts = List.from(state.userPosts);
+        posts[event.postIndex] = posts[event.postIndex].copyWith(
+          comments: posts[event.postIndex].comments + 1,
+        );
+        emit(state.copyWith(userPosts: posts));
+      }
+    });
   }
 
   void addRecentPost(AddRecentPost event, Emitter<UserState> emit) {
@@ -45,72 +62,20 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       print(e);
     }
   }
-   // NEW METHOD: Handle report submission
-  void _onSubmitReport(SubmitReport event, Emitter<UserState> emit) async {
+
+  void addNewComment(AddNewComment event, Emitter<UserState> emit) {
     try {
-      // Emit loading state
-      emit(state.copyWith(
-        isSubmittingReport: true,
-        reportSubmitted: false,
-        reportError: null,
-      ));
+      if (!state.isLoadingComments) {
+        List<Comment> userComments = List.from(state.userComments);
+        userComments.insert(0, event.comment);
 
-      // Simulate API delay (remove this when implementing real API)
-      await Future.delayed(Duration(seconds: 1));
-
-      // TODO: Implement actual API call here
-      // Example: await ApiService().submitReport(event.report);
-      
-      // For now, just validate the report object
-      _validateReport(event.report);
-
-      // Emit success state
-      emit(state.copyWith(
-        isSubmittingReport: false,
-        reportSubmitted: true,
-        reportError: null,
-      ));
-
-      // Reset the report submission state after 3 seconds
-      await Future.delayed(Duration(seconds: 3));
-      emit(state.copyWith(
-        reportSubmitted: false,
-      ));
+        emit(state.copyWith(userComments: userComments));
+      }
     } catch (e) {
-      // Emit error state
-      emit(state.copyWith(
-        isSubmittingReport: false,
-        reportSubmitted: false,
-        reportError: e.toString(),
-      ));
+      print(e);
     }
   }
- void _validateReport(Report report) {
-    if (report.reportContent.isEmpty) {
-      throw Exception('Report content cannot be empty');
-    }
 
-    if (!report.isPostReport && !report.isCommentReport && !report.isUserReport) {
-      throw Exception('Invalid report type');
-    }
-
-    if (report.isPostReport && report.postId == null) {
-      throw Exception('Post ID is required for post reports');
-    }
-
-    if (report.isCommentReport && report.commentId == null) {
-      throw Exception('Comment ID is required for comment reports');
-    }
-
-    if (report.isUserReport && report.reportedUserId == null) {
-      throw Exception('User ID is required for user reports');
-    }
-
-    // TODO: Add more validation as needed
-    print('Report validated successfully: ${report.reportType}');
-  }
-
- 
   void _onUpdateAvatarAndAbout(
     UpdateAvatarAndAbout event,
     Emitter<UserState> emit,
@@ -345,13 +310,13 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     Emitter<UserState> emit,
   ) async {
     emit(state.copyWith(isLoadingComments: true));
-    await Future.delayed(Duration(seconds: 3));
 
-    final List<Comment> matchingComments = dummyComments;
-
-    emit(
-      state.copyWith(userComments: matchingComments, isLoadingComments: false),
+    final List<Comment> comments = await ApiService().fetchUserComments(
+      state.user!.id,
+      state.user!.id,
     );
+
+    emit(state.copyWith(userComments: comments, isLoadingComments: false));
   }
 
   // New method to fetch user posts
@@ -435,28 +400,64 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   }
 
   // New handler for saving posts
-  void _onSavePost(SavePost1 event, Emitter<UserState> emit) {
+  void _onSavePost(SavePost1 event, Emitter<UserState> emit) async {
     final currentSavedPosts = state.savedPosts;
+    String status = await ApiService().savePost(
+      event.userId,
+      int.parse(event.post.id),
+    );
+    if (status == "already_saved") {
+      ScaffoldMessenger.of(event.context).showSnackBar(
+        SnackBar(
+          duration: Duration(seconds: 2),
+          content: Text(
+            'Post is already saved',
+            style: TextStyle(
+              color: Theme.of(event.context).colorScheme.onPrimary,
+            ),
+          ),
+          backgroundColor: Theme.of(event.context).colorScheme.primary,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(event.context).showSnackBar(
+        SnackBar(
+          duration: Duration(seconds: 2),
+          content: Text(
+            'Post saved successfully',
+            style: TextStyle(
+              color: Theme.of(event.context).colorScheme.onPrimary,
+            ),
+          ),
+          backgroundColor: Theme.of(event.context).colorScheme.primary,
+        ),
+      );
+    }
 
-    final updatedSavedPosts = List<Post>.from(currentSavedPosts)
-      ..add(event.post);
-    emit(state.copyWith(savedPosts: updatedSavedPosts));
+    if (!state.isLoadingSavedPosts) {
+      final updatedSavedPosts = List<Post>.from(currentSavedPosts)
+        ..add(event.post);
+      emit(state.copyWith(savedPosts: updatedSavedPosts));
+    }
   }
 
   // New handler for unsaving posts
   void _onUnsavePost(UnsavePost1 event, Emitter<UserState> emit) {
+    ApiService().unsave(event.userId, int.parse(event.post.id));
+
     final currentSavedPosts = state.savedPosts;
     final updatedSavedPosts =
         currentSavedPosts.where((post) => post.id != event.post.id).toList();
-
     emit(state.copyWith(savedPosts: updatedSavedPosts));
   }
 
-  // New handler for fetching saved posts
   void _onFetchSavedPosts(
     FetchSavedPosts event,
     Emitter<UserState> emit,
-  ) async {}
+  ) async {
+    List<Post> savedPosts = await ApiService().getSavedPosts(event.userId);
+    emit(state.copyWith(savedPosts: savedPosts, isLoadingSavedPosts: false));
+  }
 
   void updateAura(UpdateAura event, Emitter<UserState> emit) async {
     int aura = await ApiService().getAura(state.user!.id);

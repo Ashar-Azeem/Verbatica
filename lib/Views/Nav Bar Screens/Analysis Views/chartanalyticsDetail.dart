@@ -1,17 +1,21 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:sizer/sizer.dart';
+import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/countrychart.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/emotional.dart';
 
 class ClusterDetailScreen extends StatefulWidget {
   final String clusterTitle;
-  final double numberOfComments;
+  final int postId;
+  final int numberOfComments;
 
   const ClusterDetailScreen({
     super.key,
     required this.clusterTitle,
     required this.numberOfComments,
+    required this.postId,
   });
 
   @override
@@ -24,7 +28,8 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
   late Animation<double> _scaleAnimation;
   late Animation<double> _fadeAnimation;
   late AnimationController _chartController;
-  final Random _random = Random();
+  bool isLoading = true;
+  AnalyticsData? analytics;
 
   @override
   void initState() {
@@ -51,7 +56,18 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     );
+    fetchAnalytics(widget.postId, widget.clusterTitle);
+  }
 
+  void fetchAnalytics(int postId, String cluster) async {
+    AnalyticsData fetchAnalytics = await ApiService().fetchClusterAnalytics(
+      postId,
+      cluster,
+    );
+    setState(() {
+      analytics = fetchAnalytics;
+      isLoading = false;
+    });
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _controller.forward();
       _chartController.forward();
@@ -154,12 +170,12 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
     );
   }
 
-  List<BarChartGroupData> _generateCountryData() {
-    final countries = ['USA', 'India', 'UK', 'Canada', 'Australia', 'Germany'];
-    final maxComments = widget.numberOfComments.toDouble();
+  List<BarChartGroupData> generateCountryData() {
+    final countries = analytics!.countries.map((c) => c.country).toList();
+    final counts = analytics!.countries.map((c) => c.count.toDouble()).toList();
 
-    // Ensure we have at least 1 comment per country
-    if (maxComments < countries.length) {
+    // If no countries or all counts are 0, return default small bars
+    if (counts.isEmpty || counts.every((c) => c == 0)) {
       return List.generate(countries.length, (index) {
         return BarChartGroupData(
           x: index,
@@ -175,34 +191,12 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
       });
     }
 
-    // Distribute comments more evenly
-    final values = List<double>.filled(countries.length, 0);
-    double remaining = maxComments;
-
-    // First pass - give each country at least 1 comment
-    for (int i = 0; i < countries.length; i++) {
-      values[i] = 1.0;
-      remaining -= 1.0;
-    }
-
-    // Distribute remaining comments randomly
-    while (remaining > 0) {
-      final index = _random.nextInt(countries.length);
-      final increment = _random.nextInt(5) + 1; // Add 1-5 comments at a time
-      values[index] += increment.toDouble();
-      remaining -= increment;
-      if (remaining < 0) {
-        values[index] += remaining; // Adjust if we went over
-        remaining = 0;
-      }
-    }
-
     return List.generate(countries.length, (index) {
       return BarChartGroupData(
         x: index,
         barRods: [
           BarChartRodData(
-            toY: values[index],
+            toY: counts[index],
             color: _getColor(index),
             width: 16,
             borderRadius: BorderRadius.circular(4),
@@ -226,13 +220,49 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
     return colors[index % colors.length];
   }
 
+  List<double> calculateEmotionPercentagesWithTotal(
+    AnalyticsData analytics,
+    List<String> emotionalTitles,
+    int totalComments,
+  ) {
+    if (totalComments == 0) return List.filled(emotionalTitles.length, 0.0);
+
+    return emotionalTitles.map((title) {
+      final emotion = analytics.emotions.firstWhere(
+        (e) => e.emotion == title,
+        orElse: () => EmotionStat(emotion: title, count: 0),
+      );
+      return (emotion.count / totalComments) * 100;
+    }).toList();
+  }
+
+  List<double> calculateGenderPercentagesWithTotal(
+    AnalyticsData analytics,
+    List<String> genderTitle,
+    int totalComments,
+  ) {
+    if (totalComments == 0) return List.filled(genderTitle.length, 0.0);
+
+    return genderTitle.map((title) {
+      final emotion = analytics.genders.firstWhere(
+        (e) => e.gender == title,
+        orElse: () => GenderStat(gender: title, count: 0),
+      );
+      return (emotion.count / totalComments) * 100;
+    }).toList();
+  }
+
+  List<String> getCountryLabels() {
+    return analytics!.countries.map((c) => c.country).toList();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final containerColor = colorScheme.surface;
-    final value = _random.nextDouble() * 30 + 10;
-    final countryChartData = _generateCountryData();
+    List<String> emotionalTitles = ['Happy', 'Sad', 'Angry', 'Neutral'];
+    List<String> genderTitles = ['Male', 'Female'];
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -245,49 +275,161 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
         ),
       ),
-      body: FadeTransition(
-        opacity: _fadeAnimation,
-        child: ScaleTransition(
-          scale: _scaleAnimation,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildHeaderSection(),
-                const SizedBox(height: 24),
-
-                _buildSectionTitle('📊 Emotional Analysis'),
-                const SizedBox(height: 8),
-                EmotionalChart(
-                  value: value,
-                  dataforgraph: ['Happy', 'Sad', 'Angry', 'Neutral', 'Excited'],
-                  index: 1,
+      body:
+          isLoading
+              ? Center(
+                child: LoadingAnimationWidget.dotsTriangle(
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 13.w,
                 ),
+              )
+              : FadeTransition(
+                opacity: _fadeAnimation,
+                child: ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildHeaderSection(),
+                        const SizedBox(height: 24),
 
-                const SizedBox(height: 24),
+                        _buildSectionTitle('📊 Emotional Analysis'),
+                        const SizedBox(height: 8),
+                        EmotionalChart(
+                          emotionValues: calculateEmotionPercentagesWithTotal(
+                            analytics!,
+                            emotionalTitles,
+                            widget.numberOfComments.toInt(),
+                          ),
+                          dataforgraph: emotionalTitles,
+                          index: 1,
+                        ),
 
-                _buildSectionTitle('🌍 Country-Based Distribution'),
-                const SizedBox(height: 8),
-                Countrychart(
-                  countryData: countryChartData,
-                  numberOfComments: widget.numberOfComments,
+                        const SizedBox(height: 24),
+
+                        _buildSectionTitle('🌍 Country-Based Distribution'),
+                        const SizedBox(height: 8),
+                        Countrychart(
+                          countries: getCountryLabels(),
+                          countryData: generateCountryData(),
+                          numberOfComments: widget.numberOfComments,
+                        ),
+                        const SizedBox(height: 24),
+
+                        _buildSectionTitle('🚻 Gender Analysis'),
+                        const SizedBox(height: 8),
+                        EmotionalChart(
+                          emotionValues: calculateGenderPercentagesWithTotal(
+                            analytics!,
+                            genderTitles,
+                            widget.numberOfComments.toInt(),
+                          ),
+                          dataforgraph: genderTitles,
+                          index: 2,
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 24),
-
-                _buildSectionTitle('🚻 Gender Analysis'),
-                const SizedBox(height: 8),
-                EmotionalChart(
-                  value: value,
-                  dataforgraph: ['Male', 'Female', 'Other'],
-                  index: 2,
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
-        ),
-      ),
+              ),
     );
+  }
+}
+
+class AnalyticsData {
+  final int postId;
+  final List<EmotionStat> emotions;
+  final List<CountryStat> countries;
+  final List<GenderStat> genders;
+
+  AnalyticsData({
+    required this.postId,
+    required this.emotions,
+    required this.countries,
+    required this.genders,
+  });
+
+  factory AnalyticsData.fromJson(Map<String, dynamic> json) {
+    return AnalyticsData(
+      postId: json['postId'] as int,
+      emotions:
+          (json['emotions'] as List<dynamic>)
+              .map((e) => EmotionStat.fromJson(e))
+              .toList(),
+      countries:
+          (json['countries'] as List<dynamic>)
+              .map((e) => CountryStat.fromJson(e))
+              .toList(),
+      genders:
+          (json['genders'] as List<dynamic>)
+              .map((e) => GenderStat.fromJson(e))
+              .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'postId': postId,
+      'emotions': emotions.map((e) => e.toJson()).toList(),
+      'countries': countries.map((e) => e.toJson()).toList(),
+      'genders': genders.map((e) => e.toJson()).toList(),
+    };
+  }
+}
+
+class EmotionStat {
+  final String emotion;
+  final int count;
+
+  EmotionStat({required this.emotion, required this.count});
+
+  factory EmotionStat.fromJson(Map<String, dynamic> json) {
+    return EmotionStat(
+      emotion: json['emotion'] as String,
+      count: json['count'] as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'emotion': emotion, 'count': count};
+  }
+}
+
+class CountryStat {
+  final String country;
+  final int count;
+
+  CountryStat({required this.country, required this.count});
+
+  factory CountryStat.fromJson(Map<String, dynamic> json) {
+    return CountryStat(
+      country: json['country'] as String,
+      count: json['count'] as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'country': country, 'count': count};
+  }
+}
+
+class GenderStat {
+  final String gender;
+  final int count;
+
+  GenderStat({required this.gender, required this.count});
+
+  factory GenderStat.fromJson(Map<String, dynamic> json) {
+    return GenderStat(
+      gender: json['gender'] as String,
+      count: json['count'] as int,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'gender': gender, 'count': count};
   }
 }

@@ -7,6 +7,7 @@ import 'package:sizer/sizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:verbatica/BLOC/Comments%20Bloc/comments_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/BLOC/Votes%20Restriction/votes_restrictor_bloc.dart';
 import 'package:verbatica/model/comment.dart';
 
 class CommentsBlock extends StatelessWidget {
@@ -137,7 +138,7 @@ class CommentsBlock extends StatelessWidget {
                       expandText: 'show more',
                       collapseText: 'show less',
                       linkEllipsis: false,
-                      maxLines: 2,
+                      maxLines: 4,
                       style: TextStyle(
                         fontSize: 3.8.w,
                         color: Theme.of(context).textTheme.bodyMedium?.color,
@@ -149,10 +150,17 @@ class CommentsBlock extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         IconButton(
-                          key: ValueKey(comment.upVoteUserIds),
+                          key: ValueKey(comment.isUpvote),
                           onPressed: () {
+                            context.read<VotesRestrictorBloc>().add(
+                              RegisterVoteOnComment(commentId: comment.id),
+                            );
                             context.read<CommentsBloc>().add(
-                              UpVoteComment(comment: comment, userId: userId),
+                              UpVoteComment(
+                                comment: comment,
+                                userId: userId,
+                                context: context,
+                              ),
                             );
                           },
                           padding: EdgeInsets.zero,
@@ -160,7 +168,7 @@ class CommentsBlock extends StatelessWidget {
                                 Icons.arrow_circle_up_outlined,
                                 size: 5.5.w,
                                 color:
-                                    comment.upVoteUserIds.contains(userId)
+                                    comment.isUpvote
                                         ? Theme.of(context).colorScheme.primary
                                         : Theme.of(
                                           context,
@@ -177,7 +185,7 @@ class CommentsBlock extends StatelessWidget {
                               ),
                         ),
                         Text(
-                          "${comment.totalUpVotes - comment.totalDownVotes}",
+                          "${comment.totalUpvotes - comment.totalDownvotes}",
                           style: TextStyle(
                             color: Theme.of(context).colorScheme.secondary,
                             fontSize: 3.w,
@@ -188,8 +196,15 @@ class CommentsBlock extends StatelessWidget {
                         SizedBox(width: 1.w),
                         IconButton(
                           onPressed: () {
+                            context.read<VotesRestrictorBloc>().add(
+                              RegisterVoteOnComment(commentId: comment.id),
+                            );
                             context.read<CommentsBloc>().add(
-                              DownVoteComment(comment: comment, userId: userId),
+                              DownVoteComment(
+                                comment: comment,
+                                userId: userId,
+                                context: context,
+                              ),
                             );
                           },
                           padding: EdgeInsets.zero,
@@ -197,7 +212,7 @@ class CommentsBlock extends StatelessWidget {
                             Icons.arrow_circle_down_outlined,
                             size: 5.5.w,
                             color:
-                                comment.downVoteUserIds.contains(userId)
+                                comment.isDownvote
                                     ? Theme.of(context).colorScheme.primary
                                     : Theme.of(context).colorScheme.secondary,
                           ),

@@ -9,6 +9,7 @@ class UserState extends Equatable {
   final int? lastPostId;
   final bool isMorePost;
   final List<Comment> userComments;
+  final bool isLoadingSavedPosts;
   final bool isLoadingComments;
   final bool isLoadingPosts;
   final bool isLoadingUpdatingProfile;
@@ -20,6 +21,7 @@ class UserState extends Equatable {
   const UserState({
     this.user,
     this.lastPostId,
+    this.isLoadingSavedPosts = true,
     this.isMorePost = true,
     
     this.isLoadingUpdatingProfile = false,
@@ -42,6 +44,7 @@ class UserState extends Equatable {
     bool? isLoadingUpdatingProfile,
     List<Post>? savedPosts,
     bool? isLoadingComments,
+    bool? isLoadingSavedPosts,
     bool? isLoadingPosts,
         bool? isSubmittingReport,
     bool? reportSubmitted,
@@ -49,6 +52,7 @@ class UserState extends Equatable {
   }) {
     return UserState(
       user: user ?? this.user,
+      isLoadingSavedPosts: isLoadingSavedPosts ?? this.isLoadingSavedPosts,
       userPosts: userPosts ?? this.userPosts,
       userComments: userComments ?? this.userComments,
       lastPostId: lastPostId ?? this.lastPostId,
@@ -74,6 +78,7 @@ class UserState extends Equatable {
       isLoadingComments: false,
       isLoadingPosts: false,
       isMorePost: true,
+      isLoadingSavedPosts: true,
       lastPostId: null,
           isSubmittingReport: false,
       reportSubmitted: false,
@@ -90,6 +95,7 @@ class UserState extends Equatable {
     isLoadingComments,
     isLoadingPosts,
     savedPosts,
+    isLoadingSavedPosts,
     isMorePost,
     lastPostId,
       isSubmittingReport,

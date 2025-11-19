@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable_text/expandable_text.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,7 +20,7 @@ import 'package:verbatica/BLOC/postsubmit/postsubmit_bloc.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_event.dart';
 import 'package:verbatica/UI_Components/PostComponents/VideoPlayer.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/SummaryView.dart';
-import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/ViewDiscussion.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/otherprofile.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/clusterScreen.dart';
 import 'package:verbatica/Views/reportscreen.dart';
@@ -173,7 +174,7 @@ class PostWidget extends StatelessWidget {
                               screen: SummaryScreen(
                                 showClusters: true,
                                 clusters: post.clusters,
-                                postId: '',
+                                postId: post.id,
                               ),
                               withNavBar: false,
                             );
@@ -184,7 +185,7 @@ class PostWidget extends StatelessWidget {
                                   PageTransitionAnimation.scale,
                               screen: SummaryScreen(
                                 showClusters: false,
-                                postId: '',
+                                postId: post.id,
                               ),
                               withNavBar: false,
                             );
@@ -232,13 +233,19 @@ class PostWidget extends StatelessWidget {
                             } else if (category == 'other') {
                             } else if (category == 'searched') {}
                           } else if (value == "save") {
-                            context.read<UserBloc>().add(SavePost1(post: post));
+                            context.read<UserBloc>().add(
+                              SavePost1(
+                                post: post,
+                                context: context,
+                                userId: user.id,
+                              ),
+                            );
                           } else if (value == "share") {
                           } else if (value == 'delete') {
                             _showDeleteConfirmation(context, post);
                           } else if (value == 'unSave') {
                             context.read<UserBloc>().add(
-                              UnsavePost1(post: post),
+                              UnsavePost1(post: post, userId: user.id),
                             );
                           }
                         },
@@ -319,7 +326,7 @@ class PostWidget extends StatelessWidget {
                                           color: textTheme.bodyLarge?.color,
                                         ),
                                         Text(
-                                          'UnSave',
+                                          'unsave',
                                           style: TextStyle(
                                             color: textTheme.bodyLarge?.color,
                                           ),
@@ -624,7 +631,11 @@ class PostWidget extends StatelessWidget {
                                     );
                                   } else {
                                     context.read<searchBloc.SearchBloc>().add(
-                                      searchBloc.UpVotePost(index: index),
+                                      searchBloc.UpVotePost(
+                                        index: index,
+                                        userId: user.id,
+                                        context: context,
+                                      ),
                                     );
                                   }
                                 },
@@ -844,7 +855,11 @@ class PostWidget extends StatelessWidget {
                                     );
                                   } else {
                                     context.read<searchBloc.SearchBloc>().add(
-                                      searchBloc.DownVotePost(index: index),
+                                      searchBloc.DownVotePost(
+                                        index: index,
+                                        userId: user.id,
+                                        context: context,
+                                      ),
                                     );
                                     // HomeBloc
                                     context.read<homeBloc.HomeBloc>().add(

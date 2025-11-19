@@ -7,15 +7,23 @@ class Comment extends Equatable {
   final String text;
   final String author;
   final String profile;
+  final String commenterGender;
+  final String commenterCountry;
   final String? parentId;
   final List<Comment> allReplies;
   final DateTime uploadTime;
-  final List<String> upVoteUserIds;
-  final List<String> downVoteUserIds;
+  final bool isUpvote;
+  final bool isDownvote;
+  final int totalUpvotes;
+  final int totalDownvotes;
+  final String? emotionalTone;
   final String? cluster;
 
   const Comment({
+    required this.commenterGender,
+    required this.commenterCountry,
     required this.id,
+    required this.emotionalTone,
     required this.postId,
     required this.titleOfThePost,
     required this.text,
@@ -24,13 +32,12 @@ class Comment extends Equatable {
     this.parentId,
     this.allReplies = const [],
     required this.uploadTime,
-    this.upVoteUserIds = const [],
-    this.downVoteUserIds = const [],
+    required this.isDownvote,
+    required this.isUpvote,
+    this.totalUpvotes = 0,
+    this.totalDownvotes = 0,
     this.cluster,
   });
-
-  int get totalUpVotes => upVoteUserIds.length;
-  int get totalDownVotes => downVoteUserIds.length;
 
   Map<String, dynamic> toJson() {
     return {
@@ -43,27 +50,43 @@ class Comment extends Equatable {
       'parentId': parentId,
       'allReplies': allReplies.map((e) => e.toJson()).toList(),
       'uploadTime': uploadTime.toIso8601String(),
-      'upVoteUserIds': upVoteUserIds,
-      'downVoteUserIds': downVoteUserIds,
+      'isUpvote': isUpvote,
+      'isDownVote': isDownvote,
+      'totalUpvotes': totalUpvotes,
+      'totalDownvotes': totalDownvotes,
       'cluster': cluster,
+    };
+  }
+
+  Map<String, dynamic> toTextHierarchy() {
+    return {
+      'text': text,
+      'allReplies': allReplies.map((reply) => reply.toTextHierarchy()).toList(),
     };
   }
 
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
       id: json['id'],
-      postId: json['postId'],
+      emotionalTone: json['emotionalTone'],
+      postId: json['postId'].toString(),
+      titleOfThePost: json['titleOfThePost'],
       text: json['text'],
-      titleOfThePost: json['postTitle'],
-
       author: json['author'],
       profile: json['profile'],
+      commenterGender: json['commenterGender'],
+      commenterCountry: json['commenterCountry'],
       parentId: json['parentId'],
       allReplies:
-          (json['allReplies'] as List).map((e) => Comment.fromJson(e)).toList(),
-      uploadTime: DateTime.parse(json['uploadTime']),
-      upVoteUserIds: List<String>.from(json['upVoteUserIds'] ?? []),
-      downVoteUserIds: List<String>.from(json['downVoteUserIds'] ?? []),
+          (json['allReplies'] as List<dynamic>?)
+              ?.map((e) => Comment.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          [],
+      uploadTime: DateTime.parse(json['uploadTime']).toLocal(),
+      isUpvote: json['isUpVote'] ?? false,
+      isDownvote: json['isDownVote'] ?? false,
+      totalUpvotes: json['totalUpvotes'] ?? 0,
+      totalDownvotes: json['totalDownvotes'] ?? 0,
       cluster: json['cluster'],
     );
   }
@@ -78,33 +101,34 @@ class Comment extends Equatable {
     String? parentId,
     List<Comment>? allReplies,
     DateTime? uploadTime,
-    List<String>? upVoteUserIds,
-    List<String>? downVoteUserIds,
+    bool? isUpvote,
+    bool? isDownvote,
+    int? totalUpvotes,
+    int? totalDownvotes,
+    String? emotionalTone,
+    String? gender,
+    String? country,
     String? cluster,
   }) {
     return Comment(
       id: id ?? this.id,
+      commenterCountry: country ?? commenterCountry,
+      commenterGender: gender ?? commenterGender,
       postId: postId ?? this.postId,
       text: text ?? this.text,
+      emotionalTone: emotionalTone ?? this.emotionalTone,
       titleOfThePost: titleOfThePost ?? this.titleOfThePost,
       author: author ?? this.author,
       profile: profile ?? this.profile,
       parentId: parentId ?? this.parentId,
       allReplies: allReplies ?? this.allReplies,
       uploadTime: uploadTime ?? this.uploadTime,
-      upVoteUserIds: upVoteUserIds ?? this.upVoteUserIds,
-      downVoteUserIds: downVoteUserIds ?? this.downVoteUserIds,
+      isUpvote: isUpvote ?? this.isUpvote,
+      isDownvote: isDownvote ?? this.isDownvote,
+      totalUpvotes: totalUpvotes ?? this.totalUpvotes,
+      totalDownvotes: totalDownvotes ?? this.totalDownvotes,
       cluster: cluster ?? this.cluster,
     );
-  }
-
-  List<Comment> getPaginatedReplies(int page, int pageSize) {
-    int startIndex = page * pageSize;
-    int endIndex =
-        (startIndex + pageSize) > allReplies.length
-            ? allReplies.length
-            : startIndex + pageSize;
-    return allReplies.sublist(startIndex, endIndex);
   }
 
   @override
@@ -118,8 +142,13 @@ class Comment extends Equatable {
     parentId,
     allReplies,
     uploadTime,
-    upVoteUserIds,
-    downVoteUserIds,
+    isUpvote,
+    emotionalTone,
+    isDownvote,
+    totalUpvotes,
+    totalDownvotes,
+    commenterCountry,
+    commenterGender,
     cluster,
   ];
 }

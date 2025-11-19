@@ -5,12 +5,12 @@ import 'package:sizer/sizer.dart';
 class EmotionalChart extends StatefulWidget {
   const EmotionalChart({
     required this.dataforgraph,
-    required this.value,
+    required this.emotionValues,
     required this.index,
     super.key,
   });
 
-  final double value;
+  final List<double> emotionValues;
   final int index;
   final List<String> dataforgraph;
 
@@ -24,7 +24,6 @@ class _EmotionalChartState extends State<EmotionalChart>
   late AnimationController _indicatorsController;
 
   int touchedIndex = -1;
-  late List<double> emotionValues;
 
   @override
   void initState() {
@@ -38,11 +37,6 @@ class _EmotionalChartState extends State<EmotionalChart>
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     )..forward();
-
-    // Evenly distribute the values
-    final count = widget.dataforgraph.length;
-    final double perSectionValue = count > 0 ? widget.value / count : 0;
-    emotionValues = List.filled(count, perSectionValue);
   }
 
   @override
@@ -161,8 +155,8 @@ class _EmotionalChartState extends State<EmotionalChart>
 
       return PieChartSectionData(
         color: _getColor(index),
-        value: emotionValues[index],
-        title: '${emotionValues[index].toStringAsFixed(0)}%',
+        value: widget.emotionValues[index],
+        title: '${widget.emotionValues[index].toStringAsFixed(0)}%',
         radius: radius,
         titleStyle: TextStyle(
           fontSize: fontSize,
@@ -270,15 +264,14 @@ class _EmotionalChartState extends State<EmotionalChart>
   Color _getColor(int index) {
     const colors = [
       Color(0xFF3498DB),
-      Color(0xFFE74C3C),
       Color(0xFFF39C12),
+      Color(0xFFE74C3C),
       Color(0xFF2ECC71),
       Color(0xFF9B59B6),
       Color(0xFF1ABC9C),
       Color(0xFFE84393),
       Color(0xFFD35400),
       Color(0xFF27AE60),
-      Color(0xFF8E44AD),
     ];
     return colors[index % colors.length];
   }
