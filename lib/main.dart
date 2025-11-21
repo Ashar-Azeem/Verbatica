@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Chat%20Bloc/chat_bloc.dart';
+import 'package:verbatica/BLOC/Notification/notification_bloc.dart';
 import 'package:verbatica/BLOC/Search%20Bloc/search_bloc.dart';
 import 'package:verbatica/BLOC/Home/home_bloc.dart';
 import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
@@ -33,7 +34,7 @@ void main() async {
         BlocProvider<UserBloc>(create: (context) => UserBloc()),
         BlocProvider<OtheruserBloc>(create: (context) => OtheruserBloc()),
         BlocProvider<PostBloc>(create: (context) => PostBloc()),
-
+         BlocProvider<NotificationBloc>(create: (context) => NotificationBloc()),
         BlocProvider<VotesRestrictorBloc>(
           create: (context) => VotesRestrictorBloc(),
         ),

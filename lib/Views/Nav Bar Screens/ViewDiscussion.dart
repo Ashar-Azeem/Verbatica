@@ -9,6 +9,8 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Comments%20Bloc/comments_bloc.dart';
 import 'package:verbatica/BLOC/Home/home_bloc.dart';
+import 'package:verbatica/BLOC/Notification/notification_bloc.dart';
+import 'package:verbatica/BLOC/Notification/notification_state.dart';
 import 'package:verbatica/BLOC/Search%20Bloc/search_bloc.dart';
 import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
@@ -317,6 +319,31 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                       commentCount: dynamicpost.comments,
                                     ),
                                   );
+
+                                  return Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 1.w,
+                                    ),
+                                    child: PostWidget(
+                                      post: dynamicpost,
+                                      index: widget.index,
+                                      category: widget.category,
+                                      onFullView: true,
+                                    ),
+                                  );
+                                },
+                              ),
+                               if (widget.category == 'notification')
+                              BlocBuilder<NotificationBloc, NotificationState>(
+                                builder: (context, state) {
+                                  Post dynamicpost =
+                                     widget.post;
+
+                                  // context.read<CommentsBloc>().add(
+                                  //   UpdateCommentCount(
+                                  //     commentCount: dynamicpost.comments,
+                                  //   ),
+                                  // );
 
                                   return Padding(
                                     padding: EdgeInsets.symmetric(

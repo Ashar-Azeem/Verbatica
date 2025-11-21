@@ -9,7 +9,6 @@ import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/comment.dart';
-import 'package:verbatica/model/report.dart';
 import 'package:verbatica/model/user.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {

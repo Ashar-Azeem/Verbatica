@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:verbatica/model/comment.dart';
+import 'package:verbatica/model/report.dart';
 import 'package:verbatica/model/user.dart';
 import 'package:verbatica/model/Post.dart';
 
@@ -119,6 +120,7 @@ class UpdateCommentCountOfAPost extends UserEvent {
 
   UpdateCommentCountOfAPost({required this.category, required this.postIndex});
 }
-
+class SubmitReport extends UserEvent{
+  final Report report;
   SubmitReport({required this.report});
 }

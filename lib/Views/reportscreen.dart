@@ -263,7 +263,7 @@ class _ReportScreenState extends State<ReportScreen> {
                           SizedBox(height: 1.5.h),
                         ],
                       );
-                    }).toList(),
+                    }),
                     if (showCustomInput) ...[
                       SizedBox(height: 1.h),
                       TextField(

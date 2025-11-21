@@ -74,7 +74,7 @@ class _ProfileViewState extends State<otherProfileView>
                 context,
                 screen: ReportScreen(
                   reportType: 'user',
-                  reportedUserId: widget.post.userId.toString(),
+                  reportedUserId: otherUserId.toString(),
                 ),
               );
             },
