@@ -68,3 +68,9 @@ class UpdateCommentCountOfAPostInSimilarPosts extends PostEvent {
 
   const UpdateCommentCountOfAPostInSimilarPosts({required this.postIndex});
 }
+
+class ToggleSaveOfSimilarPosts extends PostEvent {
+  final int postIndex;
+
+  const ToggleSaveOfSimilarPosts({required this.postIndex});
+}

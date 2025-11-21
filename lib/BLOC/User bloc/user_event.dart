@@ -119,3 +119,10 @@ class UpdateCommentCountOfAPost extends UserEvent {
 
   UpdateCommentCountOfAPost({required this.category, required this.postIndex});
 }
+
+class ToggleSaveOfUserPosts extends UserEvent {
+  final int postIndex;
+  final String category;
+
+  ToggleSaveOfUserPosts({required this.category, required this.postIndex});
+}

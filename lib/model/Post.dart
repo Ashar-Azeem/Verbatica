@@ -1,5 +1,4 @@
 // ignore_for_file: file_names
-
 import 'package:equatable/equatable.dart';
 import 'package:verbatica/model/FeedItem.dart';
 
@@ -19,10 +18,12 @@ class Post extends Equatable implements FeedItem {
   final int downvotes;
   final int comments;
   final DateTime uploadTime;
+  final bool isSaved;
   final List<String>? clusters;
   final String publicKey;
   const Post({
     required this.id,
+    required this.isSaved,
     required this.publicKey,
     required this.name,
     required this.userId,
@@ -59,6 +60,7 @@ class Post extends Equatable implements FeedItem {
       'public_key': publicKey,
       'comments': comments,
       'uploadTime': uploadTime.toIso8601String(),
+      "isSaved": isSaved,
     };
   }
 
@@ -79,6 +81,7 @@ class Post extends Equatable implements FeedItem {
       isDownVote: json['isDownVote'],
       comments: json['comments'] ?? 0,
       publicKey: json['public_key'],
+      isSaved: json['isSaved'],
       uploadTime: DateTime.parse(json['uploadTime']).toLocal(),
       clusters:
           (json['clusters'] as List<dynamic>?)
@@ -102,6 +105,7 @@ class Post extends Equatable implements FeedItem {
     bool? isUpVote,
     String? publicKey,
     bool? isDownVote,
+    bool? isSaved,
     int? comments,
     List<String>? clusters,
     DateTime? uploadTime,
@@ -111,6 +115,7 @@ class Post extends Equatable implements FeedItem {
       publicKey: publicKey ?? this.publicKey,
       name: name ?? this.name,
       userId: userId ?? this.userId,
+      isSaved: isSaved ?? this.isSaved,
       avatar: avatar ?? this.avatar,
       title: title ?? this.title,
       description: description ?? this.description,
@@ -144,6 +149,7 @@ class Post extends Equatable implements FeedItem {
     comments,
     uploadTime,
     isUpVote,
+    isSaved,
     isDownVote,
     clusters,
   ];

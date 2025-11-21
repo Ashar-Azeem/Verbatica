@@ -7,9 +7,8 @@ class Report {
   final String? postId;
   final String? commentId;
   final String? reportedUserId;
-  final String reportContent;
+  final String reportContent;   
   final DateTime reportTime;
-  final bool isSeenByModerator;
   final String
   reportStatus; // 'pending', 'under_review', 'resolved', 'rejected'
   final String? adminFeedback;
@@ -25,7 +24,6 @@ class Report {
     this.reportedUserId,
     required this.reportContent,
     required this.reportTime,
-    required this.isSeenByModerator,
     required this.reportStatus,
     this.adminFeedback,
   });
@@ -45,7 +43,6 @@ class Report {
           json['report_time'] != null
               ? DateTime.parse(json['report_time'])
               : DateTime.now(),
-      isSeenByModerator: json['is_seen_by_admin'] ?? false,
       reportStatus: json['report_status'] ?? 'Pending',
       adminFeedback: json['admin_feedback'],
     );
@@ -64,7 +61,6 @@ class Report {
       'reportedUserId': reportedUserId,
       'reportContent': reportContent,
       'reportTime': reportTime.toIso8601String(),
-      'isSeenByModerator': isSeenByModerator,
       'reportStatus': reportStatus,
       'adminFeedback': adminFeedback,
     };

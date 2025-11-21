@@ -124,4 +124,14 @@ class UpdateCommentCountOfAPost extends HomeEvent {
   });
 }
 
+class ToggleSaveOfForYouPosts extends HomeEvent {
+  final int postIndex;
+  final String category;
+
+  const ToggleSaveOfForYouPosts({
+    required this.postIndex,
+    required this.category,
+  });
+}
+
 class ClearHomeBloc extends HomeEvent {}

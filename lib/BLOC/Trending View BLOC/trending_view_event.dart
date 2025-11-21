@@ -158,4 +158,16 @@ class UpdateCommentCountOfAPost extends TrendingViewEvent {
   });
 }
 
+class ToggleSaveOfTrendingPosts extends TrendingViewEvent {
+  final int postIndex;
+  final String category;
+  final int? newIndex;
+
+  const ToggleSaveOfTrendingPosts({
+    required this.postIndex,
+    required this.category,
+    this.newIndex,
+  });
+}
+
 class ClearTrendingBloc extends TrendingViewEvent {}

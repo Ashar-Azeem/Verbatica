@@ -10,7 +10,7 @@ class SocketService {
 
   void connect(String userId) {
     socket = IO.io(
-      'http://10.175.113.137:4000',
+      'http://192.168.100.103:4000',
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .enableAutoConnect()

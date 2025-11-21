@@ -324,6 +324,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                     //Adding the logic of moving to the upload logic as there are no similar posts available
                     User user = context.read<UserBloc>().state.user!;
                     Post post = Post(
+                      isSaved: false,
                       name: user.userName,
                       avatar: user.avatarId,
                       title: _titleController.text,
@@ -371,6 +372,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                 User user =
                                     rootContext.read<UserBloc>().state.user!;
                                 Post post = Post(
+                                  isSaved: false,
                                   name: user.userName,
                                   avatar: user.avatarId,
                                   title: _titleController.text,

@@ -56,6 +56,27 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
         emit(state.copyWith(news: news));
       }
     });
+    on<ToggleSaveOfTrendingPosts>((event, emit) {
+      if (event.category == 'Trending') {
+        List<Post> posts = List.from(state.trending);
+        posts[event.postIndex] = posts[event.postIndex].copyWith(
+          isSaved: !posts[event.postIndex].isSaved,
+        );
+        emit(state.copyWith(trending: posts));
+      } else {
+        List<News> news = List.from(state.news);
+        List<Post> posts = List.from(news[event.newIndex!].discussions);
+
+        posts[event.postIndex] = posts[event.postIndex].copyWith(
+          isSaved: !posts[event.postIndex].isSaved,
+        );
+        news[event.newIndex!] = news[event.newIndex!].copyWith(
+          discussions: posts,
+        );
+
+        emit(state.copyWith(news: news));
+      }
+    });
   }
   void addRecentPost(
     AddRecentPostInNews event,

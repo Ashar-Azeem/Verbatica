@@ -71,3 +71,9 @@ class UpdateCommentCountOfAPost extends SearchEvent {
 
   const UpdateCommentCountOfAPost({required this.postIndex});
 }
+
+class ToggleSaveOfSearchedPosts extends SearchEvent {
+  final int postIndex;
+
+  const ToggleSaveOfSearchedPosts({required this.postIndex});
+}

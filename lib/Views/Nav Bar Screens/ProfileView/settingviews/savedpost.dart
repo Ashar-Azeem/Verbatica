@@ -112,47 +112,6 @@ class SavedPostsScreen extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 1.h),
-                    Text(
-                      'Start saving posts that interest you!\nThey will appear here for easy access.',
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.textTheme.bodyMedium?.color?.withOpacity(
-                          0.7,
-                        ),
-                        height: 1.4,
-                      ),
-                    ),
-                    SizedBox(height: 3.h),
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 6.w,
-                        vertical: 2.5.w,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            theme.colorScheme.primary.withOpacity(0.8),
-                            theme.colorScheme.primary,
-                          ],
-                        ),
-                        borderRadius: BorderRadius.circular(25),
-                        boxShadow: [
-                          BoxShadow(
-                            color: theme.colorScheme.primary.withOpacity(0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Text(
-                        'Explore Posts',
-                        style: TextStyle(
-                          color: theme.colorScheme.onPrimary,
-                          fontSize: 3.5.w,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -343,7 +302,7 @@ class SavedPostWidget extends StatelessWidget {
         PostWidget(
           post: post,
           index: index,
-          category: 'SavedPosts', // Custom category for saved posts
+          category: 'saved', // Custom category for saved posts
           onFullView: false,
         ),
         // Save button overlay

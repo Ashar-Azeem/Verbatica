@@ -231,21 +231,62 @@ class PostWidget extends StatelessWidget {
                               );
                             } else if (category == 'other') {
                             } else if (category == 'searched') {}
-                          } else if (value == "save") {
-                            context.read<UserBloc>().add(
-                              SavePost1(
-                                post: post,
-                                context: context,
-                                userId: user.id,
-                              ),
-                            );
+                          } else if (value == "save" || value == 'unSave') {
+                            if (value == 'save') {
+                              context.read<UserBloc>().add(
+                                SavePost1(
+                                  post: post,
+                                  context: context,
+                                  userId: user.id,
+                                ),
+                              );
+                            } else {
+                              context.read<UserBloc>().add(
+                                UnsavePost1(post: post, userId: user.id),
+                              );
+                            }
+                            if (category == 'other') {
+                              context.read<OtheruserBloc>().add(
+                                ToggleSave(postIndex: index),
+                              );
+                            } else if (category == 'user') {
+                              context.read<UserBloc>().add(
+                                ToggleSaveOfUserPosts(
+                                  postIndex: index,
+                                  category: category,
+                                ),
+                              );
+                            } else if (category == 'Trending' ||
+                                category == 'Top 10 news') {
+                              context.read<TrendingViewBloc>().add(
+                                ToggleSaveOfTrendingPosts(
+                                  postIndex: index,
+                                  category: category,
+                                  newIndex: newsIndex,
+                                ),
+                              );
+                            } else if (category == 'ForYou' ||
+                                category == 'Following') {
+                              context.read<homeBloc.HomeBloc>().add(
+                                homeBloc.ToggleSaveOfForYouPosts(
+                                  postIndex: index,
+                                  category: category,
+                                ),
+                              );
+                            } else if (category == 'searched') {
+                              context.read<searchBloc.SearchBloc>().add(
+                                searchBloc.ToggleSaveOfSearchedPosts(
+                                  postIndex: index,
+                                ),
+                              );
+                            } else if (category == 'similarPosts') {
+                              context.read<PostBloc>().add(
+                                ToggleSaveOfSimilarPosts(postIndex: index),
+                              );
+                            }
                           } else if (value == "share") {
                           } else if (value == 'delete') {
                             _showDeleteConfirmation(context, post);
-                          } else if (value == 'unSave') {
-                            context.read<UserBloc>().add(
-                              UnsavePost1(post: post, userId: user.id),
-                            );
                           }
                         },
                         itemBuilder:
@@ -289,7 +330,7 @@ class PostWidget extends StatelessWidget {
                                       ],
                                     ),
                                   ),
-                              category != 'saved'
+                              !post.isSaved
                                   ? PopupMenuItem<String>(
                                     value: 'save',
                                     child: Row(
@@ -297,7 +338,7 @@ class PostWidget extends StatelessWidget {
                                           MainAxisAlignment.spaceAround,
                                       children: [
                                         Icon(
-                                          Icons.save,
+                                          Icons.bookmark_add_outlined,
                                           color: textTheme.bodyLarge?.color,
                                         ),
                                         Text(
@@ -316,7 +357,7 @@ class PostWidget extends StatelessWidget {
                                           MainAxisAlignment.spaceAround,
                                       children: [
                                         Icon(
-                                          Icons.remove_circle_outline,
+                                          Icons.bookmark_remove_outlined,
                                           color: textTheme.bodyLarge?.color,
                                         ),
                                         Text(
@@ -328,25 +369,6 @@ class PostWidget extends StatelessWidget {
                                       ],
                                     ),
                                   ),
-                              PopupMenuItem<String>(
-                                value: 'share',
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Icon(
-                                      Icons.share,
-                                      color: textTheme.bodyLarge?.color,
-                                    ),
-                                    Text(
-                                      'Share',
-                                      style: TextStyle(
-                                        color: textTheme.bodyLarge?.color,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
                             ],
                       ),
                     ],
@@ -616,6 +638,24 @@ class PostWidget extends StatelessWidget {
                                     context.read<UserBloc>().add(
                                       upvotesavedPost1(index: index),
                                     );
+                                    // HomeBloc
+                                    context.read<homeBloc.HomeBloc>().add(
+                                      homeBloc.SyncUpVotePost(postId: post.id),
+                                    );
+                                    // OtheruserBloc
+                                    context.read<OtheruserBloc>().add(
+                                      SyncUpvoteotherPost(postId: post.id),
+                                    );
+
+                                    // TrendingViewBloc
+                                    context.read<TrendingViewBloc>().add(
+                                      SyncUpVoteTrendingPost(postId: post.id),
+                                    );
+
+                                    // UserBloc
+                                    context.read<UserBloc>().add(
+                                      SyncUpvotePost(postId: post.id),
+                                    );
                                   } else if (category == 'similarPosts') {
                                     context.read<PostBloc>().add(
                                       UpVoteSimilarPosts(
@@ -794,12 +834,7 @@ class PostWidget extends StatelessWidget {
                                     context.read<UserBloc>().add(
                                       downvotesavedPost(index: index),
                                     );
-                                    context.read<PostBloc>().add(
-                                      DownVoteSimilarPosts(
-                                        index: index,
-                                        context: context,
-                                      ),
-                                    );
+
                                     // HomeBloc
                                     context.read<homeBloc.HomeBloc>().add(
                                       homeBloc.SyncDownVotePost(
