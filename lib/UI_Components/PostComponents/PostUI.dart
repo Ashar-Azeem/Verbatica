@@ -1,7 +1,6 @@
 // ignore_for_file: file_names
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:expandable_text/expandable_text.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,6 +22,7 @@ import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/Summar
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/otherprofile.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/clusterScreen.dart';
+import 'package:verbatica/Views/reportscreen.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:verbatica/model/user.dart';
@@ -293,6 +293,11 @@ class PostWidget extends StatelessWidget {
                             (BuildContext context) => <PopupMenuEntry<String>>[
                               category != 'user'
                                   ? PopupMenuItem<String>(
+                                    onTap: (){
+                                 pushScreen(context, screen:ReportScreen(reportType: 'user')
+                                   
+                                  );
+                                    },
                                     value: 'report',
                                     child: Row(
                                       mainAxisAlignment:

@@ -40,6 +40,7 @@ class _BottomNavigationBarViewState extends State<BottomNavigationBarView> {
           (previous, current) => previous.isAnyUnread != current.isAnyUnread,
       builder: (context, state) {
         return PersistentTabView(
+          
           screenTransitionAnimation: ScreenTransitionAnimation.none(),
           tabs: [
             PersistentTabConfig(
@@ -75,6 +76,7 @@ class _BottomNavigationBarViewState extends State<BottomNavigationBarView> {
               ),
             ),
             PersistentTabConfig(
+              
               screen: NotificationScreen(),
               item: ItemConfig(
                 icon: Icon(Icons.notifications_none_sharp),

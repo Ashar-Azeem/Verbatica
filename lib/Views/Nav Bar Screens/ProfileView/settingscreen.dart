@@ -98,7 +98,6 @@ class SettingsScreen extends StatelessWidget {
                         // Toggle theme would go here if implemented
                         _toggleTheme(context);
                       },
-                      activeColor: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ]),
