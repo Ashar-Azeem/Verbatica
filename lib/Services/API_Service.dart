@@ -344,6 +344,7 @@ class ApiService {
     if (!isAllowedForServer) {
       return;
     }
+    print(isAllowedForServer);
 
     try {
       await _dio.put(
@@ -1063,6 +1064,19 @@ class ApiService {
         'notification/markAsReadNotification',
         data: {'notificationIds': notificationIds},
       );
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<Post> fetchPostWithId(String id, int userId) async {
+    try {
+      final result = await _dio.get(
+        'post/post',
+        data: {'postId': id, "userId": userId},
+      );
+      return Post.fromJson(result.data["post"]);
     } on DioException catch (e) {
       final errorMessage = _extractErrorMessage(e);
       throw Exception(errorMessage);

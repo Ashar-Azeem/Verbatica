@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:verbatica/BLOC/Notification/notification_event.dart';
@@ -39,32 +41,26 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     Post newPost;
     if (!currentPost.isUpVote) {
       if (currentPost.isDownVote) {
-        // Downvoted -> Upvote: +2 to upvotes, -1 to downvotes
         newPost = currentPost.copyWith(
           isDownVote: false,
           isUpVote: true,
           upvotes: currentPost.upvotes + 1,
-          downvotes: currentPost.downvotes - 1, // Decrement downvotes
+          downvotes: currentPost.downvotes - 1,
         );
       } else {
-        // No vote -> Upvote: +1 to upvotes
         newPost = currentPost.copyWith(
           isUpVote: true,
           upvotes: currentPost.upvotes + 1,
         );
       }
     } else {
-      // Undo Upvote: -1 from upvotes
       newPost = currentPost.copyWith(
         isUpVote: false,
         upvotes: currentPost.upvotes - 1,
       );
     }
-    print("abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcccc");
-    // 3. Emit the state with the updated post
     emit(state.copyWith(onViewPost: newPost));
   }
-  // --- In NotificationBloc.dart (New Method) ---
 
   void _onDownVoteNotificationPost(
     DownVoteNotificationPost event,
@@ -166,10 +162,8 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     MarkAllNotificationsAsRead event,
     Emitter<NotificationState> emit,
   ) async {
-    // 1. Map the current list to a new list, changing the isRead status for every notification.
     final updatedNotifications =
         state.notifications.map((notification) {
-          // Use the model's copyWith method to create a new instance with isRead = true
           return notification.copyWith(isRead: true);
         }).toList();
 
@@ -180,7 +174,6 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
 
     ApiService().markAsRead(notificationIds);
 
-    // 2. Emit a new state with the modified list.
     emit(
       state.copyWith(
         notifications: updatedNotifications,
@@ -196,46 +189,13 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   ) {
     Post? currentPost = state.onViewPost;
 
-    if (currentPost == null) return; // Safety check
+    if (currentPost == null) return;
 
-    // 1. Call API Service (Assuming ApiService().updatePostSaveStatus exists)
-    // You would uncomment and implement this:
-    /*
-  ApiService().updatePostSaveStatus(
-    int.parse(event.postId),
-    event.userId,
-    event.isSaving,
-    event.context,
-  );
-  */
+    ApiService().savePost(event.userId, int.parse(state.onViewPost!.id));
 
-    // 2. Apply save logic
-    Post newPost;
+    currentPost = currentPost.copyWith(isSaved: !currentPost.isSaved);
 
-    if (event.isSaving) {
-      // Logic for saving: we assume the Post model has an 'isSaved' property
-      // or that the User model handles tracking saved posts externally.
-      // Since PostWidget uses the Post object directly, let's assume Post needs an isSaved property.
-
-      // We will rely on the UserBloc updating its saved list,
-      // but for this specific Post object to reflect the status visually,
-      // we need to update the post itself if a field like `isSaved` exists in Post model.
-
-      // If Post model has `isSaved`:
-      // newPost = currentPost.copyWith(isSaved: true);
-
-      // Since your Post model doesn't explicitly show `isSaved`, we rely on
-      // the UserBloc to handle the saved status externally,
-      // but if the UI relies on a Post property to change the icon, that needs updating.
-
-      // For now, emit the state change to trigger UI refresh (which relies on UserBloc for icon state):
-      emit(state.copyWith(onViewPost: currentPost));
-    } else {
-      // Logic for unsaving
-      // newPost = currentPost.copyWith(isSaved: false); // If Post model has `isSaved`
-
-      emit(state.copyWith(onViewPost: currentPost));
-    }
+    emit(state.copyWith(onViewPost: currentPost));
   }
 
   void _onResetPostView(ResetPostView event, Emitter<NotificationState> emit) {
@@ -249,43 +209,15 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     final clickedNotification = state.notifications.firstWhere(
       (n) => n.notificationId == event.notificationId,
     );
+    ApiService().markAsRead([int.parse(clickedNotification.notificationId)]);
 
     Post? fetchedPost;
 
     if (clickedNotification.postId != null) {
-      // Simulates waiting for network
-      await Future.delayed(const Duration(milliseconds: 700));
-
-      // Create the mock post
-      final Post randomPost = Post(
-        // ... (Your mock post data) ...
-        isSaved: false,
-        id: clickedNotification.postId!,
-        publicKey: 'pk-remote-2025',
-        name: 'TechAnalyst25',
-        userId: 501,
-        avatar: 4,
-        title:
-            'Is the Global Shift to Remote Work Sustainable for Large Enterprises?',
-        description: 'The pandemic accelerated the remote work revolution...',
-        postImageLink: 'https://example.com/images/remote_work_desk.jpg',
-        postVideoLink: null,
-        isDebate: true,
-        upvotes: 782,
-        downvotes: 115,
-        isUpVote: false,
-        isDownVote: false,
-        comments: 6,
-        uploadTime: DateTime.utc(2025, 10, 20, 10, 30),
-        clusters: const [
-          'Productivity',
-          'Company Culture',
-          'Security Risks',
-          'Future of Work',
-        ],
+      fetchedPost = await ApiService().fetchPostWithId(
+        clickedNotification.postId!,
+        event.userId,
       );
-
-      fetchedPost = randomPost;
     }
 
     final updatedNotifications =
@@ -296,9 +228,14 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
           return notification;
         }).toList();
 
-    emit(state.copyWith(notifications: updatedNotifications));
+    emit(
+      state.copyWith(
+        notifications: updatedNotifications,
+        onViewPost: fetchedPost,
+      ),
+    );
     pushScreen(
-      event.context, // Use the context passed in the event
+      event.context,
       pageTransitionAnimation: PageTransitionAnimation.scale,
       screen: ViewDiscussion(
         post: fetchedPost!,

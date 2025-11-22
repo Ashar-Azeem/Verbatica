@@ -298,7 +298,7 @@ class NotificationTile extends StatelessWidget {
             context.read<NotificationBloc>().add(
               FetchAndSetPostForView(
                 notificationId: notification.notificationId,
-                postId: notification.postId!,
+                userId: context.read<UserBloc>().state.user!.id,
                 context: context,
               ),
             );

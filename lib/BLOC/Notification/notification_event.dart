@@ -39,11 +39,11 @@ class ToggleNotificationReadStatus extends NotificationEvent {
 }
 
 class FetchAndSetPostForView extends NotificationEvent {
-  final String postId;
   final String notificationId;
   final BuildContext context;
+  final int userId;
   const FetchAndSetPostForView({
-    required this.postId,
+    required this.userId,
     required this.context,
     required this.notificationId,
   });
@@ -86,21 +86,15 @@ class DownVoteNotificationPost extends NotificationEvent {
   List<Object> get props => [postId, userId, context];
 }
 
-// --- In verbatica/BLOC/Notification/notification_event.dart (Conceptual) ---
-
 class ToggleNotificationPostSaveStatus extends NotificationEvent {
-  final String postId;
   final int userId;
-  final bool isSaving; // true for save, false for unsave
   final BuildContext context;
 
   const ToggleNotificationPostSaveStatus({
-    required this.postId,
     required this.userId,
-    required this.isSaving,
     required this.context,
   });
 
   @override
-  List<Object> get props => [postId, userId, isSaving, context];
+  List<Object> get props => [userId, context];
 }

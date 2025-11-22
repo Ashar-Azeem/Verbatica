@@ -270,17 +270,24 @@ class PostWidget extends StatelessWidget {
                               context.read<PostBloc>().add(
                                 ToggleSaveOfSimilarPosts(postIndex: index),
                               );
+                            } else if (category == 'notification') {
+                              context
+                                  .read<notificationBloc.NotificationBloc>()
+                                  .add(
+                                    ToggleNotificationPostSaveStatus(
+                                      userId:
+                                          context
+                                              .read<UserBloc>()
+                                              .state
+                                              .user!
+                                              .id,
+                                      context: context,
+                                    ),
+                                  );
                             }
                           } else if (value == "share") {
                           } else if (value == 'delete') {
                             _showDeleteConfirmation(context, post);
-                          } else if (category == 'notification') {
-                            //  context.read<NotificationBloc>().add(
-                            //                                       SavedSimilarPosts(
-                            //                                         index: index,
-                            //                                         context: context,
-                            //                                       ),
-                            //                                     );
                           }
                         },
                         itemBuilder:
