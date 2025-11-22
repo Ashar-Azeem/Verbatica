@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_event.dart';
@@ -82,9 +83,10 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   void handleSubmit() {
-    final reportContent = showCustomInput
-        ? customReasonController.text.trim()
-        : selectedReason ?? '';
+    final reportContent =
+        showCustomInput
+            ? customReasonController.text.trim()
+            : selectedReason ?? '';
 
     if (reportContent.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -118,11 +120,12 @@ class _ReportScreenState extends State<ReportScreen> {
       reportedUserId: widget.reportedUserId,
       reportContent: reportContent,
       reportTime: DateTime.now(),
-      isSeenByModerator: false,
       reportStatus: 'pending',
     );
 
-    context.read<UserBloc>().add(SubmitReport(report: report));
+    context.read<UserBloc>().add(
+      SubmitReport(report: report, context: context),
+    );
   }
 
   @override
@@ -225,9 +228,10 @@ class _ReportScreenState extends State<ReportScreen> {
                                 ),
                                 decoration: BoxDecoration(
                                   border: Border.all(
-                                    color: isSelected
-                                        ? colorScheme.primary
-                                        : theme.dividerColor,
+                                    color:
+                                        isSelected
+                                            ? colorScheme.primary
+                                            : theme.dividerColor,
                                     width: isSelected ? 2 : 1,
                                   ),
                                   borderRadius: BorderRadius.circular(12),
@@ -238,9 +242,11 @@ class _ReportScreenState extends State<ReportScreen> {
                                       isSelected
                                           ? Icons.radio_button_checked
                                           : Icons.radio_button_unchecked,
-                                      color: isSelected
-                                          ? colorScheme.primary
-                                          : colorScheme.onSurface.withOpacity(0.5),
+                                      color:
+                                          isSelected
+                                              ? colorScheme.primary
+                                              : colorScheme.onSurface
+                                                  .withOpacity(0.5),
                                     ),
                                     SizedBox(width: 3.w),
                                     Expanded(
@@ -249,9 +255,10 @@ class _ReportScreenState extends State<ReportScreen> {
                                         style: TextStyle(
                                           fontSize: 15.sp,
                                           color: colorScheme.onSurface,
-                                          fontWeight: isSelected
-                                              ? FontWeight.w600
-                                              : FontWeight.w400,
+                                          fontWeight:
+                                              isSelected
+                                                  ? FontWeight.w600
+                                                  : FontWeight.w400,
                                         ),
                                       ),
                                     ),
@@ -314,7 +321,7 @@ class _ReportScreenState extends State<ReportScreen> {
                   child: BlocBuilder<UserBloc, UserState>(
                     builder: (context, state) {
                       return ElevatedButton(
-                        onPressed: state.isSubmittingReport ? null : handleSubmit,
+                        onPressed: handleSubmit,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: colorScheme.primary,
                           foregroundColor: Colors.white,
@@ -324,22 +331,19 @@ class _ReportScreenState extends State<ReportScreen> {
                           ),
                           elevation: 0,
                         ),
-                        child: state.isSubmittingReport
-                            ? SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        child:
+                            state.isSubmittingReport
+                                ? LoadingAnimationWidget.staggeredDotsWave(
+                                  color: theme.colorScheme.onPrimary,
+                                  size: 6.w,
+                                )
+                                : Text(
+                                  'Submit Report',
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
-                              )
-                            : Text(
-                                'Submit Report',
-                                style: TextStyle(
-                                  fontSize: 15.sp,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
                       );
                     },
                   ),

@@ -15,7 +15,6 @@ class AppNotification {
   final int avatarId;
 
   AppNotification({
-
     required this.notificationId,
     required this.postId,
     this.commentId,
@@ -68,7 +67,7 @@ class AppNotification {
       description: json['description'] ?? '',
       createdAt:
           json['created_at'] != null
-              ? DateTime.parse(json['created_at'])
+              ? DateTime.parse(json['created_at']).toLocal()
               : DateTime.now(),
       isRead: json['is_read'] ?? false,
       avatarId:
@@ -80,40 +79,40 @@ class AppNotification {
 
   // Update copyWith to include avatarId
   // --- In AppNotification Class ---
-AppNotification copyWith({
-  String? notificationId,
-  String? postId,
-  String? commentId,
-  String? senderUsername,
-  String? receiverUsername,
-  bool? isPostNotification,
-  bool? isCommentNotification,
-  bool? isUpvoteNotification,
-  bool? isReplyNotification,
-  String? title,
-  String? description,
-  DateTime? createdAt,
-  // This is the variable you'll most often use to trigger the state change
-  bool? isRead, 
-  int? avatarId,
-}) {
-  return AppNotification(
-    notificationId: notificationId ?? this.notificationId,
-    postId: postId ?? this.postId,
-    commentId: commentId ?? this.commentId,
-    senderUsername: senderUsername ?? this.senderUsername,
-    receiverUsername: receiverUsername ?? this.receiverUsername,
-    isPostNotification: isPostNotification ?? this.isPostNotification,
-    isCommentNotification:
-        isCommentNotification ?? this.isCommentNotification,
-    isUpvoteNotification: isUpvoteNotification ?? this.isUpvoteNotification,
-    isReplyNotification: isReplyNotification ?? this.isReplyNotification,
-    title: title ?? this.title,
-    description: description ?? this.description,
-    createdAt: createdAt ?? this.createdAt,
-    // When marking a single notification, you'd call copyWith(isRead: true)
-    isRead: isRead ?? this.isRead, 
-    avatarId: avatarId ?? this.avatarId,
-  );
-}
+  AppNotification copyWith({
+    String? notificationId,
+    String? postId,
+    String? commentId,
+    String? senderUsername,
+    String? receiverUsername,
+    bool? isPostNotification,
+    bool? isCommentNotification,
+    bool? isUpvoteNotification,
+    bool? isReplyNotification,
+    String? title,
+    String? description,
+    DateTime? createdAt,
+    // This is the variable you'll most often use to trigger the state change
+    bool? isRead,
+    int? avatarId,
+  }) {
+    return AppNotification(
+      notificationId: notificationId ?? this.notificationId,
+      postId: postId ?? this.postId,
+      commentId: commentId ?? this.commentId,
+      senderUsername: senderUsername ?? this.senderUsername,
+      receiverUsername: receiverUsername ?? this.receiverUsername,
+      isPostNotification: isPostNotification ?? this.isPostNotification,
+      isCommentNotification:
+          isCommentNotification ?? this.isCommentNotification,
+      isUpvoteNotification: isUpvoteNotification ?? this.isUpvoteNotification,
+      isReplyNotification: isReplyNotification ?? this.isReplyNotification,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      createdAt: createdAt ?? this.createdAt,
+      // When marking a single notification, you'd call copyWith(isRead: true)
+      isRead: isRead ?? this.isRead,
+      avatarId: avatarId ?? this.avatarId,
+    );
+  }
 }

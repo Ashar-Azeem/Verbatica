@@ -7,10 +7,10 @@ class Report {
   final String? postId;
   final String? commentId;
   final String? reportedUserId;
-  final String reportContent;   
+  final String reportContent;
   final DateTime reportTime;
   final String
-  reportStatus; // 'pending', 'under_review', 'resolved', 'rejected'
+  reportStatus; // 'pending', 'resolved', 'rejected'
   final String? adminFeedback;
 
   Report({
@@ -41,7 +41,7 @@ class Report {
       reportContent: json['report_content'] ?? '',
       reportTime:
           json['report_time'] != null
-              ? DateTime.parse(json['report_time'])
+              ? DateTime.parse(json['report_time']).toLocal()
               : DateTime.now(),
       reportStatus: json['report_status'] ?? 'Pending',
       adminFeedback: json['admin_feedback'],

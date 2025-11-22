@@ -5,6 +5,7 @@ class Comment extends Equatable {
   final String postId;
   final String titleOfThePost;
   final String text;
+  final int userId;
   final String author;
   final String profile;
   final String commenterGender;
@@ -20,6 +21,7 @@ class Comment extends Equatable {
   final String? cluster;
 
   const Comment({
+    required this.userId,
     required this.commenterGender,
     required this.commenterCountry,
     required this.id,
@@ -68,6 +70,7 @@ class Comment extends Equatable {
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
       id: json['id'],
+      userId: json['userId'],
       emotionalTone: json['emotionalTone'],
       postId: json['postId'].toString(),
       titleOfThePost: json['titleOfThePost'],
@@ -98,6 +101,7 @@ class Comment extends Equatable {
     String? author,
     String? titleOfThePost,
     String? profile,
+    int? userId,
     String? parentId,
     List<Comment>? allReplies,
     DateTime? uploadTime,
@@ -115,6 +119,7 @@ class Comment extends Equatable {
       commenterCountry: country ?? commenterCountry,
       commenterGender: gender ?? commenterGender,
       postId: postId ?? this.postId,
+      userId: userId ?? this.userId,
       text: text ?? this.text,
       emotionalTone: emotionalTone ?? this.emotionalTone,
       titleOfThePost: titleOfThePost ?? this.titleOfThePost,
@@ -143,6 +148,7 @@ class Comment extends Equatable {
     allReplies,
     uploadTime,
     isUpvote,
+    userId,
     emotionalTone,
     isDownvote,
     totalUpvotes,

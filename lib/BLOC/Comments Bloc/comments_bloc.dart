@@ -131,6 +131,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       event.user.id,
       iv,
       state.replyToComment?.text,
+      state.replyToComment?.userId,
     );
     List<Comment> comments = List.from(state.comments);
 

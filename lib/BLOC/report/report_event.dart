@@ -9,9 +9,9 @@ abstract class ReportEvent extends Equatable {
 }
 
 class FetchUserReports extends ReportEvent {
-  final String userId;
+  final int userId;
 
-  const FetchUserReports(this.userId);
+  const FetchUserReports({required this.userId});
 
   @override
   List<Object> get props => [userId];

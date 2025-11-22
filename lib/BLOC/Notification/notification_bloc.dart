@@ -2,8 +2,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:verbatica/BLOC/Notification/notification_event.dart';
 import 'package:verbatica/BLOC/Notification/notification_state.dart';
+import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/model/Post.dart';
+import 'package:verbatica/model/notification.dart';
 
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   NotificationBloc() : super(const NotificationState()) {
@@ -29,6 +31,15 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
             .where((n) => n.createdAt.isAfter(todayStart))
             .toList();
 
+    List<int> notificationIds = [];
+    for (AppNotification n in state.notifications) {
+      if (n.createdAt.isBefore(todayStart)) {
+        notificationIds.add(int.parse(n.notificationId));
+      }
+    }
+
+    ApiService().deleteNotification(notificationIds);
+
     emit(
       state.copyWith(
         notifications: notificationsToKeep,
@@ -45,10 +56,10 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     emit(state.copyWith(isLoading: true));
 
     try {
-      // Use the notifications passed in the event
-      emit(
-        state.copyWith(notifications: event.appnotification, isLoading: false),
+      List<AppNotification> notifications = await ApiService().getNotifications(
+        event.userId,
       );
+      emit(state.copyWith(notifications: notifications, isLoading: false));
     } catch (e) {
       emit(
         state.copyWith(
@@ -70,6 +81,13 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
           return notification.copyWith(isRead: true);
         }).toList();
 
+    List<int> notificationIds = [];
+    for (AppNotification n in updatedNotifications) {
+      notificationIds.add(int.parse(n.notificationId));
+    }
+
+    ApiService().markAsRead(notificationIds);
+
     // 2. Emit a new state with the modified list.
     emit(
       state.copyWith(
@@ -79,10 +97,6 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       ),
     );
   }
-  // --- In notification_bloc.dart (or equivalent file) ---
-
-  // --- In notification_bloc.dart ---
-  // --- In verbatica/BLOC/Notification/notification_bloc.dart (Class Body) ---
 
   void _onResetPostView(ResetPostView event, Emitter<NotificationState> emit) {
     // Emit a new state that explicitly clears the onViewPost field

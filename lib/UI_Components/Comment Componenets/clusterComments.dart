@@ -3,12 +3,14 @@ import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:sizer/sizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/BLOC/Votes%20Restriction/votes_restrictor_bloc.dart';
 import 'package:verbatica/BLOC/comments_cluster/comment_cluster_bloc.dart';
 import 'package:verbatica/Utilities/Color.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/Report/reportscreen.dart';
 import 'package:verbatica/model/comment.dart';
 
 class ClusterComments extends StatelessWidget {
@@ -365,7 +367,12 @@ class ClusterComments extends StatelessWidget {
                     color: Theme.of(context).iconTheme.color,
                   ),
                   onSelected: (String value) {
-                    if (value == "report") {}
+                    if (value == "report") {
+                      pushScreen(
+                        context,
+                        screen: ReportScreen(reportType: 'comment'),
+                      );
+                    }
                   },
                   itemBuilder:
                       (BuildContext context) => <PopupMenuEntry<String>>[

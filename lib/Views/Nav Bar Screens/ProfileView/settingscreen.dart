@@ -8,7 +8,7 @@ import 'package:verbatica/Utilities/DialogueBox.dart';
 import 'package:verbatica/Utilities/theme_provider.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/aboutus.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/privacypolicy.dart';
-import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/reportdata.dart'; // Import your reports screen
+import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/Report/reportdata.dart'; // Import your reports screen
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/savedpost.dart'; // Import your report bloc
 import 'package:provider/provider.dart';
@@ -160,7 +160,7 @@ class SettingsScreen extends StatelessWidget {
                       (context) =>
                           ReportBloc()..add(
                             FetchUserReports(
-                              'user123', // Replace with actual user ID from your auth system
+                              userId: context.read<UserBloc>().state.user!.id,
                             ),
                           ),
                   child: UserReportsScreen(),

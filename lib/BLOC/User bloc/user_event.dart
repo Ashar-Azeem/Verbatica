@@ -123,7 +123,8 @@ class UpdateCommentCountOfAPost extends UserEvent {
 
 class SubmitReport extends UserEvent {
   final Report report;
-  SubmitReport({required this.report});
+  final BuildContext context;
+  SubmitReport({required this.report, required this.context});
 }
 
 class ToggleSaveOfUserPosts extends UserEvent {

@@ -32,6 +32,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       followingPage = 1;
       forYouVector = null;
       followingVector = null;
+      lastForYouPost = null;
 
       emit(HomeState.initial());
     });

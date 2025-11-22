@@ -9,6 +9,7 @@ import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/comment.dart';
+import 'package:verbatica/model/report.dart';
 import 'package:verbatica/model/user.dart';
 
 class UserBloc extends Bloc<UserEvent, UserState> {
@@ -62,6 +63,50 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         );
         emit(state.copyWith(userPosts: posts));
       }
+    });
+    on<SubmitReport>((event, emit) async {
+      emit(state.copyWith(isSubmittingReport: true));
+      Report? report = await ApiService().addReport(
+        int.parse(event.report.reporterUserId),
+        event.report.isPostReport,
+        event.report.isCommentReport,
+        event.report.isUserReport,
+        event.report.postId,
+        event.report.commentId,
+        event.report.reportedUserId == null
+            ? null
+            : int.parse(event.report.reportedUserId!),
+        event.report.reportContent,
+      );
+      if (report != null) {
+        ScaffoldMessenger.of(event.context).showSnackBar(
+          SnackBar(
+            duration: Duration(seconds: 2),
+            content: Text(
+              'Report Submitted',
+              style: TextStyle(
+                color: Theme.of(event.context).colorScheme.onPrimary,
+              ),
+            ),
+            backgroundColor: Theme.of(event.context).colorScheme.primary,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(event.context).showSnackBar(
+          SnackBar(
+            duration: Duration(seconds: 2),
+            content: Text(
+              'Report failed to be submitted',
+              style: TextStyle(
+                color: Theme.of(event.context).colorScheme.onPrimary,
+              ),
+            ),
+            backgroundColor: Theme.of(event.context).colorScheme.primary,
+          ),
+        );
+      }
+
+      emit(state.copyWith(isSubmittingReport: false));
     });
   }
 

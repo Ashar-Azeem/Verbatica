@@ -33,7 +33,7 @@ class UserReportsScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'No reports submitted yet',
+                      'No report submitted yet',
                       style: TextStyle(
                         color: Theme.of(
                           context,
@@ -87,7 +87,7 @@ class UserReportsScreen extends StatelessWidget {
       highlightColor:
           isDarkMode
               ? const Color.fromARGB(255, 65, 74, 92)
-              : const Color.fromARGB(255, 159, 194, 216), 
+              : const Color.fromARGB(255, 159, 194, 216),
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: 5,

@@ -23,14 +23,14 @@ class UserState extends Equatable {
     this.lastPostId,
     this.isLoadingSavedPosts = true,
     this.isMorePost = true,
-    
+
     this.isLoadingUpdatingProfile = false,
     this.userPosts = const [],
     this.userComments = const [],
     this.savedPosts = const [],
     this.isLoadingComments = false,
     this.isLoadingPosts = true,
-        this.isSubmittingReport = false,
+    this.isSubmittingReport = false,
     this.reportSubmitted = false,
     this.reportError,
   });
@@ -46,7 +46,7 @@ class UserState extends Equatable {
     bool? isLoadingComments,
     bool? isLoadingSavedPosts,
     bool? isLoadingPosts,
-        bool? isSubmittingReport,
+    bool? isSubmittingReport,
     bool? reportSubmitted,
     String? reportError,
   }) {
@@ -62,7 +62,7 @@ class UserState extends Equatable {
       savedPosts: savedPosts ?? this.savedPosts, // Add saved posts
       isLoadingComments: isLoadingComments ?? this.isLoadingComments,
       isLoadingPosts: isLoadingPosts ?? this.isLoadingPosts,
-            isSubmittingReport: isSubmittingReport ?? this.isSubmittingReport,
+      isSubmittingReport: isSubmittingReport ?? this.isSubmittingReport,
       reportSubmitted: reportSubmitted ?? this.reportSubmitted,
       reportError: reportError ?? this.reportError,
     );
@@ -80,7 +80,7 @@ class UserState extends Equatable {
       isMorePost: true,
       isLoadingSavedPosts: true,
       lastPostId: null,
-          isSubmittingReport: false,
+      isSubmittingReport: false,
       reportSubmitted: false,
       reportError: null,
     );
@@ -98,8 +98,8 @@ class UserState extends Equatable {
     isLoadingSavedPosts,
     isMorePost,
     lastPostId,
-      isSubmittingReport,
-        reportSubmitted,
-        reportError,
+    isSubmittingReport,
+    reportSubmitted,
+    reportError,
   ];
 }

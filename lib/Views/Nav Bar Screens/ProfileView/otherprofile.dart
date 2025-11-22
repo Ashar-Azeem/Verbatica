@@ -17,7 +17,7 @@ import 'package:verbatica/Utilities/ErrorSnackBar.dart';
 import 'package:verbatica/Utilities/dateformat.dart';
 import 'package:verbatica/Utilities/loadingAnimationOfCustomSize.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/Chats%20And%20Messaging%20Views/MessageView.dart';
-import 'package:verbatica/Views/reportscreen.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/Report/reportscreen.dart';
 import 'package:verbatica/model/Chat.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:shimmer/shimmer.dart';
@@ -45,54 +45,52 @@ class _ProfileViewState extends State<otherProfileView>
   late final int otherAvatarId;
   late final String otherUserPublicKey;
 
- void _showUserOptionsBottomSheet(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    backgroundColor: Theme.of(context).cardColor,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
-    builder: (context) => SafeArea(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 40,
-            height: 4,
-            margin: EdgeInsets.symmetric(vertical: 12),
-            decoration: BoxDecoration(
-              color: Theme.of(context).dividerColor,
-              borderRadius: BorderRadius.circular(2),
+  void _showUserOptionsBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Theme.of(context).cardColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder:
+          (context) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).dividerColor,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                ListTile(
+                  leading: Icon(Icons.flag_outlined, color: Colors.red),
+                  title: Text(
+                    'Report User',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    pushScreen(
+                      context,
+                      screen: ReportScreen(
+                        reportType: 'user',
+                        reportedUserId: otherUserId.toString(),
+                      ),
+                    );
+                  },
+                ),
+
+                SizedBox(height: 2.h),
+              ],
             ),
           ),
-          ListTile(
-            leading: Icon(Icons.flag_outlined, color: Colors.red),
-            title: Text('Report User', style: TextStyle(color: Colors.red)),
-            onTap: () {
-              Navigator.pop(context);
-              pushScreen(
-                context,
-                screen: ReportScreen(
-                  reportType: 'user',
-                  reportedUserId: otherUserId.toString(),
-                ),
-              );
-            },
-          ),
-          ListTile(
-            leading: Icon(Icons.block_outlined),
-            title: Text('Block User'),
-            onTap: () {
-              Navigator.pop(context);
-              // Handle block action
-            },
-          ),
-          SizedBox(height: 2.h),
-        ],
-      ),
-    ),
-  );
-}
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -250,14 +248,20 @@ class _ProfileViewState extends State<otherProfileView>
                                             ),
                                             Spacer(flex: 8),
                                             // Settings button in collapsed state
-                                           IconButton(
-  icon: Icon(Icons.more_vert, size: 5.w),
-  color: Theme.of(context).colorScheme.secondary,
-  onPressed: () {
-    _showUserOptionsBottomSheet(context);
-  },
-
-                                          
+                                            IconButton(
+                                              icon: Icon(
+                                                Icons.more_vert,
+                                                size: 5.w,
+                                              ),
+                                              color:
+                                                  Theme.of(
+                                                    context,
+                                                  ).colorScheme.secondary,
+                                              onPressed: () {
+                                                _showUserOptionsBottomSheet(
+                                                  context,
+                                                );
+                                              },
                                             ),
                                           ],
                                         ),
@@ -512,38 +516,43 @@ class _ProfileViewState extends State<otherProfileView>
                                   Align(
                                     alignment: Alignment.topLeft,
                                     child: // Changed from single back button to:
-// Back and More options buttons in expanded view
-Row(
-  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  children: [
-    IconButton(
-      onPressed: () {
-        Navigator.pop(context);
-      },
-      icon: const Icon(
-        Icons.arrow_back_ios_new_outlined,
-        color: Colors.white,
-        size: 26,
-      ),
-      style: IconButton.styleFrom(
-        backgroundColor: Colors.white.withOpacity(0.2),
-      ),
-    ),
-    IconButton(
-      onPressed: () {
-        _showUserOptionsBottomSheet(context);
-      },
-      icon: const Icon(
-        Icons.more_vert,
-        color: Colors.white,
-        size: 26,
-      ),
-      style: IconButton.styleFrom(
-        backgroundColor: Colors.white.withOpacity(0.2),
-      ),
-    ),
-  ],
-),
+                                    // Back and More options buttons in expanded view
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        IconButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                          },
+                                          icon: const Icon(
+                                            Icons.arrow_back_ios_new_outlined,
+                                            color: Colors.white,
+                                            size: 26,
+                                          ),
+                                          style: IconButton.styleFrom(
+                                            backgroundColor: Colors.white
+                                                .withOpacity(0.2),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          onPressed: () {
+                                            _showUserOptionsBottomSheet(
+                                              context,
+                                            );
+                                          },
+                                          icon: const Icon(
+                                            Icons.more_vert,
+                                            color: Colors.white,
+                                            size: 26,
+                                          ),
+                                          style: IconButton.styleFrom(
+                                            backgroundColor: Colors.white
+                                                .withOpacity(0.2),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
 
                                   SizedBox(height: 1.0.h),

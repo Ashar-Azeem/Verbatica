@@ -13,6 +13,8 @@ import 'package:verbatica/model/Chat.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:verbatica/model/comment.dart';
 import 'package:verbatica/model/news.dart';
+import 'package:verbatica/model/notification.dart';
+import 'package:verbatica/model/report.dart';
 import 'package:verbatica/model/summary.dart';
 import 'package:verbatica/model/user.dart';
 
@@ -787,6 +789,7 @@ class ApiService {
     int userId,
     Uint8List iv,
     String? parentComment,
+    int? parentCommentUserId,
   ) async {
     try {
       final response = await _dio.post(
@@ -805,6 +808,7 @@ class ApiService {
           "parentId": parentId,
           "uploadTime": uploadTime.toUtc().toIso8601String(),
           "parentComment": parentComment,
+          "parentCommentUserId": parentCommentUserId,
         },
       );
 
@@ -989,7 +993,94 @@ class ApiService {
     }
   }
 
-  // 🔎 Extract error message helper
+  Future<List<AppNotification>> getNotifications(int userId) async {
+    try {
+      final response = await _dio.get(
+        'notification/getNotification',
+        data: {"userId": userId},
+      );
+      final List<dynamic> data = response.data['notifications'] ?? [];
+      List<AppNotification> notifications =
+          data.map((d) => AppNotification.fromJson(d)).toList();
+      return notifications;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<List<Report>> getReports(int userId) async {
+    try {
+      final response = await _dio.get(
+        'report/fetchReports',
+        data: {"userId": userId},
+      );
+      final List<dynamic> data = response.data['reports'] ?? [];
+      List<Report> reports = data.map((d) => Report.fromJson(d)).toList();
+      return reports;
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<Report?> addReport(
+    int reporterUserId,
+    bool isPostReport,
+    bool isCommentReport,
+    bool isUserReport,
+    String? postId,
+    String? commentId,
+    int? reportedUserId,
+    String reportContent,
+  ) async {
+    try {
+      final response = await _dio.post(
+        'report/uploadReport',
+        data: {
+          'reporterUserId': reporterUserId,
+          "isPostReport": isPostReport,
+          "isCommentReport": isCommentReport,
+          'isUserReport': isUserReport,
+          "postId": postId,
+          "commentId": commentId,
+          "reportedUserId": reportedUserId,
+          "reportContent": reportContent,
+          "reportTime": DateTime.now().toUtc().toIso8601String(),
+        },
+      );
+
+      return Report.fromJson(response.data['report']);
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  void markAsRead(List<int> notificationIds) async {
+    try {
+      await _dio.put(
+        'notification/markAsReadNotification',
+        data: {'notificationIds': notificationIds},
+      );
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  void deleteNotification(List<int> notificationIds) async {
+    try {
+      await _dio.delete(
+        'notification/notifications',
+        data: {'notificationIds': notificationIds},
+      );
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
   String _extractErrorMessage(DioException e) {
     if (e.response?.data != null) {
       final data = e.response!.data;
@@ -998,7 +1089,6 @@ class ApiService {
       }
     }
 
-    // 👇 Handle custom errors like timeouts from interceptor
     if (e.error != null && e.error is String) {
       return e.error as String;
     }

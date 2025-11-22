@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
-import 'package:verbatica/model/notification.dart';
 
 // Events
 abstract class NotificationEvent extends Equatable {
@@ -11,8 +10,8 @@ abstract class NotificationEvent extends Equatable {
 }
 
 class LoadNotifications extends NotificationEvent {
-  final List<AppNotification> appnotification;
-  const LoadNotifications(this.appnotification);
+  final int userId;
+  const LoadNotifications({required this.userId});
 }
 
 class ClearAllNotifications extends NotificationEvent {
@@ -21,6 +20,7 @@ class ClearAllNotifications extends NotificationEvent {
   @override
   List<Object> get props => [];
 }
+
 class MarkAllNotificationsAsRead extends NotificationEvent {
   const MarkAllNotificationsAsRead();
 
@@ -37,19 +37,17 @@ class ToggleNotificationReadStatus extends NotificationEvent {
   @override
   List<Object> get props => [notificationId];
 }
-// --- Conceptual notification_event.dart ---
 
 class FetchAndSetPostForView extends NotificationEvent {
   final String postId;
-  final String notificationId; // To mark the specific notification as read
-final BuildContext context;
+  final String notificationId;
+  final BuildContext context;
   const FetchAndSetPostForView({
     required this.postId,
     required this.context,
     required this.notificationId,
   });
 }
-// --- In verbatica/BLOC/Notification/notification_event.dart ---
 
 class ResetPostView extends NotificationEvent {
   const ResetPostView();

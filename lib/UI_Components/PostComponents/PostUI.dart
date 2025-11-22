@@ -22,7 +22,7 @@ import 'package:verbatica/Views/Nav%20Bar%20Screens/Home%20View%20Screens/Summar
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/otherprofile.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/clusterScreen.dart';
-import 'package:verbatica/Views/reportscreen.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/ProfileView/settingviews/Report/reportscreen.dart';
 import 'package:verbatica/model/Post.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:verbatica/model/user.dart';
@@ -211,26 +211,10 @@ class PostWidget extends StatelessWidget {
                         color: colorScheme.surface,
                         onSelected: (String value) {
                           if (value == "report") {
-                            if (category == 'ForYou' ||
-                                category == 'Following') {
-                              context.read<homeBloc.HomeBloc>().add(
-                                homeBloc.ReportPost(
-                                  index: index,
-                                  category: category,
-                                  postId: post.id,
-                                ),
-                              );
-                            } else if (category == 'Trending' ||
-                                category == 'Top 10 news') {
-                              context.read<TrendingViewBloc>().add(
-                                ReportPost(
-                                  index: index,
-                                  category: category,
-                                  postId: post.id,
-                                ),
-                              );
-                            } else if (category == 'other') {
-                            } else if (category == 'searched') {}
+                            pushScreen(
+                              context,
+                              screen: ReportScreen(reportType: 'post'),
+                            );
                           } else if (value == "save" || value == 'unSave') {
                             if (value == 'save') {
                               context.read<UserBloc>().add(
@@ -293,11 +277,6 @@ class PostWidget extends StatelessWidget {
                             (BuildContext context) => <PopupMenuEntry<String>>[
                               category != 'user'
                                   ? PopupMenuItem<String>(
-                                    onTap: (){
-                                 pushScreen(context, screen:ReportScreen(reportType: 'user')
-                                   
-                                  );
-                                    },
                                     value: 'report',
                                     child: Row(
                                       mainAxisAlignment:
@@ -535,6 +514,7 @@ class PostWidget extends StatelessWidget {
                                   context.read<VotesRestrictorBloc>().add(
                                     RegisterVote(postId: post.id),
                                   );
+
                                   if (category == 'ForYou' ||
                                       category == 'Following') {
                                     context.read<homeBloc.HomeBloc>().add(

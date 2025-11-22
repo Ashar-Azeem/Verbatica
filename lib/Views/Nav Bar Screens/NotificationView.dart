@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:verbatica/BLOC/Notification/notification_bloc.dart';
 import 'package:verbatica/BLOC/Notification/notification_event.dart';
 import 'package:verbatica/BLOC/Notification/notification_state.dart';
+import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
 import 'package:verbatica/model/notification.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -16,179 +17,8 @@ class _NotificationScreenState extends State<NotificationScreen> {
   @override
   void initState() {
     super.initState();
-
-    // Use the existing NotificationBloc instead of creating a new one
     context.read<NotificationBloc>().add(
-      LoadNotifications([
-        AppNotification(
-          notificationId: 'notif_1',
-          postId: 'post_101',
-          commentId: '',
-          senderUsername: 'historybuff',
-          receiverUsername: 'currentUser',
-          isPostNotification: true,
-          isCommentNotification: false,
-          isUpvoteNotification: false,
-          isReplyNotification: false,
-          title: 'u/historybuff mentioned you in a post',
-          description:
-              'Check out this historical analysis of the partition era...',
-          createdAt: DateTime.now().subtract(const Duration(minutes: 15)),
-          isRead: false,
-          avatarId: 3,
-        ),
-        AppNotification(
-          notificationId: 'notif_2',
-          postId: 'post_89',
-          commentId: 'comment_45',
-          senderUsername: 'debateMaster',
-          receiverUsername: 'currentUser',
-          isPostNotification: false,
-          isCommentNotification: false,
-          isUpvoteNotification: false,
-          isReplyNotification: true,
-          title: 'u/debateMaster replied to your comment in r/PakHistory',
-          description: 'Actually, the census data from 1947 shows...',
-          createdAt: DateTime.now().subtract(const Duration(hours: 2)),
-          isRead: true,
-          avatarId: 7,
-        ),
-        AppNotification(
-          notificationId: 'notif_3',
-          postId: 'post_56',
-          commentId: '',
-          senderUsername: '',
-          receiverUsername: 'currentUser',
-          isPostNotification: false,
-          isCommentNotification: false,
-          isUpvoteNotification: true,
-          isReplyNotification: false,
-          title: '15 upvotes!',
-          description:
-              'Your post "Economic Growth 2023 Analysis" is gaining traction',
-          createdAt: DateTime.now().subtract(const Duration(hours: 5)),
-          isRead: false,
-          avatarId: 1,
-        ),
-        AppNotification(
-          notificationId: 'notif_4',
-          postId: 'post_112',
-          commentId: 'comment_78',
-          senderUsername: 'factChecker42',
-          receiverUsername: 'currentUser',
-          isPostNotification: false,
-          isCommentNotification: true,
-          isUpvoteNotification: false,
-          isReplyNotification: false,
-          title: 'u/factChecker42 commented on your post',
-          description:
-              'I found some discrepancies in your sources. Table 3 actually shows...',
-          createdAt: DateTime.now().subtract(const Duration(days: 1)),
-          isRead: true,
-          avatarId: 5,
-        ),
-        AppNotification(
-          notificationId: 'notif_5',
-          postId: 'post_203',
-          commentId: 'comment_92',
-          senderUsername: 'newUser99',
-          receiverUsername: 'currentUser',
-          isPostNotification: false,
-          isCommentNotification: false,
-          isUpvoteNotification: false,
-          isReplyNotification: true,
-          title: 'u/newUser99 replied to your comment in r/Economics',
-          description:
-              'As a student, I found your explanation really helpful! Could you expand on...',
-          createdAt: DateTime.now().subtract(const Duration(days: 1, hours: 3)),
-          isRead: false,
-          avatarId: 2,
-        ),
-        AppNotification(
-          notificationId: 'notif_1',
-          postId: 'post_101',
-          commentId: '',
-          senderUsername: 'historybuff',
-          receiverUsername: 'currentUser',
-          isPostNotification: true,
-          isCommentNotification: false,
-          isUpvoteNotification: false,
-          isReplyNotification: false,
-          title: 'u/historybuff mentioned you in a post',
-          description:
-              'Check out this historical analysis of the partition era...',
-          createdAt: DateTime.now().subtract(const Duration(minutes: 15)),
-          isRead: false,
-          avatarId: 3,
-        ),
-        AppNotification(
-          notificationId: 'notif_2',
-          postId: 'post_89',
-          commentId: 'comment_45',
-          senderUsername: 'debateMaster',
-          receiverUsername: 'currentUser',
-          isPostNotification: false,
-          isCommentNotification: false,
-          isUpvoteNotification: false,
-          isReplyNotification: true,
-          title: 'u/debateMaster replied to your comment in r/PakHistory',
-          description: 'Actually, the census data from 1947 shows...',
-          createdAt: DateTime.now().subtract(const Duration(hours: 2)),
-          isRead: true,
-          avatarId: 7,
-        ),
-        AppNotification(
-          notificationId: 'notif_3',
-          postId: 'post_56',
-          commentId: '',
-          senderUsername: '',
-          receiverUsername: 'currentUser',
-          isPostNotification: false,
-          isCommentNotification: false,
-          isUpvoteNotification: true,
-          isReplyNotification: false,
-          title: '15 upvotes!',
-          description:
-              'Your post "Economic Growth 2023 Analysis" is gaining traction',
-          createdAt: DateTime.now().subtract(const Duration(hours: 5)),
-          isRead: false,
-          avatarId: 1,
-        ),
-        AppNotification(
-          notificationId: 'notif_4',
-          postId: 'post_112',
-          commentId: 'comment_78',
-          senderUsername: 'factChecker42',
-          receiverUsername: 'currentUser',
-          isPostNotification: false,
-          isCommentNotification: true,
-          isUpvoteNotification: false,
-          isReplyNotification: false,
-          title: 'u/factChecker42 commented on your post',
-          description:
-              'I found some discrepancies in your sources. Table 3 actually shows...',
-          createdAt: DateTime.now().subtract(const Duration(days: 1)),
-          isRead: true,
-          avatarId: 5,
-        ),
-        AppNotification(
-          notificationId: 'notif_5',
-          postId: 'post_203',
-          commentId: 'comment_92',
-          senderUsername: 'newUser99',
-          receiverUsername: 'currentUser',
-          isPostNotification: false,
-          isCommentNotification: false,
-          isUpvoteNotification: false,
-          isReplyNotification: true,
-          title: 'u/newUser99 replied to your comment in r/Economics',
-          description:
-              'As a student, I found your explanation really helpful! Could you expand on...',
-          createdAt: DateTime.now().subtract(const Duration(days: 1, hours: 3)),
-          isRead: false,
-          avatarId: 2,
-        ),
-      ]),
+      LoadNotifications(userId: context.read<UserBloc>().state.user!.id),
     );
   }
 
@@ -284,7 +114,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   .where((n) => !n.createdAt.isAfter(todayStart))
                   .toList();
 
-          // REMOVED THE NESTED SCAFFOLD HERE
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
             child: CustomScrollView(
@@ -559,25 +388,6 @@ class NotificationTile extends StatelessWidget {
                               fontSize: 12,
                             ),
                           ),
-
-                          // Action icons
-                          Row(
-                            children: [
-                              _buildActionIcon(
-                                context,
-                                Icons.reply_rounded,
-                                'Reply',
-                                () {},
-                              ),
-                              const SizedBox(width: 16),
-                              _buildActionIcon(
-                                context,
-                                Icons.more_horiz_rounded,
-                                'More options',
-                                () {},
-                              ),
-                            ],
-                          ),
                         ],
                       ),
                     ],
@@ -683,28 +493,6 @@ class NotificationTile extends StatelessWidget {
         ],
       );
     }
-  }
-
-  Widget _buildActionIcon(
-    BuildContext context,
-    IconData icon,
-    String tooltip,
-    VoidCallback onTap,
-  ) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(50),
-      child: Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: Icon(
-          icon,
-          color: Theme.of(
-            context,
-          ).textTheme.bodyMedium?.color?.withOpacity(0.5),
-          size: 18,
-        ),
-      ),
-    );
   }
 
   String _formatTimeDifference(DateTime date) {
