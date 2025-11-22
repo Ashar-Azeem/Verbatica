@@ -55,3 +55,52 @@ class ResetPostView extends NotificationEvent {
   @override
   List<Object> get props => [];
 }
+
+class UpVoteNotificationPost extends NotificationEvent {
+  final int postId;
+  final int userId;
+  final BuildContext context;
+
+  const UpVoteNotificationPost({
+    required this.postId,
+    required this.userId,
+    required this.context,
+  });
+
+  @override
+  List<Object> get props => [postId, userId, context];
+}
+
+class DownVoteNotificationPost extends NotificationEvent {
+  final int postId;
+  final int userId;
+  final BuildContext context;
+
+  const DownVoteNotificationPost({
+    required this.postId,
+    required this.userId,
+    required this.context,
+  });
+
+  @override
+  List<Object> get props => [postId, userId, context];
+}
+
+// --- In verbatica/BLOC/Notification/notification_event.dart (Conceptual) ---
+
+class ToggleNotificationPostSaveStatus extends NotificationEvent {
+  final String postId;
+  final int userId;
+  final bool isSaving; // true for save, false for unsave
+  final BuildContext context;
+
+  const ToggleNotificationPostSaveStatus({
+    required this.postId,
+    required this.userId,
+    required this.isSaving,
+    required this.context,
+  });
+
+  @override
+  List<Object> get props => [postId, userId, isSaving, context];
+}

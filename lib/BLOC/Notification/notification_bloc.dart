@@ -13,8 +13,100 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     on<ResetPostView>(_onResetPostView);
     on<ClearAllNotifications>(_onClearAllNotifications);
     on<FetchAndSetPostForView>(_onReadAndLoadPost);
+    on<ToggleNotificationPostSaveStatus>(_onTogglePostSaveStatus);
     on<MarkAllNotificationsAsRead>(_onMarkAllAsRead);
+    on<UpVoteNotificationPost>(_onUpVoteNotificationPost);
+    on<DownVoteNotificationPost>(_onDownVoteNotificationPost);
   }
+
+  void _onUpVoteNotificationPost(
+    UpVoteNotificationPost event,
+    Emitter<NotificationState> emit,
+  ) {
+    final Post? currentPost = state.onViewPost;
+
+    if (currentPost == null) {
+      return;
+    }
+
+    ApiService().updatingVotes(
+      int.parse(currentPost.id),
+      event.userId,
+      true,
+      event.context,
+    );
+
+    Post newPost;
+    if (!currentPost.isUpVote) {
+      if (currentPost.isDownVote) {
+        // Downvoted -> Upvote: +2 to upvotes, -1 to downvotes
+        newPost = currentPost.copyWith(
+          isDownVote: false,
+          isUpVote: true,
+          upvotes: currentPost.upvotes + 1,
+          downvotes: currentPost.downvotes - 1, // Decrement downvotes
+        );
+      } else {
+        // No vote -> Upvote: +1 to upvotes
+        newPost = currentPost.copyWith(
+          isUpVote: true,
+          upvotes: currentPost.upvotes + 1,
+        );
+      }
+    } else {
+      // Undo Upvote: -1 from upvotes
+      newPost = currentPost.copyWith(
+        isUpVote: false,
+        upvotes: currentPost.upvotes - 1,
+      );
+    }
+    print("abbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbcccc");
+    // 3. Emit the state with the updated post
+    emit(state.copyWith(onViewPost: newPost));
+  }
+  // --- In NotificationBloc.dart (New Method) ---
+
+  void _onDownVoteNotificationPost(
+    DownVoteNotificationPost event,
+    Emitter<NotificationState> emit,
+  ) {
+    Post? currentPost = state.onViewPost;
+
+    if (currentPost == null) return;
+
+    ApiService().updatingVotes(
+      int.parse(currentPost.id),
+      event.userId,
+      false,
+      event.context,
+    );
+
+    Post newPost;
+
+    if (!currentPost.isDownVote) {
+      if (currentPost.isUpVote) {
+        newPost = currentPost.copyWith(
+          isDownVote: true,
+          isUpVote: false,
+          upvotes: currentPost.upvotes - 1,
+          downvotes: currentPost.downvotes + 1,
+        );
+      } else {
+        newPost = currentPost.copyWith(
+          isDownVote: true,
+          downvotes: currentPost.downvotes + 1,
+        );
+      }
+    } else {
+      newPost = currentPost.copyWith(
+        isDownVote: false,
+        downvotes: currentPost.downvotes - 1,
+      );
+    }
+
+    emit(state.copyWith(onViewPost: newPost));
+  }
+
   DateTime _getTodayStart() {
     final now = DateTime.now();
     return DateTime(now.year, now.month, now.day);
@@ -98,25 +190,62 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     );
   }
 
-  void _onResetPostView(ResetPostView event, Emitter<NotificationState> emit) {
-    // Emit a new state that explicitly clears the onViewPost field
-    emit(
-      state.copyWith(
-        onViewPost: null, // <--- Clears the post object
-        isLoading: false,
-        error: null,
-      ),
-    );
+  void _onTogglePostSaveStatus(
+    ToggleNotificationPostSaveStatus event,
+    Emitter<NotificationState> emit,
+  ) {
+    Post? currentPost = state.onViewPost;
+
+    if (currentPost == null) return; // Safety check
+
+    // 1. Call API Service (Assuming ApiService().updatePostSaveStatus exists)
+    // You would uncomment and implement this:
+    /*
+  ApiService().updatePostSaveStatus(
+    int.parse(event.postId),
+    event.userId,
+    event.isSaving,
+    event.context,
+  );
+  */
+
+    // 2. Apply save logic
+    Post newPost;
+
+    if (event.isSaving) {
+      // Logic for saving: we assume the Post model has an 'isSaved' property
+      // or that the User model handles tracking saved posts externally.
+      // Since PostWidget uses the Post object directly, let's assume Post needs an isSaved property.
+
+      // We will rely on the UserBloc updating its saved list,
+      // but for this specific Post object to reflect the status visually,
+      // we need to update the post itself if a field like `isSaved` exists in Post model.
+
+      // If Post model has `isSaved`:
+      // newPost = currentPost.copyWith(isSaved: true);
+
+      // Since your Post model doesn't explicitly show `isSaved`, we rely on
+      // the UserBloc to handle the saved status externally,
+      // but if the UI relies on a Post property to change the icon, that needs updating.
+
+      // For now, emit the state change to trigger UI refresh (which relies on UserBloc for icon state):
+      emit(state.copyWith(onViewPost: currentPost));
+    } else {
+      // Logic for unsaving
+      // newPost = currentPost.copyWith(isSaved: false); // If Post model has `isSaved`
+
+      emit(state.copyWith(onViewPost: currentPost));
+    }
   }
-  // --- CORRECTED _onReadAndLoadPost in NotificationBloc.dart ---
+
+  void _onResetPostView(ResetPostView event, Emitter<NotificationState> emit) {
+    emit(state.copyWith(onViewPost: null, isLoading: false, error: null));
+  }
 
   void _onReadAndLoadPost(
     FetchAndSetPostForView event,
     Emitter<NotificationState> emit,
   ) async {
-    // 1. Emit LOADING state (FIXED to TRUE)
-    // emit(state.copyWith(isLoading: true, onViewPost: null));
-
     final clickedNotification = state.notifications.firstWhere(
       (n) => n.notificationId == event.notificationId,
     );
@@ -156,11 +285,9 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
         ],
       );
 
-      // CRITICAL FIX: Assign the created post to the fetchedPost variable
-      fetchedPost = randomPost; // <--- ASSIGNMENT ADDED
+      fetchedPost = randomPost;
     }
 
-    // 3. Update the list: Mark the clicked notification as read
     final updatedNotifications =
         state.notifications.map((notification) {
           if (notification.notificationId == event.notificationId) {
@@ -169,7 +296,6 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
           return notification;
         }).toList();
 
-    // 4. Emit the final state: STOP loading, provide data (This triggers navigation)
     emit(state.copyWith(notifications: updatedNotifications));
     pushScreen(
       event.context, // Use the context passed in the event

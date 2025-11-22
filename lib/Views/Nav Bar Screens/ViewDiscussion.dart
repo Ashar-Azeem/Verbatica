@@ -336,8 +336,8 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                if (widget.category == 'notification')
                               BlocBuilder<NotificationBloc, NotificationState>(
                                 builder: (context, state) {
-                                  Post dynamicpost =
-                                     widget.post;
+                                  
+                                Post dynamicpost = state.onViewPost ?? widget.post;
 
                                   // context.read<CommentsBloc>().add(
                                   //   UpdateCommentCount(
