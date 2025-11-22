@@ -9,6 +9,8 @@ import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Home/home_bloc.dart' as homeBloc;
+import 'package:verbatica/BLOC/Notification/notification_bloc.dart';
+import 'package:verbatica/BLOC/Notification/notification_event.dart';
 import 'package:verbatica/BLOC/Search%20Bloc/search_bloc.dart' as searchBloc;
 import 'package:verbatica/BLOC/Trending%20View%20BLOC/trending_view_bloc.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
@@ -232,6 +234,18 @@ class PostWidget extends StatelessWidget {
                             } else if (category == 'other') {
                             } else if (category == 'searched') {}
                           } else if (value == "save") {
+
+                         if (category == 'notification') {
+                                    context.read<NotificationBloc>().add(
+                                        ToggleNotificationPostSaveStatus(
+                                            postId: post.id,
+                                            userId: user.id,
+                                            isSaving: true, // SAVE action
+                                            context: context,
+                                        ),
+                                    );
+                                    return; // Handled by NotificationBloc
+                                }
                             context.read<UserBloc>().add(
                               SavePost1(
                                 post: post,
@@ -247,6 +261,15 @@ class PostWidget extends StatelessWidget {
                               UnsavePost1(post: post, userId: user.id),
                             );
                           }
+                          else if (category == 'notification') {
+
+//  context.read<NotificationBloc>().add(
+//                                       SavedSimilarPosts(
+//                                         index: index,
+//                                         context: context,
+//                                       ),
+//                                     );
+                                  }
                         },
                         itemBuilder:
                             (BuildContext context) => <PopupMenuEntry<String>>[
@@ -628,7 +651,17 @@ class PostWidget extends StatelessWidget {
                                         context: context,
                                       ),
                                     );
-                                  } else {
+                                  }else if (category == 'notification') {
+print('kdshdsjhjshfjshfjshfjhfjshj');
+context.read<NotificationBloc>().add(
+                    UpVoteNotificationPost(
+                        postId: int.parse(post.id),
+                        userId: user.id,
+                        context: context,
+                    ),
+                );print('kdshdsjhjshf222222222jshfjshfjhfjshj');
+                                  }
+                                   else {
                                     context.read<searchBloc.SearchBloc>().add(
                                       searchBloc.UpVotePost(
                                         index: index,
@@ -852,7 +885,18 @@ class PostWidget extends StatelessWidget {
                                     context.read<UserBloc>().add(
                                       SyncDownvotePost(postId: post.id),
                                     );
-                                  } else {
+                                  } else if (category == 'notification') {
+
+context.read<NotificationBloc>().add(
+                    DownVoteNotificationPost(
+                        postId: int.parse(post.id),
+                        userId: user.id,
+                        context: context,
+                    ),
+                );
+                                  }
+                                  
+                                  else {
                                     context.read<searchBloc.SearchBloc>().add(
                                       searchBloc.DownVotePost(
                                         index: index,

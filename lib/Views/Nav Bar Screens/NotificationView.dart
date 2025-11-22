@@ -290,7 +290,6 @@ class _NotificationScreenState extends State<NotificationScreen> {
               .where((n) => !n.createdAt.isAfter(todayStart))
               .toList();
 
-          // REMOVED THE NESTED SCAFFOLD HERE
           return Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 12.0,
