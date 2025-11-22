@@ -120,7 +120,15 @@ class UpdateCommentCountOfAPost extends UserEvent {
 
   UpdateCommentCountOfAPost({required this.category, required this.postIndex});
 }
-class SubmitReport extends UserEvent{
+
+class SubmitReport extends UserEvent {
   final Report report;
   SubmitReport({required this.report});
+}
+
+class ToggleSaveOfUserPosts extends UserEvent {
+  final int postIndex;
+  final String category;
+
+  ToggleSaveOfUserPosts({required this.category, required this.postIndex});
 }

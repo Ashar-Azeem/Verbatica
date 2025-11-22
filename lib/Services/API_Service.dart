@@ -980,6 +980,15 @@ class ApiService {
     }
   }
 
+  Future<void> deletePost(int postId) async {
+    try {
+      await _dio.delete('post/post', data: {"postId": postId});
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
   // 🔎 Extract error message helper
   String _extractErrorMessage(DioException e) {
     if (e.response?.data != null) {

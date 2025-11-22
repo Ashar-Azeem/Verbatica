@@ -30,6 +30,13 @@ class PostBloc extends Bloc<PostEvent, PostState> {
       );
       emit(state.copyWith(similarPosts: posts));
     });
+    on<ToggleSaveOfSimilarPosts>((event, emit) {
+      List<Post> posts = List.from(state.similarPosts);
+      posts[event.postIndex] = posts[event.postIndex].copyWith(
+        isSaved: !posts[event.postIndex].isSaved,
+      );
+      emit(state.copyWith(similarPosts: posts));
+    });
   }
 
   void progress(CompressedProgress event, Emitter<PostState> emit) {

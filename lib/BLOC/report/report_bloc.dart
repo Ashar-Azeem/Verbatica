@@ -37,7 +37,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
           reportContent:
               'This post contains misleading information about health supplements that could be harmful to users.',
           reportTime: DateTime.now().subtract(const Duration(days: 2)),
-          isSeenByModerator: true,
+
           reportStatus: 'under_review',
           adminFeedback: null,
         ),
@@ -53,7 +53,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
           reportContent:
               'This comment contains hate speech targeting a specific community.',
           reportTime: DateTime.now().subtract(const Duration(days: 5)),
-          isSeenByModerator: true,
+
           reportStatus: 'resolved',
           adminFeedback:
               'Thank you for bringing this to our attention. The comment has been removed and we have issued a warning to the user.',
@@ -70,7 +70,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
           reportContent:
               'This user has been repeatedly spamming promotional content across multiple threads.',
           reportTime: DateTime.now().subtract(const Duration(days: 10)),
-          isSeenByModerator: true,
+
           reportStatus: 'resolved',
           adminFeedback:
               'Weve reviewed the user activity and have suspended the account for violating our anti-spam policy. Thank you for helping keep our community clean.',
@@ -87,7 +87,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
           reportContent:
               'This post contains copyrighted images that I own the rights to. Please remove it.',
           reportTime: DateTime.now().subtract(const Duration(days: 7)),
-          isSeenByModerator: true,
+
           reportStatus: 'rejected',
           adminFeedback:
               'Our team has reviewed your claim but could not verify copyright ownership based on the information provided. Please submit additional documentation to support your claim.',
@@ -104,7 +104,7 @@ class ReportBloc extends Bloc<ReportEvent, ReportState> {
           reportContent:
               'This comment reveals personal information about me without my consent.',
           reportTime: DateTime.now().subtract(const Duration(hours: 12)),
-          isSeenByModerator: false,
+
           reportStatus: 'pending',
           adminFeedback: null,
         ),

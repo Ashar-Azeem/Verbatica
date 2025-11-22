@@ -9,6 +9,7 @@ import 'package:verbatica/model/Post.dart';
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
   NotificationBloc() : super(const NotificationState()) {
     on<LoadNotifications>(_onLoadNotifications);
+<<<<<<< HEAD
  on<ResetPostView>(_onResetPostView);
      on<ClearAllNotifications>(_onClearAllNotifications); 
      on<FetchAndSetPostForView>(_onReadAndLoadPost);
@@ -119,18 +120,28 @@ void _onDownVoteNotificationPost(
   emit(state.copyWith(onViewPost: newPost));
 }
  DateTime _getTodayStart() {
+=======
+    on<ResetPostView>(_onResetPostView);
+    on<ClearAllNotifications>(_onClearAllNotifications);
+    on<FetchAndSetPostForView>(_onReadAndLoadPost);
+    on<MarkAllNotificationsAsRead>(_onMarkAllAsRead);
+  }
+  DateTime _getTodayStart() {
+>>>>>>> 3ee0a2dfa87d94c0aa336b0c265c1d0216d22a3a
     final now = DateTime.now();
     return DateTime(now.year, now.month, now.day);
   }
-void _onClearAllNotifications(
+
+  void _onClearAllNotifications(
     ClearAllNotifications event,
     Emitter<NotificationState> emit,
   ) async {
     final todayStart = _getTodayStart();
 
-    final notificationsToKeep = state.notifications
-        .where((n) => n.createdAt.isAfter(todayStart))
-        .toList();
+    final notificationsToKeep =
+        state.notifications
+            .where((n) => n.createdAt.isAfter(todayStart))
+            .toList();
 
     emit(
       state.copyWith(
@@ -140,7 +151,6 @@ void _onClearAllNotifications(
       ),
     );
   }
-
 
   Future<void> _onLoadNotifications(
     LoadNotifications event,
@@ -162,15 +172,17 @@ void _onClearAllNotifications(
       );
     }
   }
+
   void _onMarkAllAsRead(
     MarkAllNotificationsAsRead event,
     Emitter<NotificationState> emit,
   ) async {
     // 1. Map the current list to a new list, changing the isRead status for every notification.
-    final updatedNotifications = state.notifications.map((notification) {
-      // Use the model's copyWith method to create a new instance with isRead = true
-      return notification.copyWith(isRead: true);
-    }).toList();
+    final updatedNotifications =
+        state.notifications.map((notification) {
+          // Use the model's copyWith method to create a new instance with isRead = true
+          return notification.copyWith(isRead: true);
+        }).toList();
 
     // 2. Emit a new state with the modified list.
     emit(
@@ -181,8 +193,9 @@ void _onClearAllNotifications(
       ),
     );
   }
-// --- In notification_bloc.dart (or equivalent file) ---
+  // --- In notification_bloc.dart (or equivalent file) ---
 
+<<<<<<< HEAD
 // --- In notification_bloc.dart ---
 // --- In verbatica/BLOC/Notification/notification_bloc.dart (Class Body) ---
 void _onTogglePostSaveStatus(
@@ -247,47 +260,102 @@ void _onResetPostView(
   );
 }
 // --- CORRECTED _onReadAndLoadPost in NotificationBloc.dart ---
+=======
+  // --- In notification_bloc.dart ---
+  // --- In verbatica/BLOC/Notification/notification_bloc.dart (Class Body) ---
 
-void _onReadAndLoadPost(
-FetchAndSetPostForView event,
-Emitter<NotificationState> emit,
-) async {
- // 1. Emit LOADING state (FIXED to TRUE)
-// emit(state.copyWith(isLoading: true, onViewPost: null)); 
-  
-final clickedNotification = state.notifications.firstWhere((n) => n.notificationId == event.notificationId);
+  void _onResetPostView(ResetPostView event, Emitter<NotificationState> emit) {
+    // Emit a new state that explicitly clears the onViewPost field
+    emit(
+      state.copyWith(
+        onViewPost: null, // <--- Clears the post object
+        isLoading: false,
+        error: null,
+      ),
+    );
+  }
+  // --- CORRECTED _onReadAndLoadPost in NotificationBloc.dart ---
+>>>>>>> 3ee0a2dfa87d94c0aa336b0c265c1d0216d22a3a
 
- Post? fetchedPost;
+  void _onReadAndLoadPost(
+    FetchAndSetPostForView event,
+    Emitter<NotificationState> emit,
+  ) async {
+    // 1. Emit LOADING state (FIXED to TRUE)
+    // emit(state.copyWith(isLoading: true, onViewPost: null));
 
-if (clickedNotification.postId != null) {
- // Simulates waiting for network
- await Future.delayed(const Duration(milliseconds: 700));
+    final clickedNotification = state.notifications.firstWhere(
+      (n) => n.notificationId == event.notificationId,
+    );
 
- // Create the mock post
-final Post randomPost = Post(
+    Post? fetchedPost;
+
+    if (clickedNotification.postId != null) {
+      // Simulates waiting for network
+      await Future.delayed(const Duration(milliseconds: 700));
+
+      // Create the mock post
+      final Post randomPost = Post(
         // ... (Your mock post data) ...
+<<<<<<< HEAD
         id: '1233455', 
+=======
+        isSaved: false,
+        id: clickedNotification.postId!,
+>>>>>>> 3ee0a2dfa87d94c0aa336b0c265c1d0216d22a3a
         publicKey: 'pk-remote-2025',
         name: 'TechAnalyst25',
         userId: 501,
-        avatar: 4, 
-        title: 'Is the Global Shift to Remote Work Sustainable for Large Enterprises?',
+        avatar: 4,
+        title:
+            'Is the Global Shift to Remote Work Sustainable for Large Enterprises?',
         description: 'The pandemic accelerated the remote work revolution...',
         postImageLink: 'https://example.com/images/remote_work_desk.jpg',
         postVideoLink: null,
         isDebate: true,
         upvotes: 782,
         downvotes: 115,
-        isUpVote: false, 
+        isUpVote: false,
         isDownVote: false,
-        comments: 6, 
+        comments: 6,
         uploadTime: DateTime.utc(2025, 10, 20, 10, 30),
-        clusters: const ['Productivity', 'Company Culture', 'Security Risks', 'Future of Work'],
+        clusters: const [
+          'Productivity',
+          'Company Culture',
+          'Security Risks',
+          'Future of Work',
+        ],
+      );
+
+      // CRITICAL FIX: Assign the created post to the fetchedPost variable
+      fetchedPost = randomPost; // <--- ASSIGNMENT ADDED
+    }
+
+    // 3. Update the list: Mark the clicked notification as read
+    final updatedNotifications =
+        state.notifications.map((notification) {
+          if (notification.notificationId == event.notificationId) {
+            return notification.copyWith(isRead: true);
+          }
+          return notification;
+        }).toList();
+
+    // 4. Emit the final state: STOP loading, provide data (This triggers navigation)
+    emit(state.copyWith(notifications: updatedNotifications));
+    pushScreen(
+      event.context, // Use the context passed in the event
+      pageTransitionAnimation: PageTransitionAnimation.scale,
+      screen: ViewDiscussion(
+        post: fetchedPost!,
+        index: -1,
+        newIndex: null,
+        category: 'notification',
+      ),
+      withNavBar: false,
     );
-    
-    // CRITICAL FIX: Assign the created post to the fetchedPost variable
- fetchedPost = randomPost; // <--- ASSIGNMENT ADDED
+  }
 }
+<<<<<<< HEAD
 
 // 3. Update the list: Mark the clicked notification as read
  final updatedNotifications = state.notifications.map((notification) {
@@ -320,3 +388,5 @@ pushScreen(
     );
 }
 }
+=======
+>>>>>>> 3ee0a2dfa87d94c0aa336b0c265c1d0216d22a3a

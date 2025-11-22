@@ -78,3 +78,9 @@ class UpdateCommentCountOfAPost extends OtheruserEvent {
 
   const UpdateCommentCountOfAPost({required this.postIndex});
 }
+
+class ToggleSave extends OtheruserEvent {
+  final int postIndex;
+
+  const ToggleSave({required this.postIndex});
+}

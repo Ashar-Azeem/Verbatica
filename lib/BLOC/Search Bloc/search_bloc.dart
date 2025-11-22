@@ -31,6 +31,13 @@ class SearchBloc extends Bloc<SearchEvent, SearchState> {
       );
       emit(state.copyWith(posts: posts));
     });
+    on<ToggleSaveOfSearchedPosts>((event, emit) {
+      List<Post> posts = List.from(state.posts);
+      posts[event.postIndex] = posts[event.postIndex].copyWith(
+        isSaved: !posts[event.postIndex].isSaved,
+      );
+      emit(state.copyWith(posts: posts));
+    });
   }
 
   EventTransformer<E> debounceRestartable<E>(Duration duration) {

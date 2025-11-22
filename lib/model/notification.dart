@@ -5,7 +5,6 @@ class AppNotification {
   final String senderUsername;
   final String receiverUsername;
   final bool isPostNotification;
-
   final bool isCommentNotification;
   final bool isUpvoteNotification;
   final bool isReplyNotification;

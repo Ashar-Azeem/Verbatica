@@ -45,6 +45,13 @@ class OtheruserBloc extends Bloc<OtheruserEvent, OtheruserState> {
       );
       emit(state.copyWith(userPosts: posts));
     });
+    on<ToggleSave>((event, emit) {
+      List<Post> posts = List.from(state.userPosts);
+      posts[event.postIndex] = posts[event.postIndex].copyWith(
+        isSaved: !posts[event.postIndex].isSaved,
+      );
+      emit(state.copyWith(userPosts: posts));
+    });
   }
   void _UpvotePost(upvotePost event, Emitter<OtheruserState> emit) {
     List<Post> posts = List.from(state.userPosts);

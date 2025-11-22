@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:persistent_bottom_nav_bar_v2/persistent_bottom_nav_bar_v2.dart';
 import 'package:verbatica/BLOC/Notification/notification_bloc.dart';
 import 'package:verbatica/BLOC/Notification/notification_event.dart';
 import 'package:verbatica/BLOC/Notification/notification_state.dart';
-import 'package:verbatica/Views/Nav%20Bar%20Screens/ViewDiscussion.dart';
 import 'package:verbatica/model/notification.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -106,7 +104,7 @@ class _NotificationScreenState extends State<NotificationScreen> {
           isRead: false,
           avatarId: 2,
         ),
-         AppNotification(
+        AppNotification(
           notificationId: 'notif_1',
           postId: 'post_101',
           commentId: '',
@@ -236,11 +234,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                   Text(
                     'Error: ${state.error}',
                     style: TextStyle(
-                      color: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.color
-                          ?.withOpacity(0.7),
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 16,
                     ),
                   ),
@@ -254,22 +250,18 @@ class _NotificationScreenState extends State<NotificationScreen> {
                 children: [
                   Icon(
                     Icons.notifications_off_rounded,
-                    color: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.color
-                        ?.withOpacity(0.6),
+                    color: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.color?.withOpacity(0.6),
                     size: 64,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'No notifications yet',
                     style: TextStyle(
-                      color: Theme.of(context)
-                          .textTheme
-                          .bodyMedium
-                          ?.color
-                          ?.withOpacity(0.7),
+                      color: Theme.of(
+                        context,
+                      ).textTheme.bodyMedium?.color?.withOpacity(0.7),
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
                     ),
@@ -282,24 +274,24 @@ class _NotificationScreenState extends State<NotificationScreen> {
           // Group notifications by date
           final now = DateTime.now();
           final todayStart = DateTime(now.year, now.month, now.day);
-          final todayNotifications = state.notifications
-              .where((n) => n.createdAt.isAfter(todayStart))
-              .toList();
+          final todayNotifications =
+              state.notifications
+                  .where((n) => n.createdAt.isAfter(todayStart))
+                  .toList();
 
-          final earlierNotifications = state.notifications
-              .where((n) => !n.createdAt.isAfter(todayStart))
-              .toList();
+          final earlierNotifications =
+              state.notifications
+                  .where((n) => !n.createdAt.isAfter(todayStart))
+                  .toList();
 
           return Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 12.0,
-              vertical: 10,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
             child: CustomScrollView(
               shrinkWrap: true,
               // Using AlwaysScrollable ensures it drags even if content is small
               physics: const BouncingScrollPhysics(
-                  parent: AlwaysScrollableScrollPhysics()),
+                parent: AlwaysScrollableScrollPhysics(),
+              ),
               slivers: [
                 SliverToBoxAdapter(
                   child: Padding(
@@ -312,15 +304,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).textTheme.titleLarge?.color,
+                            color:
+                                Theme.of(context).textTheme.titleLarge?.color,
                             letterSpacing: 0.5,
                           ),
                         ),
                         GestureDetector(
                           onTap: () {
                             context.read<NotificationBloc>().add(
-                                  const MarkAllNotificationsAsRead(),
-                                );
+                              const MarkAllNotificationsAsRead(),
+                            );
                           },
                           child: Text(
                             'Mark all as read',
@@ -343,11 +336,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         child: Text(
                           'No new notifications today',
                           style: TextStyle(
-                            color: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.color
-                                ?.withOpacity(0.6),
+                            color: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.color?.withOpacity(0.6),
                             fontSize: 15,
                           ),
                         ),
@@ -375,15 +366,16 @@ class _NotificationScreenState extends State<NotificationScreen> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Theme.of(context).textTheme.titleLarge?.color,
+                            color:
+                                Theme.of(context).textTheme.titleLarge?.color,
                             letterSpacing: 0.5,
                           ),
                         ),
                         GestureDetector(
                           onTap: () {
                             context.read<NotificationBloc>().add(
-                                  const ClearAllNotifications(),
-                                );
+                              const ClearAllNotifications(),
+                            );
                           },
                           child: Text(
                             'Clear all',
@@ -406,11 +398,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
                         child: Text(
                           'No earlier notifications',
                           style: TextStyle(
-                            color: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.color
-                                ?.withOpacity(0.6),
+                            color: Theme.of(
+                              context,
+                            ).textTheme.bodyMedium?.color?.withOpacity(0.6),
                             fontSize: 15,
                           ),
                         ),
@@ -456,11 +446,12 @@ class NotificationTile extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 6.0),
       decoration: BoxDecoration(
-        color: notification.isRead
-            ? (isDarkMode ? const Color(0xFF1A1A1A) : Colors.grey[50])
-            : (isDarkMode
-                ? const Color(0xFF232733)
-                : Theme.of(context).colorScheme.primary.withOpacity(0.05)),
+        color:
+            notification.isRead
+                ? (isDarkMode ? const Color(0xFF1A1A1A) : Colors.grey[50])
+                : (isDarkMode
+                    ? const Color(0xFF232733)
+                    : Theme.of(context).colorScheme.primary.withOpacity(0.05)),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -475,11 +466,12 @@ class NotificationTile extends StatelessWidget {
         child: InkWell(
           onTap: () {
             context.read<NotificationBloc>().add(
-                  FetchAndSetPostForView(
-                      notificationId: notification.notificationId,
-                      postId: notification.postId!,
-                      context: context),
-                );
+              FetchAndSetPostForView(
+                notificationId: notification.notificationId,
+                postId: notification.postId!,
+                context: context,
+              ),
+            );
           },
           borderRadius: BorderRadius.circular(12),
           child: Padding(
@@ -517,10 +509,14 @@ class NotificationTile extends StatelessWidget {
                             child: Text(
                               notification.title,
                               style: TextStyle(
-                                fontWeight: notification.isRead
-                                    ? FontWeight.w500
-                                    : FontWeight.bold,
-                                color: Theme.of(context).textTheme.bodyLarge?.color,
+                                fontWeight:
+                                    notification.isRead
+                                        ? FontWeight.w500
+                                        : FontWeight.bold,
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).textTheme.bodyLarge?.color,
                                 fontSize: 15,
                                 height: 1.3,
                               ),
@@ -540,11 +536,9 @@ class NotificationTile extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                           fontSize: 13,
-                          color: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.color
-                              ?.withOpacity(0.7),
+                          color: Theme.of(
+                            context,
+                          ).textTheme.bodyMedium?.color?.withOpacity(0.7),
                           height: 1.4,
                         ),
                       ),
@@ -558,11 +552,9 @@ class NotificationTile extends StatelessWidget {
                           Text(
                             _formatTimeDifference(notification.createdAt),
                             style: TextStyle(
-                              color: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.color
-                                  ?.withOpacity(0.5),
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.color?.withOpacity(0.5),
                               fontSize: 12,
                             ),
                           ),
@@ -705,7 +697,9 @@ class NotificationTile extends StatelessWidget {
         padding: const EdgeInsets.all(4.0),
         child: Icon(
           icon,
-          color: Theme.of(context).textTheme.bodyMedium?.color?.withOpacity(0.5),
+          color: Theme.of(
+            context,
+          ).textTheme.bodyMedium?.color?.withOpacity(0.5),
           size: 18,
         ),
       ),

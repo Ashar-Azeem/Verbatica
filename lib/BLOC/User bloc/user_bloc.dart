@@ -48,6 +48,21 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         emit(state.copyWith(userPosts: posts));
       }
     });
+    on<ToggleSaveOfUserPosts>((event, emit) {
+      if (event.category == "saved") {
+        List<Post> posts = List.from(state.savedPosts);
+        posts[event.postIndex] = posts[event.postIndex].copyWith(
+          isSaved: !posts[event.postIndex].isSaved,
+        );
+        emit(state.copyWith(savedPosts: posts));
+      } else {
+        List<Post> posts = List.from(state.userPosts);
+        posts[event.postIndex] = posts[event.postIndex].copyWith(
+          isSaved: !posts[event.postIndex].isSaved,
+        );
+        emit(state.copyWith(userPosts: posts));
+      }
+    });
   }
 
   void addRecentPost(AddRecentPost event, Emitter<UserState> emit) {
@@ -383,6 +398,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   }
 
   void _onDeleteUserPost(DeleteUserPost event, Emitter<UserState> emit) {
+    ApiService().deletePost(int.parse(event.postId));
     final updatedPosts =
         state.userPosts.where((post) => post.id != event.postId).toList();
     emit(state.copyWith(userPosts: updatedPosts));
