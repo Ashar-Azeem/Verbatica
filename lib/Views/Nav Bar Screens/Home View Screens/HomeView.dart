@@ -1,7 +1,5 @@
 // ignore_for_file: file_names
-
 import 'dart:async';
-
 import 'package:extended_nested_scroll_view/extended_nested_scroll_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -169,21 +167,43 @@ class _HomeViewState extends State<HomeView> with TickerProviderStateMixin {
                     physics: NeverScrollableScrollPhysics(),
                     children: [
                       // For You Tab
-                      BuiltPostList(
-                        posts: state.forYou,
-                        ads: state.ads,
-                        loading: state.forYouInitialLoading,
-                        hasMore: state.hasMoreForYouPosts,
-                        category: "ForYou",
+                      RefreshIndicator(
+                        onRefresh: () async {
+                          context.read<HomeBloc>().add(
+                            RefreshEvent(
+                              category: "For You",
+                              userId: context.read<UserBloc>().state.user!.id,
+                            ),
+                          );
+                          await Future.delayed(Duration(seconds: 2));
+                        },
+                        child: BuiltPostList(
+                          posts: state.forYou,
+                          ads: state.ads,
+                          loading: state.forYouInitialLoading,
+                          hasMore: state.hasMoreForYouPosts,
+                          category: "ForYou",
+                        ),
                       ),
 
                       // Following Tab
-                      BuiltPostList(
-                        posts: state.following,
-                        ads: state.ads,
-                        loading: state.followingInitialLoading,
-                        category: "Following",
-                        hasMore: state.hasMoreFollowingPosts,
+                      RefreshIndicator(
+                        onRefresh: () async {
+                          context.read<HomeBloc>().add(
+                            RefreshEvent(
+                              category: "Following",
+                              userId: context.read<UserBloc>().state.user!.id,
+                            ),
+                          );
+                          await Future.delayed(Duration(seconds: 2));
+                        },
+                        child: BuiltPostList(
+                          posts: state.following,
+                          ads: state.ads,
+                          loading: state.followingInitialLoading,
+                          category: "Following",
+                          hasMore: state.hasMoreFollowingPosts,
+                        ),
                       ),
                     ],
                   );
@@ -233,14 +253,18 @@ class _BuiltPostListState extends State<BuiltPostList>
 
     // 🔹 Step 2: Handle empty state
     if (widget.posts.isEmpty) {
-      return SizedBox(
-        height: MediaQuery.of(context).size.height * 0.6,
-        child: const Center(
-          child: BuildEmptyTabContent(
-            icon: Icons.article_outlined,
-            message: 'No posts',
+      return ListView(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.6,
+            child: const Center(
+              child: BuildEmptyTabContent(
+                icon: Icons.article_outlined,
+                message: 'No posts',
+              ),
+            ),
           ),
-        ),
+        ],
       );
     }
 

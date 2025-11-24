@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:sizer/sizer.dart';
 import 'package:verbatica/Services/API_Service.dart';
+import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/TrendGraph.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/countrychart.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/emotional.dart';
 
@@ -149,21 +150,23 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
     final colorScheme = theme.colorScheme;
     final textTheme = theme.textTheme;
 
-    return SlideTransition(
-      position: Tween<Offset>(
-        begin: const Offset(-0.5, 0),
-        end: Offset.zero,
-      ).animate(
-        CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
-      ),
-      child: FadeTransition(
-        opacity: _fadeAnimation,
-        child: Text(
-          title,
-          style: TextStyle(
-            color: textTheme.titleMedium?.color ?? colorScheme.onSurface,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+    return Center(
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(-0.5, 0),
+          end: Offset.zero,
+        ).animate(
+          CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic),
+        ),
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: Text(
+            title,
+            style: TextStyle(
+              color: textTheme.titleMedium?.color ?? colorScheme.onSurface,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
       ),
@@ -309,6 +312,12 @@ class _ClusterDetailScreenState extends State<ClusterDetailScreen>
 
                         const SizedBox(height: 24),
 
+                        _buildSectionTitle('📈 Cluster Engagement Trend'),
+                        const SizedBox(height: 8),
+                        ClusterTrendChart(data: analytics!.trends),
+
+                        const SizedBox(height: 24),
+
                         _buildSectionTitle('🌍 Country-Based Distribution'),
                         const SizedBox(height: 8),
                         Countrychart(
@@ -344,8 +353,10 @@ class AnalyticsData {
   final List<EmotionStat> emotions;
   final List<CountryStat> countries;
   final List<GenderStat> genders;
+  final Map<DateTime, int> trends;
 
   AnalyticsData({
+    required this.trends,
     required this.postId,
     required this.emotions,
     required this.countries,
@@ -367,6 +378,19 @@ class AnalyticsData {
           (json['genders'] as List<dynamic>)
               .map((e) => GenderStat.fromJson(e))
               .toList(),
+      trends:
+          (() {
+            final Map<DateTime, int> trendMap = {};
+            if (json['clusterTrend'] != null && json['clusterTrend'] is Map) {
+              (json['clusterTrend'] as Map<String, dynamic>).forEach((
+                key,
+                value,
+              ) {
+                trendMap[DateTime.parse(key).toLocal()] = value as int;
+              });
+            }
+            return trendMap;
+          })(),
     );
   }
 

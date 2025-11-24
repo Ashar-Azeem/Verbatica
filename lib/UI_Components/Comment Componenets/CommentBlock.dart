@@ -98,7 +98,10 @@ class CommentsBlock extends StatelessWidget {
                             if (value == "report") {
                               pushScreen(
                                 context,
-                                screen: ReportScreen(reportType: 'comment'),
+                                screen: ReportScreen(
+                                  reportType: 'comment',
+                                  commentId: comment.id,
+                                ),
                               );
                             }
                           },

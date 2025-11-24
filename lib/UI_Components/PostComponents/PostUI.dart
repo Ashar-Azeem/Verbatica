@@ -216,7 +216,10 @@ class PostWidget extends StatelessWidget {
                           if (value == "report") {
                             pushScreen(
                               context,
-                              screen: ReportScreen(reportType: 'post'),
+                              screen: ReportScreen(
+                                reportType: 'post',
+                                postId: post.id,
+                              ),
                             );
                           } else if (value == "save" || value == 'unSave') {
                             if (value == 'save') {

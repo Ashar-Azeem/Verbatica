@@ -319,10 +319,15 @@ class _ChartsAnalyticsScreenState extends State<ChartsAnalyticsScreen>
                                               .clusterWiseCount[index]
                                               .cluster;
                                       final percentage =
-                                          ((stats!.clusterWiseCount[index].count /
-                                                      stats!.totalComments) *
-                                                  100)
-                                              .round();
+                                          stats!.totalComments > 0
+                                              ? ((stats!
+                                                              .clusterWiseCount[index]
+                                                              .count /
+                                                          stats!
+                                                              .totalComments) *
+                                                      100)
+                                                  .round()
+                                              : 0;
                                       final count =
                                           stats!.clusterWiseCount[index].count;
 
@@ -546,19 +551,28 @@ class _PieChartWithClusterInfoState extends State<PieChartWithClusterInfo>
   List<PieChartSectionData> showingSections() {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final total = widget.total;
 
-    return List.generate(widget.clusters.length, (i) {
+    final total = widget.total;
+    final clusterCount = widget.clusters.length;
+
+    return List.generate(clusterCount, (i) {
       final isTouched = i == touchedIndex;
       final cluster = widget.clusters[i];
-      final percentage = (cluster.count / total * 100).round();
+
+      // Value to display in chart
+      final value = total > 0 ? cluster.count.toDouble() : 1.0;
+      final percentage =
+          total > 0
+              ? ((cluster.count / total) * 100).round()
+              : 0; // show 0% if total = 0
+
       final fontSize = isTouched ? 16.0 : 14.0;
       final radius = isTouched ? 75.0 : 65.0;
       final badgeSize = isTouched ? 55.0 : 45.0;
 
       return PieChartSectionData(
         color: _getClusterColor(i),
-        value: cluster.count.toDouble(),
+        value: value,
         title: '$percentage%',
         radius: radius,
         titleStyle: TextStyle(
@@ -570,7 +584,7 @@ class _PieChartWithClusterInfoState extends State<PieChartWithClusterInfo>
           ],
         ),
         badgeWidget: _ClusterBadge(
-          commentCount: cluster.count,
+          commentCount: total > 0 ? cluster.count : 0,
           color: _getClusterColor(i),
           size: badgeSize * 0.8,
           isTouched: isTouched,

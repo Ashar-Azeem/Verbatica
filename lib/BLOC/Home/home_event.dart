@@ -134,4 +134,11 @@ class ToggleSaveOfForYouPosts extends HomeEvent {
   });
 }
 
+class RefreshEvent extends HomeEvent {
+  final String category;
+  final int userId;
+
+  const RefreshEvent({required this.category, required this.userId});
+}
+
 class ClearHomeBloc extends HomeEvent {}

@@ -77,6 +77,19 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
         emit(state.copyWith(news: news));
       }
     });
+    on<RefreshTrendingView>((event, emit) {
+      emit(
+        state.copyWith(
+          ads: [],
+          trending: [],
+          trendingInitialLoading: true,
+          trendingBottomLoading: true,
+        ),
+      );
+      page = 1;
+      vector = null;
+      add(FetchInitialTrendingPosts(userId: event.userId));
+    });
   }
   void addRecentPost(
     AddRecentPostInNews event,

@@ -98,3 +98,9 @@ class ToggleNotificationPostSaveStatus extends NotificationEvent {
   @override
   List<Object> get props => [userId, context];
 }
+
+class RefreshEvent extends NotificationEvent {
+  final int userId;
+
+  const RefreshEvent({required this.userId});
+}

@@ -170,4 +170,10 @@ class ToggleSaveOfTrendingPosts extends TrendingViewEvent {
   });
 }
 
+class RefreshTrendingView extends TrendingViewEvent {
+  final int userId;
+
+  const RefreshTrendingView({required this.userId});
+}
+
 class ClearTrendingBloc extends TrendingViewEvent {}

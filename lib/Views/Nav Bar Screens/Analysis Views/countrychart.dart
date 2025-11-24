@@ -125,36 +125,6 @@ class _CountrychartState extends State<Countrychart>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Animated title similar to EmotionalChart
-                  SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, -0.5),
-                      end: Offset.zero,
-                    ).animate(
-                      CurvedAnimation(
-                        parent: _chartController,
-                        curve: const Interval(
-                          0.1,
-                          0.6,
-                          curve: Curves.easeOutCubic,
-                        ),
-                      ),
-                    ),
-                    child: FadeTransition(
-                      opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
-                        CurvedAnimation(
-                          parent: _chartController,
-                          curve: const Interval(0.1, 0.6, curve: Curves.easeIn),
-                        ),
-                      ),
-                      child: Text(
-                        'Comment Distribution by Country',
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
                   const SizedBox(height: 16),
 
                   // Main chart area
@@ -274,40 +244,6 @@ class _CountrychartState extends State<Countrychart>
                     ),
                   ),
                   const SizedBox(height: 8),
-
-                  // Animated footer similar to EmotionalChart
-                  SlideTransition(
-                    position: Tween<Offset>(
-                      begin: const Offset(0, 0.5),
-                      end: Offset.zero,
-                    ).animate(
-                      CurvedAnimation(
-                        parent: _chartController,
-                        curve: const Interval(
-                          0.3,
-                          0.8,
-                          curve: Curves.easeOutCubic,
-                        ),
-                      ),
-                    ),
-                    child: FadeTransition(
-                      opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
-                        CurvedAnimation(
-                          parent: _chartController,
-                          curve: const Interval(0.3, 0.8, curve: Curves.easeIn),
-                        ),
-                      ),
-                      child: Text(
-                        'Geographical distribution of commenters',
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.textTheme.bodySmall?.color?.withOpacity(
-                            0.7,
-                          ),
-                          fontStyle: FontStyle.italic,
-                        ),
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ),

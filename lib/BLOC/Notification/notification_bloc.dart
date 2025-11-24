@@ -19,6 +19,10 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     on<MarkAllNotificationsAsRead>(_onMarkAllAsRead);
     on<UpVoteNotificationPost>(_onUpVoteNotificationPost);
     on<DownVoteNotificationPost>(_onDownVoteNotificationPost);
+    on<RefreshEvent>((event, emit) {
+      emit(state.copyWith(notifications: [], isLoading: true));
+      add(LoadNotifications(userId: event.userId));
+    });
   }
 
   void _onUpVoteNotificationPost(

@@ -68,6 +68,35 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         emit(state.copyWith(following: posts));
       }
     });
+    on<RefreshEvent>((event, emit) {
+      if (event.category == 'For You') {
+        emit(
+          state.copyWith(
+            forYou: [],
+            forYouInitialLoading: true,
+            ads: [],
+            hasMoreForYouPosts: true,
+          ),
+        );
+        forYouPage = 1;
+        forYouVector = null;
+        lastForYouPost = null;
+        add(FetchInitialForYouPosts(userId: event.userId));
+      } else {
+        emit(
+          state.copyWith(
+            following: [],
+            followingInitialLoading: true,
+            ads: [],
+            hasMoreFollowingPosts: true,
+            lastFollowingPostId: null,
+          ),
+        );
+        followingPage = 1;
+        followingVector = null;
+        add(FetchInitialFollowingPosts(userId: event.userId));
+      }
+    });
   }
   fetchInitialForYouPosts(
     FetchInitialForYouPosts event,

@@ -49,14 +49,6 @@ class _EmotionalChartState extends State<EmotionalChart>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final title =
-        widget.index == 1
-            ? 'Emotional Distribution Analysis'
-            : 'Gender Distribution Analysis';
-    final subtitle =
-        widget.index == 1
-            ? 'Distribution of emotions in comments'
-            : 'Distribution of genders in comments';
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -83,32 +75,6 @@ class _EmotionalChartState extends State<EmotionalChart>
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Title
-                Column(
-                  children: [
-                    Text(
-                      title,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.5,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.textTheme.bodySmall?.color?.withOpacity(
-                          0.7,
-                        ),
-                      ),
-                    ),
-                    Divider(
-                      color: theme.dividerColor.withOpacity(0.3),
-                      height: 24,
-                    ),
-                  ],
-                ),
-
                 // Pie Chart
                 AspectRatio(
                   aspectRatio: 1.2,

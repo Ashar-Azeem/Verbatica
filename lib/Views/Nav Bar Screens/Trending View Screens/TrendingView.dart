@@ -168,12 +168,22 @@ class _TrendingViewState extends State<TrendingView> {
                     physics: NeverScrollableScrollPhysics(),
                     children: [
                       // For You Tab
-                      BuiltPostList(
-                        posts: state.trending,
-                        loading: state.trendingInitialLoading,
-                        category: "Trending",
-                        ads: state.ads,
-                        hasMore: state.trendingBottomLoading,
+                      RefreshIndicator(
+                        onRefresh: () async {
+                          context.read<TrendingViewBloc>().add(
+                            RefreshTrendingView(
+                              userId: context.read<UserBloc>().state.user!.id,
+                            ),
+                          );
+                          await Future.delayed(Duration(seconds: 2));
+                        },
+                        child: BuiltPostList(
+                          posts: state.trending,
+                          loading: state.trendingInitialLoading,
+                          category: "Trending",
+                          ads: state.ads,
+                          hasMore: state.trendingBottomLoading,
+                        ),
                       ),
 
                       // Following Tab
@@ -437,25 +447,21 @@ class _BuiltPostListState extends State<BuiltPostList>
                       ),
                     ),
                   ),
-                  widget.news!.isEmpty
-                      ? Padding(
-                        padding: EdgeInsets.only(top: 6.h),
-                        child: ListView(
-                          shrinkWrap: true,
-                          children: [
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.6,
-                              child: Center(
-                                child: BuildEmptyTabContent(
-                                  icon: Icons.article_outlined,
-                                  message: 'No news',
-                                ),
-                              ),
+                  if (widget.news!.isEmpty)
+                    ListView(
+                      shrinkWrap: true,
+                      children: [
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.6,
+                          child: Center(
+                            child: BuildEmptyTabContent(
+                              icon: Icons.article_outlined,
+                              message: 'No news',
                             ),
-                          ],
+                          ),
                         ),
-                      )
-                      : SizedBox.shrink(),
+                      ],
+                    ),
                 ],
               )
               : NewsView(index: index - 1, news: widget.news![index - 1]);

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:sizer/sizer.dart';
 import 'package:verbatica/BLOC/Notification/notification_bloc.dart';
 import 'package:verbatica/BLOC/Notification/notification_event.dart';
 import 'package:verbatica/BLOC/Notification/notification_state.dart';
 import 'package:verbatica/BLOC/User%20bloc/user_bloc.dart';
+import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/model/notification.dart';
 
 class NotificationScreen extends StatefulWidget {
@@ -46,8 +49,9 @@ class _NotificationScreenState extends State<NotificationScreen> {
         builder: (context, state) {
           if (state.isLoading) {
             return Center(
-              child: CircularProgressIndicator(
-                color: Theme.of(context).colorScheme.primary,
+              child: LoadingAnimationWidget.dotsTriangle(
+                color: primaryColor,
+                size: 10.w,
               ),
             );
           } else if (state.error != null) {
@@ -116,141 +120,149 @@ class _NotificationScreenState extends State<NotificationScreen> {
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10),
-            child: CustomScrollView(
-              shrinkWrap: true,
-              // Using AlwaysScrollable ensures it drags even if content is small
-              physics: const BouncingScrollPhysics(
-                parent: AlwaysScrollableScrollPhysics(),
-              ),
-              slivers: [
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Today',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color:
-                                Theme.of(context).textTheme.titleLarge?.color,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            context.read<NotificationBloc>().add(
-                              const MarkAllNotificationsAsRead(),
-                            );
-                          },
-                          child: Text(
-                            'Mark all as read',
+            child: RefreshIndicator(
+              onRefresh: () async {
+                context.read<NotificationBloc>().add(
+                  RefreshEvent(userId: context.read<UserBloc>().state.user!.id),
+                );
+                await Future.delayed(Duration(seconds: 2));
+              },
+              child: CustomScrollView(
+                shrinkWrap: true,
+                // Using AlwaysScrollable ensures it drags even if content is small
+                physics: const BouncingScrollPhysics(
+                  parent: AlwaysScrollableScrollPhysics(),
+                ),
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Today',
                             style: TextStyle(
-                              fontSize: 14,
-                              color: Theme.of(context).colorScheme.primary,
-                              fontWeight: FontWeight.w500,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  Theme.of(context).textTheme.titleLarge?.color,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              context.read<NotificationBloc>().add(
+                                const MarkAllNotificationsAsRead(),
+                              );
+                            },
+                            child: Text(
+                              'Mark all as read',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (todayNotifications.isEmpty)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Center(
+                          child: Text(
+                            'No new notifications today',
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                              fontSize: 15,
                             ),
                           ),
                         ),
-                      ],
+                      ),
+                    )
+                  else
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final notification = todayNotifications[index];
+                        return NotificationTile(
+                          notification: notification,
+                          onTap: () {},
+                        );
+                      }, childCount: todayNotifications.length),
                     ),
-                  ),
-                ),
-                if (todayNotifications.isEmpty)
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Center(
-                        child: Text(
-                          'No new notifications today',
-                          style: TextStyle(
-                            color: Theme.of(
-                              context,
-                            ).textTheme.bodyMedium?.color?.withOpacity(0.6),
-                            fontSize: 15,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Earlier',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  Theme.of(context).textTheme.titleLarge?.color,
+                              letterSpacing: 0.5,
+                            ),
                           ),
-                        ),
+                          GestureDetector(
+                            onTap: () {
+                              context.read<NotificationBloc>().add(
+                                const ClearAllNotifications(),
+                              );
+                            },
+                            child: Text(
+                              'Clear all',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.red[300],
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  )
-                else
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      final notification = todayNotifications[index];
-                      return NotificationTile(
-                        notification: notification,
-                        onTap: () {},
-                      );
-                    }, childCount: todayNotifications.length),
                   ),
-                SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Earlier',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color:
-                                Theme.of(context).textTheme.titleLarge?.color,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            context.read<NotificationBloc>().add(
-                              const ClearAllNotifications(),
-                            );
-                          },
+                  if (earlierNotifications.isEmpty)
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Center(
                           child: Text(
-                            'Clear all',
+                            'No earlier notifications',
                             style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.red[300],
-                              fontWeight: FontWeight.w500,
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.color?.withOpacity(0.6),
+                              fontSize: 15,
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                ),
-                if (earlierNotifications.isEmpty)
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16.0),
-                      child: Center(
-                        child: Text(
-                          'No earlier notifications',
-                          style: TextStyle(
-                            color: Theme.of(
-                              context,
-                            ).textTheme.bodyMedium?.color?.withOpacity(0.6),
-                            fontSize: 15,
-                          ),
-                        ),
                       ),
+                    )
+                  else
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate((context, index) {
+                        final notification = earlierNotifications[index];
+                        return NotificationTile(
+                          notification: notification,
+                          onTap: () {},
+                        );
+                      }, childCount: earlierNotifications.length),
                     ),
-                  )
-                else
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate((context, index) {
-                      final notification = earlierNotifications[index];
-                      return NotificationTile(
-                        notification: notification,
-                        onTap: () {},
-                      );
-                    }, childCount: earlierNotifications.length),
-                  ),
 
-                // Add bottom padding for better scrolling
-                const SliverToBoxAdapter(child: SizedBox(height: 24)),
-              ],
+                  // Add bottom padding for better scrolling
+                  const SliverToBoxAdapter(child: SizedBox(height: 24)),
+                ],
+              ),
             ),
           );
         },
