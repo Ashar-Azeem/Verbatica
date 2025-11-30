@@ -37,14 +37,29 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<UpdateCommentCountOfAPost>((event, emit) {
       if (event.category == "saved") {
         List<Post> posts = List.from(state.savedPosts);
+        List<String> newCluster = posts[event.postIndex].clusters!;
+        if (posts[event.postIndex].isAutomatedClusters &&
+            event.clusters != null &&
+            !newCluster.contains(event.clusters)) {
+          newCluster.add(event.clusters!);
+        }
         posts[event.postIndex] = posts[event.postIndex].copyWith(
           comments: posts[event.postIndex].comments + 1,
+          clusters: newCluster,
         );
         emit(state.copyWith(savedPosts: posts));
       } else {
         List<Post> posts = List.from(state.userPosts);
+        List<String> newCluster = posts[event.postIndex].clusters!;
+        //Update the clusters when isAutomatedCluster is TRUE
+        if (posts[event.postIndex].isAutomatedClusters &&
+            event.clusters != null &&
+            !newCluster.contains(event.clusters)) {
+          newCluster.add(event.clusters!);
+        }
         posts[event.postIndex] = posts[event.postIndex].copyWith(
           comments: posts[event.postIndex].comments + 1,
+          clusters: newCluster,
         );
         emit(state.copyWith(userPosts: posts));
       }

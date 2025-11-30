@@ -18,6 +18,7 @@ class Post extends Equatable implements FeedItem {
   final int downvotes;
   final int comments;
   final DateTime uploadTime;
+  final bool isAutomatedClusters;
   final bool isSaved;
   final List<String>? clusters;
   final String publicKey;
@@ -25,6 +26,7 @@ class Post extends Equatable implements FeedItem {
     required this.id,
     required this.isSaved,
     required this.publicKey,
+    required this.isAutomatedClusters,
     required this.name,
     required this.userId,
     required this.avatar,
@@ -81,6 +83,7 @@ class Post extends Equatable implements FeedItem {
       isDownVote: json['isDownVote'],
       comments: json['comments'] ?? 0,
       publicKey: json['public_key'],
+      isAutomatedClusters: json['isAutomatedClusters'],
       isSaved: json['isSaved'],
       uploadTime: DateTime.parse(json['uploadTime']).toLocal(),
       clusters:
@@ -102,6 +105,7 @@ class Post extends Equatable implements FeedItem {
     bool? isDebate,
     int? upvotes,
     int? downvotes,
+    bool? isAutomatedClusters,
     bool? isUpVote,
     String? publicKey,
     bool? isDownVote,
@@ -115,6 +119,7 @@ class Post extends Equatable implements FeedItem {
       publicKey: publicKey ?? this.publicKey,
       name: name ?? this.name,
       userId: userId ?? this.userId,
+      isAutomatedClusters: isAutomatedClusters ?? this.isAutomatedClusters,
       isSaved: isSaved ?? this.isSaved,
       avatar: avatar ?? this.avatar,
       title: title ?? this.title,
@@ -147,6 +152,7 @@ class Post extends Equatable implements FeedItem {
     upvotes,
     downvotes,
     comments,
+    isAutomatedClusters,
     uploadTime,
     isUpVote,
     isSaved,

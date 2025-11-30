@@ -116,10 +116,12 @@ class SyncDownvotePostsOfOtherTab extends HomeEvent {
 
 class UpdateCommentCountOfAPost extends HomeEvent {
   final int postIndex;
+  final String? clusters;
   final String category;
 
   const UpdateCommentCountOfAPost({
     required this.postIndex,
+    required this.clusters,
     required this.category,
   });
 }

@@ -150,10 +150,12 @@ class UpdateCommentCountOfAPost extends TrendingViewEvent {
   final int postIndex;
   final String category;
   final int? newIndex;
+  final String? clusters;
 
   const UpdateCommentCountOfAPost({
     required this.postIndex,
     required this.category,
+    required this.clusters,
     this.newIndex,
   });
 }

@@ -38,16 +38,30 @@ class TrendingViewBloc extends Bloc<TrendingViewEvent, TrendingViewState> {
     on<UpdateCommentCountOfAPost>((event, emit) {
       if (event.category == 'Trending') {
         List<Post> posts = List.from(state.trending);
+        List<String> newCluster = posts[event.postIndex].clusters!;
+        if (posts[event.postIndex].isAutomatedClusters &&
+            event.clusters != null &&
+            !newCluster.contains(event.clusters)) {
+          newCluster.add(event.clusters!);
+        }
         posts[event.postIndex] = posts[event.postIndex].copyWith(
           comments: posts[event.postIndex].comments + 1,
+          clusters: newCluster,
         );
         emit(state.copyWith(trending: posts));
       } else {
         List<News> news = List.from(state.news);
         List<Post> posts = List.from(news[event.newIndex!].discussions);
 
+        List<String> newCluster = posts[event.postIndex].clusters!;
+        if (posts[event.postIndex].isAutomatedClusters &&
+            event.clusters != null &&
+            !newCluster.contains(event.clusters)) {
+          newCluster.add(event.clusters!);
+        }
         posts[event.postIndex] = posts[event.postIndex].copyWith(
           comments: posts[event.postIndex].comments + 1,
+          clusters: newCluster,
         );
         news[event.newIndex!] = news[event.newIndex!].copyWith(
           discussions: posts,

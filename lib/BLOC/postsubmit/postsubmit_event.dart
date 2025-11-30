@@ -65,8 +65,12 @@ class DownVoteSimilarPosts extends PostEvent {
 
 class UpdateCommentCountOfAPostInSimilarPosts extends PostEvent {
   final int postIndex;
+  final String? clusters;
 
-  const UpdateCommentCountOfAPostInSimilarPosts({required this.postIndex});
+  const UpdateCommentCountOfAPostInSimilarPosts({
+    required this.postIndex,
+    required this.clusters,
+  });
 }
 
 class ToggleSaveOfSimilarPosts extends PostEvent {

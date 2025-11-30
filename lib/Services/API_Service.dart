@@ -21,7 +21,7 @@ import 'package:verbatica/model/user.dart';
 class ApiService {
   final Dio _dio = Dio(
       BaseOptions(
-        baseUrl: 'https://seamus-dialectical-blusteringly.ngrok-free.dev/api/',
+        baseUrl: 'https://192.168.100.103:4000/api/',
         connectTimeout: const Duration(seconds: 20),
         receiveTimeout: const Duration(seconds: 20),
         headers: {'Content-Type': 'application/json'},
@@ -277,6 +277,7 @@ class ApiService {
     int avatarId,
     String? newsId,
     String publicKey,
+    bool isAutomatedCluster,
   ) async {
     try {
       final response = await _dio.post(
@@ -294,6 +295,7 @@ class ApiService {
           "iv": iv,
           "newsId": newsId,
           "publicKey": publicKey,
+          "isAutomatedClusters": isAutomatedCluster,
         },
         options: Options(
           sendTimeout: const Duration(minutes: 10),
@@ -791,6 +793,8 @@ class ApiService {
     Uint8List iv,
     String? parentComment,
     int? parentCommentUserId,
+    String descriptionOfThePost,
+    bool isAutomatedClusters,
   ) async {
     try {
       final response = await _dio.post(
@@ -810,6 +814,8 @@ class ApiService {
           "uploadTime": uploadTime.toUtc().toIso8601String(),
           "parentComment": parentComment,
           "parentCommentUserId": parentCommentUserId,
+          "descriptionOfThePost": descriptionOfThePost,
+          "isAutomatedCluster": isAutomatedClusters,
         },
       );
 

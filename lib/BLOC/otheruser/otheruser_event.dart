@@ -75,8 +75,12 @@ class SyncDownvoteotherPost extends OtheruserEvent {
 
 class UpdateCommentCountOfAPost extends OtheruserEvent {
   final int postIndex;
+  final String? clusters;
 
-  const UpdateCommentCountOfAPost({required this.postIndex});
+  const UpdateCommentCountOfAPost({
+    required this.postIndex,
+    required this.clusters,
+  });
 }
 
 class ToggleSave extends OtheruserEvent {

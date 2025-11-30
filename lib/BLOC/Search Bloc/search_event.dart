@@ -68,8 +68,12 @@ class Reset extends SearchEvent {
 
 class UpdateCommentCountOfAPost extends SearchEvent {
   final int postIndex;
+  final String? clusters;
 
-  const UpdateCommentCountOfAPost({required this.postIndex});
+  const UpdateCommentCountOfAPost({
+    required this.postIndex,
+    required this.clusters,
+  });
 }
 
 class ToggleSaveOfSearchedPosts extends SearchEvent {

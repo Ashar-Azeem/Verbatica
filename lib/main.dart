@@ -34,7 +34,7 @@ void main() async {
         BlocProvider<UserBloc>(create: (context) => UserBloc()),
         BlocProvider<OtheruserBloc>(create: (context) => OtheruserBloc()),
         BlocProvider<PostBloc>(create: (context) => PostBloc()),
-         BlocProvider<NotificationBloc>(create: (context) => NotificationBloc()),
+        BlocProvider<NotificationBloc>(create: (context) => NotificationBloc()),
         BlocProvider<VotesRestrictorBloc>(
           create: (context) => VotesRestrictorBloc(),
         ),

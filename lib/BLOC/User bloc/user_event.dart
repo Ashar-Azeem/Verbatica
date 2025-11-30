@@ -117,8 +117,13 @@ class AddNewComment extends UserEvent {
 class UpdateCommentCountOfAPost extends UserEvent {
   final int postIndex;
   final String category;
+  final String? clusters;
 
-  UpdateCommentCountOfAPost({required this.category, required this.postIndex});
+  UpdateCommentCountOfAPost({
+    required this.clusters,
+    required this.category,
+    required this.postIndex,
+  });
 }
 
 class SubmitReport extends UserEvent {

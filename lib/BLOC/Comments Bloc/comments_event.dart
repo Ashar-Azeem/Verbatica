@@ -65,9 +65,13 @@ class UploadComment extends CommentsEvent {
   final List<String>? clusters;
   final TextEditingController commentController;
   final String postId;
+  final String postDescription;
+  final bool isAutomatedClusters;
   final BuildContext context;
   const UploadComment({
     required this.category,
+    required this.postDescription,
+    required this.isAutomatedClusters,
     this.newsIndex,
     required this.comment,
     required this.context,

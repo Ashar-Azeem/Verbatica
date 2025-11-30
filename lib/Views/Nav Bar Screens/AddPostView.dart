@@ -33,11 +33,11 @@ class CreatePostScreen extends StatefulWidget {
 }
 
 class _CreatePostScreenState extends State<CreatePostScreen> {
-  // Add this in your state class
   List<String> clusterNames = ['', ''];
   List<String> validCluster = [];
   List<TextEditingController> controllers = [];
   bool isLoading = false;
+  bool isAutomatedClusters = false;
 
   @override
   void initState() {
@@ -340,6 +340,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                       id: '999',
                       publicKey: "dummy",
                       clusters: validCluster,
+                      isAutomatedClusters: isAutomatedClusters,
                     );
 
                     context.read<PostBloc>().add(
@@ -384,6 +385,7 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                   isUpVote: false,
                                   publicKey: 'dummy',
                                   isDownVote: false,
+                                  isAutomatedClusters: isAutomatedClusters,
                                   comments: 0,
                                   uploadTime: DateTime.now(),
                                   id: '999',
@@ -520,7 +522,8 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                               }
 
                               if (polarity == 'Polarize' &&
-                                  validCluster.length < 2) {
+                                  (!isAutomatedClusters &&
+                                      validCluster.length < 2)) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     backgroundColor:
@@ -929,213 +932,296 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           // Polarize Clusters Section
                           if (polarity == 'Polarize')
                             Padding(
-                              padding: const EdgeInsets.only(top: 24.0),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).cardColor,
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(16.0),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          const Icon(
-                                            Icons.people,
-                                            color: Colors.blue,
-                                            size: 20,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            "Add Cluster Names",
-                                            style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold,
-                                              color: Theme.of(context)
-                                                  .textTheme
-                                                  .bodyMedium
-                                                  ?.color
-                                                  ?.withOpacity(0.6),
-                                            ),
-                                          ),
-                                          const Spacer(),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 8,
-                                              vertical: 4,
-                                            ),
-                                            decoration: BoxDecoration(
-                                              color: Colors.blue.withOpacity(
-                                                0.1,
-                                              ),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: const Text(
-                                              "Min. 2 required",
-                                              style: TextStyle(
-                                                color: Colors.blue,
-                                                fontSize: 12,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                              padding: const EdgeInsets.only(top: 16.0),
+                              child: Column(
+                                children: [
+                                  CheckboxListTile(
+                                    contentPadding: EdgeInsets.zero,
+
+                                    title: Text(
+                                      "Use AI-generated clusters for this post",
+                                      style: TextStyle(
+                                        fontSize: 3.5.w,
+                                        fontWeight: FontWeight.w600,
+                                        color: const Color.fromARGB(
+                                          255,
+                                          166,
+                                          165,
+                                          165,
+                                        ),
                                       ),
-                                      const SizedBox(height: 16),
-
-                                      // Cluster input fields
-                                      ...List.generate(clusterNames.length, (
-                                        index,
-                                      ) {
-                                        return Padding(
-                                          padding: const EdgeInsets.only(
-                                            bottom: 12,
+                                    ),
+                                    value: isAutomatedClusters,
+                                    onChanged: (bool? value) {
+                                      setState(() {
+                                        isAutomatedClusters = value!;
+                                      });
+                                    },
+                                    side: const BorderSide(
+                                      color: Color.fromARGB(255, 167, 165, 165),
+                                      width: 2, // border width
+                                    ),
+                                    controlAffinity:
+                                        ListTileControlAffinity.leading,
+                                    checkboxShape: RoundedRectangleBorder(
+                                      borderRadius:
+                                          BorderRadiusGeometry.circular(4),
+                                    ),
+                                  ),
+                                  Stack(
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).cardColor,
+                                          borderRadius: BorderRadius.circular(
+                                            16,
                                           ),
-                                          child: Row(
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(16.0),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
-                                              CircleAvatar(
-                                                radius: 12,
-                                                backgroundColor: Colors.blue
-                                                    .withOpacity(0.2),
-                                                child: Text(
-                                                  "${index + 1}",
-                                                  style: const TextStyle(
+                                              Row(
+                                                children: [
+                                                  const Icon(
+                                                    Icons.people,
                                                     color: Colors.blue,
-                                                    fontSize: 12,
-                                                    fontWeight: FontWeight.bold,
+                                                    size: 20,
                                                   ),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 12),
-                                              Expanded(
-                                                child: TextField(
-                                                  autofocus:
-                                                      false, // 👈 remove this or set false
-
-                                                  style: TextStyle(
-                                                    color:
-                                                        Theme.of(context)
-                                                            .textTheme
-                                                            .bodyLarge
-                                                            ?.color,
-                                                  ),
-                                                  controller:
-                                                      controllers[index],
-                                                  decoration: InputDecoration(
-                                                    hintText:
-                                                        "Enter cluster name",
-                                                    hintStyle: TextStyle(
+                                                  const SizedBox(width: 8),
+                                                  Text(
+                                                    "Add Cluster Names",
+                                                    style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                       color: Theme.of(context)
                                                           .textTheme
                                                           .bodyMedium
                                                           ?.color
                                                           ?.withOpacity(0.6),
                                                     ),
-                                                    contentPadding:
+                                                  ),
+                                                  const Spacer(),
+                                                  Container(
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          horizontal: 8,
+                                                          vertical: 4,
+                                                        ),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.blue
+                                                          .withOpacity(0.1),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            12,
+                                                          ),
+                                                    ),
+                                                    child: const Text(
+                                                      "Min. 2 required",
+                                                      style: TextStyle(
+                                                        color: Colors.blue,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 16),
+
+                                              // Cluster input fields
+                                              ...List.generate(clusterNames.length, (
+                                                index,
+                                              ) {
+                                                return Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                        bottom: 12,
+                                                      ),
+                                                  child: Row(
+                                                    children: [
+                                                      CircleAvatar(
+                                                        radius: 12,
+                                                        backgroundColor: Colors
+                                                            .blue
+                                                            .withOpacity(0.2),
+                                                        child: Text(
+                                                          "${index + 1}",
+                                                          style:
+                                                              const TextStyle(
+                                                                color:
+                                                                    Colors.blue,
+                                                                fontSize: 12,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                      const SizedBox(width: 12),
+                                                      Expanded(
+                                                        child: TextField(
+                                                          autofocus:
+                                                              false, // 👈 remove this or set false
+
+                                                          style: TextStyle(
+                                                            color:
+                                                                Theme.of(
+                                                                      context,
+                                                                    )
+                                                                    .textTheme
+                                                                    .bodyLarge
+                                                                    ?.color,
+                                                          ),
+                                                          controller:
+                                                              controllers[index],
+                                                          decoration: InputDecoration(
+                                                            hintText:
+                                                                "Enter cluster name",
+                                                            hintStyle: TextStyle(
+                                                              color: Theme.of(
+                                                                    context,
+                                                                  )
+                                                                  .textTheme
+                                                                  .bodyMedium
+                                                                  ?.color
+                                                                  ?.withOpacity(
+                                                                    0.6,
+                                                                  ),
+                                                            ),
+                                                            contentPadding:
+                                                                const EdgeInsets.symmetric(
+                                                                  horizontal:
+                                                                      16,
+                                                                  vertical: 12,
+                                                                ),
+                                                            filled: true,
+                                                            fillColor:
+                                                                Theme.of(
+                                                                          context,
+                                                                        ).brightness ==
+                                                                        Brightness
+                                                                            .dark
+                                                                    ? Theme.of(
+                                                                          context,
+                                                                        )
+                                                                        .colorScheme
+                                                                        .surface
+                                                                        .withOpacity(
+                                                                          0.3,
+                                                                        )
+                                                                    : Theme.of(
+                                                                          context,
+                                                                        )
+                                                                        .colorScheme
+                                                                        .surfaceContainerHighest
+                                                                        .withOpacity(
+                                                                          0.3,
+                                                                        ),
+                                                            border: OutlineInputBorder(
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    10,
+                                                                  ),
+                                                              borderSide:
+                                                                  BorderSide
+                                                                      .none,
+                                                            ),
+                                                          ),
+                                                          onChanged:
+                                                              (value) =>
+                                                                  clusterNames[index] =
+                                                                      value,
+                                                        ),
+                                                      ),
+                                                      if (index >=
+                                                          2) // Show remove button only for extra fields
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets.only(
+                                                                left: 8.0,
+                                                              ),
+                                                          child: IconButton(
+                                                            icon: const Icon(
+                                                              Icons
+                                                                  .remove_circle,
+                                                              color: Colors.red,
+                                                              size: 22,
+                                                            ),
+                                                            onPressed: () {
+                                                              setState(() {
+                                                                clusterNames
+                                                                    .removeAt(
+                                                                      index,
+                                                                    );
+                                                                controllers
+                                                                    .removeAt(
+                                                                      index,
+                                                                    )
+                                                                    .dispose();
+                                                              });
+                                                            },
+                                                          ),
+                                                        ),
+                                                    ],
+                                                  ),
+                                                );
+                                              }),
+
+                                              // Add more clusters button
+                                              Center(
+                                                child: TextButton.icon(
+                                                  onPressed: () {
+                                                    setState(() {
+                                                      clusterNames.add('');
+                                                      controllers.add(
+                                                        TextEditingController(),
+                                                      );
+                                                    });
+                                                  },
+                                                  icon: const Icon(
+                                                    Icons.add_circle_outline,
+                                                    size: 18,
+                                                  ),
+                                                  label: const Text(
+                                                    "Add Another Cluster",
+                                                  ),
+                                                  style: TextButton.styleFrom(
+                                                    foregroundColor:
+                                                        Colors.blue,
+                                                    padding:
                                                         const EdgeInsets.symmetric(
                                                           horizontal: 16,
                                                           vertical: 12,
                                                         ),
-                                                    filled: true,
-                                                    fillColor:
-                                                        Theme.of(
-                                                                  context,
-                                                                ).brightness ==
-                                                                Brightness.dark
-                                                            ? Theme.of(context)
-                                                                .colorScheme
-                                                                .surface
-                                                                .withOpacity(
-                                                                  0.3,
-                                                                )
-                                                            : Theme.of(context)
-                                                                .colorScheme
-                                                                .surfaceContainerHighest
-                                                                .withOpacity(
-                                                                  0.3,
-                                                                ),
-                                                    border: OutlineInputBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            10,
-                                                          ),
-                                                      borderSide:
-                                                          BorderSide.none,
-                                                    ),
                                                   ),
-                                                  onChanged:
-                                                      (value) =>
-                                                          clusterNames[index] =
-                                                              value,
                                                 ),
                                               ),
-                                              if (index >=
-                                                  2) // Show remove button only for extra fields
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                        left: 8.0,
-                                                      ),
-                                                  child: IconButton(
-                                                    icon: const Icon(
-                                                      Icons.remove_circle,
-                                                      color: Colors.red,
-                                                      size: 22,
-                                                    ),
-                                                    onPressed: () {
-                                                      setState(() {
-                                                        clusterNames.removeAt(
-                                                          index,
-                                                        );
-                                                        controllers
-                                                            .removeAt(index)
-                                                            .dispose();
-                                                      });
-                                                    },
-                                                  ),
-                                                ),
                                             ],
-                                          ),
-                                        );
-                                      }),
-
-                                      const SizedBox(height: 16),
-
-                                      // Add more clusters button
-                                      Center(
-                                        child: TextButton.icon(
-                                          onPressed: () {
-                                            setState(() {
-                                              clusterNames.add('');
-                                              controllers.add(
-                                                TextEditingController(),
-                                              );
-                                            });
-                                          },
-                                          icon: const Icon(
-                                            Icons.add_circle_outline,
-                                            size: 18,
-                                          ),
-                                          label: const Text(
-                                            "Add Another Cluster",
-                                          ),
-                                          style: TextButton.styleFrom(
-                                            foregroundColor: Colors.blue,
-                                            padding: const EdgeInsets.symmetric(
-                                              horizontal: 16,
-                                              vertical: 12,
-                                            ),
                                           ),
                                         ),
                                       ),
+
+                                      if (isAutomatedClusters)
+                                        Positioned.fill(
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: Theme.of(
+                                                context,
+                                              ).cardColor.withOpacity(0.6),
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                            ),
+                                          ),
+                                        ),
                                     ],
                                   ),
-                                ),
+                                ],
                               ),
                             ),
 

@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously, library_prefixes
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -132,6 +131,8 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
       iv,
       state.replyToComment?.text,
       state.replyToComment?.userId,
+      event.postDescription,
+      event.isAutomatedClusters,
     );
     List<Comment> comments = List.from(state.comments);
 
@@ -159,13 +160,17 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
 
     if (event.category == 'other') {
       event.context.read<OtherUserBloc.OtheruserBloc>().add(
-        OtherUserBloc.UpdateCommentCountOfAPost(postIndex: event.index),
+        OtherUserBloc.UpdateCommentCountOfAPost(
+          postIndex: event.index,
+          clusters: comment.cluster,
+        ),
       );
     } else if (event.category == 'saved' || event.category == 'user') {
       event.context.read<userBloc.UserBloc>().add(
         userEvent.UpdateCommentCountOfAPost(
           postIndex: event.index,
           category: event.category,
+          clusters: comment.cluster,
         ),
       );
     } else if (event.category == 'Trending' ||
@@ -175,6 +180,7 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
           postIndex: event.index,
           category: event.category,
           newIndex: event.newsIndex,
+          clusters: comment.cluster,
         ),
       );
     } else if (event.category == 'ForYou' || event.category == 'Following') {
@@ -182,15 +188,22 @@ class CommentsBloc extends Bloc<CommentsEvent, CommentsState> {
         HomeBloc.UpdateCommentCountOfAPost(
           postIndex: event.index,
           category: event.category,
+          clusters: comment.cluster,
         ),
       );
     } else if (event.category == 'searched') {
       event.context.read<SearchBloc>().add(
-        UpdateCommentCountOfAPost(postIndex: event.index),
+        UpdateCommentCountOfAPost(
+          postIndex: event.index,
+          clusters: comment.cluster,
+        ),
       );
     } else if (event.category == 'similarPosts') {
       event.context.read<PostBloc>().add(
-        UpdateCommentCountOfAPostInSimilarPosts(postIndex: event.index),
+        UpdateCommentCountOfAPostInSimilarPosts(
+          postIndex: event.index,
+          clusters: comment.cluster,
+        ),
       );
     }
     emit(

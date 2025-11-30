@@ -333,11 +333,11 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                   );
                                 },
                               ),
-                               if (widget.category == 'notification')
+                            if (widget.category == 'notification')
                               BlocBuilder<NotificationBloc, NotificationState>(
                                 builder: (context, state) {
-                                  
-                                Post dynamicpost = state.onViewPost ?? widget.post;
+                                  Post dynamicpost =
+                                      state.onViewPost ?? widget.post;
 
                                   // context.read<CommentsBloc>().add(
                                   //   UpdateCommentCount(
@@ -656,6 +656,10 @@ class _ViewDiscussionState extends State<ViewDiscussion>
                                           postId: widget.post.id,
                                           index: widget.index,
                                           category: widget.category,
+                                          postDescription:
+                                              widget.post.description,
+                                          isAutomatedClusters:
+                                              widget.post.isAutomatedClusters,
                                           newsIndex: widget.newIndex,
                                         ),
                                       );

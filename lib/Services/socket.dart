@@ -10,7 +10,7 @@ class SocketService {
 
   void connect(String userId) {
     socket = IO.io(
-      'https://seamus-dialectical-blusteringly.ngrok-free.dev',
+      'https://192.168.100.103:4000',
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .enableAutoConnect()

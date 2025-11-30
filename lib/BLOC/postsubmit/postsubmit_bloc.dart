@@ -1,4 +1,6 @@
 // BLoC
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,8 +27,15 @@ class PostBloc extends Bloc<PostEvent, PostState> {
     on<DownVoteSimilarPosts>(downVoteSimilarPosts);
     on<UpdateCommentCountOfAPostInSimilarPosts>((event, emit) {
       List<Post> posts = List.from(state.similarPosts);
+      List<String> newCluster = posts[event.postIndex].clusters!;
+      if (posts[event.postIndex].isAutomatedClusters &&
+          event.clusters != null &&
+          !newCluster.contains(event.clusters)) {
+        newCluster.add(event.clusters!);
+      }
       posts[event.postIndex] = posts[event.postIndex].copyWith(
         comments: posts[event.postIndex].comments + 1,
+        clusters: newCluster,
       );
       emit(state.copyWith(similarPosts: posts));
     });
@@ -118,6 +127,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
           event.post.avatar,
           event.newsId,
           event.context.read<UserBloc>().state.user!.publicKey,
+          event.post.isAutomatedClusters,
         );
 
         event.context.read<UserBloc>().add(AddRecentPost(post: post));
@@ -165,6 +175,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
           event.post.avatar,
           event.newsId,
           event.context.read<UserBloc>().state.user!.publicKey,
+          event.post.isAutomatedClusters,
         );
 
         event.context.read<UserBloc>().add(AddRecentPost(post: post));
@@ -204,6 +215,7 @@ class PostBloc extends Bloc<PostEvent, PostState> {
           event.post.avatar,
           event.newsId,
           event.context.read<UserBloc>().state.user!.publicKey,
+          event.post.isAutomatedClusters,
         );
 
         event.context.read<UserBloc>().add(AddRecentPost(post: post));
