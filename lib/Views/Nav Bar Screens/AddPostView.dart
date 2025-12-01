@@ -932,54 +932,73 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                           // Polarize Clusters Section
                           if (polarity == 'Polarize')
                             Padding(
-                              padding: const EdgeInsets.only(top: 16.0),
-                              child: Column(
-                                children: [
-                                  CheckboxListTile(
-                                    contentPadding: EdgeInsets.zero,
-
-                                    title: Text(
-                                      "Use AI-generated clusters for this post",
-                                      style: TextStyle(
-                                        fontSize: 3.5.w,
-                                        fontWeight: FontWeight.w600,
-                                        color: const Color.fromARGB(
-                                          255,
-                                          166,
-                                          165,
-                                          165,
+                              padding: const EdgeInsets.only(top: 20.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).cardColor,
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(left: 2.w),
+                                      child: Theme(
+                                        data: Theme.of(context).copyWith(
+                                          splashFactory: NoSplash.splashFactory,
+                                        ),
+                                        child: CheckboxListTile(
+                                          contentPadding: EdgeInsets.zero,
+                                          title: Text(
+                                            "Use AI-generated clusters for this post",
+                                            style: TextStyle(
+                                              fontSize: 3.5.w,
+                                              fontWeight: FontWeight.w700,
+                                              color: const Color.fromARGB(
+                                                255,
+                                                166,
+                                                165,
+                                                165,
+                                              ),
+                                            ),
+                                          ),
+                                          value: isAutomatedClusters,
+                                          onChanged: (bool? value) {
+                                            setState(() {
+                                              isAutomatedClusters = value!;
+                                            });
+                                          },
+                                          side: const BorderSide(
+                                            color: Color.fromARGB(
+                                              255,
+                                              167,
+                                              165,
+                                              165,
+                                            ),
+                                            width: 2, // border width
+                                          ),
+                                          controlAffinity:
+                                              ListTileControlAffinity.leading,
+                                          checkboxShape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadiusGeometry.circular(
+                                                  4,
+                                                ),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                    value: isAutomatedClusters,
-                                    onChanged: (bool? value) {
-                                      setState(() {
-                                        isAutomatedClusters = value!;
-                                      });
-                                    },
-                                    side: const BorderSide(
-                                      color: Color.fromARGB(255, 167, 165, 165),
-                                      width: 2, // border width
+                                    Divider(
+                                      color: Theme.of(context).dividerColor,
+                                      height: 1,
+                                      thickness: 1,
+                                      indent: 3.w,
+                                      endIndent: 3.w,
                                     ),
-                                    controlAffinity:
-                                        ListTileControlAffinity.leading,
-                                    checkboxShape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadiusGeometry.circular(4),
-                                    ),
-                                  ),
-                                  Stack(
-                                    children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(context).cardColor,
-                                          borderRadius: BorderRadius.circular(
-                                            16,
-                                          ),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(16.0),
-                                          child: Column(
+                                    Padding(
+                                      padding: const EdgeInsets.all(16.0),
+                                      child: Stack(
+                                        children: [
+                                          Column(
                                             mainAxisSize: MainAxisSize.min,
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
@@ -1204,24 +1223,23 @@ class _CreatePostScreenState extends State<CreatePostScreen> {
                                               ),
                                             ],
                                           ),
-                                        ),
-                                      ),
-
-                                      if (isAutomatedClusters)
-                                        Positioned.fill(
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: Theme.of(
-                                                context,
-                                              ).cardColor.withOpacity(0.6),
-                                              borderRadius:
-                                                  BorderRadius.circular(16),
+                                          if (isAutomatedClusters)
+                                            Positioned.fill(
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  color: Theme.of(
+                                                    context,
+                                                  ).cardColor.withOpacity(0.6),
+                                                  borderRadius:
+                                                      BorderRadius.circular(16),
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ],
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
 
