@@ -86,8 +86,6 @@ class downvotesavedPost extends UserEvent {
   downvotesavedPost({required this.index});
 }
 
-class UpdateAura extends UserEvent {}
-
 class AddRecentPost extends UserEvent {
   final Post post;
 

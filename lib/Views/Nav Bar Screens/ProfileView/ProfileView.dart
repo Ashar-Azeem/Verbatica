@@ -37,7 +37,6 @@ class _ProfileViewState extends State<ProfileView>
     super.initState();
     context.read<UserBloc>().add(updateCommentWithPost());
     context.read<UserBloc>().add(FetchUserPosts());
-    context.read<UserBloc>().add(UpdateAura());
 
     _tabController = TabController(length: 3, vsync: this);
     _scrollNotifier = ValueNotifier(0.0);

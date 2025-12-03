@@ -1,4 +1,5 @@
 // socket_service.dart
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class SocketService {
@@ -10,7 +11,7 @@ class SocketService {
 
   void connect(String userId) {
     socket = IO.io(
-      'http://192.168.100.103:4000',
+      dotenv.env['serverURL']!,
       IO.OptionBuilder()
           .setTransports(['websocket'])
           .enableAutoConnect()

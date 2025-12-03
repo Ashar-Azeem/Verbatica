@@ -20,7 +20,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
     on<updateCommentWithPost>(_onupdateComment);
     on<FetchUserPosts>(_onFetchUserPosts);
     on<DeleteUserPost>(_onDeleteUserPost);
-    on<UpdateAura>(updateAura);
     on<SavePost1>(_onSavePost);
     on<UnsavePost1>(_onUnsavePost);
     on<FetchSavedPosts>(_onFetchSavedPosts);
@@ -532,14 +531,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
   ) async {
     List<Post> savedPosts = await ApiService().getSavedPosts(event.userId);
     emit(state.copyWith(savedPosts: savedPosts, isLoadingSavedPosts: false));
-  }
-
-  void updateAura(UpdateAura event, Emitter<UserState> emit) async {
-    int aura = await ApiService().getAura(state.user!.id);
-    User user = state.user!.copyWith(aura: aura);
-    await TokenOperations().saveUserProfile(user);
-
-    emit(state.copyWith(user: user));
   }
 
   void clearBloc(ClearBloc event, Emitter<UserState> emit) async {

@@ -1,4 +1,5 @@
 // ignore_for_file: file_names
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
@@ -9,8 +10,7 @@ class AuthService {
   Future<void> _initialize() async {
     try {
       await _googleSignIn.initialize(
-        serverClientId:
-            '310207901418-0bcqf34s3cmu1l9o3v85cib6a77hc7id.apps.googleusercontent.com',
+        serverClientId: dotenv.env['GoogleAuthKey']!,
       );
       _initialized = true;
     } catch (e) {

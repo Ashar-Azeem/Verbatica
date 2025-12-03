@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:sizer/sizer.dart';
@@ -15,6 +16,7 @@ import 'package:verbatica/BLOC/Votes%20Restriction/votes_restrictor_bloc.dart';
 import 'package:verbatica/BLOC/otheruser/otheruser_bloc.dart';
 import 'package:verbatica/BLOC/postsubmit/postsubmit_bloc.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
+import 'package:verbatica/Services/API_Service.dart';
 import 'package:verbatica/Utilities/Color.dart';
 import 'package:verbatica/Utilities/theme_provider.dart';
 import 'package:verbatica/Views/Authentication%20Screens/EmailVerification.dart';
@@ -25,8 +27,11 @@ import 'package:verbatica/model/user.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-
+  await dotenv.load();
   User? user = await TokenOperations().loadUserProfile();
+  if (user != null) {
+    user = await ApiService().fetchUser(user.id);
+  }
   runApp(
     MultiProvider(
       providers: [

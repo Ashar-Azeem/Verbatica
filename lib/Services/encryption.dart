@@ -5,8 +5,10 @@ import 'package:encrypt/encrypt.dart' as encrypt;
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 //Secret key, hide this at the end
-const String aesKey = '12345678901234567890123456789012';
+String aesKey = dotenv.env['aesKey']!;
 
 // Generate secure random IV
 Uint8List generateRandomIVBytes() {

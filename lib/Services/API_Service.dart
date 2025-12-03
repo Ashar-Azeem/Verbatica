@@ -4,6 +4,7 @@ import 'package:chatview/chatview.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:verbatica/BLOC/Votes%20Restriction/votes_restrictor_bloc.dart';
 import 'package:verbatica/LocalDB/TokenOperations.dart';
 import 'package:verbatica/Views/Nav%20Bar%20Screens/Analysis%20Views/chartanalytics.dart';
@@ -21,7 +22,7 @@ import 'package:verbatica/model/user.dart';
 class ApiService {
   final Dio _dio = Dio(
       BaseOptions(
-        baseUrl: 'http://192.168.100.103:4000/api/',
+        baseUrl: '${dotenv.env['serverURL']!}/api/',
         connectTimeout: const Duration(seconds: 20),
         receiveTimeout: const Duration(seconds: 20),
         headers: {'Content-Type': 'application/json'},
@@ -58,6 +59,16 @@ class ApiService {
         data: {'email': email, 'password': password},
       );
       await TokenOperations().savePrivateKey(response.data['privateKey']);
+      return User.fromJson(response.data['user']);
+    } on DioException catch (e) {
+      final errorMessage = _extractErrorMessage(e);
+      throw Exception(errorMessage);
+    }
+  }
+
+  Future<User?> fetchUser(int userId) async {
+    try {
+      final response = await _dio.get('user/user', data: {'userId': userId});
       return User.fromJson(response.data['user']);
     } on DioException catch (e) {
       final errorMessage = _extractErrorMessage(e);

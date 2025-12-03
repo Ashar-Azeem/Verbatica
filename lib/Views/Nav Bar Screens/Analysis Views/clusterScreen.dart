@@ -82,32 +82,63 @@ class _ClusterscreenState extends State<Clusterscreen>
                 onPressed: () => Navigator.of(context).pop(),
               ),
               actions: [
-                IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => ChartsAnalyticsScreen(
-                              postId: int.parse(widget.postid),
-                              clusters: widget.clusters,
-                            ),
+                widget.clusters.isEmpty
+                    ? SizedBox.shrink()
+                    : IconButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => ChartsAnalyticsScreen(
+                                  postId: int.parse(widget.postid),
+                                  clusters: widget.clusters,
+                                ),
+                          ),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.bar_chart,
+                        size: 22,
+                        color: Theme.of(context).iconTheme.color,
                       ),
-                    );
-                  },
-                  icon: Icon(
-                    Icons.bar_chart,
-                    size: 22,
-                    color: Theme.of(context).iconTheme.color,
-                  ),
-                  tooltip: 'View Analytics',
-                ),
+                      tooltip: 'View Analytics',
+                    ),
               ],
               centerTitle: true,
             ),
-            body: Column(
-              children: [_buildTabBar(), Expanded(child: _buildCommentsList())],
-            ),
+            body:
+                widget.clusters.isEmpty
+                    ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.chat_bubble_outline,
+                            size: 64,
+                            color: Theme.of(
+                              context,
+                            ).iconTheme.color?.withOpacity(0.5),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No comments or clusters available yet',
+                            style: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).textTheme.bodyMedium?.color?.withOpacity(0.7),
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                    : Column(
+                      children: [
+                        _buildTabBar(),
+                        Expanded(child: _buildCommentsList()),
+                      ],
+                    ),
           );
         },
       ),
