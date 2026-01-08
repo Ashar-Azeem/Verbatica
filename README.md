@@ -19,9 +19,9 @@ A cross-platform mobile application built using Flutter, designed for performanc
 ## 🛠️ Tech Stack
 
 - **Framework:** Flutter (Dart)
-- **State Management:**Bloc 
+- **State Management:** Bloc 
 - **Backend:** Node.js
-- **Database:**REST APIs, Web Socket
-- **Tools:**  VS Code
+- **Database:** REST APIs, Web Socket
+- **Tools:** VS Code
 
 ---
