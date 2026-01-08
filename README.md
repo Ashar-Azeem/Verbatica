@@ -1,16 +1,27 @@
-# verbatica
+# Flutter Mobile Application
 
-A new Flutter project.
+A cross-platform mobile application built using Flutter, designed for performance, scalability, and a clean user experience. This project follows modern Flutter best practices and a maintainable architecture.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 🚀 Features
 
-A few resources to get you started if this is your first Flutter project:
+- Cross-platform support (Android & iOS)
+- Clean and responsive UI
+- Scalable architecture
+- State management ready
+- API integration support
+- Backend-ready 
+- Optimized for performance
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🛠️ Tech Stack
+
+- **Framework:** Flutter (Dart)
+- **State Management:**Bloc 
+- **Backend:** Node.js
+- **Database:**REST APIs, Web Socket
+- **Tools:**  VS Code
+
+---
